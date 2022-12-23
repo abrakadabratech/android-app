@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="240dp"
+    android:layout_width="300dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="@dimen/dp_16"
+    app:cardElevation="8dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHeight_percent="0.3"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintWidth_percent="0.8">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/imageView39"
+            android:layout_width="@dimen/dp_16"
+            android:layout_height="15dp"
+            android:layout_marginStart="17dp"
+            android:layout_marginTop="21dp"
+            android:src="@drawable/ic_close_icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView117"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_semi_bold"
+            android:text="Sort By"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView39"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageView39"
+            app:layout_constraintTop_toTopOf="@+id/imageView39" />
+
+        <TextView
+            android:id="@+id/nearToMeTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="28dp"
+            android:fontFamily="@font/montserrat_medium"
+            android:text="Nearest to me"
+            android:textColor="@color/cat_select_color"
+            android:textSize="@dimen/sp_16"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView117" />
+
+        <TextView
+            android:id="@+id/textView118"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="#F2F2F2"
+            app:layout_constraintEnd_toEndOf="@+id/nearToMeSwitch"
+            app:layout_constraintStart_toStartOf="@+id/nearToMeTxt"
+            app:layout_constraintTop_toBottomOf="@+id/nearToMeTxt" />
+
+        <TextView
+            android:id="@+id/newrstFirstTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:fontFamily="@font/montserrat_medium"
+            android:text="Newest First"
+            android:textColor="@color/cat_unselect_color"
+            android:textSize="@dimen/sp_16"
+
+            app:layout_constraintStart_toStartOf="@+id/nearToMeTxt"
+            app:layout_constraintTop_toBottomOf="@+id/nearToMeTxt" />
+
+        <TextView
+            android:id="@+id/textView1181"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="#F2F2F2"
+            app:layout_constraintEnd_toEndOf="@+id/newestFirstSwitch"
+            app:layout_constraintStart_toStartOf="@+id/newrstFirstTxt"
+            app:layout_constraintTop_toBottomOf="@+id/newrstFirstTxt" />
+
+        <com.codersroute.flexiblewidgets.FlexibleSwitch
+            android:id="@+id/nearToMeSwitch"
+            android:layout_width="50dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="20dp"
+            android:checked="true"
+            app:backgroundColorOnSwitchOff="#F0F0F8"
+            app:backgroundColorOnSwitchOn="#00000029"
+            app:layout_constraintBottom_toBottomOf="@+id/nearToMeTxt"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/nearToMeTxt"
+            app:showText="false"
+            app:strokeColorOnSwitchOff="#ADB5BD"
+            app:strokeColorOnSwitchOn="#3C8F7C"
+            app:strokeWidth="2dp"
+            app:textColorOnSwitchOff="#ADB5BD"
+            app:textColorOnSwitchOn="#3C8F7C"
+            app:thumbColorOnSwitchOff="#ADB5BD"
+            app:thumbColorOnSwitchOn="#3C8F7C" />
+
+        <com.codersroute.flexiblewidgets.FlexibleSwitch
+            android:id="@+id/newestFirstSwitch"
+            android:layout_width="50dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="20dp"
+            android:checked="false"
+            android:textSize="20sp"
+            app:backgroundColorOnSwitchOff="#F0F0F8"
+            app:backgroundColorOnSwitchOn="#00000029"
+            app:layout_constraintBottom_toBottomOf="@+id/newrstFirstTxt"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/newrstFirstTxt"
+            app:showText="false"
+            app:strokeColorOnSwitchOff="#ADB5BD"
+            app:strokeColorOnSwitchOn="#3C8F7C"
+            app:strokeWidth="2dp"
+            app:textColorOnSwitchOff="#ADB5BD"
+            app:textColorOnSwitchOn="#3C8F7C"
+            app:thumbColorOnSwitchOff="#ADB5BD"
+            app:thumbColorOnSwitchOn="#3C8F7C" />
+
+        <TextView
+            android:id="@+id/applyBtn"
+            android:layout_width="111dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="33dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/btn_bg_rounded_rect"
+            android:fontFamily="@font/montserrat_semi_bold"
+            android:gravity="center"
+            android:text="Apply"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_16"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView1181" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
+

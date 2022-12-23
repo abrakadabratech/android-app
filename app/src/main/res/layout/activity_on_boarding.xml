@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".activities.OnBoardingActivity">
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/fab_previous"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="32dp"
+        android:contentDescription="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/on_boarding_previous"
+        app:layout_constraintBottom_toTopOf="@+id/tv_skip"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+    <!--        android:id="@+id/fab_previous"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginStart="32dp"-->
+    <!--        android:contentDescription="@null"-->
+    <!--        android:elevation="2dp"-->
+    <!--        android:src="@drawable/ic_previous_arrow"-->
+    <!--        app:backgroundTint="@color/white"-->
+    <!--        app:fabCustomSize="44dp"-->
+    <!--        app:fabSize="auto"-->
+    <!--        app:layout_constraintBottom_toTopOf="@+id/tv_skip"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:maxImageSize="24dp" />-->
+
+    <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
+        android:id="@+id/indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:dotsColor="@color/un_selected_color"
+        app:dotsCornerRadius="8dp"
+        app:dotsSize="8dp"
+        app:dotsSpacing="4dp"
+        app:dotsWidthFactor="1.8"
+        app:layout_constraintBottom_toBottomOf="@+id/fab_previous"
+        app:layout_constraintEnd_toStartOf="@+id/fab_next"
+        app:layout_constraintStart_toEndOf="@+id/fab_previous"
+        app:layout_constraintTop_toTopOf="@+id/fab_previous"
+        app:progressMode="false"
+        app:selectedDotColor="@color/selected_color" />
+
+    <ImageView
+        android:id="@+id/fab_next"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="32dp"
+        android:contentDescription="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/on_boarding_next"
+        app:layout_constraintBottom_toBottomOf="@+id/fab_previous"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/fab_previous" />
+
+    <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+    <!--        android:id="@+id/fab_next"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginEnd="32dp"-->
+    <!--        android:contentDescription="@null"-->
+    <!--        android:elevation="2dp"-->
+    <!--        android:src="@drawable/ic_next_arrow"-->
+    <!--        app:backgroundTint="@color/text_color"-->
+    <!--        app:fabCustomSize="44dp"-->
+    <!--        app:fabSize="auto"-->
+    <!--        app:layout_constraintBottom_toBottomOf="@+id/fab_previous"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="@+id/fab_previous"-->
+    <!--        app:maxImageSize="24dp"-->
+    <!--        app:tint="@color/white" />-->
+
+    <TextView
+        android:id="@+id/tv_skip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat_regular"
+        android:text="@string/skip"
+        android:textColor="@color/text_color"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/iv_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/iv_bottom"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

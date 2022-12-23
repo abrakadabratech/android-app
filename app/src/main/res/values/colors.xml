@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="theme_color">#416D49</color>
+    <color name="new_theme_color">#A7EBD7</color>
+    <color name="new_theme_color_dark">#51A8C2</color>
+    <color name="theme_color_op_20">#20416D49</color>
+    <color name="bg_color">#E5E5E5</color>
+    <color name="hint_color">#929292</color>
+    <color name="hint_color_op_40">#50929292</color>
+    <color name="product_bg_color">#F1F1F1</color>
+    <color name="sub_title_color">#0D253C</color>
+    <color name="product_border_color">#CFCFCF</color>
+    <color name="product_border_color_op_50">#80CFCFCF</color>
+    <color name="white_op_50">#90FFFFFF</color>
+    <color name="op_theme_40">#40C3DEC8</color>
+    <color name="op_grey_20">#20CFCFCF</color>
+    <color name="op_grey_28">#28CFCFCF</color>
+    <color name="disable_btn_color">#DBDBDB</color>
+    <color name="product_image_bg_color">#F1F1F1</color>
+    <color name="request_border_color">#CCD7CE</color>
+
+    <color name="request_text_color">#141414</color>
+
+    <color name="request_pending_color">#3C93E3</color>
+    <color name="op_request_pending_13">#133C93E3</color>
+    <color name="op_theme_13">#13416D49</color>
+    <color name="request_rejected_color">#D22222</color>
+    <color name="op_request_rejected_13">#13D22222</color>
+    <color name="op_request_42">#42E3E3E3</color>
+
+    <color name="loadingDialogBackgroundColor">#00FFFFFF</color>
+
+    <color name="blue_status_bar_color">#E4FAFF</color>
+    <color name="text_color">#2D7A76</color>
+    <color name="sub_text_color">#1D2126</color>
+    <color name="new_bg_color">#F5F5F7</color>
+    <color name="title_color">#535C6B</color>
+    <color name="message_color">#727C8E</color>
+    <color name="btn_color">#2D7A76</color>
+    <color name="hyper_link_text_color">#707070</color>
+    <color name="hyper_link_color">#0630B9</color>
+    <color name="btn_shadow_color">#85000000</color>
+    <color name="resend_color">#053D3E</color>
+    <color name="ring_color">#50000000</color>
+    <color name="selected_color">#FA8F95</color>
+    <color name="un_selected_color">#FACFBD</color>
+    <color name="dark_title_color">#113B3C</color>
+
+    <color name="new_theme">#E4FAFF</color>
+    <color name="new_button_color">#2D7A76</color>
+    <color name="tabs_color">#60B3C6</color>
+    <color name="transparent">#00000000</color>
+    <color name="transparent_blur">#3B000000</color>
+    <color name="new_text_color">#334D60</color>
+    <color name="new_action_bar_title_color">#223749</color>
+    <color name="alert_bg_color">#B3000000</color>
+    <color name="edit_text_color">#8898AA</color>
+    <color name="cat_select_color">#3C8F7C</color>
+    <color name="cat_unselect_color">#727C8E</color>
+    <color name="blue_text_color">#355389</color>
+
+</resources>

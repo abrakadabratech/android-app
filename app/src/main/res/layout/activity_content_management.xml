@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_content_management"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".activities.ContentManagementActivity">
+
+    <include
+        android:id="@+id/include_toolbar"
+        layout="@layout/logged_in_user_toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scrollbarSize="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/include_toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_contact_us_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible">
+
+                <include layout="@layout/new_support" />
+
+                <!-- <ImageView
+                    android:id="@+id/iv"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="24dp"
+                    android:contentDescription="@null"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/home_app_icon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_for_enquiry_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:fontFamily="@font/lato_bold"
+                    android:text="Want to get in touch? We'd love to hear from you. Here is how you can reach us..."
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/iv" />
+
+                <TextView
+                    android:id="@+id/tv_phone_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="24dp"
+                    android:fontFamily="@font/lato_bold"
+                    android:text="@string/mobile"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_for_enquiry_title" />
+
+                <LinearLayout
+                    android:id="@+id/ll_for_enquiry"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="24dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_phone_title">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_phone"
+                        app:tint="@color/black" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:autoLink="phone"
+                        android:fontFamily="@font/lato_regular"
+                        android:text="@string/app_contact_number"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_email_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="24dp"
+                    android:fontFamily="@font/lato_bold"
+                    android:text="@string/email"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ll_for_enquiry" />
+
+
+                <LinearLayout
+                    android:id="@+id/ll_email"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="22dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginBottom="24dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_email_title">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_email"
+                        app:tint="@color/black" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:autoLink="email"
+                        android:fontFamily="@font/lato_regular"
+                        android:text="@string/app_email_address"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                </LinearLayout>-->
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_about_us_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="8dp"
+                android:visibility="gone">
+
+                <include
+                    layout="@layout/new_about_us"
+                   />
+
+                <!-- <ImageView
+                     android:id="@+id/iv"
+                     android:layout_width="100dp"
+                     android:layout_height="100dp"
+                     android:layout_marginTop="24dp"
+                     android:contentDescription="@null"
+                     android:scaleType="fitXY"
+                     android:src="@drawable/home_app_icon"
+                     app:layout_constraintEnd_toEndOf="parent"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toTopOf="parent" />
+
+                 <TextView
+                     android:id="@+id/tv_for_enquiry_title"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     android:layout_marginStart="24dp"
+                     android:layout_marginTop="24dp"
+                     android:layout_marginEnd="24dp"
+                     android:fontFamily="@font/lato_bold"
+                     android:text="Want to get in touch? We'd love to hear from you. Here is how you can reach us..."
+                     android:textColor="@color/black"
+                     android:textSize="18sp"
+                     app:layout_constraintEnd_toEndOf="parent"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toBottomOf="@+id/iv" />
+
+                 <TextView
+                     android:id="@+id/tv_phone_title"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     android:layout_marginStart="24dp"
+                     android:layout_marginTop="8dp"
+                     android:layout_marginEnd="24dp"
+                     android:fontFamily="@font/lato_bold"
+                     android:text="@string/mobile"
+                     android:textColor="@color/black"
+                     android:textSize="18sp"
+                     android:visibility="gone"
+                     app:layout_constraintEnd_toEndOf="parent"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toBottomOf="@+id/tv_for_enquiry_title" />
+
+                 <LinearLayout
+                     android:id="@+id/ll_for_enquiry"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     android:layout_marginStart="20dp"
+                     android:layout_marginTop="16dp"
+                     android:layout_marginEnd="24dp"
+                     android:gravity="center_vertical"
+                     android:orientation="horizontal"
+                     app:layout_constraintEnd_toEndOf="parent"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toBottomOf="@+id/tv_phone_title">
+
+                     <ImageView
+                         android:layout_width="24dp"
+                         android:layout_height="24dp"
+                         android:contentDescription="@null"
+                         android:src="@drawable/ic_phone"
+                         app:tint="@color/black" />
+
+                     <TextView
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_marginStart="6dp"
+                         android:autoLink="phone"
+                         android:fontFamily="@font/lato_regular"
+                         android:text="@string/app_contact_number"
+                         android:textColor="@color/black"
+                         android:textSize="18sp" />
+
+                 </LinearLayout>
+
+                 <TextView
+                     android:id="@+id/tv_email_title"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_marginStart="24dp"
+                     android:layout_marginTop="24dp"
+                     android:fontFamily="@font/lato_bold"
+                     android:text="@string/email"
+                     android:textColor="@color/black"
+                     android:textSize="18sp"
+                     android:visibility="gone"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toBottomOf="@+id/ll_for_enquiry" />
+
+
+                 <LinearLayout
+                     android:id="@+id/ll_email"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     android:layout_marginStart="22dp"
+                     android:layout_marginTop="16dp"
+                     android:layout_marginEnd="24dp"
+                     android:layout_marginBottom="24dp"
+                     android:gravity="center_vertical"
+                     android:orientation="horizontal"
+                     app:layout_constraintBottom_toBottomOf="parent"
+                     app:layout_constraintEnd_toEndOf="parent"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toBottomOf="@+id/tv_email_title">
+
+                     <ImageView
+                         android:layout_width="24dp"
+                         android:layout_height="24dp"
+                         android:contentDescription="@null"
+                         android:src="@drawable/ic_email"
+                         app:tint="@color/black" />
+
+                     <TextView
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_marginStart="10dp"
+                         android:autoLink="email"
+                         android:fontFamily="@font/lato_regular"
+                         android:text="@string/app_email_address"
+                         android:textColor="@color/black"
+                         android:textSize="18sp" />
+
+                 </LinearLayout>-->
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_privacy_policy_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="8dp"
+                android:visibility="gone">
+
+                <include
+                    layout="@layout/new_privacy_policy"
+                    />
+
+                <!-- <ImageView
+                     android:id="@+id/iv"
+                     android:layout_width="100dp"
+                     android:layout_height="100dp"
+                     android:layout_marginTop="24dp"
+                     android:contentDescription="@null"
+                     android:scaleType="fitXY"
+                     android:src="@drawable/home_app_icon"
+                     app:layout_constraintEnd_toEndOf="parent"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toTopOf="parent" />
+
+                 <TextView
+                     android:id="@+id/tv_for_enquiry_title"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     android:layout_marginStart="24dp"
+                     android:layout_marginTop="24dp"
+                     android:layout_marginEnd="24dp"
+                     android:fontFamily="@font/lato_bold"
+                     android:text="Want to get in touch? We'd love to hear from you. Here is how you can reach us..."
+                     android:textColor="@color/black"
+                     android:textSize="18sp"
+                     app:layout_constraintEnd_toEndOf="parent"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toBottomOf="@+id/iv" />
+
+                 <TextView
+                     android:id="@+id/tv_phone_title"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     android:layout_marginStart="24dp"
+                     android:layout_marginTop="8dp"
+                     android:layout_marginEnd="24dp"
+                     android:fontFamily="@font/lato_bold"
+                     android:text="@string/mobile"
+                     android:textColor="@color/black"
+                     android:textSize="18sp"
+                     android:visibility="gone"
+                     app:layout_constraintEnd_toEndOf="parent"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toBottomOf="@+id/tv_for_enquiry_title" />
+
+                 <LinearLayout
+                     android:id="@+id/ll_for_enquiry"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     android:layout_marginStart="20dp"
+                     android:layout_marginTop="16dp"
+                     android:layout_marginEnd="24dp"
+                     android:gravity="center_vertical"
+                     android:orientation="horizontal"
+                     app:layout_constraintEnd_toEndOf="parent"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toBottomOf="@+id/tv_phone_title">
+
+                     <ImageView
+                         android:layout_width="24dp"
+                         android:layout_height="24dp"
+                         android:contentDescription="@null"
+                         android:src="@drawable/ic_phone"
+                         app:tint="@color/black" />
+
+                     <TextView
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_marginStart="6dp"
+                         android:autoLink="phone"
+                         android:fontFamily="@font/lato_regular"
+                         android:text="@string/app_contact_number"
+                         android:textColor="@color/black"
+                         android:textSize="18sp" />
+
+                 </LinearLayout>
+
+                 <TextView
+                     android:id="@+id/tv_email_title"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_marginStart="24dp"
+                     android:layout_marginTop="24dp"
+                     android:fontFamily="@font/lato_bold"
+                     android:text="@string/email"
+                     android:textColor="@color/black"
+                     android:textSize="18sp"
+                     android:visibility="gone"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toBottomOf="@+id/ll_for_enquiry" />
+
+
+                 <LinearLayout
+                     android:id="@+id/ll_email"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     android:layout_marginStart="22dp"
+                     android:layout_marginTop="16dp"
+                     android:layout_marginEnd="24dp"
+                     android:layout_marginBottom="24dp"
+                     android:gravity="center_vertical"
+                     android:orientation="horizontal"
+                     app:layout_constraintBottom_toBottomOf="parent"
+                     app:layout_constraintEnd_toEndOf="parent"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toBottomOf="@+id/tv_email_title">
+
+                     <ImageView
+                         android:layout_width="24dp"
+                         android:layout_height="24dp"
+                         android:contentDescription="@null"
+                         android:src="@drawable/ic_email"
+                         app:tint="@color/black" />
+
+                     <TextView
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_marginStart="10dp"
+                         android:autoLink="email"
+                         android:fontFamily="@font/lato_regular"
+                         android:text="@string/app_email_address"
+                         android:textColor="@color/black"
+                         android:textSize="18sp" />
+
+                 </LinearLayout>-->
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <TextView
+                android:id="@+id/tv_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/lato_regular"
+                android:padding="16dp"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

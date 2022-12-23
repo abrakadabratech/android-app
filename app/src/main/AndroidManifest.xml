@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.oss.abraakadabraaapp">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="true" />
+
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+        <intent>
+            <action android:name="android.media.action.VIEW" />
+
+            <data android:scheme="http" />
+        </intent>
+    </queries>
+    <queries>
+        <package android:name="com.whatsapp" />
+    </queries>
+    <queries>
+        <package android:name="com.whatsapp.w4b" />
+    </queries>
+
+    <application
+        android:name=".App"
+        android:allowBackup="true"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher_"
+        android:killAfterRestore="false"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/ic_launcher_"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AbraaKaDabraa.App"
+        android:usesCleartextTraffic="true"
+        tools:ignore="HardcodedDebugMode,LockedOrientationActivity">
+        <activity
+            android:name=".activities.SuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.newflow.MyNotificationDetailActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.newflow.NewNotificationActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.newflow.MyNewProfileActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.newflow.ui.FeedbackActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.newflow.TestActivity"
+            android:exported="true" />
+        <activity
+            android:name=".activities.newflow.CategorySelectActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.newflow.ui.MyRequestDetailsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.newflow.MyListingDetialActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.newflow.MyPayAsYouGoActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.newflow.MyAchievementsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.newflow.MyChatsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.newflow.MyListingActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.newflow.NewMyRequestActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.newflow.PostedUserActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.newflow.NewSearchActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.newflow.NewProductDetailActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.newflow.NewHomeActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa"
+            android:windowSoftInputMode="adjustPan">
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
+        </activity>
+        <activity
+            android:name=".activities.auth.AuthUserDetailActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.auth.OtpVerificationActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.auth.LoginActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.OnBoardingActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.RequestProductDetailActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.FilterActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.SearchActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.MyRequestActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.MultipleImageActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.ProductDetailActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.MyProductActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.AddProductActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.NotificationActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.ChangePasswordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.EditProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.MyProfileActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".activities.AllCategoryActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.ContentManagementActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
+            android:name=".activities.HomeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.ResetPasswordActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".activities.VerifyOtpActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".activities.SignUpActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".activities.SignInActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".activities.StartAppActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".utils.customView.ImagePickerActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+
+        <service
+            android:name=".service.MessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/notification_icon" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/theme_color" />
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+
+</manifest>

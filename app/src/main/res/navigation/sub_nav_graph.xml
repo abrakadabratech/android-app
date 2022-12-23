@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sub_nav_graph.xml"
+    app:startDestination="@id/receiverFragment">
+
+    <fragment
+        android:id="@+id/giverFragment"
+        android:name="com.oss.abraakadabraaapp.activities.newflow.ui.home.NewGiverFragment"
+        android:label="GiverFragment"
+        tools:layout="@layout/new_giver_flow_fragment">
+    </fragment>
+    <fragment
+        android:id="@+id/receiverFragment"
+        android:name="com.oss.abraakadabraaapp.activities.newflow.ui.home.NewReceiverFragment"
+        android:label="ReceiverFragment"
+        tools:layout="@layout/new_receiver_flow">
+
+    </fragment>
+</navigation>

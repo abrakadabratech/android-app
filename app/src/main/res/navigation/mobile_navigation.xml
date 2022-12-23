@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.oss.abraakadabraaapp.activities.newflow.ui.home.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/new_receiver_flow" >
+       
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_community"
+        android:name="com.oss.abraakadabraaapp.activities.newflow.ui.community.CommunityFragment"
+        android:label="@string/title_community"
+        tools:layout="@layout/fragment_community" />
+
+    <fragment
+        android:id="@+id/navigation_account"
+        android:name="com.oss.abraakadabraaapp.activities.newflow.ui.accounts.AccountsFragment"
+        android:label="@string/title_account"
+        tools:layout="@layout/fragment_accounts" />
+
+     <fragment
+        android:id="@+id/navigation_menu"
+        android:name="com.oss.abraakadabraaapp.activities.newflow.ui.menu.MenuFragment"
+        android:label="Menu" />
+
+    <!-- Home-->
+
+</navigation>

@@ -1,0 +1,201 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="akd" translatable="false" tools:ignore="Typos">AIzaSyD7Svot1Qs4Qv_GczkyfdIZ0LNH-yYCPZg</string>
+
+    <string name="not_now">Not now</string>
+    <string name="settings">Settings</string>
+    <string name="dialog_permission_title">Grant Permissions</string>
+    <string name="dialog_permission_message">This app needs permission to use this feature. You can grant them in app settings.</string>
+    <string name="go_to_settings">GOTO SETTINGS</string>
+    <string name="title_permission_permanently_denied">Location Permission Permanently Denied</string>
+    <string name="message_permission_permanently_denied">The app will not work without providing location permission.
+
+ Open App settings -> Permissions -> Allow permission.</string>
+    <string name="select_options">Select Options</string>
+    <string name="lbl_choose_from_gallery">Choose image from gallery</string>
+    <string name="lbl_take_camera_picture">Take a picture</string>
+    <string name="toast_image_intent_null">Image picker option is missing!</string>
+    <string name="logout_message">Are you sure you want to logout?</string>
+    <string name="yes_string">Yes</string>
+    <string name="no_string">No</string>
+    <string name="loading">Loading...</string>
+    <string name="no_data_found">No Data Found</string>
+    <string name="my_product_no_data_message">You have not listed any products yet. Go ahead, list your first product.</string>
+    <string name="giving_no_data_message">You have not requested for any products.</string>
+    <string name="receiving_no_data_message">You have not received any requests.</string>
+    <string name="latest_product_no_data_message">No Products listed within 50Kms.</string>
+    <string name="search_no_data_message">No products match your search.</string>
+    <string name="edit_profile">Edit Profile</string>
+
+    <string-array name="gender_value">
+        <item>Select Gender</item>
+        <item>Male</item>
+        <item>Female</item>
+        <item>Unisex</item>
+    </string-array>
+
+    <string-array name="condition_value">
+        <item>Select Condition</item>
+        <item>Never used</item>
+        <item>Very less used</item>
+        <item>Regularly used and in good condition</item>
+        <item>Regularly used and in average condition</item>
+    </string-array>
+
+    <string-array name="age_value">
+        <item>Select Age</item>
+        <item>Less than 6 months</item>
+        <item>6 months to 1 year</item>
+        <item>1 year to 3 years</item>
+        <item>More than 3 years</item>
+    </string-array>
+
+    <string name="app_name">Abra Ka Dabra</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_up_your_account">Sign up your Account</string>
+    <string name="full_name">Full Name</string>
+    <string name="email_address">Email Address</string>
+    <string name="mobile_number">Mobile Number</string>
+    <string name="password">Password</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="already_have_not_an_account">Don\'t have an account?</string>
+    <string name="login">Login</string>
+    <string name="hello">Hello</string>
+    <string name="sign_into_you_account">Sign into your Account</string>
+    <string name="sign_up_exclamation">Sign Up!</string>
+    <string name="forgot_your_password_que_mark">Forgot your password?</string>
+    <string name="reset_here">Reset here</string>
+    <string name="back">Back</string>
+    <string name="verify">Verify</string>
+    <string name="verification">Verification</string>
+    <string name="please_enter_your_otp_sent_to_phone_number">Please Enter your OTP Sent to Email</string>
+    <string name="otp_hint">*</string>
+    <string name="didnt_get_code">Didn\'t get code?</string>
+    <string name="resend_otp">Resend OTP</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="no_internet_connection_found">No internet connection found</string>
+    <string name="enter_valid_otp">Enter 4-digit valid OTP</string>
+    <string name="my_profile">My Profile</string>
+    <string name="request">Request</string>
+    <string name="my_request">My Request</string>
+    <string name="my_product">My Product</string>
+    <string name="category">Category</string>
+    <string name="about_us">About Us</string>
+    <string name="contact_us">Contact Us</string>
+    <string name="support">Support</string>
+    <string name="user_does_exist_message">User doesn\'t exist.</string>
+    <string name="terms_of_use">Terms of Use</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="logout">Logout</string>
+    <string name="home">Home</string>
+    <string name="add_product">Add Product</string>
+    <string name="edit_product">Edit Product</string>
+    <string name="product_detail">Product Detail</string>
+    <string name="product_details">Product Details</string>
+    <string name="request_detail">Request Detail</string>
+    <string name="request_details">Request Details</string>
+    <string name="search">Search...</string>
+    <string name="search_message">Search products by name &amp; location</string>
+    <string name="search_str">Search</string>
+    <string name="view_all">View All</string>
+    <string name="latest_product">Latest Product</string>
+    <string name="edit">Edit</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="location">Location</string>
+    <string name="mobile">Mobile</string>
+    <string name="save">Save</string>
+    <string name="change_password">Change Password</string>
+    <string name="old_password">Old Password</string>
+    <string name="no_notification_found">No Notification Found</string>
+    <string name="notification">Notification</string>
+    <string name="select_gender">Select Gender</string>
+    <string name="gender">Gender</string>
+    <string name="condition">Condition</string>
+    <string name="how_old">How Old</string>
+    <string name="select_category">Select Category</string>
+    <string name="select_condition">Select Condition</string>
+    <string name="select_age">Select Age</string>
+    <string name="product_name">Product Name</string>
+    <string name="brand">Brand</string>
+    <string name="product_image">Product Image</string>
+    <string name="description">Description</string>
+    <string name="delete_str">Delete</string>
+    <string name="delete_product_message">Are you sure you want to delete this product?</string>
+    <string name="cancel_product_message">Are you sure you want to cancel request on this product?</string>
+    <string name="request_summary">Request Message</string>
+    <string name="your_summary">Your Message</string>
+    <string name="requested">Requested</string>
+    <string name="location_add_message">Update your Location by clicking on EDIT</string>
+    <string name="giver">Giver</string>
+    <string name="giving">Giving</string>
+    <string name="receiver">Receiver</string>
+    <string name="receiving">Receiving</string>
+    <string name="filter">Filter</string>
+    <string name="continue_str">Continue</string>
+    <string name="whats_app_note">Note: Please share your WhatsApp number as the communication with other users would be initiated using WhatsApp.</string>
+    <string name="approve">Approve</string>
+    <string name="approved">Approved</string>
+    <string name="reject">Reject</string>
+    <string name="pending">Pending</string>
+    <string name="search_results_for">Search Results For</string>
+    <string name="receiver_info">Receiver Information</string>
+    <string name="giver_info">Giver Information</string>
+    <string name="summary">Summary</string>
+    <string name="accepted">Accepted</string>
+    <string name="accept">Accept</string>
+    <string name="rejected">Rejected</string>
+    <string name="product_allotted_title">Request Can\'t Proceed</string>
+    <string name="product_allotted_message">You can\'t request this product since its already given.</string>
+    <string name="ok_str">OK</string>
+    <string name="message">Message</string>
+    <string name="current_location">Current Location</string>
+    <string name="app_email_address">abrakadabraapp@gmail.com</string>
+    <string name="app_contact_number">+91 9008377913</string>
+    <string name="cancel">Cancel</string>
+    <string name="given">Given</string>
+    <string name="splash_str">Give and Receive, Anything from Anyone, for Free!!!</string>
+
+    <string name="temp">Already have an account? <font color='' face=''>Login</font></string>
+    <string name="login_str">Please enter your mobile number to receive a One Time Password</string>
+    <string name="otp_verification_str">Please enter the 4 digit OTP sent to your mobile number</string>
+    <string name="default_country_code">+91</string>
+    <string name="hyphen_str">-</string>
+    <string name="enter_phone_number">Enter Phone Number</string>
+    <string name="generate_otp">Generate OTP</string>
+    <string name="login_terms_conditions"><![CDATA[By providing your mobile number, you agree to our Privacy Policy.]]></string>
+    <string name="otp_verification">OTP Verification</string>
+    <string name="did_receive_otp">Didn\'t receive OTP ?</string>
+    <string name="re_send_otp">Re send Otp</string>
+    <string name="resend_otp_in">Resend OTP in</string>
+    <string name="we_would_love_to_know_more_about_you">We would love to know more about you</string>
+    <string name="let_s_get_started">Let\'s Get Started</string>
+    <string name="skip">Skip</string>
+    <string name="give">Give</string>
+    <string name="on_boarding_1">Experience the joy of sharing by giving second hand items in good condition</string>
+    <string name="receive">Receive</string>
+    <string name="on_boarding_2">Save money by using the second hand items for free</string>
+    <string name="reuse">Reuse</string>
+    <string name="on_boarding_3">Preserve Environment by increasing the reuse of hardly used items</string>
+
+
+    <string name="new_about_us_str">Thank you for downloading the application and Welcome to Abra Ka Dabra. \n\nYou are officially a part of our magical family. \n\nAt Abra Ka Dabra, we believe that a core human principle is sharing. All of us have been taught to share with our siblings, friends and neighbours from our childhood. With Abra Ka Dabra we want to expand this circle to a larger community providing you an opportunity to share anything with anyone. \n\nWe often have items which we don’t use but are in good condition. Selling them may not be an option for most of us for many reasons. This platform helps us give those items to people who can use them. Similarly, the platform also allows us to request for an item from other givers which we need. \n\nAt Abra Ka Dabra, we aim to reduce the wastage by creating an ecosystem of sharing products in good condition. This helps keep the environment cleaner, saves our personal funds and spreads joy.</string>
+    <string name="new_privacy_policy_str">This privacy policy sets out how Abra Ka Dabra uses and protects any information that you give Abra Ka Dabra when you visit and use (“website”, “Android Application”). Abra Ka Dabra is committed to ensuring that your privacy is protected. Should we ask you to provide certain information by which you can be identified when using this Application, then you can be assured that it will only be used in accordance with this privacy statement. We reserve the right to change this policy at any given time, of which you will be promptly updated. If you want to make sure that you are up to date with the latest changes, we advise you to frequently visit this page. \n\n<b>What User Data We Collect</b>  \n\nAbra Ka Dabra collects the following information:  \n\nFull Name. Contact information including email address and phone number. Location and address. Social Profile links.  \n\n<b>What We Do With The Data We Collect</b> \nWe require this information to understand your needs and provide you with a better service, and in particular for the following reasons: Internal Record Keeping We may use the information to improve our products and services. We may periodically send promotional emails, SMSs and make voice calls about new products, special offers or other information which we think you may find interesting using the email address and mobile number which you have provided. From time to time, we may also use your information to contact you for market research purposes. We may contact you by email, SMS, voice or mail. We may use the information to customise the Application according to your interests.\n\n<b>Security</b> \nWe are committed to ensuring that your information is secure. In order to prevent unauthorised access or disclosure we have put in place suitable physical, electronic and managerial procedures to safeguard and secure the information we collect online. We do not retain any information collected from you for any longer than is reasonably required by us for the purpose of our services or such period as may be required by applicable laws in India. \n<b>Link To Other Applications</b> \nOur Application may contain links to other Applications of interest. However, once you have used these links to leave our site, you should note that we do not have any control over that other Application. Therefore, we cannot be responsible for the protection and privacy of any information which you provide whilst visiting such sites and such sites are not governed by this privacy statement. You should exercise caution and look at the privacy statement applicable to the Application in question.\n<b>Contact Us </b>\nFor instructions on how you can access the personally identifiable information that we have collected about you online, or how to correct any errors in such information, please email us at abrakadabraapp@gmail.com. To protect your privacy and security, we may take reasonable steps to help verify your identity before granting access or making corrections.</string>
+    <string name="title_activity_new_home">NewHomeActivity</string>
+
+    <string name="title_home">Home</string>
+    <string name="title_community">Community</string>
+    <string name="title_account">Account</string>
+    <string name="title_menu">Menu</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="new_product_name">For example  - Toys, Shoe , Book</string>
+    <string name="type_here">Type here...</string>
+    <string name="ensuring_user"><b>Important :</b> Please ensure that none of the below items are uploaded : \n Any Illegal ,Inappropriate ,Toxic ,Weapons ,Alcohol ,Fireworks ,Narcotics ,Medicines ,Perishable Items.</string>
+    <string name="avoid_content">1. Ensure that you take necessary precautions if meeting the giver to receive the product.\n\n2. While receiving the product, verify the content of the package.\n\n3. No money should be charged by giver to give you the product. </string>
+    <string name="posted_user_message">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</string>
+
+    <string name="pay_as_you_go_content">Dear User, \n\n\nAbra Ka Dabra is started with a noble aim of creating a community for sharing with keeping the environment cleaner and saving our personal funds. \n\nWhile growing this community, we would appreciate your support by giving a small one-time or monthly amount which will help us in sustaining the application. \n\nThank you for trusting and supporting us.</string>
+    <string name="report_this"><u>Report this</u></string>
+</resources>

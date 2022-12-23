@@ -1,0 +1,297 @@
+package com.oss.abraakadabraaapp.activities
+
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import android.view.View
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
+import com.google.android.gms.location.*
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.oss.abraakadabraaapp.BuildConfig
+import com.oss.abraakadabraaapp.R
+import com.oss.abraakadabraaapp.activities.auth.LoginActivity
+import com.oss.abraakadabraaapp.databinding.ActivityStartAppBinding
+import com.oss.abraakadabraaapp.databinding.SplashContentBinding
+import com.oss.abraakadabraaapp.model.UserLocation
+import com.oss.abraakadabraaapp.module.GlideApp
+import com.oss.abraakadabraaapp.retrofit.utils.ApiConstants
+import com.oss.abraakadabraaapp.utils.ImageUtils
+import com.oss.abraakadabraaapp.utils.PreferencesManagement
+import com.oss.abraakadabraaapp.viewModel.MainViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.IOException
+import java.util.*
+
+class StartAppActivity : BaseActivity() {
+
+    private lateinit var binding: ActivityStartAppBinding
+    private lateinit var contentBinding: SplashContentBinding
+
+    private val mainViewModel: MainViewModel by viewModel()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityStartAppBinding.inflate(layoutInflater)
+        contentBinding = binding.splashContent
+        val view = binding.root
+        setContentView(view)
+
+        window.statusBarColor =
+            ContextCompat.getColor(
+                this@StartAppActivity,
+                R.color.blue_status_bar_color
+            )
+
+       // setUpObserver() // Old Code
+        startApp() //New Code
+    }
+
+    private fun setUpObserver() {
+
+        mainViewModel.addressSuccess.observe(this) {
+            val data = it.results[0]
+//            val fullAddress = data.formattedAddress
+//            var pinCode = ""
+//            var country = ""
+            var state = ""
+            var city = ""
+            var locality = ""
+
+            val addressComponents = data.addressComponents
+
+            for (item in addressComponents) {
+                for (i in item.types) {
+                    when (i) {
+//                        "postal_code" -> pinCode = item.longName
+//                        "country" -> country = item.longName
+                        "administrative_area_level_1" -> state = item.longName
+                        "administrative_area_level_2" -> city = item.longName
+                        "sublocality" -> locality = item.longName
+                    }
+                }
+            }
+
+            val address = "$locality, $city, $state"
+
+            Log.d("Addresses", "address $address")
+
+            PreferencesManagement.saveUserLocation(
+                this,
+                UserLocation(
+                    lat = lat,
+                    long = lng,
+                    address,
+                )
+            )
+
+            startApp()
+        }
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+        checkPermissions()
+    }
+
+    private fun checkPermissions() {
+        val listener = object : MultiplePermissionsListener {
+            override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                initLocation()
+            }
+
+            override fun onPermissionRationaleShouldBeShown(
+                permissions: List<PermissionRequest>,
+                token: PermissionToken
+            ) {
+                token.continuePermissionRequest()
+            }
+        }
+
+        val permissions =
+            if (Build.VERSION.SDK_INT <= 29) {
+                arrayListOf(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            } else {
+                arrayListOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            }
+
+        Dexter.withContext(this)
+            .withPermissions(permissions)
+            .withListener(listener)
+            .check()
+    }
+
+    private fun initLocation() {
+//        if (checkPermission()) {
+//            if (isLocationEnabled()) {
+//                getLocation()
+//            } else {
+//                startApp()
+//            }
+//        } else {
+            startApp()
+//        }
+    }
+
+    private fun getLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        mFusedLocationClient.lastLocation.addOnCompleteListener(this) { task ->
+            val location: Location? = task.result
+            if (location == null) {
+                requestNewLocationData()
+            } else {
+                lat = location.latitude.toString()
+                lng = location.longitude.toString()
+                startAppSaveLocation()
+            }
+        }
+
+    }
+
+    private fun requestNewLocationData() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        val locationRequest = LocationRequest.create().apply {
+            interval = 10000L
+            fastestInterval = 0
+            priority = Priority.PRIORITY_HIGH_ACCURACY
+            maxWaitTime = 100
+            numUpdates = 1
+        }
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        mFusedLocationClient.requestLocationUpdates(
+            locationRequest, mLocationCallback,
+            Looper.myLooper()!!
+        )
+    }
+
+    private val mLocationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            val location = locationResult.lastLocation
+            if (location != null) {
+                lat = location.latitude.toString()
+                lng = location.longitude.toString()
+                startAppSaveLocation()
+            }
+        }
+    }
+
+    private fun startAppSaveLocation() {
+
+        val gcd = Geocoder(this, Locale.ENGLISH)
+        var addresses: List<Address>? = null
+        try {
+            addresses = gcd.getFromLocation(lat.toDouble(), lng.toDouble(), 1)
+        } catch (e: IOException) {
+            Log.d("MYT", "e ${e.localizedMessage}")
+        }
+
+        if (addresses != null && addresses.isNotEmpty()) {
+
+            val locality = addresses[0].subLocality ?: ""
+            val city = addresses[0].locality ?: ""
+            val state = addresses[0].adminArea ?: ""
+            val country = addresses[0].countryName ?: ""
+            val pinCode = addresses[0].postalCode ?: ""
+            val fullAddress = addresses[0].getAddressLine(0) ?: ""
+
+            Log.d("Addresses", "$locality\n $city\n $state\n $country\n $pinCode\n $fullAddress")
+
+            val address = "$locality, $city, $state"
+
+            Log.d("Addresses", "address $address")
+
+            PreferencesManagement.saveUserLocation(
+                this,
+                UserLocation(
+                    lat = lat,
+                    long = lng,
+                    address,
+                )
+            )
+
+            startApp()
+
+        } else {
+            startApp()
+//            getLocationAddress()
+        }
+    }
+
+    private fun startApp() {
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (PreferencesManagement.getUserData(this) != null) {
+                startActivity(Intent(this@StartAppActivity, HomeActivity::class.java))
+            } else {
+                startActivity(Intent(this@StartAppActivity, OnBoardingActivity::class.java))
+            }
+            finish()
+//        }, if (BuildConfig.DEBUG) 0 else 2000)
+        }, 2000)
+    }
+
+    private fun getLocationAddress() {
+        if (BuildConfig.DEBUG) {
+            showToast("lat $lat,long $lng")
+        }
+
+        val apiKey = getString(R.string.akd)
+        if (apiKey.isEmpty()) {
+            return
+        }
+
+        val tag = "$lat,$lng"
+        val url =
+            ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" + apiKey
+        mainViewModel.getAddress(url)
+    }
+}

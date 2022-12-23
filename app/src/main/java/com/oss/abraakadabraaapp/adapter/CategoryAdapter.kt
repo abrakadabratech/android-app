@@ -1,0 +1,121 @@
+package com.oss.abraakadabraaapp.adapter
+
+import android.content.Context
+import android.content.Intent
+import android.graphics.drawable.Drawable
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
+import com.oss.abraakadabraaapp.R
+import com.oss.abraakadabraaapp.activities.newflow.CategorySelectActivity
+import com.oss.abraakadabraaapp.databinding.ItemCategoryBinding
+import com.oss.abraakadabraaapp.response.mainResponse.CategoryData
+import com.oss.abraakadabraaapp.module.GlideApp
+
+class CategoryAdapter(
+    private val data: ArrayList<CategoryData>,
+    var context: Context,
+    private var callback: CategoryAdapterInterface,
+    private var keyFrom: String
+) : RecyclerView.Adapter<CategoryAdapter.CategoryAdapterVH>() {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryAdapterVH {
+        return CategoryAdapterVH(
+            LayoutInflater.from(context).inflate(R.layout.item_category, parent, false)
+        )
+    }
+
+    override fun onBindViewHolder(holder: CategoryAdapterVH, position: Int) {
+
+        val item = data[position]
+
+        with(holder.binding) {
+
+            tvCategoryName.text = item.categoryName.trim()
+
+//            progressBar.visibility = View.VISIBLE
+
+            if (!keyFrom.equals("search")) {
+                checkFrame.visibility = View.GONE
+            } else {
+                checkFrame.visibility = View.VISIBLE
+            }
+            if (position == data.size-1){
+                Glide.with(context).load(R.drawable.temp_seven).into(ivCategoryImage)
+            }else  Glide.with(context).load(item.categoryImage).into(ivCategoryImage)
+            if (keyFrom.equals("search")){
+                Glide.with(context).load(item.categoryImage).into(ivCategoryImage)
+            }
+//            ivCategoryImage.setImageResource(item.image)
+
+            /*GlideApp.with(context)
+                .load(item.image)
+                .listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+//                        progressBar.visibility = View.GONE
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+//                        progressBar.visibility = View.GONE
+                        return false
+                    }
+                })
+//                .error(item.image)
+                .into(ivCategoryImage)*/
+
+
+        }
+
+        holder.itemView.setOnClickListener {
+            if (!keyFrom.equals("search")){
+                if (position == data.size-1){
+                    context.startActivity(Intent(context, CategorySelectActivity::class.java))
+                }else  callback.onCategoryClick(item)
+            }else{
+                //callback.onCategoryClick(item)
+            }
+
+        }
+
+    }
+
+    fun clearData() {
+        data.clear()
+        notifyDataSetChanged()
+    }
+
+    override fun getItemCount(): Int {
+        return data.size
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return 1
+    }
+
+    class CategoryAdapterVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val binding = ItemCategoryBinding.bind(itemView)
+    }
+
+    interface CategoryAdapterInterface {
+        fun onCategoryClick(data: CategoryData)
+    }
+
+}

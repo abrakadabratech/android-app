@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navHeaderMain"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardElevation="2dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/middle_image"
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginBottom="8dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@null"
+            android:src="@drawable/nav_header_image"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/right_image"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@null"
+            android:src="@drawable/nav_header_right"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/dot_1"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@null"
+            android:src="@drawable/nav_header_dot"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/middle_image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cv_nav_user_profile" />
+
+        <ImageView
+            android:id="@+id/dot_2"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@null"
+            android:src="@drawable/nav_header_dot"
+            app:layout_constraintEnd_toStartOf="@+id/middle_image"
+            app:layout_constraintTop_toBottomOf="@+id/cv_nav_user_profile" />
+
+
+        <ImageView
+            android:id="@+id/dot_3"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="32dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@null"
+            android:src="@drawable/nav_header_dot"
+            app:layout_constraintEnd_toStartOf="@+id/dot_4"
+            app:layout_constraintStart_toStartOf="@+id/middle_image"
+            app:layout_constraintTop_toTopOf="@+id/middle_image" />
+
+        <ImageView
+            android:id="@+id/dot_4"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="32dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@null"
+            android:src="@drawable/nav_header_dot"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/cv_nav_user_profile"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="16dp"
+            android:isScrollContainer="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/default_user_profile"
+            app:layout_constraintBottom_toBottomOf="@+id/middle_image"
+            app:layout_constraintEnd_toStartOf="@+id/middle_image"
+            app:layout_constraintStart_toStartOf="@+id/middle_image"
+            app:layout_constraintTop_toTopOf="@+id/middle_image" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="@+id/cv_nav_user_profile"
+            app:layout_constraintEnd_toEndOf="@+id/middle_image"
+            app:layout_constraintStart_toEndOf="@+id/cv_nav_user_profile"
+            app:layout_constraintTop_toTopOf="@+id/cv_nav_user_profile">
+
+            <TextView
+                android:id="@+id/tv_nav_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/lato_bold"
+                android:maxLines="1"
+                android:text="User Name"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_nav_mobile_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/lato_regular"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:text="1234567890"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
