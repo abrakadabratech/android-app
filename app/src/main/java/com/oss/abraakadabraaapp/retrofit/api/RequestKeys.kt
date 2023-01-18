@@ -13,8 +13,13 @@ object RequestKeys {
     var firebaseToken = "firebase_token"
     var otp = "otp"
 
+    var social_link = "social_link"
+    var social_link_type = "social_link_type"
     var name = "name"
     var email = "email"
+    var phone = "phone"
+    var image = "image"
+    var data = "data"
 
     var type = "type"
 
@@ -33,7 +38,7 @@ object RequestKeys {
     var smsKey = "sms_key"
 
     var price = "price"
-    var productImages = "product_images[]"
+    var productImages = "product1"
 
     var notificationId = "notification_id"
     var deletedImagesIds = "deleted_images_ids"

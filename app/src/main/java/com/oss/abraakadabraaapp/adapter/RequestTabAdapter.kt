@@ -32,6 +32,6 @@ data class RequestTabAdapter(
     }
 
     override fun getItemCount(): Int {
-        return 3
+        return 2
     }
 }

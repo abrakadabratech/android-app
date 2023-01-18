@@ -1,7 +1,9 @@
 package com.oss.abraakadabraaapp.activities
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.text.HtmlCompat
@@ -121,7 +123,30 @@ class ContentManagementActivity : BaseActivity() {
                     applicationContext.resources.getString(R.string.about_us)
             }
         }
+        binding.rateUs.setOnClickListener {
+            goToPlayStore()
+        }
+        binding.rateUsTxt.setOnClickListener {
+            goToPlayStore()
+        }
 
+    }
+
+    private fun goToPlayStore() {
+        postEvent(Constants.BUTTON_RATE_US,null)
+        val uri: Uri = Uri.parse("market://details?id=$packageName")
+        val goToMarket = Intent(Intent.ACTION_VIEW, uri)
+        // To count with Play market backstack, After pressing back button,
+        // to taken back to our application, we need to add following flags to intent.
+        goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY or
+                Intent.FLAG_ACTIVITY_NEW_DOCUMENT or
+                Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+        try {
+            startActivity(goToMarket)
+        } catch (e: ActivityNotFoundException) {
+            startActivity(Intent(Intent.ACTION_VIEW,
+                Uri.parse("http://play.google.com/store/apps/details?id=$packageName")))
+        }
     }
 
     private fun setUpObserver() {

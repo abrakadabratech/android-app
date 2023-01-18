@@ -19,7 +19,7 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/imageView39"
+            android:id="@+id/closeBtn"
             android:layout_width="@dimen/dp_16"
             android:layout_height="15dp"
             android:layout_marginStart="17dp"
@@ -35,10 +35,10 @@
             android:fontFamily="@font/montserrat_semi_bold"
             android:text="Sort By"
             android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView39"
+            app:layout_constraintBottom_toBottomOf="@+id/closeBtn"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView39"
-            app:layout_constraintTop_toTopOf="@+id/imageView39" />
+            app:layout_constraintStart_toEndOf="@+id/closeBtn"
+            app:layout_constraintTop_toTopOf="@+id/closeBtn" />
 
         <TextView
             android:id="@+id/nearToMeTxt"

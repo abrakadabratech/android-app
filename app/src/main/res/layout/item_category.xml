@@ -4,7 +4,8 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="center_horizontal"
-    android:layout_margin="12dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="20dp"
     android:orientation="vertical">
 
 
@@ -92,7 +93,7 @@
         android:id="@+id/tv_category_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="6dp"
         android:ellipsize="end"
         android:fontFamily="@font/montserrat_medium"
         android:gravity="center"

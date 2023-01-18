@@ -1,41 +1,33 @@
 {
   "project_info": {
-    "project_number": "144644124570",
-    "project_id": "abra-ka-dabra-c6a20",
-    "storage_bucket": "abra-ka-dabra-c6a20.appspot.com"
+    "project_number": "323424345844",
+    "project_id": "abrakadabra-dev",
+    "storage_bucket": "abrakadabra-dev.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:144644124570:android:698ea2e9435932917fd423",
+        "mobilesdk_app_id": "1:323424345844:android:4ad9ec09704fd68c4908a1",
         "android_client_info": {
           "package_name": "com.oss.abraakadabraaapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "144644124570-b49detld6tosopc9ak557i3t7qf2id6t.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.oss.abraakadabraaapp",
-            "certificate_hash": "962a77915c14249572c54cbffa3c255eedeae5be"
-          }
-        },
-        {
-          "client_id": "144644124570-06m3kongl8dbaas1tobq9vqmgrp1a58a.apps.googleusercontent.com",
+          "client_id": "323424345844-736i1k5jpgknaf978gr3dtpm0qqjld34.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD_GA2no-LXYVpbxB4pzh-NnwInR8kP21U"
+          "current_key": "AIzaSyCYb7ZGBiCo-WtEqL0TFSFGwBsJM9pL46k"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "144644124570-06m3kongl8dbaas1tobq9vqmgrp1a58a.apps.googleusercontent.com",
+              "client_id": "323424345844-736i1k5jpgknaf978gr3dtpm0qqjld34.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

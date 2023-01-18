@@ -468,6 +468,23 @@
                     app:layout_constraintBottom_toBottomOf="@+id/textView112"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/textView112" />
+
+                <TextView
+                    android:id="@+id/payAsYouWish"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/montserrat_medium"
+                    android:text="@string/u_pay_as_you_wish_u"
+                    android:textColor="@color/hyper_link_text_color"
+                    android:textSize="16sp"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView112" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -497,17 +514,17 @@
             android:background="@drawable/rounded_rect_white_gray_stroke"
             android:gravity="center"
             android:padding="8dp"
-            android:text="Mark as Received"
+            android:text="Mark As\nReceived"
             android:textAllCaps="false"
             android:textColor="@color/black"
             android:textSize="@dimen/sp_16"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/Submit"
+            app:layout_constraintEnd_toStartOf="@+id/chatBtn"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
-            android:id="@+id/Submit"
+            android:id="@+id/chatBtn"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="16dp"

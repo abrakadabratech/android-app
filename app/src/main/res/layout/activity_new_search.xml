@@ -92,7 +92,6 @@
                 android:layout_marginBottom="7dp"
                 android:background="@color/white"
                 android:fontFamily="@font/montserrat_regular"
-                android:hint="What are you looking for?"
                 android:imeOptions="actionSearch"
                 android:inputType="text"
                 android:textColor="#727C8E"
@@ -152,7 +151,7 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_latest_product"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginTop="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"

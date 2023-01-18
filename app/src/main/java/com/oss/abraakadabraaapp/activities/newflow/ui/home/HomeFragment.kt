@@ -1,28 +1,42 @@
 package com.oss.abraakadabraaapp.activities.newflow.ui.home
 
-import android.annotation.TargetApi
-import android.app.Activity
 import android.content.Intent
-import android.os.Build
+import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.view.*
-import androidx.core.content.ContextCompat
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.gms.analytics.Tracker
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
-import com.oss.abraakadabraaapp.activities.NotificationActivity
+import com.oss.abraakadabraaapp.activities.BaseActivity
+import com.oss.abraakadabraaapp.activities.HomeActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewNotificationActivity
-import com.oss.abraakadabraaapp.activities.newflow.adapters.SocialShareAdapter
 import com.oss.abraakadabraaapp.databinding.FragmentHomeBinding
+import com.oss.abraakadabraaapp.location.livedata.LocationViewModel
+import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_GIVE
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SHARE
+import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import org.greenrobot.eventbus.EventBus
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.IOException
+import java.util.*
+
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
+    private val locationViewModel: LocationViewModel by viewModel()
+    private var isGPSEnabled = false
+
+    private var mTracker: Tracker? = null
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
+    lateinit var application: BaseActivity
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -36,45 +50,32 @@ class HomeFragment : Fragment() {
         val homeViewModel =
             ViewModelProvider(this).get(HomeViewModel::class.java)
 
+
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        //setStatusBarGradiant(requireActivity())
 
-        /*val nestedNavHostFragment =
-            childFragmentManager.findFragmentById(R.id.fragmentContainer) as? NavHostFragment
-        val navController = nestedNavHostFragment?.navController
+        if (PreferencesManagement.getUserLocation(requireContext()) != null) {
+            val userLocation = PreferencesManagement.getUserLocation(requireContext())!!
+            /*latitude = userLocation.lat
+            longitude = userLocation.long*/
 
-        navController?.navigate(R.id.receiverFragment)
-
-        val navHostFragment =
-            childFragmentManager.findFragmentById(R.id.fragmentContainer)
-
-        // ChildFragmentManager of the current NavHostFragment
-        val navHostChildFragmentManager = navHostFragment?.childFragmentManager
-
-        navHostChildFragmentManager?.addOnBackStackChangedListener {
-
-            val backStackEntryCount = navHostChildFragmentManager!!.backStackEntryCount
-            val fragments = navHostChildFragmentManager!!.fragments
-
-            Toast.makeText(
-                requireContext(),
-                "HomeNavHost backStackEntryCount: $backStackEntryCount, fragments: $fragments",
-                Toast.LENGTH_SHORT
-            ).show()
+//            Log.d("LOCCA", "onCreateView: ${Gson().toJson()}")
+            var fullAddress = userLocation.address ?: ""
+            binding.locationOnActionbar.setText(getAddress(userLocation.lat.toDouble(),userLocation.long.toDouble()))
         }
-        */
-
+        firebaseAnalytics = FirebaseAnalytics.getInstance(requireActivity())
+        application = (activity as BaseActivity)
+        application.postEvent(Constants.PAGE_HOME,null)
         val fragmentManager: FragmentManager = requireFragmentManager()
         fragmentManager.beginTransaction()
             .replace(R.id.container, NewReceiverFragment::class.java, null)
             .setReorderingAllowed(true)
 //            .addToBackStack("name") // name can be null
             .commit()
-
         binding.receiveBtn.setOnClickListener {
-//            Toast.makeText(context, "Receiver", Toast.LENGTH_LONG).show()
             // Load receiver fragment
+
+            application.postClick(Constants.BUTTON_RECEIVE)
             binding.receiveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
             binding.receiveBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
             binding.giveBtn.setTextColor(resources.getColor(R.color.hyper_link_text_color))
@@ -87,6 +88,7 @@ class HomeFragment : Fragment() {
             EventBus.getDefault().post(1)
         }
         binding.giveBtn.setOnClickListener(View.OnClickListener {
+            application.postClick(BUTTON_GIVE)
 //            Toast.makeText(context,"Giver",Toast.LENGTH_LONG).show()
             // Load receiver fragment
             EventBus.getDefault().post(0)
@@ -102,33 +104,28 @@ class HomeFragment : Fragment() {
                 .commit()
         })
         binding.shareAKD.setOnClickListener {
+            application.postEvent(BUTTON_SHARE,null)
             loadData()
         }
         binding.notifications.setOnClickListener {
+            application.postEvent("button_notification",null)
             startActivity(Intent(requireActivity(), NewNotificationActivity::class.java))
         }
 
+        getUserLocation()
 
         return root
     }
-
+    private fun getUserLocation() {
+        val userLocation = PreferencesManagement.getUserLocation(requireContext())
+        binding.locationOnActionbar.text = userLocation?.address
+    }
+    override fun onStart() {
+        super.onStart()
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    fun setStatusBarGradiant(activity: Activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val window: Window = activity.window
-            val background = ContextCompat.getDrawable(activity, R.drawable.gradient_theme)
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-
-            window.statusBarColor = ContextCompat.getColor(activity, android.R.color.transparent)
-            window.navigationBarColor =
-                ContextCompat.getColor(activity, android.R.color.transparent)
-            window.setBackgroundDrawable(background)
-        }
     }
 
     private fun loadData() {
@@ -144,37 +141,52 @@ class HomeFragment : Fragment() {
 //        modalBottomSheet.show(requireActivity().supportFragmentManager, ModalBottomSheet.TAG)
 
     }
-}
 
+    fun getAddress(lat: Double, lng: Double) :String{
+        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+        try {
+            val addresses = geocoder.getFromLocation(lat, lng, 1)
+            val obj = addresses[0]
+            var add = obj.getAddressLine(0)
+            add = """
+            $add
+            ${obj.countryName}
+            """.trimIndent()
+            add = """
+            $add
+            ${obj.countryCode}
+            """.trimIndent()
+            add = """
+            $add
+            ${obj.adminArea}
+            """.trimIndent()
+            add = """
+            $add
+            ${obj.postalCode}
+            """.trimIndent()
+            add = """
+            $add
+            ${obj.subAdminArea}
+            """.trimIndent()
+            add = """
+            $add
+            ${obj.locality}
+            """.trimIndent()
+            add = """
+            $add
+            ${obj.subThoroughfare}
+            """.trimIndent()
+            Log.v("IGA", "Address$add")
+            return obj.locality+","+obj.adminArea
+            // Toast.makeText(this, "Address=>" + add,
+            // Toast.LENGTH_SHORT).show();
 
-class ModalBottomSheet : BottomSheetDialogFragment() {
-    //    private lateinit var bottomBinding : ShareBottomSheetBinding
-    private lateinit var rvSocialLinks: RecyclerView
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.share_bottom_sheet, container, false)
-        rvSocialLinks = view.findViewById(R.id.rv_social_links)
-        var images: Array<Int> = arrayOf(
-            R.drawable.fb_icon, R.drawable.linked_in_icon, R.drawable.twitter_icon,
-            R.drawable.insta_icon, R.drawable.whatsapp_icon, R.drawable.ic_mail_icon
-        )
-        var adapter = SocialShareAdapter(requireActivity(), images)
-        var layoutManager = GridLayoutManager(requireContext(), 3)
-
-        rvSocialLinks.layoutManager = layoutManager
-        rvSocialLinks.adapter = adapter
-
-        return view
-    }
-
-    companion object {
-        const val TAG = "ModalBottomSheet"
-    }
-
-    override fun getTheme(): Int {
-        return R.style.BottomSheetDialogTheme
+            // TennisAppActivity.showDialog(add);
+        } catch (e: IOException) {
+            // TODO Auto-generated catch block
+            e.printStackTrace()
+            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+        }
+        return ""
     }
 }

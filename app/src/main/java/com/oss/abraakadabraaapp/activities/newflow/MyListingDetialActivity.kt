@@ -8,17 +8,24 @@ import com.denzcoskun.imageslider.ImageSlider
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
 import com.oss.abraakadabraaapp.R
+import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.MyRequestedUsersAdapter
 import com.oss.abraakadabraaapp.databinding.ActivityMyListingBinding
 import com.oss.abraakadabraaapp.databinding.ActivityMyListingDetailsBinding
+import com.oss.abraakadabraaapp.utils.Constants
 
-class MyListingDetialActivity : AppCompatActivity() {
+class MyListingDetialActivity : BaseActivity() {
+    lateinit var application: BaseActivity
+
     private lateinit var binding:ActivityMyListingDetailsBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMyListingDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        application = (this as BaseActivity)
+        application.postEvent(Constants.PAGE_MY_LISTING_DETAIL,null)
 
         tempData()
 

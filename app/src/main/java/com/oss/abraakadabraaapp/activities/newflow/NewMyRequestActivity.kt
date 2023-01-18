@@ -3,13 +3,16 @@ package com.oss.abraakadabraaapp.activities.newflow
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.MyRequestAdapter
 import com.oss.abraakadabraaapp.databinding.ActivityNewMyRequestBinding
+import com.oss.abraakadabraaapp.utils.Constants
 
-class NewMyRequestActivity : AppCompatActivity() {
+class NewMyRequestActivity : BaseActivity() {
     private lateinit var binding: ActivityNewMyRequestBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        postEvent(Constants.PAGE_MY_REQUEST,null)
 
         binding = ActivityNewMyRequestBinding.inflate(layoutInflater)
         setContentView(binding.root)

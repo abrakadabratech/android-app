@@ -8,9 +8,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.oss.abraakadabraaapp.R
+import com.oss.abraakadabraaapp.activities.BaseActivity
+import com.oss.abraakadabraaapp.utils.Constants
 
 class AllChatsFragment : Fragment() {
-
+//    lateinit var application: BaseActivity
     private lateinit var rvChats:RecyclerView
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -20,7 +22,9 @@ class AllChatsFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_all_chats, container, false)
 
         rvChats = view.findViewById(R.id.rvChats)
+//        application = activity as BaseActivity
 
+//        application.postEvent(Constants.PAGE_CHATS,null)
         setUpRecyclerview()
 
         return view

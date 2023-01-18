@@ -747,6 +747,8 @@ class HomeActivity : BaseActivity(),
         }
     }
 
+
+
     private fun observeLocationUpdates() {
         locationViewModel.getLocationData.observe(this) {
             latitude = it.latitude.toString()

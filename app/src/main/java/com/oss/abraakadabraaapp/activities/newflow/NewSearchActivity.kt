@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.codersroute.flexiblewidgets.FlexibleSwitch
 import com.oss.abraakadabraaapp.R
+import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.adapter.CategoryAdapter
 import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.databinding.ActivityContentManagementBinding
@@ -24,8 +25,10 @@ import com.oss.abraakadabraaapp.databinding.ActivityNewSearchBinding
 import com.oss.abraakadabraaapp.databinding.NewReceiverFlowBinding
 import com.oss.abraakadabraaapp.response.mainResponse.CategoryData
 import com.oss.abraakadabraaapp.response.mainResponse.LatestProductData
+import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.customView.MarginItemDecoration
 
-class NewSearchActivity : AppCompatActivity() ,CategoryAdapter.CategoryAdapterInterface,
+class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterface,
     LatestProductAdapter.LatestProductAdapterInterface{
 
 
@@ -46,6 +49,7 @@ class NewSearchActivity : AppCompatActivity() ,CategoryAdapter.CategoryAdapterIn
         binding = ActivityNewSearchBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        postEvent(Constants.PAGE_SEARCH,null)
 
         categoryAdapter = CategoryAdapter(categoryList, this, this,"search")
         latestProductAdapter = LatestProductAdapter(latestProductList, this, this)
@@ -57,6 +61,7 @@ class NewSearchActivity : AppCompatActivity() ,CategoryAdapter.CategoryAdapterIn
     }
     private fun clickEvents() {
         binding.catFilter.setOnClickListener {
+            postEvent(Constants.BUTTON_FILTER_SEARCH,null)
             showNearByFilterDialog()
 //            startActivity(Intent(requireContext(),CategorySelectActivity::class.java))
         }
@@ -155,6 +160,9 @@ class NewSearchActivity : AppCompatActivity() ,CategoryAdapter.CategoryAdapterIn
 
         binding.rvLatestProduct.apply {
             layoutManager = lm
+            addItemDecoration(
+                MarginItemDecoration(18)
+            )
             adapter = latestProductAdapter
 //            isNestedScrollingEnabled = false
             recycledViewPool.setMaxRecycledViews(1, 0)
@@ -207,11 +215,15 @@ class NewSearchActivity : AppCompatActivity() ,CategoryAdapter.CategoryAdapterIn
             else newestFirstTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
         }
 
-        applyBtn.setOnClickListener { Toast.makeText(this, "Under Development", Toast.LENGTH_SHORT).show() }
+        applyBtn.setOnClickListener {
+            postEvent(Constants.BUTTON_FILTER_APPLY_SEARCH,null)
+            Toast.makeText(this, "Under Development", Toast.LENGTH_SHORT).show() }
 
         val alertDialog: AlertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         alertDialog.show()
+        alertDialog.window?.setLayout(800, 700)
+
     }
 }

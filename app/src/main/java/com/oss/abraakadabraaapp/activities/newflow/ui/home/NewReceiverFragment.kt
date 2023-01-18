@@ -4,9 +4,11 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -19,6 +21,7 @@ import com.codersroute.flexiblewidgets.FlexibleSwitch
 import com.codersroute.flexiblewidgets.FlexibleSwitch.OnStatusChangedListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.oss.abraakadabraaapp.R
+import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewProductDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewSearchActivity
 import com.oss.abraakadabraaapp.adapter.CategoryAdapter
@@ -26,10 +29,13 @@ import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.databinding.NewReceiverFlowBinding
 import com.oss.abraakadabraaapp.response.mainResponse.CategoryData
 import com.oss.abraakadabraaapp.response.mainResponse.LatestProductData
+import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.customView.MarginItemDecoration
 
 
 class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface,
     LatestProductAdapter.LatestProductAdapterInterface {
+    lateinit var application: BaseActivity
 
     private var _binding: NewReceiverFlowBinding? = null
     private val binding get() = _binding!!
@@ -54,6 +60,8 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         _binding = NewReceiverFlowBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        application = (activity as BaseActivity)
+        application.postEvent(Constants.PAGE_RECEIVER,null)
 
         categoryAdapter = CategoryAdapter(categoryList, requireContext(), this, "")
         latestProductAdapter = LatestProductAdapter(latestProductList, requireContext(), this)
@@ -67,6 +75,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                 noMoreData = false
                 currentPage = pageStart
                 getHomeData()
+
             }
         }
 
@@ -79,6 +88,8 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
     private fun clickEvents() {
         binding.catFilter.setOnClickListener {
+            application.postEvent(Constants.BUTTON_FILTER,null)
+
             showNearByFilterDialog()
 //            startActivity(Intent(requireContext(),CategorySelectActivity::class.java))
         }
@@ -194,184 +205,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         latestProductAdapter.notifyDataSetChanged()
 
         binding.sRLHome.isRefreshing = false
-        /*val varl = "{\n" +
-                "  \"status\": true,\n" +
-                "  \"code\": 200,\n" +
-                "  \"response_message\": \"Home Data\",\n" +
-                "  \"developer_message\": \"\",\n" +
-                "  \"data\": {\n" +
-                "    \"products\": [\n" +
-                "      {\n" +
-                "        \"title\": \"Beautiful Toy\",\n" +
-                "        \"user_id\": 240,\n" +
-                "        \"full_address\": \", Chavarambakam, Andhra Pradesh\",\n" +
-                "        \"product_id\": 220,\n" +
-                "        \"distance\": 6.921098996597988,\n" +
-                "        \"image\": \"https:\\/\\/abrakadabraapp.app\\/app\\/user_assets\\/products\\/product_image_151667237251240.jpg\",\n" +
-                "        \"is_given\": 1\n" +
-                "      },\n" +
-                "      {\n" +
-                "        \"title\": \"Bluetooth mouse chip\",\n" +
-                "        \"user_id\": 240,\n" +
-                "        \"full_address\": \", Elakatur, Andhra Pradesh\",\n" +
-                "        \"product_id\": 219,\n" +
-                "        \"distance\": 5.598131561363813,\n" +
-                "        \"image\": \"https:\\/\\/abrakadabraapp.app\\/app\\/user_assets\\/products\\/product_image_691666876838240.jpg\",\n" +
-                "        \"is_given\": 1\n" +
-                "      },\n" +
-                "      {\n" +
-                "        \"title\": \"Airtel Remote\",\n" +
-                "        \"user_id\": 245,\n" +
-                "        \"full_address\": \", Chavarambakam, Andhra Pradesh\",\n" +
-                "        \"product_id\": 218,\n" +
-                "        \"distance\": 6.925684134114143,\n" +
-                "        \"image\": \"https:\\/\\/abrakadabraapp.app\\/app\\/user_assets\\/products\\/product_image_581666876740245.jpg\",\n" +
-                "        \"is_given\": 0\n" +
-                "      },\n" +
-                "      {\n" +
-                "        \"title\": \"SIM Ejector\",\n" +
-                "        \"user_id\": 245,\n" +
-                "        \"full_address\": \", Chavarambakam, Andhra Pradesh\",\n" +
-                "        \"product_id\": 217,\n" +
-                "        \"distance\": 6.9155141665630095,\n" +
-                "        \"image\": \"https:\\/\\/abrakadabraapp.app\\/app\\/user_assets\\/products\\/product_image_851665927843245.jpg\",\n" +
-                "        \"is_given\": 1\n" +
-                "      },\n" +
-                "      {\n" +
-                "        \"title\": \"Bluetooth mouse\",\n" +
-                "        \"user_id\": 240,\n" +
-                "        \"full_address\": \", Nindra, Andhra Pradesh\",\n" +
-                "        \"product_id\": 216,\n" +
-                "        \"distance\": 2.2610310994713423,\n" +
-                "        \"image\": \"https:\\/\\/abrakadabraapp.app\\/app\\/user_assets\\/products\\/product_image_271665913971240.jpg\",\n" +
-                "        \"is_given\": 0\n" +
-                "      }\n" +
-                "    ],\n" +
-                "    \"category\": [\n" +
-                "      {\n" +
-                "        \"id\": 1,\n" +
-                "        \"category_name\": \"Electronics\",\n" +
-                "        \"category_image\": \"https:\\/\\/abrakadabraapp.app\\/app\\/user_assets\\/category\\/electronic.png\",\n" +
-                "        \"created_at\": \"2021-11-22 19:14:06\",\n" +
-                "        \"updated_at\": null\n" +
-                "      },\n" +
-                "      {\n" +
-                "        \"id\": 2,\n" +
-                "        \"category_name\": \"Clothing\",\n" +
-                "        \"category_image\": \"https:\\/\\/abrakadabraapp.app\\/app\\/user_assets\\/category\\/cloth.png\",\n" +
-                "        \"created_at\": \"2021-11-22 19:14:06\",\n" +
-                "        \"updated_at\": null\n" +
-                "      },\n" +
-                "      {\n" +
-                "        \"id\": 3,\n" +
-                "        \"category_name\": \"Books\",\n" +
-                "        \"category_image\": \"https:\\/\\/abrakadabraapp.app\\/app\\/user_assets\\/category\\/book 1.png\",\n" +
-                "        \"created_at\": \"2021-11-22 19:14:06\",\n" +
-                "        \"updated_at\": null\n" +
-                "      },\n" +
-                "      {\n" +
-                "        \"id\": 4,\n" +
-                "        \"category_name\": \"Sports\",\n" +
-                "        \"category_image\": \"https:\\/\\/abrakadabraapp.app\\/app\\/user_assets\\/category\\/ball.png\",\n" +
-                "        \"created_at\": \"2021-11-22 19:14:06\",\n" +
-                "        \"updated_at\": null\n" +
-                "      },\n" +
-                "      {\n" +
-                "        \"id\": 5,\n" +
-                "        \"category_name\": \"Footwear\",\n" +
-                "        \"category_image\": \"https:\\/\\/abrakadabraapp.app\\/app\\/user_assets\\/category\\/shose.png\",\n" +
-                "        \"created_at\": \"2021-11-22 19:14:06\",\n" +
-                "        \"updated_at\": null\n" +
-                "      },\n" +
-                "      {\n" +
-                "        \"id\": 6,\n" +
-                "        \"category_name\": \"Fashion\",\n" +
-                "        \"category_image\": \"https:\\/\\/abrakadabraapp.app\\/app\\/user_assets\\/category\\/sunglasses 1 (1).png\",\n" +
-                "        \"created_at\": \"2021-11-22 19:14:06\",\n" +
-                "        \"updated_at\": null\n" +
-                "      }\n" +
-                "    ],\n" +
-                "    \"notification_count\": 1\n" +
-                "  }\n" +
-                "}"
-        var obj: JSONObject = JSONObject(varl)
-        var status = obj.get("status")
-        var code = obj.getInt("code")
-        var response_message = obj.getString("response_message")
-        var developer_message = obj.getString("developer_message")
 
-        var data = obj.getJSONObject("data")
-        var products = data.getJSONArray("products")
-
-        var catArra:ArrayList<CategoryData> = ArrayList()
-        var proArra:ArrayList<LatestProductData> = ArrayList()
-        var category = data.getJSONArray("category")
-
-//        for (i in 0..category.length()){
-//            var index = products.getJSONObject(i)
-//            var cat = CategoryData(categoryImage = index.getString("category_image")
-//            , categoryName = index.getString("category_name")
-//            , createdAt = index.getString("created_at")
-//                ,updatedAt = index.getString("updated_at")
-//                , image = "", id = index.getInt("id"))
-//            catArra.add(cat)
-//        }
-        for (i in 0..products.length()){
-            var index = products.getJSONObject(i)
-
-            var product = LatestProductData(userId = index.getInt("user_id")
-                , title = index.getString("title")
-                , fullAddress = index.getString("full_address")
-                , productId = index.getInt("product_id")
-                , image = index.getString("image")
-                , id = 9
-                , isGiven = index.getInt("is_given")
-                , distance = index.getDouble("distance"))
-
-            proArra.add(product)
-        }
-        var notification_count = data.get("notification_count")
-//        var
-        var model = GetHomeDataResponse(status = obj.getBoolean("Status"),
-            data = GetHomeDataResponse.Data(catArra,proArra,2),
-            responseMessage = response_message,
-        code = code, developerMessage = developer_message )
-        val data1 = model.data
-        val categoryData = data1.category
-        val latestProductData = data1.products
-//        notificationCount = data.notificationCount.toString()
-
-
-        if (latestProductData.isNotEmpty()) {
-            if (currentPage == pageStart) latestProductList.clear()
-            latestProductList.addAll(latestProductData)
-            latestProductAdapter.notifyDataSetChanged()
-//            noDataBinding.clNoData.visibility = View.GONE
-
-            val lastPosition = latestProductList.size - latestProductData.size
-
-            if (latestProductList.size == latestProductData.size) {
-                binding.rvLatestProduct.smoothScrollToPosition(latestProductList.size)
-            } else {
-                binding.rvLatestProduct.smoothScrollToPosition(lastPosition + 1)
-            }
-
-            currentPage += 1
-        } else {
-            Toast.makeText(context, "No Data", Toast.LENGTH_SHORT).show()
-//            noDataFound()
-        }
-
-        if (categoryData.isNotEmpty()) {
-            categoryList.clear()
-            categoryList.addAll(categoryData)
-            categoryAdapter.notifyDataSetChanged()
-        }
-
-        isLoading = false
-        isLastPage = false
-//        binding.llProgress.visibility = View.GONE
-        binding.sRLHome.isRefreshing = false*/
 
     }
 
@@ -395,17 +229,37 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
         binding.rvLatestProduct.apply {
             layoutManager = lm
+            addItemDecoration(
+                MarginItemDecoration(18)
+            )
             adapter = latestProductAdapter
 //            isNestedScrollingEnabled = false
             recycledViewPool.setMaxRecycledViews(1, 0)
             setHasFixedSize(false)
         }
+        binding.rvLatestProduct.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager?
+                if (!isLoading) {
+                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == latestProductList.size - 1) {
+                        //bottom of list!
+                        Log.d("LST POSITION", "onScrolled: Last position Reached now")
+                    }
+                }
+            }
+        })
+
         var firstVisibleInListview: Int
         val activity = requireView().context as AppCompatActivity
         val chipNavigationBar =
             activity.findViewById<BottomNavigationView>(com.oss.abraakadabraaapp.R.id.nav_view)
 
-        binding.rvLatestProduct.addOnScrollListener(object :
+        /*binding.rvLatestProduct.addOnScrollListener(object :
             RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, oldScrollY: Int) {
                 super.onScrolled(recyclerView, dx, oldScrollY)
@@ -430,7 +284,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                 }
             }
 
-        })
+        })*/
 
         getHomeData()
     }
@@ -450,6 +304,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         val newestFirstSwitch = dialogView.findViewById<FlexibleSwitch>(R.id.newestFirstSwitch)
 
         val applyBtn = dialogView.findViewById<TextView>(R.id.applyBtn)
+        val closeBtn = dialogView.findViewById<ImageView>(R.id.closeBtn)
 
         nearToMeSwitch.addOnStatusChangedListener(OnStatusChangedListener {
             if (it) nearToMeTxt.setTextColor(resources.getColor(R.color.cat_select_color))
@@ -461,11 +316,17 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             else newestFirstTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
         })
 
-        applyBtn.setOnClickListener { Toast.makeText(context, "Under Development", Toast.LENGTH_SHORT).show() }
+        applyBtn.setOnClickListener {
+            application.postEvent(Constants.BUTTON_FILTER_APPLY,null)
+            Toast.makeText(context, "Under Development", Toast.LENGTH_SHORT).show() }
 
         val alertDialog: AlertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         alertDialog.show()
+
+        closeBtn.setOnClickListener {
+            alertDialog.dismiss()
+        }
         alertDialog.window?.setLayout(800, 700)
 
     }

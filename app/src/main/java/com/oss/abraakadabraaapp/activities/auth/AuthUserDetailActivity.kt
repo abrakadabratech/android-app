@@ -1,28 +1,36 @@
 package com.oss.abraakadabraaapp.activities.auth
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.VIEW_MODEL_STORE_OWNER_KEY
+import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.gms.analytics.Tracker
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.gson.Gson
 import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
-import com.oss.abraakadabraaapp.activities.HomeActivity
-import com.oss.abraakadabraaapp.activities.VerifyOtpActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
+import com.oss.abraakadabraaapp.activities.newflow.adapters.SocialShareAdapter
+import com.oss.abraakadabraaapp.activities.newflow.model.SocialData
 import com.oss.abraakadabraaapp.databinding.ActivityAuthUserDetailBinding
-import com.oss.abraakadabraaapp.databinding.ActivityLoginBinding
-import com.oss.abraakadabraaapp.model.UserData
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.retrofit.utils.ApiConstants
 import com.oss.abraakadabraaapp.utils.*
+import com.oss.abraakadabraaapp.utils.Constants.API_TAG
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_LETS_START_SOCIAL_PROFILE
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_LETS_START_USER_PROFILE
+import com.oss.abraakadabraaapp.utils.Constants.PAGE_ADD_SOCIAL_PROFILE_ONBOARDING
+import com.oss.abraakadabraaapp.utils.Constants.USER_CREATED
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-class AuthUserDetailActivity : BaseActivity() {
+class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfileClicked {
 
     private lateinit var binding: ActivityAuthUserDetailBinding
 
@@ -33,12 +41,21 @@ class AuthUserDetailActivity : BaseActivity() {
     private var latitude = ""
     private var longitude = ""
     private var address = ""
+    private var socialLinkType = "facebook"
+
+    var list = arrayListOf<SocialData>()
+    lateinit var adapter:SocialShareAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAuthUserDetailBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        binding.userDetailsLayout.visibility = View.VISIBLE
+        binding.socialProfileLayout.visibility = View.GONE
+
+        postEvent(Constants.PAGE_ADD_USER_PROFILE_ONBOARDING,null)
 
         phoneNumber = intent.getStringExtra(Constants.phoneNumber) ?: "1234567890"
 
@@ -48,7 +65,7 @@ class AuthUserDetailActivity : BaseActivity() {
                 R.color.blue_status_bar_color
             )
 
-//        setUpObserver()
+        setUpObserver()
 
         with(binding) {
 
@@ -57,29 +74,100 @@ class AuthUserDetailActivity : BaseActivity() {
 
             letsGetStartedBtn.setOnClickListener {
                 hideSoftKeyboard()
-
-                startActivity(Intent(applicationContext,NewHomeActivity::class.java))
-                //Old Code
-                //registerUser()
+                postEvent(BUTTON_LETS_START_USER_PROFILE,null)
+                postEvent(PAGE_ADD_SOCIAL_PROFILE_ONBOARDING,null)
+            //Old Code
+                registerUser()
             }
         }
 
+        binding.submitBtn.setOnClickListener {
+            postEvent(BUTTON_LETS_START_SOCIAL_PROFILE,null)
+            postUserProfile()
+        }
+
+        setUpRecyclerView()
+
     }
+
+    private fun postUserProfile() {
+        if (isUserProfileValidate()){
+            if (isNetworkAvailable()){
+                val mapAuth = HashMap<String,String>()
+                /*if (PreferencesManagement.getAuthToken(this@AuthUserDetailActivity) != null){
+                    mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
+                }else{
+                    generateAuthToken()
+                    mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
+                }*/
+                mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
+
+                val map = HashMap<String, String>()
+
+                map[RequestKeys.social_link_type] = socialLinkType
+                map[RequestKeys.social_link] = binding.socialProfileHeader.text.toString().trim()+
+                        binding.socialProfileEdt.text.toString().trim()
+
+                authViewModel.postUserSocialProfile(mapAuth,map)
+            }
+        }
+    }
+
+    private fun isUserProfileValidate(): Boolean {
+        with(binding) {
+            if (socialProfileEdt.text!!.length <= 3) {
+                showToast("Please Enter Valid Full Name")
+                return false
+            }
+
+            if (socialProfileEdt.text!!.length > 50) {
+                showToast("Full Name must be less than 50 character")
+                return false
+            }
+
+            return true
+        }
+    }
+
+    private fun setUpRecyclerView() {
+        var images: Array<Int> = arrayOf(
+            R.drawable.fb_icon, R.drawable.linked_in_icon, R.drawable.twitter_icon,
+            R.drawable.insta_icon
+        )
+        list.add(SocialData(R.drawable.fb_icon,true))
+        list.add(SocialData(R.drawable.linked_in_icon,false))
+        list.add(SocialData(R.drawable.twitter_icon,false))
+        list.add(SocialData(R.drawable.insta_icon,false))
+
+        adapter = SocialShareAdapter(this, list,this)
+        val layoutManager = GridLayoutManager(this, 4)
+
+        binding.rvSocialLinks.layoutManager = layoutManager
+        binding.rvSocialLinks.adapter = adapter
+    }
+
 
     private fun registerUser() {
         if (isValidate()) {
             if (isNetworkAvailable()) {
                 if (isLocationEnabled()) getLastLocation()
 
+                val mapAuth = HashMap<String,String>()
+               /* if (PreferencesManagement.getAuthToken(this@AuthUserDetailActivity) != null){
+                    mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
+                }else{
+                    generateAuthToken()
+                    mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
+                }*/
+                mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
+
                 val map = HashMap<String, String>()
 
                 map[RequestKeys.name] = binding.etName.text.toString().trim()
                 map[RequestKeys.email] = binding.etEmail.text.toString().trim()
                 map[RequestKeys.phoneNumber] = phoneNumber.trim()
-                map[RequestKeys.deviceId] = getDeviceId()
-                map[RequestKeys.deviceType] = ApiConstants.deviceType
 
-                if (PreferencesManagement.getUserLocation(this@AuthUserDetailActivity) != null) {
+                /*if (PreferencesManagement.getUserLocation(this@AuthUserDetailActivity) != null) {
                     val userLocation =
                         PreferencesManagement.getUserLocation(this@AuthUserDetailActivity)!!
                     latitude = userLocation.lat
@@ -89,9 +177,11 @@ class AuthUserDetailActivity : BaseActivity() {
 
                 map[RequestKeys.lat] = latitude
                 map[RequestKeys.lng] = longitude
-                map[RequestKeys.fullAddress] = address
+                map[RequestKeys.fullAddress] = address*/
+                Log.d(API_TAG, "registerUser: ${Gson().toJson(mapAuth)}")
+                authViewModel.postUser(mapAuth,map)
 
-                getFCMToken(map)
+//                getFCMToken(map)
 
             } else {
                 showSnackBar(
@@ -105,9 +195,36 @@ class AuthUserDetailActivity : BaseActivity() {
     private fun setUpObserver() {
         authViewModel.isLoading.observe(this) { loader(it) }
 
-        authViewModel.signUpSuccess.observe(this) {
-            showToast(it.responseMessage)
-            loginInUser(it.data)
+        authViewModel.postUserSuccess.observe(this) {
+            Log.d(API_TAG, "postUserSuccess: ${Gson().toJson(it)}")
+
+            if (it.responseMessage == USER_CREATED){
+                binding.userDetailsLayout.visibility = View.GONE
+                binding.socialProfileLayout.visibility = View.VISIBLE
+
+                val mapAuth = HashMap<String,String>()
+                /*if (PreferencesManagement.getAuthToken(this@AuthUserDetailActivity) != null){
+                    mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
+                }else{
+                    generateAuthToken()
+                    mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
+                }*/
+                mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
+
+                authViewModel.getUserSocialProfile(mapAuth)
+            }
+//            showToast(it.responseMessage)
+//            loginInUser(it.data)
+        }
+        authViewModel.getSocialProfileSuccess.observe(this){
+            Log.d(API_TAG, "getSocialProfileSuccess: ${Gson().toJson(it)}")
+        }
+
+        authViewModel.postSocialProfileSuccess.observe(this){
+            Log.d(API_TAG, "postSocialProfileSuccess: ${Gson().toJson(it)}")
+            showToast(it.responseMessage.toString())
+            startActivity(Intent(applicationContext,NewHomeActivity::class.java))
+//            if (it.responseMessage == "")
         }
 
         authViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
@@ -156,6 +273,31 @@ class AuthUserDetailActivity : BaseActivity() {
 
             return true
         }
+    }
+
+    override fun onSocialIconClick(position: Int, status: Boolean) {
+        when(position){
+            0 ->{
+                binding.socialProfileHeader.text = Constants.FB_URL
+                socialLinkType = "facebook"
+            }
+
+            1 ->{
+                binding.socialProfileHeader.text = Constants.LINKED_IN_URL
+                socialLinkType = "linkedin"
+            }
+            2 ->{
+                binding.socialProfileHeader.text = Constants.TWITTER_URL
+                socialLinkType = "twitter"
+            }
+            3 ->{
+                binding.socialProfileHeader.text = Constants.INSTA_URL
+                socialLinkType = "instagram"
+            }
+        }
+        for (i in 0 until list.size) list[i].status = i == position
+
+        adapter.notifyDataSetChanged()
     }
 
 }

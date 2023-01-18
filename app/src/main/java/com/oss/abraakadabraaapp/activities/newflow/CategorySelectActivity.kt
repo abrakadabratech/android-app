@@ -4,12 +4,15 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.CategorySelectAdapter
 import com.oss.abraakadabraaapp.activities.newflow.model.CatData
 import com.oss.abraakadabraaapp.databinding.ActivityCategorySelectBinding
 import com.oss.abraakadabraaapp.response.mainResponse.CategoryData
+import com.oss.abraakadabraaapp.utils.Constants
 
-class CategorySelectActivity : AppCompatActivity() {
+class CategorySelectActivity : BaseActivity() {
+    lateinit var application: BaseActivity
 
     private lateinit var binding: ActivityCategorySelectBinding
 
@@ -20,6 +23,9 @@ class CategorySelectActivity : AppCompatActivity() {
         binding = ActivityCategorySelectBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        application = (this as BaseActivity)
+        application.postEvent(Constants.PAGE_CATEGORY_SELECTION,null)
 
         tempLoadData()
 

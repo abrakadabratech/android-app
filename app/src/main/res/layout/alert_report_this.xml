@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="328dp"
-    android:layout_height="320dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="@dimen/dp_16"
     app:cardElevation="8dp"
@@ -17,8 +18,197 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/submitLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView117">
+
+
+            <TextView
+                android:id="@+id/submitBtn"
+                android:layout_width="111dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="21dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/btn_bg_rounded_rect"
+                android:fontFamily="@font/montserrat_semi_bold"
+                android:gravity="center"
+                android:text="Submit"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/sp_16"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView3" />
+            <TextView
+                android:id="@+id/textView123"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="29dp"
+                android:fontFamily="@font/montserrat_medium"
+                android:gravity="center"
+                android:text="How this listing or user goes \nagainst our community standards?"
+                android:textColor="@color/title_color"
+                android:textSize="@dimen/sp_16"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="16dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView123">
+
+                <EditText
+                    android:id="@+id/reportEdt"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp"
+                    android:background="@android:color/transparent"
+                    android:fontFamily="@font/montserrat_regular"
+                    android:gravity="top"
+                    android:hint="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
+                    android:maxLength="300"
+                    android:textColor="@color/edit_text_color"
+                    android:textSize="14sp" />
+            </androidx.cardview.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/initLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView117">
+
+            <TextView
+                android:id="@+id/textView118"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="4dp"
+                android:background="#F2F2F2"
+                app:layout_constraintEnd_toEndOf="@+id/inAppropriateSwitch"
+                app:layout_constraintStart_toStartOf="@+id/inAppropriateTxt"
+                app:layout_constraintTop_toBottomOf="@+id/inAppropriateTxt" />
+
+            <TextView
+                android:id="@+id/fakeTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="17dp"
+                android:fontFamily="@font/montserrat_medium"
+                android:text="Spam / Fake ad"
+
+                android:textColor="@color/cat_unselect_color"
+                android:textSize="@dimen/sp_16"
+                app:layout_constraintStart_toStartOf="@+id/inAppropriateTxt"
+                app:layout_constraintTop_toBottomOf="@+id/textView118" />
+
+            <TextView
+                android:id="@+id/textView1181"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="4dp"
+                android:background="#F2F2F2"
+                app:layout_constraintEnd_toEndOf="@+id/fakeTxtSwitch"
+                app:layout_constraintStart_toStartOf="@+id/fakeTxt"
+                app:layout_constraintTop_toBottomOf="@+id/fakeTxt" />
+
+            <ImageView
+                android:id="@+id/fakeTxtSwitch"
+                android:layout_width="@dimen/dp_16"
+                android:layout_height="@dimen/dp_16"
+                android:background="@drawable/ic_radio_unselect"
+                android:tag="1"
+                app:layout_constraintEnd_toEndOf="@+id/inAppropriateSwitch"
+                app:layout_constraintTop_toTopOf="@+id/fakeTxt" />
+
+            <TextView
+                android:id="@+id/inAppropriateTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="21dp"
+                android:layout_marginTop="17dp"
+                android:fontFamily="@font/montserrat_medium"
+                android:text="Inappropriate Content"
+                android:textColor="@color/cat_select_color"
+                android:textSize="@dimen/sp_16"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/pay_anim" />
+
+            <TextView
+                android:id="@+id/okBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="23dp"
+                android:layout_marginEnd="31dp"
+                android:layout_marginBottom="21dp"
+                android:fontFamily="@font/montserrat_medium"
+                android:text="Ok"
+                android:textColor="#727C8E"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView1181" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/pay_anim"
+                android:layout_width="116dp"
+                android:layout_height="116dp"
+                android:layout_marginTop="13dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent="0.2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.57"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="false"
+                app:lottie_rawRes="@raw/warning" />
+
+            <TextView
+                android:id="@+id/cancelBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="62dp"
+                android:fontFamily="@font/montserrat_medium"
+                android:text="Cancel"
+                android:textColor="#727C8E"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@+id/okBtn"
+                app:layout_constraintEnd_toStartOf="@+id/okBtn"
+                app:layout_constraintTop_toTopOf="@+id/okBtn" />
+
+            <ImageView
+                android:id="@+id/inAppropriateSwitch"
+                android:layout_width="@dimen/dp_16"
+                android:layout_height="@dimen/dp_16"
+                android:layout_marginEnd="33dp"
+                android:background="@drawable/ic_radio_select"
+                android:tag="1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/inAppropriateTxt" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <ImageView
-            android:id="@+id/imageView39"
+            android:id="@+id/reportClose"
             android:layout_width="@dimen/dp_16"
             android:layout_height="15dp"
             android:layout_marginStart="17dp"
@@ -27,117 +217,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/pay_anim"
-            android:layout_width="116dp"
-            android:layout_height="116dp"
-            android:layout_marginTop="13dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView117"
-            app:layout_constraintWidth_percent="0.57"
-            app:lottie_rawRes="@raw/flower_rupee" />
-
         <TextView
             android:id="@+id/textView117"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_semi_bold"
             android:text="Report This Ad"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/montserrat_semi_bold"
             android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView39"
+            app:layout_constraintBottom_toBottomOf="@+id/reportClose"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView39"
-            app:layout_constraintTop_toTopOf="@+id/imageView39" />
-
-        <TextView
-            android:id="@+id/inAppropriateTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="17dp"
-            android:fontFamily="@font/montserrat_medium"
-            android:text="Inappropriate Content"
-            android:textColor="@color/cat_select_color"
-            android:textSize="@dimen/sp_16"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pay_anim" />
-
-        <TextView
-            android:id="@+id/textView118"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginTop="8dp"
-            android:background="#F2F2F2"
-            app:layout_constraintEnd_toEndOf="@+id/inAppropriateSwitch"
-            app:layout_constraintStart_toStartOf="@+id/inAppropriateTxt"
-            app:layout_constraintTop_toBottomOf="@+id/inAppropriateTxt" />
-
-        <TextView
-            android:id="@+id/fakeTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:fontFamily="@font/montserrat_medium"
-            android:text="Spam / Fake ad"
-            android:textColor="@color/cat_unselect_color"
-            android:textSize="@dimen/sp_16"
-
-            app:layout_constraintStart_toStartOf="@+id/inAppropriateTxt"
-            app:layout_constraintTop_toBottomOf="@+id/inAppropriateTxt" />
-
-        <TextView
-            android:id="@+id/textView1181"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginTop="8dp"
-            android:background="#F2F2F2"
-            app:layout_constraintEnd_toEndOf="@+id/fakeTxtSwitch"
-            app:layout_constraintStart_toStartOf="@+id/fakeTxt"
-            app:layout_constraintTop_toBottomOf="@+id/fakeTxt" />
-
-        <ImageView
-            android:id="@+id/inAppropriateSwitch"
-            android:layout_width="@dimen/dp_16"
-            android:layout_height="@dimen/dp_16"
-            android:layout_marginEnd="16dp"
-            android:tag="1"
-            android:background="@drawable/ic_radio_unselect"
-            app:layout_constraintBottom_toBottomOf="@+id/inAppropriateTxt"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/inAppropriateTxt" />
+            app:layout_constraintStart_toEndOf="@+id/reportClose"
+            app:layout_constraintTop_toTopOf="@+id/reportClose" />
 
 
-        <ImageView
-            android:id="@+id/fakeTxtSwitch"
-            android:layout_width="@dimen/dp_16"
-            android:layout_height="@dimen/dp_16"
-            android:layout_marginEnd="16dp"
-            android:tag="1"
-            android:background="@drawable/ic_radio_unselect"
-            app:layout_constraintBottom_toBottomOf="@+id/fakeTxt"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/fakeTxt" />
-
-        <TextView
-            android:id="@+id/applyBtn"
-            android:layout_width="111dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="33dp"
-            android:layout_marginBottom="24dp"
-            android:background="@drawable/btn_bg_rounded_rect"
-            android:fontFamily="@font/montserrat_semi_bold"
-            android:gravity="center"
-            android:text="Apply"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="@dimen/sp_16"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView1181" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

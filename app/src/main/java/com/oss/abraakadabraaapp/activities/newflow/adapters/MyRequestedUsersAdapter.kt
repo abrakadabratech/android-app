@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.newflow.MyListingDetialActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewMyRequestActivity
+import com.oss.abraakadabraaapp.activities.newflow.RequesterActivity
 import com.oss.abraakadabraaapp.activities.newflow.ui.MyRequestDetailsActivity
 
 class MyRequestedUsersAdapter(val newMyRequestActivity: MyListingDetialActivity, val i: Int)
@@ -23,8 +24,11 @@ class MyRequestedUsersAdapter(val newMyRequestActivity: MyListingDetialActivity,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
+        holder.itemView.setOnClickListener {
+            newMyRequestActivity.startActivity(Intent(newMyRequestActivity,RequesterActivity::class.java))
+        }
     }
+
 
     override fun getItemCount(): Int {
         return i

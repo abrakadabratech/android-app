@@ -36,7 +36,9 @@ class GenericTextWatcher internal constructor(
             R.id.first_edit -> if (text.length == 1) nextView!!.requestFocus()
             R.id.second_edit -> if (text.length == 1) nextView!!.requestFocus()
             R.id.third_edit -> if (text.length == 1) nextView!!.requestFocus()
-            R.id.fourth_edit -> if (text.length == 1) {
+            R.id.fourth_edit -> if (text.length == 1) nextView!!.requestFocus()
+            R.id.fifth_edit -> if (text.length == 1) nextView!!.requestFocus()
+            R.id.sixth_edit -> if (text.length == 1) {
                 val imm: InputMethodManager =
                     activity.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
                 var view: View? = activity.currentFocus

@@ -10,12 +10,11 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.newflow.model.CatData
-import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
-import com.oss.abraakadabraaapp.response.mainResponse.LatestProductData
 
 class CategoryDialogAdapter(
     val context: Context, var i: ArrayList<CatData>,
-    private var callback: CategoryDialogAdapterInterface
+    private var callback: CategoryDialogAdapterInterface,
+    var alerttype: String
 ) : RecyclerView.Adapter<CategoryDialogAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) :
@@ -45,7 +44,7 @@ class CategoryDialogAdapter(
             i.get(position).isSelect = false
         }
         holder.cardLayout.setOnClickListener {
-            callback.onItemClick(position,!i[position].isSelect)
+            callback.onItemClick(position,!i[position].isSelect,alerttype)
 //            notifyDataSetChanged()
         }
 
@@ -56,7 +55,7 @@ class CategoryDialogAdapter(
     }
 
     interface CategoryDialogAdapterInterface {
-        fun onItemClick(position: Int,isSelect:Boolean)
+        fun onItemClick(position: Int,isSelect:Boolean,alerttype:String)
     }
 
 

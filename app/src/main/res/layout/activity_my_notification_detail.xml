@@ -509,7 +509,7 @@
         >
 
         <TextView
-            android:id="@+id/button2"
+            android:id="@+id/rejectBtn"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_marginStart="@dimen/dp_16"
@@ -524,12 +524,12 @@
             android:textColor="#F95565"
             android:textSize="@dimen/sp_16"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/Submit"
+            app:layout_constraintEnd_toStartOf="@+id/acceptBtn"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/Submit"
+            android:id="@+id/acceptBtn"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_marginStart="16dp"
@@ -545,7 +545,7 @@
             android:textSize="@dimen/sp_16"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/button2"
+            app:layout_constraintStart_toEndOf="@+id/rejectBtn"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

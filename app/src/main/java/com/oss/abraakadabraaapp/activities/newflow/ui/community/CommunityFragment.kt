@@ -8,12 +8,15 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.CommunityAdapter
 import com.oss.abraakadabraaapp.databinding.FragmentCommunityBinding
+import com.oss.abraakadabraaapp.utils.Constants
 
 class CommunityFragment : Fragment() {
 
     private var _binding: FragmentCommunityBinding? = null
+    lateinit var application: BaseActivity
 
     private val binding get() = _binding!!
 
@@ -27,6 +30,8 @@ class CommunityFragment : Fragment() {
 
         _binding = FragmentCommunityBinding.inflate(inflater, container, false)
         val root: View = binding.root
+        application = (activity as BaseActivity)
+        application.postEvent(Constants.PAGE_COMMUNITY,null)
 
         setUpRecyclerView()
 

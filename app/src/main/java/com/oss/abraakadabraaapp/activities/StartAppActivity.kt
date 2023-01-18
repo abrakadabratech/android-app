@@ -22,6 +22,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.gms.location.*
+import com.google.firebase.auth.FirebaseAuth
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -30,6 +31,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.auth.LoginActivity
+import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.databinding.ActivityStartAppBinding
 import com.oss.abraakadabraaapp.databinding.SplashContentBinding
 import com.oss.abraakadabraaapp.model.UserLocation
@@ -48,9 +50,11 @@ class StartAppActivity : BaseActivity() {
     private lateinit var contentBinding: SplashContentBinding
 
     private val mainViewModel: MainViewModel by viewModel()
+    lateinit var mAuth : FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mAuth = FirebaseAuth.getInstance()
         binding = ActivityStartAppBinding.inflate(layoutInflater)
         contentBinding = binding.splashContent
         val view = binding.root
@@ -63,7 +67,7 @@ class StartAppActivity : BaseActivity() {
             )
 
        // setUpObserver() // Old Code
-        startApp() //New Code
+       // startApp() //New Code
     }
 
     private fun setUpObserver() {
@@ -153,15 +157,15 @@ class StartAppActivity : BaseActivity() {
     }
 
     private fun initLocation() {
-//        if (checkPermission()) {
-//            if (isLocationEnabled()) {
-//                getLocation()
-//            } else {
-//                startApp()
-//            }
-//        } else {
+        if (checkPermission()) {
+            if (isLocationEnabled()) {
+                getLocation()
+            } else {
+                startApp()
+            }
+        } else {
             startApp()
-//        }
+        }
     }
 
     private fun getLocation() {
@@ -269,8 +273,9 @@ class StartAppActivity : BaseActivity() {
 
     private fun startApp() {
         Handler(Looper.getMainLooper()).postDelayed({
-            if (PreferencesManagement.getUserData(this) != null) {
-                startActivity(Intent(this@StartAppActivity, HomeActivity::class.java))
+//            if (PreferencesManagement.getUserData(this) != null) {
+            if (mAuth.currentUser != null) {
+                startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
             } else {
                 startActivity(Intent(this@StartAppActivity, OnBoardingActivity::class.java))
             }

@@ -39,16 +39,26 @@
         android:name=".App"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
-        android:icon="@mipmap/ic_launcher_"
+        android:icon="@mipmap/ic_launcher"
         android:killAfterRestore="false"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@mipmap/ic_launcher_"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.AbraaKaDabraa.App"
         android:usesCleartextTraffic="true"
         tools:ignore="HardcodedDebugMode,LockedOrientationActivity">
+        <activity
+            android:name=".activities.newflow.chat.ChatDetailActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar"/>
+        <activity
+            android:name=".activities.newflow.RequesterActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar"></activity>
         <activity
             android:name=".activities.SuccessActivity"
             android:exported="false" />
@@ -134,6 +144,7 @@
             android:exported="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.AbraaKaDabraa"
             android:windowSoftInputMode="adjustPan">
 
@@ -149,7 +160,8 @@
             android:name=".activities.auth.AuthUserDetailActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".activities.auth.OtpVerificationActivity"
             android:exported="false"
@@ -162,6 +174,7 @@
         <activity
             android:name=".activities.OnBoardingActivity"
             android:screenOrientation="portrait"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
         <activity
             android:name=".activities.RequestProductDetailActivity"

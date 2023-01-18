@@ -18,6 +18,15 @@ public class JavaUtils {
             return MultipartBody.Part.createFormData("profile_image", file.getName(), requestFile);
         }
     }
+    public static MultipartBody.Part profileImagePrepareFilePart1(String filePath) {
+        if (filePath.isEmpty()) {
+            return MultipartBody.Part.createFormData("image", "", RequestBody.create("", MediaType.parse("image/*")));
+        } else {
+            File file = new File(filePath);
+            RequestBody requestFile = RequestBody.create(file, MediaType.parse("image/*"));
+            return MultipartBody.Part.createFormData("image", file.getName(), requestFile);
+        }
+    }
 
     public static RequestBody toRequestBody(String value) {
         return RequestBody.create(value, MediaType.parse("text/plain"));

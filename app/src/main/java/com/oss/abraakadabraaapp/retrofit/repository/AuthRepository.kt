@@ -1,12 +1,56 @@
 package com.oss.abraakadabraaapp.retrofit.repository
 
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.DataClass
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.ProductRequest
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.retrofit.api.APIs
 import com.oss.abraakadabraaapp.utils.Utility
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import org.json.JSONObject
 
 class AuthRepository(private val apiHelper: APIs) {
 
+    //API MVP2.0
+    //=================================================================================//
+
+    suspend fun getUser(
+        map: HashMap<String, String>
+    ) = apiHelper.getUser(map)
+
+    suspend fun postUser(
+        map: HashMap<String, String>,
+        params: HashMap<String, String>
+    ) = apiHelper.postUser(map,params)
+
+    suspend fun updateUser(
+        map: HashMap<String, String>,
+        params: DataClass
+    ) = apiHelper.updateUser(map,params)
+
+    suspend fun getSocialLink(
+        map: HashMap<String, String>
+    ) = apiHelper.getSocialLink(map)
+
+    suspend fun postSocialLink(
+        map: HashMap<String, String>,
+        params: HashMap<String, String>
+    ) = apiHelper.postSocialLink(map,params)
+
+    suspend fun updateProfilePic(
+        map: HashMap<String, String>,
+        file: MultipartBody.Part
+    ) = apiHelper.updateProfilePic(map,file)
+
+    suspend fun postProduct(
+        map: HashMap<String, String>,
+        body: Map<String, RequestBody>,
+        file: Array<MultipartBody.Part>
+    ) = apiHelper.postProduct(map,body,file)
+
+
+
+    //=================================================================================//
     suspend fun loginWithPhoneNumber(
         map: HashMap<String, String>
     ) = apiHelper.loginWithPhoneNumber(Utility.getAuthHeaders(), map)

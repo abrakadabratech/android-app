@@ -3,6 +3,8 @@ package com.oss.abraakadabraaapp.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -23,11 +25,20 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.android.gms.analytics.GoogleAnalytics
+import com.google.android.gms.analytics.Tracker
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.play.core.tasks.OnCompleteListener
+import com.google.android.play.core.tasks.Task
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GetTokenResult
+import com.google.firebase.messaging.FirebaseMessaging
 import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.auth.LoginActivity
+import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.dialog.ProgressDialog
 import com.oss.abraakadabraaapp.location.livedata.LocationViewModel
 import com.oss.abraakadabraaapp.model.UserData
@@ -60,8 +71,25 @@ abstract class BaseActivity : AppCompatActivity() {
 
     lateinit var smsToken: String
 
+    private var sAnalytics: GoogleAnalytics? = null
+    private var sTracker: Tracker? = null
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
+
+
+    @get:Synchronized
+    val defaultTracker: Tracker?
+        get() {
+            // To enable debug logging use: adb shell setprop log.tag.GAv4 DEBUG
+            if (sTracker == null) {
+                sTracker = sAnalytics?.newTracker(R.xml.global_tracker)
+            }
+            return sTracker
+        }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        sAnalytics = GoogleAnalytics.getInstance(this);
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
         mFusedLocationClient =
             LocationServices.getFusedLocationProviderClient(this)
@@ -74,9 +102,33 @@ abstract class BaseActivity : AppCompatActivity() {
         setUpObserver()
     }
 
+    public fun postClick(event_tag: String){
+        val bundle = Bundle()
+        bundle.putString(event_tag, "1")
+        firebaseAnalytics.logEvent(event_tag, bundle)
+        debugLog(event_tag)
+
+    }
+
+    public fun postEvent(event_tag: String, bundle: Bundle?) {
+        // Obtain the FirebaseAnalytics instance.
+        firebaseAnalytics.setCurrentScreen(this,event_tag,null)
+//        val bundle = Bundle()
+//        bundle.putString(FirebaseAnalytics.Param.METHOD, "Test method")
+
+       // firebaseAnalytics.logEvent(event_tag, bundle)
+
+        //init analytics
+        /*  mTracker = application.defaultTracker
+          mTracker!!.setScreenName(event_tag)
+          mTracker!!.send(HitBuilders.ScreenViewBuilder().build())*/
+        debugLog(event_tag)
+
+    }
+
     override fun onStart() {
         super.onStart()
-//        startLocationUpdates()
+        startLocationUpdates()
     }
 
     private fun startLocationUpdates() {
@@ -101,19 +153,66 @@ abstract class BaseActivity : AppCompatActivity() {
                 PreferencesManagement.saveUserLocation(
                     this@BaseActivity,
                     UserLocation(
-                        latitude, longitude, userLocation?.address ?: "",
+                        latitude, longitude, getAddress(latitude.toDouble(),longitude.toDouble()),
                     )
                 )
             } else {
                 PreferencesManagement.saveUserLocation(
                     this@BaseActivity,
                     UserLocation(
-                        latitude, longitude, "",
+                        latitude, longitude, getAddress(latitude.toDouble(),longitude.toDouble()),
                     )
                 )
             }
 
         }
+    }
+    fun getAddress(lat: Double, lng: Double) :String{
+        val geocoder = Geocoder(this, Locale.getDefault())
+        try {
+            val addresses = geocoder.getFromLocation(lat, lng, 1)
+            val obj = addresses[0]
+            var add = obj.getAddressLine(0)
+            add = """
+            $add
+            ${obj.countryName}
+            """.trimIndent()
+            add = """
+            $add
+            ${obj.countryCode}
+            """.trimIndent()
+            add = """
+            $add
+            ${obj.adminArea}
+            """.trimIndent()
+            add = """
+            $add
+            ${obj.postalCode}
+            """.trimIndent()
+            add = """
+            $add
+            ${obj.subAdminArea}
+            """.trimIndent()
+            add = """
+            $add
+            ${obj.locality}
+            """.trimIndent()
+            add = """
+            $add
+            ${obj.subThoroughfare}
+            """.trimIndent()
+            Log.v("IGA", "Address$add")
+            return obj.locality+","+obj.adminArea
+            // Toast.makeText(this, "Address=>" + add,
+            // Toast.LENGTH_SHORT).show();
+
+            // TennisAppActivity.showDialog(add);
+        } catch (e: IOException) {
+            // TODO Auto-generated catch block
+            e.printStackTrace()
+//            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+        }
+        return ""
     }
 
     private fun setUpObserver() {
@@ -467,5 +566,61 @@ abstract class BaseActivity : AppCompatActivity() {
         inputMethodManager.hideSoftInputFromWindow(
             currentFocus?.windowToken, 0
         )
+    }
+
+    fun debugLog(eventTag: String) {
+        Log.d("GA4", "debugLog: $eventTag")
+    }
+
+    fun generateAuthToken():String{
+        val mUser = FirebaseAuth.getInstance().currentUser
+        mUser!!.getIdToken(true)
+            .addOnCompleteListener(object : OnCompleteListener<GetTokenResult?>,
+                com.google.android.gms.tasks.OnCompleteListener<GetTokenResult> {
+                override fun onComplete(task: Task<GetTokenResult?>) {
+                    if (task.isSuccessful()) {
+                        val idToken: String = task.getResult().getToken()!!
+//                        authToken = idToken
+                        Log.d(NewHomeActivity.TAG, "onComplete: $idToken")
+                        // Send token to your backend via HTTPS
+                        // ...
+                    } else {
+                        // Handle error -> task.getException();
+                    }
+                }
+
+                override fun onComplete(task: com.google.android.gms.tasks.Task<GetTokenResult>) {
+                    if (task.isSuccessful()) {
+                        val idToken: String = task.getResult().getToken()!!
+                        val auth = "Bearer "+idToken
+
+                        val clipboard =
+                            getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        val clip = ClipData.newPlainText(android.R.attr.label.toString(), idToken)
+                        clipboard.setPrimaryClip(clip)
+                        Log.d(NewHomeActivity.TAG, "onComplete11: ${PreferencesManagement.saveAuthToken(this@BaseActivity,auth)}")
+                        // Send token to your backend via HTTPS
+                        // ...
+                        Log.d(NewHomeActivity.TAG, "onComplete11:new Token generated")
+                        showToast("new Token generated")
+                    } else {
+                        // Handle error -> task.getException();
+                    }
+                }
+
+            })
+        return "authToken"
+    }
+
+    fun getFCMToken() {
+
+        FirebaseMessaging.getInstance().token.addOnSuccessListener {
+            PreferencesManagement.saveFCMToken(this,it)
+        }.addOnFailureListener {
+            loader(false)
+            if (BuildConfig.DEBUG) showToast("Error Please try again ! ${it.localizedMessage}") else showToast(
+                "Error Please try again !"
+            )
+        }
     }
 }

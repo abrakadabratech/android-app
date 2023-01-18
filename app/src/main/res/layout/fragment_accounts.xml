@@ -12,7 +12,7 @@
         android:id="@+id/textView83"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="40dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/montserrat_bold"
         android:text="Given"
@@ -73,7 +73,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/imageView18"
+            android:id="@+id/ivBack"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginStart="16dp"
@@ -92,10 +92,10 @@
             android:text="My Account"
             android:textColor="#1D2126"
             android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView18"
+            app:layout_constraintBottom_toBottomOf="@+id/ivBack"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView18"
-            app:layout_constraintTop_toTopOf="@+id/imageView18" />
+            app:layout_constraintStart_toEndOf="@+id/ivBack"
+            app:layout_constraintTop_toTopOf="@+id/ivBack" />
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView6"
             android:layout_width="90dp"
@@ -106,27 +106,27 @@
             app:cardCornerRadius="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView18">
+            app:layout_constraintTop_toBottomOf="@+id/ivBack">
 
             <ImageView
-                android:id="@+id/imageView20"
+                android:id="@+id/profilePic"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:scaleType="fitXY"
                 android:src="@drawable/new_bg_theme" />
         </androidx.cardview.widget.CardView>
 
         <TextView
-            android:id="@+id/textView46"
+            android:id="@+id/userName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:fontFamily="@font/montserrat_bold"
-            android:text="Wooden Chair"
+            android:text="Venkat"
             android:textColor="#1D2126"
-            android:textSize="22sp"
+            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@+id/cardView6"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/profileActivity"
             app:layout_constraintStart_toEndOf="@+id/cardView6"
             app:layout_constraintTop_toTopOf="@+id/cardView6" />
 
@@ -138,11 +138,11 @@
             android:fontFamily="@font/montserrat_medium"
             android:text="Edit Profile"
             android:textColor="#1D2126"
+            android:visibility="gone"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/cardView6"
-            app:layout_constraintStart_toStartOf="@+id/textView46"
-            app:layout_constraintTop_toBottomOf="@+id/textView46" />
-
+            app:layout_constraintStart_toStartOf="@+id/userName"
+            app:layout_constraintTop_toBottomOf="@+id/userName" />
 
 
         <ImageView
@@ -152,9 +152,9 @@
             android:layout_marginEnd="24dp"
             android:rotation="180"
             android:src="@drawable/ic_back_arrow"
-            app:layout_constraintBottom_toBottomOf="@+id/textView47"
+            app:layout_constraintBottom_toBottomOf="@+id/userName"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView47" />
+            app:layout_constraintTop_toTopOf="@+id/userName" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -175,6 +175,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="32dp"
             android:background="#F2F2F2"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/my_achievement_layout"
             app:layout_constraintTop_toBottomOf="@+id/pay_as_you_go" />
@@ -188,6 +189,7 @@
             android:orientation="horizontal"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/textView5"
             app:layout_constraintTop_toBottomOf="@+id/textView5">
@@ -212,7 +214,7 @@
             android:id="@+id/my_listing_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="40dp"
             android:layout_marginEnd="16dp"
             android:orientation="horizontal"
             android:paddingTop="10dp"

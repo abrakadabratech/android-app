@@ -4,6 +4,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.widget.CompoundButton
+import android.widget.LinearLayout
 import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -11,22 +12,37 @@ import androidx.appcompat.app.AppCompatActivity
 import com.denzcoskun.imageslider.ImageSlider
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
+import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
+import com.oss.abraakadabraaapp.activities.BaseActivity
+import com.oss.abraakadabraaapp.activities.newflow.MyPayAsYouGoActivity
+import com.oss.abraakadabraaapp.databinding.ActivityMyRequestingDetailBinding
+import com.oss.abraakadabraaapp.utils.Constants
 
 
-class MyRequestDetailsActivity : AppCompatActivity() {
+class MyRequestDetailsActivity : BaseActivity() {
+    lateinit var application: BaseActivity
+    private lateinit var binding:ActivityMyRequestingDetailBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_my_requesting_detail)
+        binding = ActivityMyRequestingDetailBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        var editRequest = findViewById<Switch>(R.id.editRequest)
-        var markAsDelivered = findViewById<TextView>(R.id.markAsDelivered)
+        application = (this as BaseActivity)
+        application.postEvent(Constants.PAGE_MY_REQUEST_DETAILS,null)
 
-        markAsDelivered.setOnClickListener {
+
+        binding.chatBtn.setOnClickListener{
+            postEvent(Constants.BUTTON_CHAT_IN_REQUEST_DETAILS,null)
+        }
+
+        binding.markAsDelivered.setOnClickListener {
             //navigates to feedback pages...
+            postEvent(Constants.BUTTON_MARK_AS_DELIVERED,null)
             startActivity(Intent(this,FeedbackActivity::class.java))
         }
-        editRequest.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+        binding.editRequest.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            postEvent(Constants.BUTTON_EDIT_REQUEST,null)
             var alertDialog = AlertDialog.Builder(this)
             alertDialog.setTitle("Cancel")
             alertDialog.setMessage("Are you sure you want to cancel request on this product ?")
@@ -43,6 +59,12 @@ class MyRequestDetailsActivity : AppCompatActivity() {
 
             }
         })
+        binding.payAsYouWish.setOnClickListener {
+            val i = Intent(this, MyPayAsYouGoActivity::class.java)
+            i.putExtra("from","receiver")
+//            i.putExtra("receiver_data", Gson().toJson(productDetailData))
+            startActivity(i)
+        }
         tempData()
     }
 
