@@ -8,6 +8,7 @@ import com.oss.abraakadabraaapp.response.commonResponse.ContentManagementRespons
 import com.oss.abraakadabraaapp.response.locationResponse.LocationAddressResponse
 import com.oss.abraakadabraaapp.response.mainResponse.*
 import com.oss.abraakadabraaapp.response.notificationResponse.NotificationResponse
+import com.oss.abraakadabraaapp.response.productdetails.ProductDetailsData
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import org.json.JSONObject
@@ -59,6 +60,12 @@ interface APIs {
         @Query("page") page: Int,
         @Query("size") size: Int = 10
     ): ProductResponse
+
+    @GET("product/{id}")
+    suspend fun getProductDetails(
+        @HeaderMap header: Map<String, String>,
+        @Path("id") id: String
+    ): Response<ProductDetailsData>
 
     //==================================================================================//
     @GET

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
@@ -11,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.denzcoskun.imageslider.ImageSlider
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
@@ -23,14 +25,19 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.databinding.ActivityNewProductDetailBinding
+import com.oss.abraakadabraaapp.response.productdetails.ProductDetailsData
+import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
+import com.oss.abraakadabraaapp.viewModel.AuthViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class NewProductDetailActivity : BaseActivity() /*,OnMapReadyCallback*/{
     private lateinit var binding: ActivityNewProductDetailBinding
 //    private var mMap: GoogleMap? = null
-
+    private val mainViewModel: AuthViewModel by viewModel()
+    lateinit var productDetails:ProductDetailsData
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNewProductDetailBinding.inflate(layoutInflater)
@@ -39,6 +46,8 @@ class NewProductDetailActivity : BaseActivity() /*,OnMapReadyCallback*/{
         postEvent(Constants.PAGE_PRODUCT_DETAILS,null)
 
         tempData()
+        loaddata()
+        setUpObserver()
 
 //        val mapFragment = supportFragmentMa nager
 //            .findFragmentById(R.id.maps_view) as SupportMapFragment?
@@ -64,6 +73,24 @@ class NewProductDetailActivity : BaseActivity() /*,OnMapReadyCallback*/{
         binding.chatBtn.setOnClickListener {
             postEvent(Constants.BUTTON_CHAT_IN_DETAILS_PAGE,null)
             showToast("under development")
+        }
+    }
+
+    private fun loaddata(){
+        val map = HashMap<String, String>()
+        val token = PreferencesManagement.getAuthToken(this)!!
+        map[RequestKeys.authorization] = token
+        mainViewModel.getProductDetails(map,"mwm0LIiPmVMQzpcxJepO")
+    }
+
+    private fun setUpObserver(){
+        mainViewModel.productDetailsData.observe(this){
+            if (it.code == 200){
+                productDetails = it!!
+                Log.d("TAG - Product deails", "setUpObserver: ${productDetails.data.description}")
+            }else{
+                Log.d("TAG -", "setUpObserver: fail")
+            }
         }
     }
 
