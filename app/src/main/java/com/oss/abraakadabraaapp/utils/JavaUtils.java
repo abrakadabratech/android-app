@@ -37,9 +37,26 @@ public class JavaUtils {
         for (int i = 0; i < filePathList.size(); i++) {
             File file = new File(filePathList.get(i));
             RequestBody surveyBody = RequestBody.create(file, MediaType.parse("image/*"));
+            surveyImagesParts[i] = MultipartBody.Part.createFormData(type+(i+1), file.getName(), surveyBody);
+        }
+        return surveyImagesParts;
+    }
+    public static MultipartBody.Part[] prepareFilePart1(ArrayList<String> filePathList,String type) {
+        MultipartBody.Part[] surveyImagesParts = new MultipartBody.Part[filePathList.size()];
+        for (int i = 0; i < filePathList.size(); i++) {
+            File file = new File(filePathList.get(i));
+            RequestBody surveyBody = RequestBody.create(file, MediaType.parse("image/*"));
             surveyImagesParts[i] = MultipartBody.Part.createFormData(type, file.getName(), surveyBody);
         }
         return surveyImagesParts;
+    }
+
+
+    public static MultipartBody.Part prepareFilePartSingle(String filePathList,String type) {
+        File file = new File(filePathList);
+        RequestBody surveyBody = RequestBody.create(file, MediaType.parse("image/*"));
+
+        return MultipartBody.Part.createFormData(type, file.getName(), surveyBody);
     }
 
     public static MultipartBody.Part prepareImageFilePath(String filePath, String type) {

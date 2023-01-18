@@ -38,7 +38,7 @@ object RequestKeys {
     var smsKey = "sms_key"
 
     var price = "price"
-    var productImages = "product1"
+    var productImages = "product"
 
     var notificationId = "notification_id"
     var deletedImagesIds = "deleted_images_ids"

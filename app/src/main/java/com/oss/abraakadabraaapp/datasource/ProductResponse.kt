@@ -16,7 +16,7 @@ data class Data (
 
     @SerializedName("page"     ) var page     : Int?                = null,
     @SerializedName("count"    ) var count    : Int?                = null,
-    @SerializedName("products" ) var products : ArrayList<Products> = arrayListOf()
+    @SerializedName("products" ) var products : List<Products> = arrayListOf()
 
 ) : Parcelable
 

@@ -13,7 +13,6 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +22,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -44,13 +44,17 @@ import com.oss.abraakadabraaapp.model.UserLocation
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.*
 import com.oss.abraakadabraaapp.utils.Constants.API_TAG
+import com.oss.abraakadabraaapp.utils.JavaUtils.prepareFilePartSingle
 import com.oss.abraakadabraaapp.utils.customView.ImagePickerActivity
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import id.zelory.compressor.Compressor
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.File
+
 
 class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
     CategoryDialogAdapter.CategoryDialogAdapterInterface {
@@ -426,7 +430,6 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
             addImage()
             if (application.isNetworkAvailable()) {
                 application.generateAuthToken()
-
                 val map = HashMap<String, RequestBody>()
                 map["name"] = JavaUtils.toRequestBody(binding.etProductName.text.toString().trim())
                 map["category"] = JavaUtils.toRequestBody(PROD_CATEGORY)
@@ -518,7 +521,6 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
             )
         }
     }
-
     private fun showSubmitSuccessDialog() {
         val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
         val inflater = this.layoutInflater

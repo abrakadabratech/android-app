@@ -193,7 +193,8 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
     fun postProduct(
         headerMap: HashMap<String, String>,
         body: Map<String, RequestBody>,
-        file: Array<MultipartBody.Part>) {
+        file: Array<MultipartBody.Part>
+    ) {
         viewModelScope.launch {
 
             isLoading.value = true
