@@ -35,12 +35,17 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
+import com.oss.abraakadabraaapp.activities.newflow.MyListingActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.CategoryDialogAdapter
 import com.oss.abraakadabraaapp.activities.newflow.model.CatData
 import com.oss.abraakadabraaapp.adapter.ImageAdapter
 import com.oss.abraakadabraaapp.databinding.NewGiverFlowFragmentBinding
+import com.oss.abraakadabraaapp.datasource.ProductsAdapter
+import com.oss.abraakadabraaapp.datasource.ProductsViewModel
+import com.oss.abraakadabraaapp.datasource.ProductsViewModelFactory
 import com.oss.abraakadabraaapp.model.ProductImage
 import com.oss.abraakadabraaapp.model.UserLocation
+import com.oss.abraakadabraaapp.retrofit.api.APIs
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.*
 import com.oss.abraakadabraaapp.utils.Constants.API_TAG
@@ -49,6 +54,7 @@ import com.oss.abraakadabraaapp.utils.customView.ImagePickerActivity
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import id.zelory.compressor.Compressor
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -84,6 +90,9 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
 
     lateinit var alertDialog: AlertDialog
     lateinit var alertAdaper: CategoryDialogAdapter
+
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -105,6 +114,7 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
 
         initUI()
         setUpObserver()
+
 
         clickEvents()
 
@@ -462,6 +472,8 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
             it.responseMessage?.let { it1 ->
                 showToast(it1)
                 alertDialog.dismiss()
+                clearAll()
+                startActivity(Intent(context, MyListingActivity::class.java))
             }
 
         }
@@ -470,6 +482,16 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
         mainViewModel.errorMessage.observe(
             requireActivity(),
             { if (it.isNotBlank()) showToast(it) })
+    }
+
+    private fun clearAll() {
+        with(binding){
+            etProductName.setText("")
+            descEdt.setText("")
+            etProductBrand.setText("")
+            serverPhotoList.clear()
+            iAgreeCheckbox.isChecked = false
+        }
     }
 
     private fun manageProduct(body: Map<String, RequestBody>) {

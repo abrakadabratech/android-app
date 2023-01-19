@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide
 import com.oss.abraakadabraaapp.databinding.ItemProductBinding
 
 class ProductsAdapter :
-    PagingDataAdapter<Data, ProductsAdapter.ProductViewHolder>(PassengersComparator) {
+    PagingDataAdapter<Products, ProductsAdapter.ProductViewHolder>(PassengersComparator) {
 
     lateinit var context:Context
     override fun onCreateViewHolder(
@@ -33,20 +33,20 @@ class ProductsAdapter :
     inner class ProductViewHolder(private val binding: ItemProductBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bindPassenger(item: Data) = with(binding) {
-            Glide.with(context).load(item.products.get(0).imageUrl).into(ivProduct)
+        fun bindPassenger(item: Products) = with(binding) {
+            Glide.with(context).load(item.imageUrl).into(ivProduct)
 //            ivProduct.loadImage(item.airline.get(0).logo)
-            tvProductName.text = item.products.get(0).name
-            tvProductLocation.text = item.products.get(0).location.toString()
+            tvProductName.text = item.name
+            tvProductLocation.text = item.location.toString()
         }
     }
 
-    object PassengersComparator : DiffUtil.ItemCallback<Data>() {
-        override fun areItemsTheSame(oldItem: Data, newItem: Data): Boolean {
-            return oldItem.products.get(0).id == newItem.products.get(0).id
+    object PassengersComparator : DiffUtil.ItemCallback<Products>() {
+        override fun areItemsTheSame(oldItem: Products, newItem: Products): Boolean {
+            return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: Data, newItem: Data): Boolean {
+        override fun areContentsTheSame(oldItem: Products, newItem: Products): Boolean {
             return oldItem == newItem
         }
     }

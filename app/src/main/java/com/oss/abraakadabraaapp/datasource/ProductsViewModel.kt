@@ -7,10 +7,13 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.oss.abraakadabraaapp.retrofit.api.APIs
 
-class ProductsViewModel(private val api: APIs
+class ProductsViewModel(val page:Int,private val api: APIs, val headers:Map<String,String>,
+                        val maxDistange:Int,
+                        val lat: Double,
+                        val long:Double
 ) : ViewModel() {
-   /* val passengers =
+    val products =
         Pager(config = PagingConfig(pageSize = 10), pagingSourceFactory = {
-            ProductDataSource(api)
-        }).flow.cachedIn(viewModelScope)*/
+            ProductDataSource(page,api,headers,maxDistange, lat,long)
+        }).flow.cachedIn(viewModelScope)
 }

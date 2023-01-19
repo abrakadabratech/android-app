@@ -1,5 +1,6 @@
 package com.oss.abraakadabraaapp.retrofit.api
 
+import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.*
 import com.oss.abraakadabraaapp.datasource.ProductResponse
 import com.oss.abraakadabraaapp.response.authResponse.*
@@ -8,10 +9,13 @@ import com.oss.abraakadabraaapp.response.commonResponse.ContentManagementRespons
 import com.oss.abraakadabraaapp.response.locationResponse.LocationAddressResponse
 import com.oss.abraakadabraaapp.response.mainResponse.*
 import com.oss.abraakadabraaapp.response.notificationResponse.NotificationResponse
+import com.oss.abraakadabraaapp.response.productdetails.ProductDetailsData
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import org.json.JSONObject
 import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 
 
@@ -54,12 +58,33 @@ interface APIs {
         @Part filePart: Array<MultipartBody.Part>
     ): Response<PostProductResponse>
 
-    @GET("passenger")
+    @GET("products")
     suspend fun getProductsData(
-        @Query("page") page: Int,
-        @Query("size") size: Int = 10
+        @HeaderMap header: Map<String, String>,
+        @Query("page") page:Int,
+        @Query("maxDistance") maxDistance:Int,
+        @Query("lat") lat:Double,
+        @Query("long") long:Double,
+
     ): ProductResponse
 
+    @GET("product/{id}")
+    suspend fun getProductDetails(
+        @HeaderMap header: Map<String, String>,
+        @Path("id") id: String
+    ): Response<ProductDetailsData>
+
+    //For pagination
+    companion object {
+
+        private const val BASE_URL = "https://api.instantwebtools.net/v1/"
+
+        operator fun invoke(): APIs = Retrofit.Builder()
+            .baseUrl(if(BuildConfig.DEBUG) BuildConfig.BASE_URL else BuildConfig.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(APIs::class.java)
+    }
     //==================================================================================//
     @GET
     suspend fun getAddress(@Url url: String): Response<LocationAddressResponse>

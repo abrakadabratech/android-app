@@ -14,6 +14,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,10 +29,18 @@ import com.oss.abraakadabraaapp.activities.newflow.NewSearchActivity
 import com.oss.abraakadabraaapp.adapter.CategoryAdapter
 import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.databinding.NewReceiverFlowBinding
+import com.oss.abraakadabraaapp.datasource.ProductsAdapter
+import com.oss.abraakadabraaapp.datasource.ProductsViewModel
+import com.oss.abraakadabraaapp.datasource.ProductsViewModelFactory
 import com.oss.abraakadabraaapp.response.mainResponse.CategoryData
 import com.oss.abraakadabraaapp.response.mainResponse.LatestProductData
+import com.oss.abraakadabraaapp.retrofit.api.APIs
+import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.customView.MarginItemDecoration
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface,
@@ -49,7 +59,12 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     private var isLastPage = false
 
     private var latestProductList: ArrayList<LatestProductData> = ArrayList()
-    private lateinit var latestProductAdapter: LatestProductAdapter
+//    private lateinit var latestProductAdapter: LatestProductAdapter
+
+
+    //Pagination
+    lateinit var passengersViewModel: ProductsViewModel
+    lateinit var passengersAdapter: ProductsAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,7 +79,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         application.postEvent(Constants.PAGE_RECEIVER,null)
 
         categoryAdapter = CategoryAdapter(categoryList, requireContext(), this, "")
-        latestProductAdapter = LatestProductAdapter(latestProductList, requireContext(), this)
+//        latestProductAdapter = LatestProductAdapter(latestProductList, requireContext(), this)
 
         with(binding) {
 //            sRLHome.setColorSchemeResources(R.color.theme_color)
@@ -78,6 +93,12 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
             }
         }
+        setupViewModel()
+
+        setupView()
+
+        setupList()
+
 
         clickEvents()
 
@@ -85,7 +106,33 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
         return root
     }
+    private fun setupView() {
+        passengersAdapter = ProductsAdapter()
+        binding.rvLatestProduct.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = passengersAdapter
+            setHasFixedSize(true)
+        }
+    }
 
+    private fun setupList() {
+        lifecycleScope.launch {
+            passengersViewModel.products.collectLatest { pagedData ->
+                passengersAdapter.submitData(pagedData)
+            }
+        }
+    }
+
+    private fun setupViewModel() {
+        val userLocation = PreferencesManagement.getUserLocation(requireContext())
+        application.generateAuthToken()
+        val map = HashMap<String, String>()
+        val token = PreferencesManagement.getAuthToken(requireContext())!!
+        map[RequestKeys.authorization] = token
+        val factory = ProductsViewModelFactory(1, APIs(),map,800,userLocation!!.lat.toDouble(),
+            userLocation.long.toDouble())
+        passengersViewModel = ViewModelProvider(this, factory).get(ProductsViewModel::class.java)
+    }
     private fun clickEvents() {
         binding.catFilter.setOnClickListener {
             application.postEvent(Constants.BUTTON_FILTER,null)
@@ -202,7 +249,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         latestProductList.add(prod)
 
         categoryAdapter.notifyDataSetChanged()
-        latestProductAdapter.notifyDataSetChanged()
+//        latestProductAdapter.notifyDataSetChanged()
 
         binding.sRLHome.isRefreshing = false
 
@@ -227,7 +274,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             setHasFixedSize(false)
         }
 
-        binding.rvLatestProduct.apply {
+        /*binding.rvLatestProduct.apply {
             layoutManager = lm
             addItemDecoration(
                 MarginItemDecoration(18)
@@ -236,55 +283,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 //            isNestedScrollingEnabled = false
             recycledViewPool.setMaxRecycledViews(1, 0)
             setHasFixedSize(false)
-        }
-        binding.rvLatestProduct.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-            }
-
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager?
-                if (!isLoading) {
-                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == latestProductList.size - 1) {
-                        //bottom of list!
-                        Log.d("LST POSITION", "onScrolled: Last position Reached now")
-                    }
-                }
-            }
-        })
-
-        var firstVisibleInListview: Int
-        val activity = requireView().context as AppCompatActivity
-        val chipNavigationBar =
-            activity.findViewById<BottomNavigationView>(com.oss.abraakadabraaapp.R.id.nav_view)
-
-        /*binding.rvLatestProduct.addOnScrollListener(object :
-            RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, oldScrollY: Int) {
-                super.onScrolled(recyclerView, dx, oldScrollY)
-                val total: Int = lm.itemCount
-                val lastVisibleItemCount: Int = lm.findLastVisibleItemPosition()
-
-
-//                if (total == lastVisibleItemCount) {
-//
-//                }
-
-
-
-                if (!isLoading) {
-                    if (total > 0) if (total - 1 == lastVisibleItemCount) {
-                        if (!noMoreData) {
-                            isLoading = true
-                            isLastPage = true
-                            //getHomeData()
-                        }
-                    }
-                }
-            }
-
-        })*/
+        }*/
 
         getHomeData()
     }

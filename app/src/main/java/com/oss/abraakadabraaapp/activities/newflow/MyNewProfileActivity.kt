@@ -3,6 +3,7 @@ package com.oss.abraakadabraaapp.activities.newflow
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
@@ -319,6 +320,8 @@ class MyNewProfileActivity : BaseActivity(),SocialShareAdapter.OnSocialProfileCl
                     val imageUri = data!!.data
                     val imageStream: InputStream? = contentResolver.openInputStream(imageUri!!)
                     val selectedImage = BitmapFactory.decodeStream(imageStream)
+
+                   // updatePhoto(selectedImage)
                     binding.profilePic.setImageBitmap(selectedImage)
                 } catch (e: FileNotFoundException) {
                     e.printStackTrace()

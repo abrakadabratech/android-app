@@ -6,12 +6,17 @@ import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.SocialProfileResponse
 import com.oss.abraakadabraaapp.retrofit.api.APIs
 
-class ProductDataSource(private val api: APIs) : PagingSource<Int, Products>() {
+class ProductDataSource(val page:Int,private val api: APIs,
+    val headers:Map<String,String>,
+                        val maxDistange:Int,
+                        val lat: Double,
+                        val long:Double
+) : PagingSource<Int, Products>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Products> {
         return try {
             val nextPageNumber = params.key ?: 0
-            val response = api.getProductsData(nextPageNumber)
+            val response = api.getProductsData(headers,nextPageNumber,maxDistange,lat,long)
 
             LoadResult.Page(
                 data = response.data?.products!!,

@@ -10,6 +10,7 @@ import com.oss.abraakadabraaapp.activities.newflow.apimodels.*
 import com.oss.abraakadabraaapp.response.authResponse.*
 import com.oss.abraakadabraaapp.response.commonResponse.CommonResponse
 import com.oss.abraakadabraaapp.response.commonResponse.HttpErrorResponse
+import com.oss.abraakadabraaapp.response.productdetails.ProductDetailsData
 import com.oss.abraakadabraaapp.retrofit.api.CallHelper
 import com.oss.abraakadabraaapp.retrofit.api.callApi
 import com.oss.abraakadabraaapp.retrofit.repository.AuthRepository
@@ -35,6 +36,8 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
 
     var loginWithPhoneNumberSuccess = MutableLiveData<SignInResponse>()
     var changePasswordSuccess = MutableLiveData<CommonResponse>()
+
+    var productDetailsData = MutableLiveData<ProductDetailsData>()
 
 
     fun getUser(
@@ -218,6 +221,26 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
         }
     }
 
+    fun getProductDetails(
+        headerMap: HashMap<String, String>,
+        id: String
+    ) {
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.ProductDetails(headerMap,id)
+            callApi(::call, object : CallHelper<ProductDetailsData>{
+                override fun onSuccessful(data: ProductDetailsData) {
+                    productDetailsData.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+
+            })
+        }
+    }
 
     fun changePassword(
         headerMap: HashMap<String, String>,

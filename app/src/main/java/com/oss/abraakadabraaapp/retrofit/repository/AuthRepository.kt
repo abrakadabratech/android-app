@@ -48,7 +48,10 @@ class AuthRepository(private val apiHelper: APIs) {
         file: Array<MultipartBody.Part>
     ) = apiHelper.postProduct(map,body,file)
 
-
+    suspend fun ProductDetails(
+        map: HashMap<String, String>,
+        id: String
+    ) = apiHelper.getProductDetails(map,id)
 
     //=================================================================================//
     suspend fun loginWithPhoneNumber(

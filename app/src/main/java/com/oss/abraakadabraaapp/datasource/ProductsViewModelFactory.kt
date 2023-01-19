@@ -4,11 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.oss.abraakadabraaapp.retrofit.api.APIs
 
-class ProductsViewModelFactory(
-    private val api: APIs
+class ProductsViewModelFactory(val page:Int,
+    private val api: APIs,val headers:Map<String,String>,
+                               val maxDistange:Int,
+                               val lat: Double,
+                               val long:Double
 ) : ViewModelProvider.NewInstanceFactory(){
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return ProductsViewModel(api) as T
+        return ProductsViewModel(page,api,headers,maxDistange,lat,long) as T
     }
 }
