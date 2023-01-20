@@ -16,12 +16,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.codersroute.flexiblewidgets.FlexibleSwitch
 import com.codersroute.flexiblewidgets.FlexibleSwitch.OnStatusChangedListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewProductDetailActivity
@@ -29,6 +31,7 @@ import com.oss.abraakadabraaapp.activities.newflow.NewSearchActivity
 import com.oss.abraakadabraaapp.adapter.CategoryAdapter
 import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.databinding.NewReceiverFlowBinding
+import com.oss.abraakadabraaapp.datasource.Products
 import com.oss.abraakadabraaapp.datasource.ProductsAdapter
 import com.oss.abraakadabraaapp.datasource.ProductsViewModel
 import com.oss.abraakadabraaapp.datasource.ProductsViewModelFactory
@@ -41,6 +44,7 @@ import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.customView.MarginItemDecoration
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlin.math.log
 
 
 class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface,
@@ -64,7 +68,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
     //Pagination
     lateinit var passengersViewModel: ProductsViewModel
-    lateinit var passengersAdapter: ProductsAdapter
+    val passengersAdapter: ProductsAdapter = ProductsAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -93,21 +97,21 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
             }
         }
-        setupViewModel()
-
         setupView()
+
+        setupViewModel()
 
         setupList()
 
+        Log.d("TAG-", "setupList: ${Gson().toJson(passengersAdapter.snapshot().items)}")
 
         clickEvents()
 
-//        setUpRecyclerView()
+        setUpRecyclerView()
 
         return root
     }
     private fun setupView() {
-        passengersAdapter = ProductsAdapter()
         binding.rvLatestProduct.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = passengersAdapter
@@ -116,8 +120,8 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     }
 
     private fun setupList() {
-        lifecycleScope.launch {
-            passengersViewModel.products.collectLatest { pagedData ->
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+            passengersViewModel.getData().collectLatest { pagedData ->
                 passengersAdapter.submitData(pagedData)
             }
         }
@@ -129,10 +133,12 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         val map = HashMap<String, String>()
         val token = PreferencesManagement.getAuthToken(requireContext())!!
         map[RequestKeys.authorization] = token
-        val factory = ProductsViewModelFactory(1, APIs(),map,800,userLocation!!.lat.toDouble(),
-            userLocation.long.toDouble())
-        passengersViewModel = ViewModelProvider(this, factory).get(ProductsViewModel::class.java)
+       // Log.d("TAG - ", "setupViewModel: ${userLocation!!.lat.toDouble()},${userLocation.long.toDouble()}\n")
+        val factory = ProductsViewModelFactory(1, APIs.invoke(),map,800,15.827747098145027,
+            78.00364670950111)
+        passengersViewModel = ViewModelProvider(this, factory)[ProductsViewModel::class.java]
     }
+
     private fun clickEvents() {
         binding.catFilter.setOnClickListener {
             application.postEvent(Constants.BUTTON_FILTER,null)

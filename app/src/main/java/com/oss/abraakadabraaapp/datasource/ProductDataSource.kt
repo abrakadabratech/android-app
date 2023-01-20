@@ -1,7 +1,9 @@
 package com.oss.abraakadabraaapp.datasource
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.google.gson.Gson
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.SocialProfileResponse
 import com.oss.abraakadabraaapp.retrofit.api.APIs
@@ -13,15 +15,19 @@ class ProductDataSource(val page:Int,private val api: APIs,
                         val long:Double
 ) : PagingSource<Int, Products>() {
 
+    companion object {
+        private const val STARTING_PAGE_INDEX = 1
+    }
+
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Products> {
         return try {
-            val nextPageNumber = params.key ?: 0
-            val response = api.getProductsData(headers,nextPageNumber,maxDistange,lat,long)
-
+            val position = params.key ?: STARTING_PAGE_INDEX
+            val response = api.getProductsData(headers,position,maxDistange,lat,long)
+            Log.d("TAG-", "load: ${Gson().toJson(response)}")
             LoadResult.Page(
                 data = response.data?.products!!,
-                prevKey = if (nextPageNumber > 0) nextPageNumber - 1 else null,
-                nextKey = if (nextPageNumber < response.data?.count!!) nextPageNumber + 1 else null
+                prevKey = if (position == STARTING_PAGE_INDEX) null else position - 1,
+                nextKey = if (response.data!!.products.isEmpty()) null else position + 1
             )
         } catch (e: Exception) {
             LoadResult.Error(e)
@@ -29,6 +35,9 @@ class ProductDataSource(val page:Int,private val api: APIs,
     }
 
     override fun getRefreshKey(state: PagingState<Int, Products>): Int? {
-        TODO("Not yet implemented")
+        return state.anchorPosition?.let { anchorPosition ->
+            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
+                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
+        }
     }
 }
