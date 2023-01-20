@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.*
 import com.oss.abraakadabraaapp.response.authResponse.*
@@ -439,7 +438,7 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
                 override fun onError(errorResponse: HttpErrorResponse) {
                     errorMessage.value = "Status = ${errorResponse.status} Message = ${errorResponse.responseMessage} Code = ${errorResponse.code}"
 
-                    FirebaseCrashlytics.getInstance().log("${errorMessage.value}")
+//                    FirebaseCrashlytics.getInstance().log("${errorMessage.value}")
 
                 }
             })

@@ -602,7 +602,7 @@ abstract class BaseActivity : AppCompatActivity() {
                         // Send token to your backend via HTTPS
                         // ...
                         Log.d(NewHomeActivity.TAG, "onComplete11:new Token generated")
-                        showToast("new Token generated")
+//                        showToast("new Token generated")
                     } else {
                         // Handle error -> task.getException();
                     }

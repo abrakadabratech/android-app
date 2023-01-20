@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
+import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.auth.AuthUserDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.*
@@ -16,6 +17,7 @@ import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
 import com.oss.abraakadabraaapp.databinding.FragmentAccountsBinding
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.Constants.API_TAG
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -76,7 +78,10 @@ class AccountsFragment : Fragment(), View.OnClickListener {
             setUpProfile()
         }
 
-        authViewModel.errorMessage.observe(requireActivity()) { if (it.isNotBlank()) application.showToast(it) }
+        authViewModel.errorMessage.observe(requireActivity()) { if (it.isNotBlank()) Log.d(
+            API_TAG,
+            "setUpObserver: $it"
+        ) }
 
         authViewModel.isLoading.observe(requireActivity()) { application.loader(it) }
     }
@@ -88,6 +93,7 @@ class AccountsFragment : Fragment(), View.OnClickListener {
                 userName.text = it.data?.name
                 Glide.with(this@AccountsFragment)
                     .load(it.data?.userAvatar)
+                    .placeholder(resources.getDrawable(R.drawable.ic_profile))
                     .into(profilePic)
             }
         }

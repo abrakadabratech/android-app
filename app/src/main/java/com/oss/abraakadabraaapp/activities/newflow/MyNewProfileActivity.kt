@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -14,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.UserInfo
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import com.karumi.dexter.Dexter
@@ -33,6 +35,10 @@ import com.oss.abraakadabraaapp.databinding.ActivityMyProfile2Binding
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.*
 import com.oss.abraakadabraaapp.utils.Constants.API_TAG
+import com.oss.abraakadabraaapp.utils.Constants.facebook
+import com.oss.abraakadabraaapp.utils.Constants.instagram
+import com.oss.abraakadabraaapp.utils.Constants.linkedin
+import com.oss.abraakadabraaapp.utils.Constants.twitter
 import com.oss.abraakadabraaapp.utils.customView.ImagePickerActivity
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import id.zelory.compressor.Compressor
@@ -47,108 +53,242 @@ import java.io.IOException
 import java.io.InputStream
 
 
-class MyNewProfileActivity : BaseActivity(),SocialShareAdapter.OnSocialProfileClicked {
+class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileClicked {
     private lateinit var binding: ActivityMyProfile2Binding
     var list = arrayListOf<SocialData>()
-    lateinit var adapter:SocialShareAdapter
+    lateinit var adapter: SocialShareAdapter
     private val authViewModel: AuthViewModel by viewModel()
+    private var socialLinkType = "facebook"
+    private lateinit var userInfo: GetUserResponse
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMyProfile2Binding.inflate(layoutInflater)
         setContentView(binding.root)
-        postEvent(Constants.PAGE_PROFILE,null)
-
-        setUpProfile(PreferencesManagement.getUserInfo(this)!!)
-
+        postEvent(Constants.PAGE_PROFILE, null)
+        userInfo = PreferencesManagement.getUserInfo(this)!!
+        setUpProfile(userInfo)
         clickeEvents()
-
-        setUpRecyclerView()
         setUpObserver()
 
         FirebaseMessaging.getInstance().token.addOnSuccessListener {
             Log.d("TAG::", "onCreate: $it")
-            PreferencesManagement.saveFCMToken(this,it)
+            PreferencesManagement.saveFCMToken(this, it)
         }.addOnFailureListener {
             Log.d("TAG::", "onCreate: $it")
         }
     }
 
     private fun setUpProfile(userInfo: GetUserResponse) {
-        with(binding){
+        with(binding) {
             nameEdit.setText(userInfo.data?.name)
             emailEdit.setText(userInfo.data?.email)
             phoneEdit.setText(userInfo.data?.phone)
             instaEdit.setText(userInfo.data?.socialLink)
             Glide.with(this@MyNewProfileActivity)
                 .load(userInfo.data?.userAvatar)
+                .placeholder(resources.getDrawable(R.drawable.ic_profile))
                 .into(profilePic)
+            list.clear()
+            when (userInfo.data?.socialLinkType) {
+                facebook -> {
+                    list.add(SocialData(R.drawable.fb_icon, true))
+                    list.add(SocialData(R.drawable.linked_in_icon, false))
+                    list.add(SocialData(R.drawable.twitter_icon, false))
+                    list.add(SocialData(R.drawable.insta_icon, false))
+                }
+                linkedin -> {
+                    list.add(SocialData(R.drawable.fb_icon, false))
+                    list.add(SocialData(R.drawable.linked_in_icon, true))
+                    list.add(SocialData(R.drawable.twitter_icon, false))
+                    list.add(SocialData(R.drawable.insta_icon, false))
+                }
+                twitter -> {
+                    list.add(SocialData(R.drawable.fb_icon, false))
+                    list.add(SocialData(R.drawable.linked_in_icon, false))
+                    list.add(SocialData(R.drawable.twitter_icon, true))
+                    list.add(SocialData(R.drawable.insta_icon, false))
+                }
+                instagram -> {
+                    list.add(SocialData(R.drawable.fb_icon, false))
+                    list.add(SocialData(R.drawable.linked_in_icon, false))
+                    list.add(SocialData(R.drawable.twitter_icon, false))
+                    list.add(SocialData(R.drawable.insta_icon, true))
+                }
+                else -> {
+                    list.add(SocialData(R.drawable.fb_icon, true))
+                    list.add(SocialData(R.drawable.linked_in_icon, false))
+                    list.add(SocialData(R.drawable.twitter_icon, false))
+                    list.add(SocialData(R.drawable.insta_icon, false))
+                }
+            }
+//            val parsedText = getUserNameFromSocialLink(userInfo.data?.socialLink,
+//                userInfo.data?.socialLinkType)
+//            Log.d("TAG::", "setUpProfile: Parsed Text $parsedText")
+//            binding.socialProfileEdt.setText(parsedText)
+            setUpRecyclerView()
         }
+    }
+
+    private fun getUserNameFromSocialLink(socialLink: String?, socialLinkType: String?): String? {
+        var result = ""
+        if (!socialLink.equals("")){
+            when(socialLinkType){
+                facebook -> result = socialLink?.split("https://www.facebook.com/")?.get(1).toString()
+                linkedin -> result = socialLink?.split("https://www.instagram.com/")?.get(1).toString()
+                twitter -> result = socialLink?.split("https://www.linkedin.com/in/")?.get(1).toString()
+                instagram -> result = socialLink?.split("https://twitter.com/")?.get(1).toString()
+            }
+        }
+        return result
     }
 
     private fun setUpObserver() {
         authViewModel.isLoading.observe(this) { loader(it) }
         authViewModel.updateUserSuccess.observe(this) {
 //            showToast(it.responseMessage.toString())
-            PreferencesManagement.saveUserInfo(this,it)
-            setUpProfile(it)
+            if (it.code == 500){
+                showToast(it.responseMessage.toString())
+            }else {
+                PreferencesManagement.saveUserInfo(this, it)
+                setUpProfile(it)
+            }
         }
         authViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
         authViewModel.userProfilePicSuccess.observe(this) {
             showToast(it.responseMessage.toString())
 //            getUserProfileApi()
         }
+        authViewModel.postSocialProfileSuccess.observe(this) {
+
+            val userInfo = PreferencesManagement.getUserInfo(this)!!
+            val userData = UsersData(phone = userInfo.data?.phone,
+                socialLinkType = it.data?.socialLinkType,
+                socialLink = it.data?.socialLink,
+                name = userInfo.data?.name,
+                userAvatar = userInfo.data?.userAvatar,
+                email = userInfo.data?.email,
+                uid = userInfo.data?.uid,
+                fcmToken = userInfo.data?.fcmToken
+            )
+            val newUserInfo = GetUserResponse(
+                code = userInfo.code,
+                responseMessage = userInfo.responseMessage,
+                status = userInfo.status,
+                data = userData
+            )
+            PreferencesManagement.saveUserInfo(this,newUserInfo)
+//            setUpProfile(newUserInfo)
+            Log.d(API_TAG, "postSocialProfileSuccess: ${Gson().toJson(newUserInfo)}")
+            binding.socialProfileLayout.visibility = View.GONE
+            binding.successLayout.visibility = View.VISIBLE
+            binding.instaEdit.text = it.data?.socialLink
+            editMode(false)
+        }
     }
 
     private fun clickeEvents() {
+        binding.uploadImage.isEnabled = false
         binding.editProfile.setOnClickListener {
-            postEvent(Constants.BUTTON_EDIT_PROFILE,null)
-            binding.nameEdit.isEnabled = true
-            binding.emailEdit.isEnabled = true
-            binding.phoneEdit.isEnabled = true
-            binding.locationEdit.isEnabled = true
-            binding.instaEdit.isEnabled = true
-            binding.nameEdit.requestFocus()
-            binding.saveBtn.visibility = View.VISIBLE
+            postEvent(Constants.BUTTON_EDIT_PROFILE, null)
+
+            editMode(true)
         }
         binding.ivBack.setOnClickListener {
             onBackPressed()
         }
         binding.saveBtn.setOnClickListener {
-            postEvent(Constants.BUTTON_SAVE_PROFILE,null)
+            postEvent(Constants.BUTTON_SAVE_PROFILE, null)
             postUserData()
         }
         binding.instaEdit.setOnClickListener {
-            //show profile popup
-
-        }
-        binding.instaEdit.setOnClickListener {
+            userInfo.data?.socialLinkType
             binding.socialProfileLayout.visibility = View.VISIBLE
         }
         binding.socialProfileLayout.setOnClickListener {
             binding.socialProfileLayout.visibility = View.GONE
         }
         binding.submitBtn.setOnClickListener {
-            postEvent(Constants.BUTTON_SUBMIT_SOCIAL_PROFILE,null)
-            binding.socialProfileLayout.visibility = View.GONE
-            binding.successLayout.visibility = View.VISIBLE
+            postEvent(Constants.BUTTON_SUBMIT_SOCIAL_PROFILE, null)
+            postUserProfile()
         }
         binding.bottomSheet.setOnClickListener {
             binding.socialProfileLayout.visibility = View.VISIBLE
+
         }
         binding.okGotItBtn.setOnClickListener {
-            postEvent(Constants.BUTTON_OK_GOT_IT_SOCIAL_PROFILE,null)
+            postEvent(Constants.BUTTON_OK_GOT_IT_SOCIAL_PROFILE, null)
             binding.successLayout.visibility = View.GONE
-            showToast("Under development")
+//            showToast("Under development")
         }
         binding.successLayout.setOnClickListener {
             binding.successLayout.visibility = View.GONE
         }
-        binding.successDialog.setOnClickListener{
+        binding.successDialog.setOnClickListener {
             binding.successLayout.visibility = View.VISIBLE
         }
-        binding.uploadImage.setOnClickListener{
+        binding.uploadImage.setOnClickListener {
             selectImage()
+        }
+    }
+
+    private fun editMode(isEditMode: Boolean) {
+
+        binding.nameEdit.isEnabled = isEditMode
+        binding.uploadImage.isEnabled = isEditMode
+        binding.emailEdit.isEnabled = isEditMode
+//        binding.phoneEdit.isEnabled = isEditMode
+//        binding.locationEdit.isEnabled = isEditMode
+        binding.instaEdit.isEnabled = isEditMode
+        if (isEditMode) {
+            binding.nameEdit.requestFocus()
+            binding.nameEdit.setSelection(binding.nameEdit.text.toString().length)
+            binding.saveBtn.visibility = View.VISIBLE
+            binding.editProfile.visibility = View.INVISIBLE
+        } else {
+            binding.saveBtn.visibility = View.GONE
+            binding.editProfile.visibility = View.VISIBLE
+        }
+
+    }
+
+    private fun postUserProfile() {
+        if (isUserProfileValidate()) {
+            if (isNetworkAvailable()) {
+                generateAuthToken()
+                val mapAuth = HashMap<String, String>()
+                /*if (PreferencesManagement.getAuthToken(this@AuthUserDetailActivity) != null){
+                    mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
+                }else{
+                    generateAuthToken()
+                    mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
+                }*/
+                mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
+
+                val map = HashMap<String, String>()
+
+                map[RequestKeys.social_link_type] = socialLinkType
+                map[RequestKeys.social_link] = binding.socialProfileHeader.text.toString().trim() +
+                        binding.socialProfileEdt.text.toString().trim()
+
+                authViewModel.postUserSocialProfile(mapAuth, map)
+            }
+        }
+    }
+
+    private fun isUserProfileValidate(): Boolean {
+        with(binding) {
+            if (socialProfileEdt.text!!.length <= 3) {
+                showToast("Please Enter Valid Full Name")
+                return false
+            }
+
+            if (socialProfileEdt.text!!.length > 50) {
+                showToast("Full Name must be less than 50 character")
+                return false
+            }
+
+            return true
         }
     }
 
@@ -156,18 +296,24 @@ class MyNewProfileActivity : BaseActivity(),SocialShareAdapter.OnSocialProfileCl
         if (isValidate()) {
             generateAuthToken()
             //getFCMToken()
-            val data = UsersData(name = binding.nameEdit.text.toString(),
-                    email = binding.emailEdit.text.toString(),
-                fcmToken = PreferencesManagement.getFCMToken(this)!!)
+            val data = UsersData(
+                name = binding.nameEdit.text.toString(),
+                email = binding.emailEdit.text.toString(),
+                fcmToken = PreferencesManagement.getFCMToken(this)!!
+            )
             val dataClass = DataClass(data)
 
-            val map = HashMap<String,String>()
+            val map = HashMap<String, String>()
             val token = PreferencesManagement.getAuthToken(this)!!
             map[RequestKeys.authorization] = token
-            Log.d(NewHomeActivity.TAG, "Token in Accounts fragment: ${JSONObject(Gson().toJson(dataClass))}")
-            authViewModel.updateUser(map,dataClass)
+            Log.d(
+                NewHomeActivity.TAG,
+                "Token in Accounts fragment: ${JSONObject(Gson().toJson(dataClass))}"
+            )
+            authViewModel.updateUser(map, dataClass)
         }
     }
+
     private fun isValidate(): Boolean {
         return if (binding.nameEdit.text.toString().isNotBlank() &&
             binding.emailEdit.text.toString().isNotBlank()
@@ -180,35 +326,40 @@ class MyNewProfileActivity : BaseActivity(),SocialShareAdapter.OnSocialProfileCl
     }
 
     private fun setUpRecyclerView() {
-        var images: Array<Int> = arrayOf(
-            R.drawable.fb_icon, R.drawable.linked_in_icon, R.drawable.twitter_icon,
-            R.drawable.insta_icon
-        )
-        list.add(SocialData(R.drawable.fb_icon,true))
-        list.add(SocialData(R.drawable.linked_in_icon,false))
-        list.add(SocialData(R.drawable.twitter_icon,false))
-        list.add(SocialData(R.drawable.insta_icon,false))
-
-        adapter = SocialShareAdapter(this, list,this)
+        adapter = SocialShareAdapter(this, list, this)
         val layoutManager = GridLayoutManager(this, 4)
 
         binding.rvSocialLinks.layoutManager = layoutManager
         binding.rvSocialLinks.adapter = adapter
     }
 
-    override fun onSocialIconClick(position: Int,status:Boolean) {
-        when(position){
-            0 -> binding.socialProfileHeader.text = Constants.FB_URL
-            1 -> binding.socialProfileHeader.text = Constants.LINKED_IN_URL
-            2 -> binding.socialProfileHeader.text = Constants.TWITTER_URL
-            3 -> binding.socialProfileHeader.text = Constants.INSTA_URL
+    override fun onSocialIconClick(position: Int, status: Boolean) {
+        when (position) {
+            0 -> {
+                binding.socialProfileHeader.text = Constants.FB_URL
+                socialLinkType = "facebook"
+            }
+
+            1 -> {
+                binding.socialProfileHeader.text = Constants.LINKED_IN_URL
+                socialLinkType = "linkedin"
+            }
+            2 -> {
+                binding.socialProfileHeader.text = Constants.TWITTER_URL
+                socialLinkType = "twitter"
+            }
+            3 -> {
+                binding.socialProfileHeader.text = Constants.INSTA_URL
+                socialLinkType = "instagram"
+            }
         }
         for (i in 0 until list.size) list[i].status = i == position
 
         adapter.notifyDataSetChanged()
     }
+
     private fun selectImage() {
-        postEvent(Constants.BUTTON_UPLOAD_IMAGE,null)
+        postEvent(Constants.BUTTON_UPLOAD_IMAGE, null)
         Dexter.withContext(this)
             .withPermissions(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
             .withListener(object : MultiplePermissionsListener {
@@ -229,6 +380,7 @@ class MyNewProfileActivity : BaseActivity(),SocialShareAdapter.OnSocialProfileCl
                 }
             }).check()
     }
+
     private fun bannerOptions() {
         ImagePickerActivity.showImagePickerOptions(
             this,
@@ -265,6 +417,7 @@ class MyNewProfileActivity : BaseActivity(),SocialShareAdapter.OnSocialProfileCl
         intent.action = Intent.ACTION_GET_CONTENT
         launchSomeActivity.launch(intent)
     }
+
     private var businessProofImageActivity =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val data: Intent? = result.data
@@ -295,7 +448,7 @@ class MyNewProfileActivity : BaseActivity(),SocialShareAdapter.OnSocialProfileCl
         Log.d(API_TAG, "updatePhoto: file path internally:${path.path}")
         val authToken = PreferencesManagement.getAuthToken(this)!!
 
-        val authMap = HashMap<String,String>()
+        val authMap = HashMap<String, String>()
         authMap[RequestKeys.authorization] = authToken
 
         val partMap = HashMap<String, RequestBody>()
@@ -305,7 +458,12 @@ class MyNewProfileActivity : BaseActivity(),SocialShareAdapter.OnSocialProfileCl
         )
 //        partMap[RequestKeys.image] = JavaUtils.profileImagePrepareFilePart(path.absolutePath)
 
-        Log.d(API_TAG, "updatePhoto: ${JavaUtils.profileImagePrepareFilePart1(path.absolutePath)} \n ${Gson().toJson(authMap)}")
+        Log.d(
+            API_TAG,
+            "updatePhoto: ${JavaUtils.profileImagePrepareFilePart1(path.absolutePath)} \n ${
+                Gson().toJson(authMap)
+            }"
+        )
         authViewModel.updateProfilePic(
             authMap,
             JavaUtils.profileImagePrepareFilePart1(path.absolutePath)
@@ -321,7 +479,7 @@ class MyNewProfileActivity : BaseActivity(),SocialShareAdapter.OnSocialProfileCl
                     val imageStream: InputStream? = contentResolver.openInputStream(imageUri!!)
                     val selectedImage = BitmapFactory.decodeStream(imageStream)
 
-                   // updatePhoto(selectedImage)
+                    // updatePhoto(selectedImage)
                     binding.profilePic.setImageBitmap(selectedImage)
                 } catch (e: FileNotFoundException) {
                     e.printStackTrace()

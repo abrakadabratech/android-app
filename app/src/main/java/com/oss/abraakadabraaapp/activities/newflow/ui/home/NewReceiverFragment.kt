@@ -59,7 +59,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     private var isLastPage = false
 
     private var latestProductList: ArrayList<LatestProductData> = ArrayList()
-//    private lateinit var latestProductAdapter: LatestProductAdapter
+    private lateinit var latestProductAdapter: LatestProductAdapter
 
 
     //Pagination
@@ -79,7 +79,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         application.postEvent(Constants.PAGE_RECEIVER,null)
 
         categoryAdapter = CategoryAdapter(categoryList, requireContext(), this, "")
-//        latestProductAdapter = LatestProductAdapter(latestProductList, requireContext(), this)
+        latestProductAdapter = LatestProductAdapter(latestProductList, requireContext(), this)
 
         with(binding) {
 //            sRLHome.setColorSchemeResources(R.color.theme_color)
@@ -93,16 +93,16 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
             }
         }
-        setupViewModel()
+       /* setupViewModel()
 
         setupView()
 
         setupList()
-
+*/
 
         clickEvents()
 
-//        setUpRecyclerView()
+        setUpRecyclerView()
 
         return root
     }
@@ -129,7 +129,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         val map = HashMap<String, String>()
         val token = PreferencesManagement.getAuthToken(requireContext())!!
         map[RequestKeys.authorization] = token
-        val factory = ProductsViewModelFactory(1, APIs(),map,800,userLocation!!.lat.toDouble(),
+        val factory = ProductsViewModelFactory(1, APIs.invoke(),map,800,userLocation!!.lat.toDouble(),
             userLocation.long.toDouble())
         passengersViewModel = ViewModelProvider(this, factory).get(ProductsViewModel::class.java)
     }
@@ -249,7 +249,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         latestProductList.add(prod)
 
         categoryAdapter.notifyDataSetChanged()
-//        latestProductAdapter.notifyDataSetChanged()
+        latestProductAdapter.notifyDataSetChanged()
 
         binding.sRLHome.isRefreshing = false
 
@@ -257,10 +257,6 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     }
 
     private fun setUpRecyclerView() {
-//        val view = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
-
-//        view.visibility = View.GONE
-//        val navBar = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
 
         val lm = GridLayoutManager(requireContext(), 2)
 //        binding.rvHomeCategory.isNestedScrollingEnabled = false
@@ -274,7 +270,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             setHasFixedSize(false)
         }
 
-        /*binding.rvLatestProduct.apply {
+        binding.rvLatestProduct.apply {
             layoutManager = lm
             addItemDecoration(
                 MarginItemDecoration(18)
@@ -283,7 +279,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 //            isNestedScrollingEnabled = false
             recycledViewPool.setMaxRecycledViews(1, 0)
             setHasFixedSize(false)
-        }*/
+        }
 
         getHomeData()
     }

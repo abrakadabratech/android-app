@@ -3,6 +3,10 @@ package com.oss.abraakadabraaapp.utils
 object Constants {
     //Page tags for GA-4
 
+    val facebook: String = "facebook"
+    val linkedin: String = "linkedin"
+    val twitter: String = "twitter"
+    val instagram: String = "instagram"
     val UNDER_DEV: String = "Under development"
     val USER_NOT_FOUND: String = "User Not Found"
     val USER_CREATED: String = "User Created"
