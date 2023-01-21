@@ -102,7 +102,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textView13"
+                android:id="@+id/productName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -121,8 +121,8 @@
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/textView13"
-                app:layout_constraintTop_toBottomOf="@+id/textView13">
+                app:layout_constraintStart_toStartOf="@+id/productName"
+                app:layout_constraintTop_toBottomOf="@+id/productName">
 
                 <ImageView
                     android:layout_width="16dp"
@@ -171,7 +171,7 @@
                 app:layout_constraintTop_toTopOf="@+id/textView16" />
 
             <TextView
-                android:id="@+id/textView18"
+                android:id="@+id/condition"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -179,22 +179,22 @@
                 android:text="Barely Used"
                 android:textSize="16sp"
                 android:textColor="@color/sub_text_color"
-                app:layout_constraintEnd_toStartOf="@+id/textView19"
+                app:layout_constraintEnd_toStartOf="@+id/usedFor"
                 app:layout_constraintStart_toStartOf="@+id/textView16"
                 app:layout_constraintTop_toBottomOf="@+id/textView16" />
 
             <TextView
-                android:id="@+id/textView19"
+                android:id="@+id/usedFor"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserrat_medium"
                 android:text="Lessthan 6 months"
                 android:textSize="16sp"
                 android:textColor="@color/sub_text_color"
-                app:layout_constraintBottom_toBottomOf="@+id/textView18"
+                app:layout_constraintBottom_toBottomOf="@+id/condition"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView18"
-                app:layout_constraintTop_toTopOf="@+id/textView18" />
+                app:layout_constraintStart_toEndOf="@+id/condition"
+                app:layout_constraintTop_toTopOf="@+id/condition" />
 
             <TextView
                 android:id="@+id/textView20"
@@ -206,8 +206,8 @@
                 android:textSize="16sp"
                 android:textColor="@color/title_color"
                 app:layout_constraintEnd_toStartOf="@+id/textView21"
-                app:layout_constraintStart_toStartOf="@+id/textView18"
-                app:layout_constraintTop_toBottomOf="@+id/textView18" />
+                app:layout_constraintStart_toStartOf="@+id/condition"
+                app:layout_constraintTop_toBottomOf="@+id/condition" />
 
             <TextView
                 android:id="@+id/textView21"
@@ -223,7 +223,7 @@
                 app:layout_constraintTop_toTopOf="@+id/textView20" />
 
             <TextView
-                android:id="@+id/textView22"
+                android:id="@+id/castSaving"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -231,22 +231,22 @@
                 android:text="Rs. 11111"
                 android:textSize="16sp"
                 android:textColor="@color/sub_text_color"
-                app:layout_constraintEnd_toStartOf="@+id/textView23"
+                app:layout_constraintEnd_toStartOf="@+id/energySaving"
                 app:layout_constraintStart_toStartOf="@+id/textView20"
                 app:layout_constraintTop_toBottomOf="@+id/textView20" />
 
             <TextView
-                android:id="@+id/textView23"
+                android:id="@+id/energySaving"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserrat_medium"
                 android:text="X Units"
                 android:textSize="16sp"
                 android:textColor="@color/sub_text_color"
-                app:layout_constraintBottom_toBottomOf="@+id/textView22"
+                app:layout_constraintBottom_toBottomOf="@+id/castSaving"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView22"
-                app:layout_constraintTop_toTopOf="@+id/textView22" />
+                app:layout_constraintStart_toEndOf="@+id/castSaving"
+                app:layout_constraintTop_toTopOf="@+id/castSaving" />
 
             <TextView
                 android:id="@+id/textView24"
@@ -257,8 +257,8 @@
                 android:text="Description"
                 android:textSize="16sp"
                 android:textColor="@color/title_color"
-                app:layout_constraintStart_toStartOf="@+id/textView22"
-                app:layout_constraintTop_toBottomOf="@+id/textView22" />
+                app:layout_constraintStart_toStartOf="@+id/castSaving"
+                app:layout_constraintTop_toBottomOf="@+id/castSaving" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView3"

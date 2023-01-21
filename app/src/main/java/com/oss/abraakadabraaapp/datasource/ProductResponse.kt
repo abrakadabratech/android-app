@@ -1,39 +1,48 @@
 package com.oss.abraakadabraaapp.datasource
 
-import android.os.Parcelable
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
-import kotlinx.android.parcel.Parcelize
 
-@Parcelize
+@Keep
 data class ProductResponse(
-    @SerializedName("code"   ) var code   : Int?  = null,
-    @SerializedName("status" ) var status : Int?  = null,
-    @SerializedName("data"   ) var data   : Data? = Data()
-) : Parcelable
+    @SerializedName("code")
+    val code: Int,
+    @SerializedName("data")
+    val `data`: Data,
+    @SerializedName("status")
+    val status: Int
+)
 
-@Parcelize
-data class Data (
+@Keep
+data class Product(
+    @SerializedName("condition")
+    val condition: String,
+    @SerializedName("distance")
+    val distance: Int,
+    @SerializedName("id")
+    val id: String,
+    @SerializedName("image")
+    val image: String,
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("location")
+    var location  : Location? = Location(),
+)
 
-    @SerializedName("page"     ) var page     : Int?                = null,
-    @SerializedName("count"    ) var count    : Int?                = null,
-    @SerializedName("products" ) var products : List<Products> = arrayListOf()
+@Keep
+data class Data(
+    @SerializedName("count")
+    val count: Int,
+    @SerializedName("page")
+    val page: String,
+    @SerializedName("products")
+    val products: List<Product>
+)
 
-) : Parcelable
-
-@Parcelize
-data class Products (
-
-    @SerializedName("id"        ) var id        : String?   = null,
-    @SerializedName("image_url" ) var imageUrl  : String?   = null,
-    @SerializedName("condition" ) var condition : String?   = null,
-    @SerializedName("location"  ) var location  : Location? = Location(),
-    @SerializedName("name"      ) var name      : String?   = null
-) : Parcelable
-
-@Parcelize
+@Keep
 data class Location (
-
-    @SerializedName("_latitude"  ) var Latitude  : Double? = null,
-    @SerializedName("_longitude" ) var Longitude : Double? = null
-
-) : Parcelable
+    @SerializedName("_latitude")
+    var Latitude  : Double? = null,
+    @SerializedName("_longitude")
+    var Longitude : Double? = null
+)

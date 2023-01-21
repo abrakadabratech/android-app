@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.lifecycle.lifecycleScope
 import com.denzcoskun.imageslider.ImageSlider
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
@@ -25,11 +26,13 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.databinding.ActivityNewProductDetailBinding
+import com.oss.abraakadabraaapp.response.productdetails.Data
 import com.oss.abraakadabraaapp.response.productdetails.ProductDetailsData
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
+import org.koin.androidx.viewmodel.ViewModelOwner
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -38,16 +41,19 @@ class NewProductDetailActivity : BaseActivity() /*,OnMapReadyCallback*/{
 //    private var mMap: GoogleMap? = null
     private val mainViewModel: AuthViewModel by viewModel()
     lateinit var productDetails:ProductDetailsData
+    lateinit var productId:String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNewProductDetailBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
         postEvent(Constants.PAGE_PRODUCT_DETAILS,null)
-
-        tempData()
+        if(intent.hasExtra("id")){
+            productId= intent.getStringExtra("id").toString()
+            Log.d("TAG-", "onCreate: $productId")
+        }
+        //tempData()
         loaddata()
-        setUpObserver()
 
 //        val mapFragment = supportFragmentMa nager
 //            .findFragmentById(R.id.maps_view) as SupportMapFragment?
@@ -80,18 +86,27 @@ class NewProductDetailActivity : BaseActivity() /*,OnMapReadyCallback*/{
         val map = HashMap<String, String>()
         val token = PreferencesManagement.getAuthToken(this)!!
         map[RequestKeys.authorization] = token
-        mainViewModel.getProductDetails(map,"mwm0LIiPmVMQzpcxJepO")
+        mainViewModel.getProductDetails(map,productId)
+
+        mainViewModel.productDetailsData.observe(this){
+            Log.d("TAG - Product deails", "setUpObserver: ${productDetails.data.description}")
+            productDetails = it!!
+            setViews(productDetails.data)
+
+        }
     }
 
-    private fun setUpObserver(){
-        mainViewModel.productDetailsData.observe(this){
-            if (it.code == 200){
-                productDetails = it!!
-                Log.d("TAG - Product deails", "setUpObserver: ${productDetails.data.description}")
-            }else{
-                Log.d("TAG -", "setUpObserver: fail")
-            }
-        }
+    fun setViews(data: Data){
+        binding.productName.text=data.name
+        binding.productLocation.text=data.locationName
+        binding.createdAt.text=data.createdAt
+        binding.castSaving.text=data.costSaving.toString()
+        binding.energySaving.text=data.energySaving.toString()
+        binding.postedBy.text=data.postedBy.name
+        binding.condition.text=data.condition
+        binding.usedFor.text=data.usedFor
+        binding.productDes.text=data.description
+        tempData()
     }
 
     private fun showReportThisDialog() {
@@ -214,8 +229,10 @@ class NewProductDetailActivity : BaseActivity() /*,OnMapReadyCallback*/{
 
 // imageList.add(SlideModel("String Url" or R.drawable)
 // imageList.add(SlideModel("String Url" or R.drawable, "title") You can add title
-
-        imageList.add(SlideModel("https://www.gstatic.com/webp/gallery/1.jpg", "", ScaleTypes.FIT))
+        for (image in productDetails.data.images){
+            imageList.add(SlideModel(image, "", ScaleTypes.FIT))
+        }
+        /*imageList.add(SlideModel(productDetails.data.images[0], "", ScaleTypes.FIT))
         imageList.add(
             SlideModel(
                 "https://www.gstatic.com/webp/gallery/1.jpg",
@@ -231,7 +248,7 @@ class NewProductDetailActivity : BaseActivity() /*,OnMapReadyCallback*/{
             )
         )
         imageList.add(SlideModel("https://bit.ly/2BteuF2", "", ScaleTypes.CENTER_INSIDE))
-        imageList.add(SlideModel("https://bit.ly/3fLJf72", "", ScaleTypes.FIT))
+        imageList.add(SlideModel("https://bit.ly/3fLJf72", "", ScaleTypes.FIT))*/
 
         val imageSlider = findViewById<ImageSlider>(R.id.image_slider)
         imageSlider.setImageList(imageList)

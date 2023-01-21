@@ -31,7 +31,6 @@ import com.oss.abraakadabraaapp.activities.newflow.NewSearchActivity
 import com.oss.abraakadabraaapp.adapter.CategoryAdapter
 import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.databinding.NewReceiverFlowBinding
-import com.oss.abraakadabraaapp.datasource.Products
 import com.oss.abraakadabraaapp.datasource.ProductsAdapter
 import com.oss.abraakadabraaapp.datasource.ProductsViewModel
 import com.oss.abraakadabraaapp.datasource.ProductsViewModelFactory
@@ -68,7 +67,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
     //Pagination
     lateinit var passengersViewModel: ProductsViewModel
-    val passengersAdapter: ProductsAdapter = ProductsAdapter()
+    lateinit var passengersAdapter: ProductsAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -103,8 +102,6 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
         setupList()
 
-        Log.d("TAG-", "setupList: ${Gson().toJson(passengersAdapter.snapshot().items)}")
-
         clickEvents()
 
         setUpRecyclerView()
@@ -113,15 +110,18 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     }
     private fun setupView() {
         binding.rvLatestProduct.apply {
+            passengersAdapter = ProductsAdapter()
             layoutManager = LinearLayoutManager(context)
             adapter = passengersAdapter
             setHasFixedSize(true)
         }
+
     }
 
     private fun setupList() {
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-            passengersViewModel.getData().collectLatest { pagedData ->
+            passengersViewModel.listData.collect { pagedData ->
+                Log.d("TAG-", "setupList: collect")
                 passengersAdapter.submitData(pagedData)
             }
         }
@@ -133,9 +133,9 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         val map = HashMap<String, String>()
         val token = PreferencesManagement.getAuthToken(requireContext())!!
         map[RequestKeys.authorization] = token
-       // Log.d("TAG - ", "setupViewModel: ${userLocation!!.lat.toDouble()},${userLocation.long.toDouble()}\n")
-        val factory = ProductsViewModelFactory(1, APIs.invoke(),map,800,15.827747098145027,
-            78.00364670950111)
+        Log.d("TAG - ", "setupViewModel: ${userLocation!!.lat.toDouble()},${userLocation.long.toDouble()}\n")
+        val factory = ProductsViewModelFactory(1, APIs.invoke(),map,800,userLocation!!.lat.toDouble(),
+            userLocation.long.toDouble())
         passengersViewModel = ViewModelProvider(this, factory)[ProductsViewModel::class.java]
     }
 

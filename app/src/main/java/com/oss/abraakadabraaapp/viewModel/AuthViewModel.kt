@@ -231,7 +231,7 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
             suspend fun call() = repository.ProductDetails(headerMap,id)
             callApi(::call, object : CallHelper<ProductDetailsData>{
                 override fun onSuccessful(data: ProductDetailsData) {
-                    productDetailsData.value = data
+                    productDetailsData.postValue(data)
                 }
 
                 override fun onError(errorResponse: HttpErrorResponse) {
