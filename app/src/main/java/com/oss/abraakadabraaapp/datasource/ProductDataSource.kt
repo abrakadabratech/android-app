@@ -2,33 +2,40 @@ package com.oss.abraakadabraaapp.datasource
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
-import com.oss.abraakadabraaapp.activities.newflow.apimodels.SocialProfileResponse
-import com.oss.abraakadabraaapp.retrofit.api.APIs
+import com.anilhappy.paginationsample.APIService
+import com.oss.abraakadabraaapp.datasource.products.Product
 
-class ProductDataSource(val page:Int,private val api: APIs,
-    val headers:Map<String,String>,
-                        val maxDistange:Int,
-                        val lat: Double,
-                        val long:Double
-) : PagingSource<Int, Products>() {
+class ProductDataSource(private val apiService: APIService,
+                        private val headers:Map<String,String>,
+                        private val maxDistance:Int,
+                        private val lat:Double,
+                        private val long:Double) : PagingSource<Int, Product>() {
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Products> {
-        return try {
-            val nextPageNumber = params.key ?: 0
-            val response = api.getProductsData(headers,nextPageNumber,maxDistange,lat,long)
-
-            LoadResult.Page(
-                data = response.data?.products!!,
-                prevKey = if (nextPageNumber > 0) nextPageNumber - 1 else null,
-                nextKey = if (nextPageNumber < response.data?.count!!) nextPageNumber + 1 else null
-            )
-        } catch (e: Exception) {
-            LoadResult.Error(e)
+    override fun getRefreshKey(state: PagingState<Int, Product>): Int? {
+        return state.anchorPosition?.let { anchorPosition ->
+            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
+                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
     }
 
-    override fun getRefreshKey(state: PagingState<Int, Products>): Int? {
-        TODO("Not yet implemented")
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Product> {
+        try {
+            val currentLoadingPageKey = params.key ?: 1
+            val response = apiService.getProductsData(headers,currentLoadingPageKey,maxDistance,lat,long)
+            val responseData = mutableListOf<Product>()
+            val data = response.data.products ?: emptyList()
+            responseData.addAll(data)
+
+            val prevKey = if (currentLoadingPageKey == 1) null else currentLoadingPageKey - 1
+
+            return LoadResult.Page(
+                data = responseData,
+                prevKey = prevKey,
+                nextKey = currentLoadingPageKey.plus(1)
+            )
+        }catch (e: Exception) {
+            return LoadResult.Error(e)
+        }
     }
+
 }

@@ -97,6 +97,7 @@
         android:ellipsize="end"
         android:fontFamily="@font/montserrat_medium"
         android:gravity="center"
+        android:inputType="textCapWords"
         android:text="Electronics"
         android:textColor="#334D60"
         android:textSize="10sp" />

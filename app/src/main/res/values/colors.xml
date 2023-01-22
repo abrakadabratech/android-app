@@ -53,6 +53,7 @@
     <color name="selected_color">#FA8F95</color>
     <color name="un_selected_color">#FACFBD</color>
     <color name="dark_title_color">#113B3C</color>
+    <color name="given_color">#ADB5BD</color>
 
     <color name="new_theme">#E4FAFF</color>
     <color name="new_button_color">#2D7A76</color>

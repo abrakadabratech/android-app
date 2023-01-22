@@ -159,7 +159,7 @@
 
     <string name="temp">Already have an account? <font color='' face=''>Login</font></string>
     <string name="login_str">Please enter your mobile number to receive a One Time Password</string>
-    <string name="otp_verification_str">Please enter the 4 digit OTP sent to your mobile number</string>
+    <string name="otp_verification_str">Please enter the 6 digit OTP sent to your mobile number</string>
     <string name="default_country_code">+91</string>
     <string name="hyphen_str">-</string>
     <string name="enter_phone_number">Enter Phone Number</string>

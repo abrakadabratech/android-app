@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.codersroute.flexiblewidgets.FlexibleSwitch
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
+import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.adapter.CategoryAdapter
 import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.databinding.ActivityContentManagementBinding
@@ -34,7 +35,7 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
 
     private lateinit var binding: ActivityNewSearchBinding
 
-    private var categoryList: ArrayList<CategoryData> = ArrayList()
+    private var categoryList: ArrayList<UserCatData> = ArrayList()
     private lateinit var categoryAdapter: CategoryAdapter
     private var pageStart = 1
     private var currentPage = pageStart
@@ -70,73 +71,8 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
             onBackPressed()
         }
     }
-    private fun getHomeData() {
 
-        var catList : ArrayList<CategoryData> = ArrayList()
-        var cat = CategoryData(
-            "https://www.gstatic.com/webp/gallery/1.jpg",
-            "Electronics",
-            R.drawable.temp_one,
-            "2021-11-22 19:14:06",
-            1,
-            ""
-        )
-
-        categoryList.add(cat)
-        categoryList.add(CategoryData(
-            "https://www.gstatic.com/webp/gallery/1.jpg",
-            "Books",
-            R.drawable.temp_two,
-            "2021-11-22 19:14:06",
-            1,
-            ""
-        ))
-        categoryList.add(CategoryData(
-            "https://www.gstatic.com/webp/gallery/1.jpg",
-            "Furniture",
-            R.drawable.temp_three,
-            "2021-11-22 19:14:06",
-            1,
-            ""
-        ))
-//        var cat = CategoryData("https://www.gstatic.com/webp/gallery/1.jpg",
-//            "Electronics",
-//            "https://abrakadabraapp.app/app/user_assets/category/electronic.png","2021-11-22 19:14:06",
-//            1,"")
-//
-//        categoryList.add(cat)
-
-
-        var prod = LatestProductData(6.921098996597988,
-            "Barely Used",
-            240,
-            "https://www.gstatic.com/webp/gallery/1.jpg",
-            220,
-            2,
-            "Beautiful Toy",
-            2
-        )
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-
-        categoryAdapter.notifyDataSetChanged()
-        latestProductAdapter.notifyDataSetChanged()
-
-//        binding.sRLHome.isRefreshing = false
-
-    }
-
-    override fun onCategoryClick(data: CategoryData) {
+    override fun onCategoryClick(data: UserCatData) {
 
     }
 
@@ -187,7 +123,6 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
                 }
             }
         })
-        getHomeData()
     }
     //Alert Dialog for show nearby filter
     private fun showNearByFilterDialog() {

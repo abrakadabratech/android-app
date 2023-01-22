@@ -81,12 +81,22 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
             }
         }
 
-        binding.submitBtn.setOnClickListener {
+        binding.okGotItBtn.setOnClickListener {
             postEvent(BUTTON_LETS_START_SOCIAL_PROFILE,null)
             postUserProfile()
         }
 
         setUpRecyclerView()
+
+        binding.skipTxt.setOnClickListener {
+            val intent =
+                Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+//            intent.putExtra(Constants.phoneNumber,phoneNumber)
+            startActivity(intent)
+            finish()
+        }
+
 
     }
 
@@ -106,7 +116,7 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
 
                 map[RequestKeys.social_link_type] = socialLinkType
                 map[RequestKeys.social_link] = binding.socialProfileHeader.text.toString().trim()+
-                        binding.socialProfileEdt.text.toString().trim()
+                        binding.profileLink.text.toString().trim()
 
                 authViewModel.postUserSocialProfile(mapAuth,map)
             }
@@ -115,13 +125,13 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
 
     private fun isUserProfileValidate(): Boolean {
         with(binding) {
-            if (socialProfileEdt.text!!.length <= 3) {
-                showToast("Please Enter Valid Full Name")
+            if (profileLink.text!!.length <= 3) {
+                showToast("Please Enter Valid Profile ID")
                 return false
             }
 
-            if (socialProfileEdt.text!!.length > 50) {
-                showToast("Full Name must be less than 50 character")
+            if (profileLink.text!!.length > 20) {
+                showToast("Profile ID must be less than 20 character")
                 return false
             }
 
@@ -223,7 +233,9 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
         authViewModel.postSocialProfileSuccess.observe(this){
             Log.d(API_TAG, "postSocialProfileSuccess: ${Gson().toJson(it)}")
             showToast(it.responseMessage.toString())
-            startActivity(Intent(applicationContext,NewHomeActivity::class.java))
+            if (it.code == 200){
+                startActivity(Intent(applicationContext,NewHomeActivity::class.java))
+            }
 //            if (it.responseMessage == "")
         }
 
@@ -298,6 +310,7 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
         for (i in 0 until list.size) list[i].status = i == position
 
         adapter.notifyDataSetChanged()
+        binding.socialProfilePopUPLayout.visibility = View.VISIBLE
     }
 
 }

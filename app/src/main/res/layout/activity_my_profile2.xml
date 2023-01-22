@@ -6,6 +6,86 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/socialProfilePopUPLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/alert_bg_color"
+        android:elevation="5dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/successDialog1"
+            android:layout_width="350dp"
+            android:layout_height="220dp"
+            android:visibility="visible"
+            app:cardBackgroundColor="@color/new_bg_color"
+            app:cardCornerRadius="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/new_bg_theme">
+
+                <TextView
+                    android:id="@+id/textView8111"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/montserrat_medium"
+                    android:gravity="center"
+                    android:text="Please enter your profile ID to link \nyour social account to this app"
+                    android:textColor="@color/title_color"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/profileLink"
+                    android:layout_width="198.95dp"
+                    android:layout_height="41.73dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/white"
+                    android:gravity="center"
+                    android:hint="Profile link ID"
+                    android:padding="2dp"
+                    app:layout_constraintEnd_toEndOf="@+id/textView8111"
+                    app:layout_constraintStart_toStartOf="@+id/textView8111"
+                    app:layout_constraintTop_toBottomOf="@+id/textView8111" />
+
+                <TextView
+                    android:id="@+id/okGotItBtn1"
+                    android:layout_width="98dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:background="@drawable/btn_bg_rounded_rect"
+                    android:fontFamily="@font/montserrat_semi_bold"
+                    android:gravity="center"
+                    android:text="Submit"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/profileLink"
+                    app:layout_constraintVertical_bias="0.38" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/successLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -138,6 +218,7 @@
                 android:fontFamily="@font/montserrat_bold"
                 android:text="https://www.facebook.com/"
                 android:textSize="@dimen/sp_16"
+                android:visibility="gone"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/socialProfileEdt"
                 app:layout_constraintStart_toStartOf="@+id/rv_social_links"
@@ -150,6 +231,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginBottom="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView78" />
@@ -169,7 +252,7 @@
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="14sp"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -182,6 +265,7 @@
                 android:layout_marginStart="2dp"
                 android:layout_marginEnd="8dp"
                 android:ems="10"
+                android:visibility="gone"
                 android:hint="Enter Profile"
                 android:inputType="textPersonName"
                 android:textSize="18sp"

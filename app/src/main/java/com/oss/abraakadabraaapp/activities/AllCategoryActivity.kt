@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.GridLayoutManager
 import com.oss.abraakadabraaapp.R
+import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.adapter.CategoryAdapter
 import com.oss.abraakadabraaapp.databinding.ActivityAllCategoryBinding
 import com.oss.abraakadabraaapp.databinding.LoggedInUserToolbarBinding
@@ -34,7 +35,7 @@ class AllCategoryActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInter
 
     private val mainViewModel: MainViewModel by viewModel()
 
-    private var categoryList: ArrayList<CategoryData> = ArrayList()
+    private var categoryList: ArrayList<UserCatData> = ArrayList()
     private val categoryAdapter = CategoryAdapter(categoryList, this, this,"")
 
     private var pageStart = 1
@@ -106,7 +107,7 @@ class AllCategoryActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInter
             val data = it.data
             if (data.isNotEmpty()) {
                 if (currentPage == pageStart) categoryList.clear()
-                categoryList.addAll(data)
+//                categoryList.addAll(data)
                 categoryAdapter.notifyDataSetChanged()
                 noDataBinding.clNoData.visibility = View.GONE
                 binding.sv.visibility = View.VISIBLE
@@ -201,12 +202,12 @@ class AllCategoryActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInter
             }
         }
 
-    override fun onCategoryClick(data: CategoryData) {
+    override fun onCategoryClick(data: UserCatData) {
         launchSearchActivity.launch(
             SearchActivity.createIntent(
                 this@AllCategoryActivity,
                 data.id.toString(),
-                data.categoryName,
+                data.title,
                 notificationCount,
                 latitude,
                 longitude

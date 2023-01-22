@@ -89,7 +89,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/categoryTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -102,7 +102,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textView13"
+                android:id="@+id/productName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -110,8 +110,8 @@
                 android:text="Ladies Bag"
                 android:textSize="24sp"
                 android:textColor="@color/new_action_bar_title_color"
-                app:layout_constraintStart_toStartOf="@+id/textView3"
-                app:layout_constraintTop_toBottomOf="@+id/textView3" />
+                app:layout_constraintStart_toStartOf="@+id/categoryTxt"
+                app:layout_constraintTop_toBottomOf="@+id/categoryTxt" />
 
             <LinearLayout
                 android:id="@+id/linearLayout1"
@@ -121,8 +121,8 @@
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/textView13"
-                app:layout_constraintTop_toBottomOf="@+id/textView13">
+                app:layout_constraintStart_toStartOf="@+id/productName"
+                app:layout_constraintTop_toBottomOf="@+id/productName">
 
                 <ImageView
                     android:layout_width="16dp"
@@ -131,6 +131,7 @@
                     android:src="@drawable/ic_location" />
 
                 <TextView
+                    android:id="@+id/locationName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="9"
@@ -153,12 +154,12 @@
                 android:text="Condition"
                 android:textSize="16sp"
                 android:textColor="@color/title_color"
-                app:layout_constraintEnd_toStartOf="@+id/textView17"
+                app:layout_constraintEnd_toStartOf="@+id/usedForTxt"
                 app:layout_constraintStart_toStartOf="@+id/linearLayout1"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout1" />
 
             <TextView
-                android:id="@+id/textView17"
+                android:id="@+id/usedForTxt"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserrat_bold"
@@ -171,7 +172,7 @@
                 app:layout_constraintTop_toTopOf="@+id/textView16" />
 
             <TextView
-                android:id="@+id/textView18"
+                android:id="@+id/conditionTxt"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -191,10 +192,10 @@
                 android:text="Lessthan 6 months"
                 android:textSize="16sp"
                 android:textColor="@color/sub_text_color"
-                app:layout_constraintBottom_toBottomOf="@+id/textView18"
+                app:layout_constraintBottom_toBottomOf="@+id/conditionTxt"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView18"
-                app:layout_constraintTop_toTopOf="@+id/textView18" />
+                app:layout_constraintStart_toEndOf="@+id/conditionTxt"
+                app:layout_constraintTop_toTopOf="@+id/conditionTxt" />
 
             <TextView
                 android:id="@+id/textView20"
@@ -206,8 +207,8 @@
                 android:textSize="16sp"
                 android:textColor="@color/title_color"
                 app:layout_constraintEnd_toStartOf="@+id/textView21"
-                app:layout_constraintStart_toStartOf="@+id/textView18"
-                app:layout_constraintTop_toBottomOf="@+id/textView18" />
+                app:layout_constraintStart_toStartOf="@+id/conditionTxt"
+                app:layout_constraintTop_toBottomOf="@+id/conditionTxt" />
 
             <TextView
                 android:id="@+id/textView21"
@@ -223,7 +224,7 @@
                 app:layout_constraintTop_toTopOf="@+id/textView20" />
 
             <TextView
-                android:id="@+id/textView22"
+                android:id="@+id/costSavingTxt"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -243,10 +244,10 @@
                 android:text="X Units"
                 android:textSize="16sp"
                 android:textColor="@color/sub_text_color"
-                app:layout_constraintBottom_toBottomOf="@+id/textView22"
+                app:layout_constraintBottom_toBottomOf="@+id/costSavingTxt"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView22"
-                app:layout_constraintTop_toTopOf="@+id/textView22" />
+                app:layout_constraintStart_toEndOf="@+id/costSavingTxt"
+                app:layout_constraintTop_toTopOf="@+id/costSavingTxt" />
 
             <TextView
                 android:id="@+id/textView24"
@@ -257,8 +258,8 @@
                 android:text="Description"
                 android:textSize="16sp"
                 android:textColor="@color/title_color"
-                app:layout_constraintStart_toStartOf="@+id/textView22"
-                app:layout_constraintTop_toBottomOf="@+id/textView22" />
+                app:layout_constraintStart_toStartOf="@+id/costSavingTxt"
+                app:layout_constraintTop_toBottomOf="@+id/costSavingTxt" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView3"
@@ -273,6 +274,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView24">
 
                 <TextView
+                    android:id="@+id/descriptionTxt"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="5dp"
@@ -282,7 +284,7 @@
             </androidx.cardview.widget.CardView>
 
             <TextView
-                android:id="@+id/textView27"
+                android:id="@+id/responsesTwo"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -295,7 +297,7 @@
 
 
             <TextView
-                android:id="@+id/textView107"
+                android:id="@+id/responsesOne"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
@@ -304,7 +306,7 @@
                 android:textColor="#F95565"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/textView3" />
+                app:layout_constraintTop_toTopOf="@+id/categoryTxt" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvRequestedUsers"
@@ -317,7 +319,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView27" />
+                app:layout_constraintTop_toBottomOf="@+id/responsesTwo" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

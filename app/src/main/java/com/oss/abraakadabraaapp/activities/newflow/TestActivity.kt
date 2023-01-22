@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.oss.abraakadabraaapp.R
+import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.adapter.CategoryAdapter
 import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.databinding.ActivityCategorySelectBinding
@@ -23,7 +24,7 @@ class TestActivity : AppCompatActivity(),CategoryAdapter.CategoryAdapterInterfac
     private var latestProductList: ArrayList<LatestProductData> = ArrayList()
     private lateinit var latestProductAdapter: LatestProductAdapter
 
-    private var categoryList: ArrayList<CategoryData> = ArrayList()
+    private var categoryList: ArrayList<UserCatData> = ArrayList()
     private lateinit var categoryAdapter: CategoryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +39,7 @@ class TestActivity : AppCompatActivity(),CategoryAdapter.CategoryAdapterInterfac
 
     }
 
-    override fun onCategoryClick(data: CategoryData) {
+    override fun onCategoryClick(data: UserCatData) {
         TODO("Not yet implemented")
     }
 
@@ -46,99 +47,6 @@ class TestActivity : AppCompatActivity(),CategoryAdapter.CategoryAdapterInterfac
         TODO("Not yet implemented")
     }
 
-    private fun getHomeData() {
-
-        var catList: ArrayList<CategoryData> = ArrayList()
-
-        var cat = CategoryData(
-            "https://www.gstatic.com/webp/gallery/1.jpg",
-            "Electronics",
-            R.drawable.temp_one,
-            "2021-11-22 19:14:06",
-            1,
-            ""
-        )
-
-        categoryList.add(cat)
-        categoryList.add(CategoryData(
-            "https://www.gstatic.com/webp/gallery/1.jpg",
-            "Books",
-            R.drawable.temp_two,
-            "2021-11-22 19:14:06",
-            1,
-            ""
-        ))
-        categoryList.add(CategoryData(
-            "https://www.gstatic.com/webp/gallery/1.jpg",
-            "Furniture",
-            R.drawable.temp_three,
-            "2021-11-22 19:14:06",
-            1,
-            ""
-        ))
-        categoryList.add(CategoryData(
-            "https://www.gstatic.com/webp/gallery/1.jpg",
-            "Home Decor",
-            R.drawable.temp_four,
-            "2021-11-22 19:14:06",
-            1,
-            ""
-        ))
-        categoryList.add(CategoryData(
-            "https://www.gstatic.com/webp/gallery/1.jpg",
-            "Fashion",
-            R.drawable.temp_five,
-            "2021-11-22 19:14:06",
-            1,
-            ""
-        ))
-        categoryList.add(CategoryData(
-            "https://www.gstatic.com/webp/gallery/1.jpg",
-            "Electronics",
-            R.drawable.temp_six,
-            "2021-11-22 19:14:06",
-            1,
-            ""
-        ))
-        categoryList.add(CategoryData(
-            "https://www.gstatic.com/webp/gallery/1.jpg",
-            "More",
-            R.drawable.temp_seven,
-            "2021-11-22 19:14:06",
-            1,
-            ""
-        ))
-
-        var prod = LatestProductData(
-            6.921098996597988,
-            "Barely Used",
-            240,
-            "https://www.gstatic.com/webp/gallery/1.jpg",
-            220,
-            2,
-            "Beautiful Toy",
-            2
-        )
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-        latestProductList.add(prod)
-
-        categoryAdapter.notifyDataSetChanged()
-        latestProductAdapter.notifyDataSetChanged()
-
-        binding.sRLHome.isRefreshing = false
-
-
-    }
 
     private fun setUpRecyclerView() {
 //        val view = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
@@ -189,8 +97,6 @@ class TestActivity : AppCompatActivity(),CategoryAdapter.CategoryAdapterInterfac
                 }else EventBus.getDefault().post(1)*/
             }
         })
-
-        getHomeData()
     }
 
 }

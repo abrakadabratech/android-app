@@ -40,26 +40,18 @@ import com.oss.abraakadabraaapp.activities.newflow.adapters.CategoryDialogAdapte
 import com.oss.abraakadabraaapp.activities.newflow.model.CatData
 import com.oss.abraakadabraaapp.adapter.ImageAdapter
 import com.oss.abraakadabraaapp.databinding.NewGiverFlowFragmentBinding
-import com.oss.abraakadabraaapp.datasource.ProductsAdapter
-import com.oss.abraakadabraaapp.datasource.ProductsViewModel
-import com.oss.abraakadabraaapp.datasource.ProductsViewModelFactory
 import com.oss.abraakadabraaapp.model.ProductImage
 import com.oss.abraakadabraaapp.model.UserLocation
-import com.oss.abraakadabraaapp.retrofit.api.APIs
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.*
 import com.oss.abraakadabraaapp.utils.Constants.API_TAG
-import com.oss.abraakadabraaapp.utils.JavaUtils.prepareFilePartSingle
 import com.oss.abraakadabraaapp.utils.customView.ImagePickerActivity
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import id.zelory.compressor.Compressor
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.io.File
 
 
 class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,

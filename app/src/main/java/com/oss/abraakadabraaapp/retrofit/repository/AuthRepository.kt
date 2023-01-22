@@ -3,6 +3,7 @@ package com.oss.abraakadabraaapp.retrofit.repository
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.DataClass
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.ProductRequest
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
+import com.oss.abraakadabraaapp.activities.newflow.requests.ReportProductRequest
 import com.oss.abraakadabraaapp.retrofit.api.APIs
 import com.oss.abraakadabraaapp.utils.Utility
 import okhttp3.MultipartBody
@@ -17,6 +18,10 @@ class AuthRepository(private val apiHelper: APIs) {
     suspend fun getUser(
         map: HashMap<String, String>
     ) = apiHelper.getUser(map)
+
+    suspend fun logoutUser(
+        map: HashMap<String, String>
+    ) = apiHelper.logoutUser(map)
 
     suspend fun postUser(
         map: HashMap<String, String>,
@@ -52,6 +57,41 @@ class AuthRepository(private val apiHelper: APIs) {
         map: HashMap<String, String>,
         id: String
     ) = apiHelper.getProductDetails(map,id)
+
+    suspend fun getListingDetails(
+        map: HashMap<String, String>,
+        id: String
+    ) = apiHelper.getListingDetails(map,id)
+
+    suspend fun deleteProduct(
+        map: HashMap<String, String>,
+        id: String
+    ) = apiHelper.deleteProduct(map,id)
+
+    suspend fun getSupportData(
+        map: HashMap<String, String>)
+      = apiHelper.getSupportData(map)
+
+    suspend fun getAllCategories(
+        map: HashMap<String, String>)
+      = apiHelper.getAllCategories(map)
+
+    suspend fun reportProduct(
+        map: HashMap<String, String>,
+        body: HashMap<String, String>
+    )
+      = apiHelper.reportProduct(map,body)
+
+    suspend fun postRequest(
+        map: HashMap<String, String>,
+        id: String
+    )
+      = apiHelper.postProductRequest(map,id)
+
+    suspend fun getProductListing(
+        map: HashMap<String, String>,
+    )
+      = apiHelper.getProductListings(map)
 
     //=================================================================================//
     suspend fun loginWithPhoneNumber(

@@ -1,18 +1,25 @@
 package com.oss.abraakadabraaapp.retrofit.api
 
+import com.oss.abraakadabraaapp.datasource.products.GetProducts
 import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.*
-import com.oss.abraakadabraaapp.datasource.ProductResponse
+import com.oss.abraakadabraaapp.activities.newflow.menu.LogoutResponse
+import com.oss.abraakadabraaapp.activities.newflow.menu.SupportResponse
+import com.oss.abraakadabraaapp.activities.newflow.model.AllCategoryResponse
+import com.oss.abraakadabraaapp.activities.newflow.model.ProductDeleteResponse
+import com.oss.abraakadabraaapp.activities.newflow.model.ReportProductResponse
+import com.oss.abraakadabraaapp.activities.newflow.requests.ReportProductRequest
 import com.oss.abraakadabraaapp.response.authResponse.*
 import com.oss.abraakadabraaapp.response.commonResponse.CommonResponse
 import com.oss.abraakadabraaapp.response.commonResponse.ContentManagementResponse
 import com.oss.abraakadabraaapp.response.locationResponse.LocationAddressResponse
 import com.oss.abraakadabraaapp.response.mainResponse.*
 import com.oss.abraakadabraaapp.response.notificationResponse.NotificationResponse
+import com.oss.abraakadabraaapp.response.productRequestResponse.ListingResponse
+import com.oss.abraakadabraaapp.response.productRequestResponse.ProductRequestResponse
 import com.oss.abraakadabraaapp.response.productdetails.ProductDetailsData
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import org.json.JSONObject
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -27,29 +34,39 @@ interface APIs {
     @GET("user")
     suspend fun getUser(@HeaderMap header: Map<String, String>) : Response<GetUserResponse>
 
+    //Logout user
+    @POST("user/logout")
+    suspend fun logoutUser(@HeaderMap header: Map<String, String>) : Response<LogoutResponse>
+
+    //post User data
     @POST("user")
     suspend fun postUser(@HeaderMap header: Map<String, String>,
                          @Body map: HashMap<String, String>) : Response<CreatedUserResponse>
 
+    //Update user data
     @PUT("user")
     suspend fun updateUser(@HeaderMap header: Map<String, String>,
                          @Body map: DataClass
     ) : Response<GetUserResponse>
 
-    @GET("user/sociallink")
+    //Get user social link
+    @GET("user/socialprofilelink")
     suspend fun getSocialLink(@HeaderMap header: Map<String, String>) :Response<SocialProfileResponse>
 
-    @PUT("user/sociallink")
+    //Update user social link
+    @PUT("user/socialprofilelink")
     suspend fun postSocialLink(@HeaderMap header: Map<String, String>,
                                @Body map: HashMap<String, String>) :Response<SocialProfileResponse>
 
+    //Update user profile image
     @Multipart
     @PUT("user/profileimage")
     suspend fun updateProfilePic(
         @HeaderMap header: Map<String, String>,
         @Part filePart: MultipartBody.Part
-    ): Response<GetUserResponse>
+    ): Response<UploadProfileResponse>
 
+    //Post new product
     @Multipart
     @POST("product/new")
     suspend fun postProduct(
@@ -58,6 +75,14 @@ interface APIs {
         @Part filePart: Array<MultipartBody.Part>
     ): Response<PostProductResponse>
 
+    //Get app support data
+    @GET("app/support")
+    suspend fun getSupportData(
+        @HeaderMap header: Map<String, String>)
+    : Response<SupportResponse>
+
+    //Product Related end points
+    //Get all products
     @GET("products")
     suspend fun getProductsData(
         @HeaderMap header: Map<String, String>,
@@ -66,13 +91,82 @@ interface APIs {
         @Query("lat") lat:Double,
         @Query("long") long:Double,
 
-    ): ProductResponse
+        ): GetProducts
 
+    //Get product when click on card (single product)
     @GET("product/{id}")
     suspend fun getProductDetails(
         @HeaderMap header: Map<String, String>,
         @Path("id") id: String
     ): Response<ProductDetailsData>
+
+    @GET("product/{id}")
+    suspend fun getListingDetails(
+        @HeaderMap header: Map<String, String>,
+        @Path("id") id: String
+    ): Response<ListingResponse>
+
+    //Delete product
+    @DELETE("product/{id}")
+    suspend fun deleteProduct(
+        @HeaderMap header: Map<String, String>,
+        @Path("id") id: String
+    ): Response<ProductDeleteResponse>
+
+    //update product
+    @PUT("product/{id}")
+    suspend fun updateProduct(
+        @HeaderMap header: Map<String, String>,
+        @Path("id") id: String
+    ): Response<ProductDetailsData>
+
+    //Get all product categories
+    @GET("product/categories")
+    suspend fun getAllCategories(
+        @HeaderMap header: Map<String, String>
+    ): Response<AllCategoryResponse>
+
+    //Report product
+    @POST("product/report")
+    suspend fun reportProduct(
+        @HeaderMap header: Map<String, String>,
+        @Body body: HashMap<String, String>
+    ): Response<ReportProductResponse>
+
+    //Report product
+    @GET("product/mylistings")
+    suspend fun getProductListings(
+        @HeaderMap header: Map<String, String>
+    ): Response<ProductRequestResponse>
+
+    //Request a product
+    @GET("product/request/{id}")
+    suspend fun postProductRequest(
+        @HeaderMap header: Map<String, String>,
+        @Path("id") id: String
+    ): Response<ProductDeleteResponse>
+
+    //Get product request
+    @GET("product/requests/{id}")
+    suspend fun getProductRequest(
+        @HeaderMap header: Map<String, String>,
+        @Path("id") id: String
+    ): Response<ProductDetailsData>
+
+    //Update Product Request
+    @PUT("product/requests/{id}")
+    suspend fun updateProductRequest(
+        @HeaderMap header: Map<String, String>,
+        @Path("id") id: String
+    ): Response<ProductDetailsData>
+
+    //Cancel product request
+    @DELETE("product/requests/{id}")
+    suspend fun cancelProductRequest(
+        @HeaderMap header: Map<String, String>,
+        @Path("id") id: String
+    ): Response<ProductDetailsData>
+
 
     //For pagination
     companion object {

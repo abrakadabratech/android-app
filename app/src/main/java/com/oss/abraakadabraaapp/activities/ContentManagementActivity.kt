@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.text.HtmlCompat
 import com.oss.abraakadabraaapp.R
@@ -15,6 +16,7 @@ import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
+import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import com.oss.abraakadabraaapp.viewModel.ContentManagementViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -28,6 +30,8 @@ class ContentManagementActivity : BaseActivity() {
     private val contentManagementViewModel: ContentManagementViewModel by viewModel()
 
     private var type = ""
+    private val mainViewModel: AuthViewModel by viewModel()
+
 
     companion object {
         fun createIntent(context: Context, type: String):Intent {
@@ -53,11 +57,20 @@ class ContentManagementActivity : BaseActivity() {
             onBackPressed()
         }
 
+        setUpObserver()
+
         if (intent.hasExtra(Constants.hasContentManagement)) {
             type = intent.getStringExtra("type")!!
 
             when(type){
                 Constants.contactUs->{
+                    generateAuthToken()
+
+                    val map = HashMap<String, String>()
+                    val token = PreferencesManagement.getAuthToken(this)!!
+                    map[RequestKeys.authorization] = token
+                    mainViewModel.getSupportData(map)
+
                     binding.tvContent.visibility = View.GONE
                     binding.clContactUsContent.visibility = View.VISIBLE
                     binding.clAboutUsContent.visibility = View.GONE
@@ -78,7 +91,6 @@ class ContentManagementActivity : BaseActivity() {
             }
         }
 
-        setUpObserver()
         initUI()
 
     }
@@ -88,6 +100,21 @@ class ContentManagementActivity : BaseActivity() {
         if (type != Constants.contactUs) {
             //getContentData()
         }
+    }
+    private fun setUpObserver() {
+        mainViewModel.supportDataSuccess.observe(this) {
+            if (it.code == 200) {
+                binding.mobileNum.text = it.data?.email
+                binding.emailTxt.text = it.data?.phone
+                binding.version.text = it.data?.version
+
+            } else {
+                Log.d("TAG -", "setUpObserver: fail")
+            }
+        }
+        mainViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
+        mainViewModel.isLoading.observe(this) { loader(it) }
+
     }
 
     private fun getContentData() {
@@ -149,7 +176,7 @@ class ContentManagementActivity : BaseActivity() {
         }
     }
 
-    private fun setUpObserver() {
+   /* private fun setUpObserver() {
         contentManagementViewModel.isLoading.observe(this, { loader(it) })
         contentManagementViewModel.contentManagementSuccess.observe(this, {
             val data = it.data.content
@@ -158,7 +185,7 @@ class ContentManagementActivity : BaseActivity() {
         contentManagementViewModel.errorMessage.observe(
             this,
             { if (it.isNotBlank()) showToast(it) })
-    }
+    }*/
 
     private fun setUpUI(data: ContentManagementResponse.Data.Content) {
         binding.tvContent.text = HtmlCompat.fromHtml(data.value, HtmlCompat.FROM_HTML_MODE_LEGACY)

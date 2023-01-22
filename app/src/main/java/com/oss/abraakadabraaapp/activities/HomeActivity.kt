@@ -26,6 +26,7 @@ import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.oss.abraakadabraaapp.R
+import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.adapter.CategoryAdapter
 import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.adapter.NavigationAdapter
@@ -61,7 +62,7 @@ class HomeActivity : BaseActivity(),
     private var navItemList: ArrayList<NavItem> = ArrayList()
     private val navigationAdapter = NavigationAdapter(navItemList, this, this)
 
-    private var categoryList: ArrayList<CategoryData> = ArrayList()
+    private var categoryList: ArrayList<UserCatData> = ArrayList()
     private val categoryAdapter = CategoryAdapter(categoryList, this, this,"")
 
     private var latestProductList: ArrayList<LatestProductData> = ArrayList()
@@ -373,7 +374,7 @@ class HomeActivity : BaseActivity(),
 
             if (categoryData.isNotEmpty()) {
                 categoryList.clear()
-                categoryList.addAll(categoryData)
+//                categoryList.addAll(categoryData)
                 categoryAdapter.notifyDataSetChanged()
             }
 
@@ -688,12 +689,12 @@ class HomeActivity : BaseActivity(),
         alertDialog.show()
     }
 
-    override fun onCategoryClick(data: CategoryData) {
+    override fun onCategoryClick(data: UserCatData) {
         launchActivity.launch(
             SearchActivity.createIntent(
                 this@HomeActivity,
                 data.id.toString(),
-                data.categoryName,
+                data.title,
                 notificationCount,
                 latitude,
                 longitude

@@ -14,12 +14,13 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.newflow.CategorySelectActivity
+import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.databinding.ItemCategoryBinding
 import com.oss.abraakadabraaapp.response.mainResponse.CategoryData
 import com.oss.abraakadabraaapp.module.GlideApp
 
 class CategoryAdapter(
-    private val data: ArrayList<CategoryData>,
+    private var data: ArrayList<UserCatData>,
     var context: Context,
     private var callback: CategoryAdapterInterface,
     private var keyFrom: String
@@ -37,7 +38,7 @@ class CategoryAdapter(
 
         with(holder.binding) {
 
-            tvCategoryName.text = item.categoryName.trim()
+            tvCategoryName.text = item.title?.trim()
 
 //            progressBar.visibility = View.VISIBLE
 
@@ -48,9 +49,9 @@ class CategoryAdapter(
             }
             if (position == data.size-1){
                 Glide.with(context).load(R.drawable.temp_seven).into(ivCategoryImage)
-            }else  Glide.with(context).load(item.categoryImage).into(ivCategoryImage)
+            }else  Glide.with(context).load(item.image).into(ivCategoryImage)
             if (keyFrom.equals("search")){
-                Glide.with(context).load(item.categoryImage).into(ivCategoryImage)
+                Glide.with(context).load(item.image).into(ivCategoryImage)
             }
 //            ivCategoryImage.setImageResource(item.image)
 
@@ -97,10 +98,6 @@ class CategoryAdapter(
 
     }
 
-    fun clearData() {
-        data.clear()
-        notifyDataSetChanged()
-    }
 
     override fun getItemCount(): Int {
         return data.size
@@ -110,12 +107,16 @@ class CategoryAdapter(
         return 1
     }
 
+    fun setData(list:ArrayList<UserCatData>) {
+        data = list
+    }
+
     class CategoryAdapterVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = ItemCategoryBinding.bind(itemView)
     }
 
     interface CategoryAdapterInterface {
-        fun onCategoryClick(data: CategoryData)
+        fun onCategoryClick(data: UserCatData)
     }
 
 }

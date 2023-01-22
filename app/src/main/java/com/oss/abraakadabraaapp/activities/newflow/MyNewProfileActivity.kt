@@ -156,8 +156,29 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
         }
         authViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
         authViewModel.userProfilePicSuccess.observe(this) {
-            showToast(it.responseMessage.toString())
+            if (it.code == 200){
+                showToast(it.responseMessage.toString())
+
+                val userInfo = PreferencesManagement.getUserInfo(this)!!
+                val userData = UsersData(phone = userInfo.data?.phone,
+                    socialLinkType = userInfo.data?.socialLinkType,
+                    socialLink = userInfo.data?.socialLink,
+                    name = userInfo.data?.name,
+                    userAvatar = it.data,
+                    email = userInfo.data?.email,
+                    uid = userInfo.data?.uid,
+                    fcmToken = userInfo.data?.fcmToken
+                )
+                val newUserInfo = GetUserResponse(
+                    code = userInfo.code,
+                    responseMessage = userInfo.responseMessage,
+                    status = userInfo.status,
+                    data = userData
+                )
+                PreferencesManagement.saveUserInfo(this,newUserInfo)
 //            getUserProfileApi()
+            }
+
         }
         authViewModel.postSocialProfileSuccess.observe(this) {
 
@@ -183,6 +204,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             binding.socialProfileLayout.visibility = View.GONE
             binding.successLayout.visibility = View.VISIBLE
             binding.instaEdit.text = it.data?.socialLink
+            binding.socialProfilePopUPLayout.visibility = View.GONE
             editMode(false)
         }
     }
@@ -210,7 +232,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
         }
         binding.submitBtn.setOnClickListener {
             postEvent(Constants.BUTTON_SUBMIT_SOCIAL_PROFILE, null)
-            postUserProfile()
+
         }
         binding.bottomSheet.setOnClickListener {
             binding.socialProfileLayout.visibility = View.VISIBLE
@@ -229,6 +251,17 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
         }
         binding.uploadImage.setOnClickListener {
             selectImage()
+        }
+        binding.socialProfilePopUPLayout.setOnClickListener {
+            binding.socialProfilePopUPLayout.visibility = View.GONE
+            binding.socialProfileLayout.visibility = View.VISIBLE
+        }
+        binding.successDialog1.setOnClickListener {
+            binding.socialProfilePopUPLayout.visibility = View.VISIBLE
+        }
+        binding.okGotItBtn1.setOnClickListener {
+            postEvent(Constants.BUTTON_LETS_START_SOCIAL_PROFILE,null)
+            postUserProfile()
         }
     }
 
@@ -268,8 +301,8 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                 val map = HashMap<String, String>()
 
                 map[RequestKeys.social_link_type] = socialLinkType
-                map[RequestKeys.social_link] = binding.socialProfileHeader.text.toString().trim() +
-                        binding.socialProfileEdt.text.toString().trim()
+                map[RequestKeys.social_link] = binding.socialProfileHeader.text.toString().trim()+
+                        binding.profileLink.text.toString().trim()
 
                 authViewModel.postUserSocialProfile(mapAuth, map)
             }
@@ -356,6 +389,9 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
         for (i in 0 until list.size) list[i].status = i == position
 
         adapter.notifyDataSetChanged()
+        binding.socialProfileLayout.visibility = View.GONE
+        binding.socialProfilePopUPLayout.visibility = View.VISIBLE
+
     }
 
     private fun selectImage() {
