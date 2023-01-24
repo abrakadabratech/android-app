@@ -31,4 +31,12 @@ object Utility {
         map[RequestKeys.token] = ApiConstants.apiTokenValue
         return map
     }
+
+    fun getAuthentication(context: Context): HashMap<String,String>{
+        val map = HashMap<String, String>()
+        val token = PreferencesManagement.getAuthToken(context)!!
+        map[RequestKeys.authorization] = token
+
+        return map
+    }
 }

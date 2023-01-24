@@ -15,12 +15,13 @@ import com.oss.abraakadabraaapp.R
 class ProductAdapter(val onClick: OnProductClicked) : PagingDataAdapter<Product, ProductAdapter.ViewHolder>(ProductDifferntiator) {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view){
         var tv=itemView.rootView.findViewById<TextView>(R.id.tv_product_name)
+        var tv_product_distance=itemView.rootView.findViewById<TextView>(R.id.tv_product_distance)
         var iv=itemView.rootView.findViewById<ImageView>(R.id.iv_product)
         fun bind(item: Product?) {
             tv.text=item?.name
             Glide.with(itemView.context).load(item?.image).into(iv)
+            tv_product_distance.setText("${(item?.distance?.div(1000))} KM")
         }
-
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

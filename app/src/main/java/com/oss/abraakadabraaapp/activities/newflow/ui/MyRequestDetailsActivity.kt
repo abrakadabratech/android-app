@@ -18,6 +18,7 @@ import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.MyPayAsYouGoActivity
 import com.oss.abraakadabraaapp.databinding.ActivityMyRequestingDetailBinding
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_PAY_AS_YOU_WISH
 
 
 class MyRequestDetailsActivity : BaseActivity() {
@@ -33,16 +34,16 @@ class MyRequestDetailsActivity : BaseActivity() {
 
 
         binding.chatBtn.setOnClickListener{
-            postEvent(Constants.BUTTON_CHAT_IN_REQUEST_DETAILS,null)
+            postClick(Constants.BUTTON_CHAT_IN_REQUEST_DETAILS)
         }
 
         binding.markAsDelivered.setOnClickListener {
             //navigates to feedback pages...
-            postEvent(Constants.BUTTON_MARK_AS_DELIVERED,null)
+            postClick(Constants.BUTTON_MARK_AS_DELIVERED)
             startActivity(Intent(this,FeedbackActivity::class.java))
         }
         binding.editRequest.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-            postEvent(Constants.BUTTON_EDIT_REQUEST,null)
+            postClick(Constants.BUTTON_EDIT_REQUEST)
             var alertDialog = AlertDialog.Builder(this)
             alertDialog.setTitle("Cancel")
             alertDialog.setMessage("Are you sure you want to cancel request on this product ?")
@@ -60,6 +61,7 @@ class MyRequestDetailsActivity : BaseActivity() {
             }
         })
         binding.payAsYouWish.setOnClickListener {
+            postClick(BUTTON_PAY_AS_YOU_WISH)
             val i = Intent(this, MyPayAsYouGoActivity::class.java)
             i.putExtra("from","receiver")
 //            i.putExtra("receiver_data", Gson().toJson(productDetailData))

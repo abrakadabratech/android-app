@@ -35,6 +35,9 @@ import com.oss.abraakadabraaapp.databinding.ActivityMyProfile2Binding
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.*
 import com.oss.abraakadabraaapp.utils.Constants.API_TAG
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_PROFILE
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SOCIAL_PROFILE_CHANGE
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_UPLOAD_PROFILE_PIC
 import com.oss.abraakadabraaapp.utils.Constants.facebook
 import com.oss.abraakadabraaapp.utils.Constants.instagram
 import com.oss.abraakadabraaapp.utils.Constants.linkedin
@@ -212,18 +215,20 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
     private fun clickeEvents() {
         binding.uploadImage.isEnabled = false
         binding.editProfile.setOnClickListener {
-            postEvent(Constants.BUTTON_EDIT_PROFILE, null)
+            postClick(Constants.BUTTON_EDIT_PROFILE)
 
             editMode(true)
         }
         binding.ivBack.setOnClickListener {
+            postClick(BUTTON_BACK_IN_PROFILE)
             onBackPressed()
         }
         binding.saveBtn.setOnClickListener {
-            postEvent(Constants.BUTTON_SAVE_PROFILE, null)
+            postClick(Constants.BUTTON_SAVE_PROFILE)
             postUserData()
         }
         binding.instaEdit.setOnClickListener {
+            postClick(BUTTON_SOCIAL_PROFILE_CHANGE)
             userInfo.data?.socialLinkType
             binding.socialProfileLayout.visibility = View.VISIBLE
         }
@@ -231,7 +236,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             binding.socialProfileLayout.visibility = View.GONE
         }
         binding.submitBtn.setOnClickListener {
-            postEvent(Constants.BUTTON_SUBMIT_SOCIAL_PROFILE, null)
+            postClick(Constants.BUTTON_SUBMIT_SOCIAL_PROFILE)
 
         }
         binding.bottomSheet.setOnClickListener {
@@ -239,7 +244,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
 
         }
         binding.okGotItBtn.setOnClickListener {
-            postEvent(Constants.BUTTON_OK_GOT_IT_SOCIAL_PROFILE, null)
+            postClick(Constants.BUTTON_OK_GOT_IT_SOCIAL_PROFILE)
             binding.successLayout.visibility = View.GONE
 //            showToast("Under development")
         }
@@ -250,6 +255,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             binding.successLayout.visibility = View.VISIBLE
         }
         binding.uploadImage.setOnClickListener {
+            postClick(BUTTON_UPLOAD_PROFILE_PIC)
             selectImage()
         }
         binding.socialProfilePopUPLayout.setOnClickListener {
@@ -260,7 +266,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             binding.socialProfilePopUPLayout.visibility = View.VISIBLE
         }
         binding.okGotItBtn1.setOnClickListener {
-            postEvent(Constants.BUTTON_LETS_START_SOCIAL_PROFILE,null)
+            postClick(Constants.BUTTON_LETS_START_SOCIAL_PROFILE)
             postUserProfile()
         }
     }

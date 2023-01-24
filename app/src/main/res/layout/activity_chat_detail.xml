@@ -11,8 +11,8 @@
         android:id="@+id/menuLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        android:elevation="6dp">
+        android:elevation="6dp"
+        android:visibility="gone">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/menuDialog"
@@ -25,73 +25,80 @@
             app:cardElevation="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="5dp">
+
                 <LinearLayout
                     android:id="@+id/blockUser"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:gravity="center"
+                    android:orientation="horizontal"
                     android:padding="5dp">
+
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
-                        android:background="@drawable/ic_delete_product"
-                        />
+                        android:background="@drawable/ic_delete_product" />
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Block User"
                         android:layout_marginStart="5dp"
                         android:fontFamily="@font/montserrat_medium"
-                        android:textSize="12sp"
-                        android:textColor="@color/title_color"/>
+                        android:text="Block User"
+                        android:textColor="@color/title_color"
+                        android:textSize="12sp" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/reportUser"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:gravity="center"
+                    android:orientation="horizontal"
                     android:padding="5dp">
+
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
-                        android:background="@drawable/ic_delete_product"
-                        />
+                        android:background="@drawable/ic_delete_product" />
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Report User"
                         android:layout_marginStart="5dp"
                         android:fontFamily="@font/montserrat_medium"
-                        android:textSize="12sp"
-                        android:textColor="@color/title_color"/>
+                        android:text="Report User"
+                        android:textColor="@color/title_color"
+                        android:textSize="12sp" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/deleteChat"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:gravity="center"
+                    android:orientation="horizontal"
                     android:padding="5dp">
+
                     <ImageView
                         android:layout_width="12dp"
                         android:layout_height="12dp"
-                        android:background="@drawable/ic_delete_product"
-                        />
+                        android:background="@drawable/ic_delete_product" />
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Delete Chat"
                         android:layout_marginStart="5dp"
                         android:fontFamily="@font/montserrat_medium"
-                        android:textSize="12sp"
-                        android:textColor="@color/title_color"/>
+                        android:text="Delete Chat"
+                        android:textColor="@color/title_color"
+                        android:textSize="12sp" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -100,7 +107,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageView
-        android:id="@+id/imageView18"
+        android:id="@+id/ivBack"
         android:layout_width="10dp"
         android:layout_height="19dp"
         android:layout_marginStart="26dp"
@@ -116,9 +123,9 @@
         android:layout_marginStart="20dp"
         android:elevation="4dp"
         app:cardCornerRadius="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView18"
-        app:layout_constraintStart_toEndOf="@+id/imageView18"
-        app:layout_constraintTop_toTopOf="@+id/imageView18"
+        app:layout_constraintBottom_toBottomOf="@+id/ivBack"
+        app:layout_constraintStart_toEndOf="@+id/ivBack"
+        app:layout_constraintTop_toTopOf="@+id/ivBack"
         app:layout_constraintVertical_bias="0.23000002">
 
         <ImageView
@@ -169,7 +176,7 @@
         android:layout_marginTop="7dp"
         android:background="#DFDFDF"
         app:layout_constraintEnd_toEndOf="@+id/optionMenu"
-        app:layout_constraintStart_toStartOf="@+id/imageView18"
+        app:layout_constraintStart_toStartOf="@+id/ivBack"
         app:layout_constraintTop_toBottomOf="@+id/cardView13" />
 
     <TextView

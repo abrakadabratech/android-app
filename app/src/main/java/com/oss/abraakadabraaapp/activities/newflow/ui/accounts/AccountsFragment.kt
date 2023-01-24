@@ -18,7 +18,9 @@ import com.oss.abraakadabraaapp.databinding.FragmentAccountsBinding
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.API_TAG
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_ON_ACCOUNTS
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
+import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -45,7 +47,10 @@ class AccountsFragment : Fragment(), View.OnClickListener {
         application = (activity as BaseActivity)
         application.postEvent(Constants.PAGE_ACCOUNTS,null)
 
-        binding.ivBack.setOnClickListener{  requireActivity().onBackPressed() }
+        binding.ivBack.setOnClickListener{
+            application.postClick(BUTTON_BACK_ON_ACCOUNTS)
+            requireActivity().onBackPressed()
+        }
         binding.myListingLayout.setOnClickListener(this)
         binding.myRequestLayout.setOnClickListener(this)
         binding.myChatsLayout.setOnClickListener(this)
@@ -57,11 +62,7 @@ class AccountsFragment : Fragment(), View.OnClickListener {
         setUpObserver()
         application.generateAuthToken()
 
-        val map = HashMap<String,String>()
-        val token = PreferencesManagement.getAuthToken(requireActivity())!!
-        Log.d(NewHomeActivity.TAG, "Token in Accounts fragment: $token")
-        map[RequestKeys.authorization] = token
-        authViewModel.getUser(map)
+        authViewModel.getUser(Utility.getAuthentication(requireContext()))
 
         return root
     }
@@ -108,32 +109,32 @@ class AccountsFragment : Fragment(), View.OnClickListener {
         when(viewId){
             binding.myListingLayout ->
             {
-                application.postEvent(Constants.BUTTON_MY_LISTING,null)
+                application.postClick(Constants.BUTTON_MY_LISTING)
                 startActivity(Intent(context, MyListingActivity::class.java))
             }
             binding.myRequestLayout -> {
-                application.postEvent(Constants.BUTTON_MY_REQUEST,null)
+                application.postClick(Constants.BUTTON_MY_REQUEST)
                 startActivity(Intent(context, NewMyRequestActivity::class.java))
             }
             binding.myChatsLayout -> {
-                application.postEvent(Constants.BUTTON_MY_CHATS,null)
+                application.postClick(Constants.BUTTON_MY_CHATS)
                 startActivity(Intent(context, MyChatsActivity::class.java))
             }
             binding.myAchievementLayout -> {
-                application.postEvent(Constants.BUTTON_MY_ACHIEVEMENTS,null)
+                application.postClick(Constants.BUTTON_MY_ACHIEVEMENTS)
                 startActivity(Intent(context, MyAchievementsActivity::class.java))
             }
             binding.payAsYouGo -> {
-                application.postEvent(Constants.BUTTON_PAY_AS_YOU_WISH,null)
+                application.postClick(Constants.BUTTON_PAY_AS_YOU_WISH)
                 startActivity(Intent(context, MyPayAsYouGoActivity::class.java))
             }
             binding.profileActivity -> {
-                application.postEvent(Constants.BUTTON_EDIT_PROFILE,null)
+                application.postClick(Constants.BUTTON_EDIT_PROFILE)
                 val intent = Intent(context, MyNewProfileActivity::class.java)
                 startActivity(intent)
             }
             binding.userName ->{
-                application.postEvent(Constants.BUTTON_EDIT_PROFILE,null)
+                application.postClick(Constants.BUTTON_EDIT_PROFILE)
                 startActivity(Intent(context, MyNewProfileActivity::class.java))
             }
         }

@@ -7,6 +7,7 @@ import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.MyRequestAdapter
 import com.oss.abraakadabraaapp.databinding.ActivityNewMyRequestBinding
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_MY_REQUEST
 
 class NewMyRequestActivity : BaseActivity() {
     private lateinit var binding: ActivityNewMyRequestBinding
@@ -20,6 +21,7 @@ class NewMyRequestActivity : BaseActivity() {
         setUpRecyclerView()
 
         binding.ivBack.setOnClickListener {
+            postClick(BUTTON_BACK_IN_MY_REQUEST)
             onBackPressed()
         }
     }

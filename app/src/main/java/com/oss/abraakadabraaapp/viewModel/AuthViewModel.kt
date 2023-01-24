@@ -334,12 +334,13 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
 
     fun postProductRequest(
         headerMap: HashMap<String, String>,
-        id: String
+        id: String,
+        body:HashMap<String, String>
     ) {
         viewModelScope.launch {
             isLoading.value = true
 
-            suspend fun call() = repository.postRequest(headerMap,id)
+            suspend fun call() = repository.postRequest(headerMap,id,body)
             callApi(::call, object : CallHelper<ProductDeleteResponse>{
                 override fun onSuccessful(data: ProductDeleteResponse) {
                     requstProductSuccess.value = data

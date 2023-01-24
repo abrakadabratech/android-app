@@ -1,6 +1,5 @@
 package com.oss.abraakadabraaapp.activities.newflow
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,14 +11,12 @@ import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.MyRequestedUsersAdapter
-import com.oss.abraakadabraaapp.databinding.ActivityMyListingBinding
 import com.oss.abraakadabraaapp.databinding.ActivityMyListingDetailsBinding
-import com.oss.abraakadabraaapp.datasource.products.Product
 import com.oss.abraakadabraaapp.response.productRequestResponse.ListingResponse
 import com.oss.abraakadabraaapp.response.productRequestResponse.RequestData
-import com.oss.abraakadabraaapp.response.productdetails.ProductDetailsData
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_MYLISTING_DETAILS
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -45,6 +42,7 @@ class MyListingDetialActivity : BaseActivity() {
 //        tempData()
 
         binding.ivBack.setOnClickListener {
+            postClick(BUTTON_BACK_IN_MYLISTING_DETAILS)
             onBackPressed()
         }
 
@@ -112,9 +110,6 @@ class MyListingDetialActivity : BaseActivity() {
 //        Glide.with(this).load("https://www.gstatic.com/webp/gallery/1.jpg").into(binding.imageSlider)
 
         val imageList = ArrayList<SlideModel>() // Create image list
-
-// imageList.add(SlideModel("String Url" or R.drawable)
-// imageList.add(SlideModel("String Url" or R.drawable, "title") You can add title
 
         imageList.add(SlideModel("https://www.gstatic.com/webp/gallery/1.jpg", "", ScaleTypes.FIT))
         imageList.add(SlideModel("https://www.gstatic.com/webp/gallery/1.jpg", "", ScaleTypes.CENTER_CROP))

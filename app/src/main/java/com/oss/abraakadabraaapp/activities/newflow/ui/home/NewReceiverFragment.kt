@@ -35,6 +35,7 @@ import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.databinding.NewReceiverFlowBinding
 import com.oss.abraakadabraaapp.response.mainResponse.LatestProductData
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SWIPE_REFRESH
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.customView.MarginItemDecoration
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
@@ -84,6 +85,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         with(binding) {
 //            sRLHome.setColorSchemeResources(R.color.theme_color)
             sRLHome.setOnRefreshListener {
+                application.postClick(BUTTON_SWIPE_REFRESH)
                 currentPage = pageStart
                 latestProductList.clear()
                 categoryList.clear()
@@ -188,7 +190,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
     private fun clickEvents() {
         binding.catFilter.setOnClickListener {
-            application.postEvent(Constants.BUTTON_FILTER, null)
+            application.postClick(Constants.BUTTON_FILTER)
 
             showNearByFilterDialog()
 
@@ -243,7 +245,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         })
 
         applyBtn.setOnClickListener {
-            application.postEvent(Constants.BUTTON_FILTER_APPLY, null)
+            application.postClick(Constants.BUTTON_FILTER_APPLY)
             Toast.makeText(context, "Under Development", Toast.LENGTH_SHORT).show()
         }
 

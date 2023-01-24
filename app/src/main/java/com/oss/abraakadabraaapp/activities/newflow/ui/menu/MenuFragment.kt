@@ -22,6 +22,7 @@ import com.oss.abraakadabraaapp.databinding.NewMenuScreenBinding
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
+import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -53,7 +54,7 @@ class MenuFragment : Fragment() {
         application.postEvent(Constants.PAGE_MENU, null)
 
         binding.supportLayout.setOnClickListener {
-            application.postEvent(Constants.BUTTON_SUPPORT, null)
+            application.postClick(Constants.BUTTON_SUPPORT)
 
 
             startActivity(
@@ -64,7 +65,7 @@ class MenuFragment : Fragment() {
             )
         }
         binding.aboutUsLayout.setOnClickListener {
-            application.postEvent(Constants.BUTTON_ABOUT_US, null)
+            application.postClick(Constants.BUTTON_ABOUT_US)
             startActivity(
                 ContentManagementActivity.createIntent(
                     requireContext(),
@@ -73,7 +74,7 @@ class MenuFragment : Fragment() {
             )
         }
         binding.privacyPolicyLayout.setOnClickListener {
-            application.postEvent(Constants.BUTTON_PRIVACY_POLICY, null)
+            application.postClick(Constants.BUTTON_PRIVACY_POLICY)
             startActivity(
                 ContentManagementActivity.createIntent(
                     requireContext(),
@@ -82,7 +83,7 @@ class MenuFragment : Fragment() {
             )
         }
         binding.logoutLayout.setOnClickListener {
-            application.postEvent(Constants.BUTTON_LOGOUT, null)
+            application.postClick(Constants.BUTTON_LOGOUT)
             var alertDialog = AlertDialog.Builder(requireContext())
             alertDialog.setTitle("Logout")
             alertDialog.setMessage("Are you sure you want to logout ?")
@@ -91,11 +92,7 @@ class MenuFragment : Fragment() {
 
                 application.generateAuthToken()
 
-                val map = HashMap<String, String>()
-                val token = PreferencesManagement.getAuthToken(requireActivity())!!
-                Log.d(NewHomeActivity.TAG, "Token in Accounts fragment: $token")
-                map[RequestKeys.authorization] = token
-                authViewModel.logoutUser(map)
+                authViewModel.logoutUser(Utility.getAuthentication(requireContext()))
 
                 dialog.dismiss()
             })

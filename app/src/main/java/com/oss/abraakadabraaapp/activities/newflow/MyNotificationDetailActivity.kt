@@ -6,6 +6,7 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.databinding.ActivityMyNotificationDetailBinding
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_NOTIFICATION_DETAILS
 
 class MyNotificationDetailActivity : BaseActivity() {
     private lateinit var binding:ActivityMyNotificationDetailBinding
@@ -16,6 +17,7 @@ class MyNotificationDetailActivity : BaseActivity() {
         postEvent(Constants.PAGE_NOTIFICATION_DETAILS,null)
 
         binding.ivBack.setOnClickListener {
+            postClick(BUTTON_BACK_IN_NOTIFICATION_DETAILS)
             onBackPressed()
         }
         binding.acceptBtn.setOnClickListener {
@@ -23,7 +25,7 @@ class MyNotificationDetailActivity : BaseActivity() {
             showToast("Under Development")
         }
         binding.rejectBtn.setOnClickListener {
-            postEvent(Constants.BUTTON_REJECT_IN_NOTIFICATION,null)
+            postClick(Constants.BUTTON_REJECT_IN_NOTIFICATION)
             showToast("Under Development")
         }
     }

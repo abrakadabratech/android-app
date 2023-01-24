@@ -1,36 +1,34 @@
-package com.oss.abraakadabraaapp.activities.newflow.chat
+package com.oss.abraakadabraaapp.activities.newflow.adapters
 
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.oss.abraakadabraaapp.R
-import java.util.ArrayList
+import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
 
-class ChatMessageAdapter (val context: Context, var list: List<String>) :
-    RecyclerView.Adapter<ChatMessageAdapter.ViewHolder>() {
+class ChatAdapter(val context: Context, val i: Int) :
+    RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
+
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var message = itemView.findViewById<TextView>(R.id.message)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.chat_message_row, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.chat_row, parent, false)
         )
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.message.text = list[position]
+        holder.itemView.setOnClickListener {
+            context.startActivity(Intent(context, ChatDetailActivity::class.java))
+        }
     }
 
     override fun getItemCount(): Int {
-        return list.size
-    }
-
-    fun setList(list1: ArrayList<String>) {
-        this.list = list1
+        return i
     }
 }

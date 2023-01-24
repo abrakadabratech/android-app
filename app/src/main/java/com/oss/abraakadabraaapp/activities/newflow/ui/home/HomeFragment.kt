@@ -20,6 +20,7 @@ import com.oss.abraakadabraaapp.databinding.FragmentHomeBinding
 import com.oss.abraakadabraaapp.location.livedata.LocationViewModel
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_GIVE
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_NOTIFICATION
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SHARE
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import org.greenrobot.eventbus.EventBus
@@ -104,11 +105,11 @@ class HomeFragment : Fragment() {
                 .commit()
         })
         binding.shareAKD.setOnClickListener {
-            application.postEvent(BUTTON_SHARE,null)
+            application.postClick(BUTTON_SHARE)
             loadData()
         }
         binding.notifications.setOnClickListener {
-            application.postEvent("button_notification",null)
+            application.postClick(BUTTON_NOTIFICATION)
             startActivity(Intent(requireActivity(), NewNotificationActivity::class.java))
         }
 

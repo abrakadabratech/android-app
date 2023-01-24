@@ -45,6 +45,9 @@ import com.oss.abraakadabraaapp.model.UserLocation
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.*
 import com.oss.abraakadabraaapp.utils.Constants.API_TAG
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_FROM_CAMERA
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_FROM_GALLERY
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_GOTO_SETTINGS
 import com.oss.abraakadabraaapp.utils.customView.ImagePickerActivity
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import id.zelory.compressor.Compressor
@@ -123,19 +126,19 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
     private fun clickEvents() {
         alertAdaper = CategoryDialogAdapter(requireContext(), arrayListOf(), this,"")
         binding.catgoryLinearLayout.setOnClickListener {
-            application.postEvent(Constants.BUTTON_CATEGORY_SELECT, null)
+            application.postClick(Constants.BUTTON_CATEGORY_SELECT)
             showCategoryFilterDialog()
         }
         binding.conditionLinearLayout.setOnClickListener {
-            application.postEvent(Constants.BUTTON_CONDITION_OF_PRODUCT_SELECT, null)
+            application.postClick(Constants.BUTTON_CONDITION_OF_PRODUCT_SELECT)
             showConditionDialog()
         }
         binding.usedForLinearLayout.setOnClickListener {
-            application.postEvent(Constants.BUTTON_USED_FOR_SELECT, null)
+            application.postClick(Constants.BUTTON_USED_FOR_SELECT)
             showUsedForDialog()
         }
         binding.button.setOnClickListener {
-            application.postEvent(Constants.BUTTON_SUBMIT, null)
+            application.postClick(Constants.BUTTON_SUBMIT)
             if (binding.iAgreeCheckbox.isChecked) {
                 if (isValidate()) {
                     showSubmitCautionDialog()
@@ -226,10 +229,12 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
             requireContext(),
             object : ImagePickerActivity.PickerOptionListener {
                 override fun onTakeCameraSelected() {
+                    application.postClick(BUTTON_FROM_CAMERA)
                     bannerCameraIntent()
                 }
 
                 override fun onChooseGallerySelected() {
+                    application.postClick(BUTTON_FROM_GALLERY)
                     openYourActivity()
                 }
             })
@@ -240,6 +245,7 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
         builder.setTitle(getString(R.string.dialog_permission_title))
         builder.setMessage(getString(R.string.dialog_permission_message))
         builder.setPositiveButton(getString(R.string.go_to_settings)) { dialog, _ ->
+            application.postClick(BUTTON_GOTO_SETTINGS)
             dialog.cancel()
             openSettings()
         }
@@ -410,13 +416,13 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         success_ok_btn.setOnClickListener {
-            application.postEvent(Constants.BUTTON_I_ACCEPT, null)
+            application.postClick(Constants.BUTTON_I_ACCEPT)
 
             postNewProduct()
 
         }
         success_ok_btn1.setOnClickListener {
-            application.postEvent(Constants.BUTTON_OK_GOT_IT, null)
+            application.postClick(Constants.BUTTON_OK_GOT_IT)
             showToast("Under Development")
             alertDialog.dismiss()
             //showSubmitSuccessDialog()

@@ -66,6 +66,7 @@ class StartAppActivity : BaseActivity() {
                 R.color.blue_status_bar_color
             )
 
+
        // setUpObserver() // Old Code
        // startApp() //New Code
     }
@@ -275,6 +276,7 @@ class StartAppActivity : BaseActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
 //            if (PreferencesManagement.getUserData(this) != null) {
             if (mAuth.currentUser != null) {
+                generateAuthToken()
                 startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
             } else {
                 startActivity(Intent(this@StartAppActivity, OnBoardingActivity::class.java))

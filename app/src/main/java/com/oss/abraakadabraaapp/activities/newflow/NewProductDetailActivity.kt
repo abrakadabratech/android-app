@@ -24,7 +24,12 @@ import com.oss.abraakadabraaapp.databinding.ActivityNewProductDetailBinding
 import com.oss.abraakadabraaapp.response.productdetails.ProductDetailsData
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_PRODUCT_DETAILS
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_DELETE_PRODUCT
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_EDIT_PRODUCT
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SHARE_PRODUCT
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
+import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -58,28 +63,45 @@ class NewProductDetailActivity : BaseActivity() /*,OnMapReadyCallback*/ {
 //            .findFragmentById(R.id.maps_view) as SupportMapFragment?
 //        mapFragment!!.getMapAsync(this)
         binding.requestBtn.setOnClickListener {
-            postEvent(Constants.BUTTON_REQUEST_IN_DETAILS_PAGE, null)
-            if (isNetworkAvailable()){
-//                mainViewModel.reportProduct()
-            }
-            startActivity(Intent(this, PostedUserActivity::class.java))
+            postClick(Constants.BUTTON_REQUEST_IN_DETAILS_PAGE)
+
+            val intent = Intent(this,PostedUserActivity::class.java)
+            intent.putExtra(Constants.PRODUCT,Gson().toJson(productDetails))
+            startActivity(intent)
         }
 
         binding.ivMenu.setOnClickListener {
-            postEvent(Constants.BUTTON_MENU_IN_DETAILS_PAGE, null)
-            Toast.makeText(this, "clicked", Toast.LENGTH_SHORT).show()
+            postClick(Constants.BUTTON_MENU_IN_DETAILS_PAGE)
+            binding.editMenuDialog.visibility = View.VISIBLE
+        }
+
+        binding.editProduct.setOnClickListener {
+            postClick(BUTTON_EDIT_PRODUCT)
+        }
+
+        binding.shareProduct.setOnClickListener {
+            postClick(BUTTON_SHARE_PRODUCT)
+        }
+
+        binding.deleteProduct.setOnClickListener {
+            postClick(BUTTON_DELETE_PRODUCT)
+            if (isNetworkAvailable()){
+                generateAuthToken()
+                mainViewModel.deleteProduct(Utility.getAuthentication(this),productDetails!!.data.id.toString())
+            }
         }
 
         binding.ivBack.setOnClickListener {
+            postClick(BUTTON_BACK_IN_PRODUCT_DETAILS)
             onBackPressed()
         }
 
         binding.reportThis.setOnClickListener {
-            postEvent(Constants.BUTTON_REPORT_THIS_IN_DETAILS_PAGE, null)
+            postClick(Constants.BUTTON_REPORT_THIS_IN_DETAILS_PAGE)
             showReportThisDialog()
         }
         binding.chatBtn.setOnClickListener {
-            postEvent(Constants.BUTTON_CHAT_IN_DETAILS_PAGE, null)
+            postClick(Constants.BUTTON_CHAT_IN_DETAILS_PAGE)
             showToast("under development")
         }
     }
@@ -92,6 +114,13 @@ class NewProductDetailActivity : BaseActivity() /*,OnMapReadyCallback*/ {
     }
 
     private fun setUpObserver() {
+        mainViewModel.deleteProductSuccess.observe(this){
+            if (it.code == 200){
+                showToast(it.responseMessage.toString())
+                finish()
+
+            }
+        }
         mainViewModel.productDetailsData.observe(this) {
 //            Log.d("TAG - Product deails", "is it rue : ${productDetails.data.description}")
 

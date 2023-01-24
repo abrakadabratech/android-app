@@ -10,6 +10,9 @@ import com.oss.abraakadabraaapp.activities.newflow.model.CatData
 import com.oss.abraakadabraaapp.databinding.ActivityCategorySelectBinding
 import com.oss.abraakadabraaapp.response.mainResponse.CategoryData
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_APPLY_CATEGORY
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_CATEGORY_SELECTION
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_CATEGORY_CLEAR
 
 class CategorySelectActivity : BaseActivity() {
     lateinit var application: BaseActivity
@@ -34,15 +37,18 @@ class CategorySelectActivity : BaseActivity() {
         binding.catRecycler.adapter = adapter
 
         binding.clearBtn.setOnClickListener {
+            postClick(BUTTON_CATEGORY_CLEAR)
             list.clear()
             tempLoadData()
             adapter.notifyDataSetChanged()
         }
         binding.applyBtn.setOnClickListener {
+            postClick(BUTTON_APPLY_CATEGORY)
             startActivity(Intent(this, NewSearchActivity::class.java))
         }
 
         binding.ivBack.setOnClickListener {
+            postClick(BUTTON_BACK_IN_CATEGORY_SELECTION)
             onBackPressed()
         }
     }

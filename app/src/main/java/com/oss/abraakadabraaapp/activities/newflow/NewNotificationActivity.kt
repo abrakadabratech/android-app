@@ -8,6 +8,7 @@ import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.NewNotificationAdapter
 import com.oss.abraakadabraaapp.databinding.ActivityNewNotificationBinding
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_NOTIFICATIONS
 
 class NewNotificationActivity : BaseActivity() {
     private lateinit var binding:ActivityNewNotificationBinding
@@ -21,6 +22,7 @@ class NewNotificationActivity : BaseActivity() {
         binding.rvNotification.adapter = NewNotificationAdapter(this,4)
 
         binding.ivBack.setOnClickListener {
+            postClick(BUTTON_BACK_IN_NOTIFICATIONS)
             onBackPressed()
         }
     }

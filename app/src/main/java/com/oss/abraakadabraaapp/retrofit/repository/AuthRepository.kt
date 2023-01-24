@@ -84,9 +84,10 @@ class AuthRepository(private val apiHelper: APIs) {
 
     suspend fun postRequest(
         map: HashMap<String, String>,
-        id: String
+        id: String,
+        body: HashMap<String, String>
     )
-      = apiHelper.postProductRequest(map,id)
+      = apiHelper.postProductRequest(map,id,body)
 
     suspend fun getProductListing(
         map: HashMap<String, String>,

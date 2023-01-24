@@ -3,8 +3,6 @@ package com.oss.abraakadabraaapp.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -29,16 +27,12 @@ import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.Tracker
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.play.core.tasks.OnCompleteListener
-import com.google.android.play.core.tasks.Task
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GetTokenResult
 import com.google.firebase.messaging.FirebaseMessaging
 import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.auth.LoginActivity
-import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.dialog.ProgressDialog
 import com.oss.abraakadabraaapp.location.livedata.LocationViewModel
 import com.oss.abraakadabraaapp.model.UserData
@@ -575,22 +569,26 @@ abstract class BaseActivity : AppCompatActivity() {
     fun generateAuthToken():String{
         val mUser = FirebaseAuth.getInstance().currentUser
         mUser!!.getIdToken(true)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    val idToken = it.result.token
+                    val auth = "Bearer $idToken"
+
+                    if(PreferencesManagement.saveAuthToken(this@BaseActivity,auth))
+                    {
+                        Log.d("akd_debug", "generateAuthToken: Data saved in preferences.")
+                    }
+                }
+            }
+
+        /*mUser!!.getIdToken(true)
             .addOnCompleteListener(object : OnCompleteListener<GetTokenResult?>,
                 com.google.android.gms.tasks.OnCompleteListener<GetTokenResult> {
                 override fun onComplete(task: Task<GetTokenResult?>) {
-                    if (task.isSuccessful()) {
-                        val idToken: String = task.getResult().getToken()!!
-//                        authToken = idToken
-                        Log.d(NewHomeActivity.TAG, "onComplete: $idToken")
-                        // Send token to your backend via HTTPS
-                        // ...
-                    } else {
-                        // Handle error -> task.getException();
-                    }
                 }
 
                 override fun onComplete(task: com.google.android.gms.tasks.Task<GetTokenResult>) {
-                    if (task.isSuccessful()) {
+                    if (task.isSuccessful) {
                         val idToken: String = task.getResult().getToken()!!
                         val auth = "Bearer "+idToken
 
@@ -599,16 +597,15 @@ abstract class BaseActivity : AppCompatActivity() {
                         val clip = ClipData.newPlainText(android.R.attr.label.toString(), idToken)
                         clipboard.setPrimaryClip(clip)
                         Log.d(NewHomeActivity.TAG, "onComplete11: ${PreferencesManagement.saveAuthToken(this@BaseActivity,auth)}")
-                        // Send token to your backend via HTTPS
-                        // ...
+
                         Log.d(NewHomeActivity.TAG, "onComplete11:new Token generated")
-//                        showToast("new Token generated")
                     } else {
-                        // Handle error -> task.getException();
+
                     }
                 }
 
-            })
+            })*/
+
         return "authToken"
     }
 

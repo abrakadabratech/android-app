@@ -12,6 +12,8 @@ import com.oss.abraakadabraaapp.databinding.ActivityMyListingBinding
 import com.oss.abraakadabraaapp.response.productRequestResponse.RequestData
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_MY_LISTINS
+import com.oss.abraakadabraaapp.utils.Constants.BUTTON_MY_LISTING_CARD
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import kotlinx.coroutines.launch
@@ -39,6 +41,7 @@ class MyListingActivity : BaseActivity() , MyListingAdapter.OnResponseClick {
         application.postEvent(Constants.PAGE_MY_LISTING, null)
 
         binding.ivBack.setOnClickListener {
+            postClick(BUTTON_BACK_IN_MY_LISTINS)
             onBackPressed()
         }
 
@@ -91,6 +94,7 @@ class MyListingActivity : BaseActivity() , MyListingAdapter.OnResponseClick {
     }
 
     override fun onResponseClicked(item: RequestData) {
+        postClick(BUTTON_MY_LISTING_CARD)
         val intent = Intent(this,MyListingDetialActivity::class.java)
         intent.putExtra(Constants.PRODUCT,Gson().toJson(item))
         startActivity(intent)

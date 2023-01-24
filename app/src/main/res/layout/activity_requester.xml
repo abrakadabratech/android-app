@@ -75,6 +75,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
                 <ImageView
                     android:id="@+id/closeBtn"
                     android:layout_width="wrap_content"
@@ -84,6 +85,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_close_theme" />
+
                 <TextView
                     android:id="@+id/textView8112"
                     android:layout_width="0dp"
@@ -112,10 +114,10 @@
                     android:fontFamily="@font/montserrat_semi_bold"
                     android:gravity="center"
                     android:text="Ok"
-                    android:visibility="visible"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:textSize="16sp"
+                    android:visibility="visible"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

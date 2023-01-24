@@ -100,7 +100,7 @@ interface APIs {
         @Path("id") id: String
     ): Response<ProductDetailsData>
 
-    @GET("product/{id}")
+    @GET("product/requests/{id}")
     suspend fun getListingDetails(
         @HeaderMap header: Map<String, String>,
         @Path("id") id: String
@@ -140,10 +140,11 @@ interface APIs {
     ): Response<ProductRequestResponse>
 
     //Request a product
-    @GET("product/request/{id}")
+    @POST("product/request/{id}")
     suspend fun postProductRequest(
         @HeaderMap header: Map<String, String>,
-        @Path("id") id: String
+        @Path("id") id: String,
+        @Body body : HashMap<String, String>
     ): Response<ProductDeleteResponse>
 
     //Get product request
