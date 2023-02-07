@@ -100,6 +100,19 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
 
     }
 
+    override fun onBackPressed() {
+//        super.onBackPressed()
+        if (shouldAllowBack()) {
+            super.onBackPressed();
+        } else {
+            showToast("Do not press back. Please complete your profile")
+        }
+    }
+
+    private fun shouldAllowBack(): Boolean {
+        return false
+    }
+
     private fun postUserProfile() {
         if (isUserProfileValidate()){
             if (isNetworkAvailable()){
@@ -264,11 +277,12 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
             val emailMs: Matcher = emailPattern.matcher(etEmail.text.toString().trim())
 
             if (etName.text!!.length <= 3) {
+                etName.error = "Name should be minimum 4 characters"
                 showToast("Please Enter Valid Full Name")
                 return false
             }
 
-            if (etName.text!!.length > 50) {
+            if (etName.text!!.length > 25) {
                 showToast("Full Name must be less than 50 character")
                 return false
             }

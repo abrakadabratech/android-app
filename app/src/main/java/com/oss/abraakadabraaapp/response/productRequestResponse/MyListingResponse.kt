@@ -2,7 +2,7 @@ package com.oss.abraakadabraaapp.response.productRequestResponse
 
 import com.google.gson.annotations.SerializedName
 
-data class ProductRequestResponse(
+data class MyListingResponse(
     @SerializedName("code"   ) var code   : Int?            = null,
     @SerializedName("status" ) var status : Int?            = null,
     @SerializedName("data"   ) var data   : ArrayList<RequestData> = arrayListOf()

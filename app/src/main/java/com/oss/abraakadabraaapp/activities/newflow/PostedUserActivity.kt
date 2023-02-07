@@ -9,6 +9,7 @@ import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
+import com.oss.abraakadabraaapp.activities.MyRequestActivity
 import com.oss.abraakadabraaapp.databinding.ActivityPostedUserBinding
 import com.oss.abraakadabraaapp.datasource.products.Product
 import com.oss.abraakadabraaapp.response.productdetails.ProductDetailsData
@@ -48,8 +49,11 @@ class PostedUserActivity : BaseActivity() {
             generateAuthToken()
 //            if(generateAuthToken())
 
+            val useLocation = PreferencesManagement.getUserLocation(this)
             val body = HashMap<String,String>()
             body["message"] = binding.requestMsg.text.toString()
+            body["latitude"] = useLocation?.lat.toString()
+            body["longitude"] = useLocation?.long.toString()
 
             if (binding.requestMsg.text.isNotEmpty()){
                 mainViewModel.postProductRequest(getAuthentication(this),
@@ -64,7 +68,7 @@ class PostedUserActivity : BaseActivity() {
             postClick(Constants.BUTTON_OK_GOTIT_IN_POSTED_USERS_PAGE)
 //            showToast("Under development, should I navigate to My Listing as per Design?")
             binding.successAlertDialog.visibility = View.GONE
-            startActivity(Intent(this,MyListingActivity::class.java))
+            startActivity(Intent(this,NewMyRequestActivity::class.java))
         }
 
         binding.successAlertDialog.setOnClickListener {
@@ -99,8 +103,17 @@ class PostedUserActivity : BaseActivity() {
         with(binding){
             productName.setText(productDetails?.data?.name)
             locationTxt.setText(productDetails?.data?.locationName)
-            postedBy.setText("Posted By " + productDetails?.data?.postedBy)
-            Glide.with(this@PostedUserActivity).load(productDetails.data.images[0]).into(imageView20)
+            postedBy.setText("Posted By " + productDetails?.data?.postedBy?.name)
+            Glide.with(this@PostedUserActivity).load(productDetails.data.images[0])
+                .placeholder(resources.getDrawable(R.drawable.ic_profile)).into(imageView20)
+            if (productDetails.data.postedBy?.userAvatar != null){
+                Glide.with(this@PostedUserActivity).load(productDetails.data.postedBy!!.userAvatar)
+                    .into(imageView22)
+
+            }else{
+                Glide.with(this@PostedUserActivity).load(resources.getDrawable(R.drawable.ic_profile)).into(imageView22)
+            }
+
 
         }
     }

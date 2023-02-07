@@ -1,4 +1,4 @@
-package com.oss.abraakadabraaapp.receiver
+package com.oss.abraakadabraaapp.response.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context

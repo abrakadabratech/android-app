@@ -27,9 +27,10 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:id="@+id/imageView24"
+                android:id="@+id/itemImage"
                 android:layout_width="87dp"
                 android:layout_height="88dp"
+                android:scaleType="fitXY"
                 android:src="@drawable/app_logo_new" />
         </androidx.cardview.widget.CardView>
 
@@ -45,7 +46,7 @@
             app:layout_constraintTop_toTopOf="@+id/cardView11">
 
             <TextView
-                android:id="@+id/textView58"
+                android:id="@+id/itemRaisedOn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -54,7 +55,7 @@
                 android:textColor="@color/title_color"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView57" />
+                app:layout_constraintTop_toBottomOf="@+id/itemName" />
 
             <TextView
                 android:id="@+id/textView59"
@@ -68,10 +69,10 @@
                 android:textColor="@color/title_color"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView58" />
+                app:layout_constraintTop_toBottomOf="@+id/itemRaisedOn" />
 
             <TextView
-                android:id="@+id/textView60"
+                android:id="@+id/status"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -84,7 +85,7 @@
                 app:layout_constraintTop_toTopOf="@+id/textView59" />
 
             <TextView
-                android:id="@+id/textView57"
+                android:id="@+id/itemName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserrat_bold"

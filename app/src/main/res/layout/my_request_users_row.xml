@@ -40,7 +40,7 @@
         </androidx.cardview.widget.CardView>
 
         <TextView
-            android:id="@+id/textView108"
+            android:id="@+id/userName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_bold"
@@ -58,8 +58,8 @@
             android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="@+id/cardView6"
             app:layout_constraintStart_toEndOf="@+id/cardView6"
-            app:layout_constraintTop_toBottomOf="@+id/textView108"
-            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintTop_toBottomOf="@+id/userName"
+            app:layout_constraintVertical_bias="0.19"
             app:srcCompat="@drawable/ic_email" />
 
         <TextView
@@ -74,13 +74,13 @@
             app:layout_constraintTop_toTopOf="@+id/imageView17" />
 
         <TextView
-            android:id="@+id/textView111"
+            android:id="@+id/message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="24dp"
             android:fontFamily="@font/montserrat_regular"
-            android:text="alex123@gmail.com"
+            android:text="message"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/imageView17"
@@ -92,17 +92,21 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:text="20 min"
-            app:layout_constraintBottom_toBottomOf="@+id/textView108"
+            app:layout_constraintBottom_toBottomOf="@+id/userName"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView108" />
+            app:layout_constraintTop_toTopOf="@+id/userName" />
 
         <TextView
-            android:id="@+id/textView114"
-            android:layout_width="wrap_content"
+            android:id="@+id/locatinName"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginEnd="4dp"
+            android:maxLength="25"
+            android:maxLines="2"
             android:text=",HSR Layout"
             app:layout_constraintBottom_toBottomOf="@+id/textView109"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textView109"
             app:layout_constraintTop_toTopOf="@+id/textView109" />
     </androidx.constraintlayout.widget.ConstraintLayout>

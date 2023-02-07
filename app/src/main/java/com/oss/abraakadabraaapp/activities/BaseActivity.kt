@@ -3,6 +3,8 @@ package com.oss.abraakadabraaapp.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -27,12 +29,16 @@ import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.Tracker
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.play.core.tasks.OnCompleteListener
+import com.google.android.play.core.tasks.Task
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GetTokenResult
 import com.google.firebase.messaging.FirebaseMessaging
 import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.auth.LoginActivity
+import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.dialog.ProgressDialog
 import com.oss.abraakadabraaapp.location.livedata.LocationViewModel
 import com.oss.abraakadabraaapp.model.UserData
@@ -573,6 +579,11 @@ abstract class BaseActivity : AppCompatActivity() {
                 if (it.isSuccessful) {
                     val idToken = it.result.token
                     val auth = "Bearer $idToken"
+
+                    val clipboard =
+                        getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clip = ClipData.newPlainText(android.R.attr.label.toString(), idToken)
+                    clipboard.setPrimaryClip(clip)
 
                     if(PreferencesManagement.saveAuthToken(this@BaseActivity,auth))
                     {

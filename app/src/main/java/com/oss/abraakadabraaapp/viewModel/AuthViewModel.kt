@@ -1,5 +1,8 @@
 package com.oss.abraakadabraaapp.viewModel
 
+import RequestDetails
+import SearchModel
+import UpdatedProductData
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,15 +12,15 @@ import com.google.gson.Gson
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.*
 import com.oss.abraakadabraaapp.activities.newflow.menu.LogoutResponse
 import com.oss.abraakadabraaapp.activities.newflow.menu.SupportResponse
-import com.oss.abraakadabraaapp.activities.newflow.model.AllCategoryResponse
-import com.oss.abraakadabraaapp.activities.newflow.model.ProductDeleteResponse
-import com.oss.abraakadabraaapp.activities.newflow.model.ReportProductResponse
+import com.oss.abraakadabraaapp.activities.newflow.model.*
+import com.oss.abraakadabraaapp.activities.newflow.requests.CancelRequestReponse
 import com.oss.abraakadabraaapp.activities.newflow.requests.ReportProductRequest
 import com.oss.abraakadabraaapp.response.authResponse.*
 import com.oss.abraakadabraaapp.response.commonResponse.CommonResponse
 import com.oss.abraakadabraaapp.response.commonResponse.HttpErrorResponse
 import com.oss.abraakadabraaapp.response.productRequestResponse.ListingResponse
-import com.oss.abraakadabraaapp.response.productRequestResponse.ProductRequestResponse
+import com.oss.abraakadabraaapp.response.productRequestResponse.MyListingResponse
+import com.oss.abraakadabraaapp.response.productRequestResponse.MyRequestResponse
 import com.oss.abraakadabraaapp.response.productdetails.ProductDetailsData
 import com.oss.abraakadabraaapp.retrofit.api.CallHelper
 import com.oss.abraakadabraaapp.retrofit.api.callApi
@@ -48,9 +51,19 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
 
     var productDetailsData = MutableLiveData<ProductDetailsData>()
     var listingDetailsuccess = MutableLiveData<ListingResponse>()
+    var requestDetailsuccess = MutableLiveData<RequestDetails>()
     var deleteProductSuccess = MutableLiveData<ProductDeleteResponse>()
+    var updateProductSuccess = MutableLiveData<UpdatedProductData>()
     var requstProductSuccess = MutableLiveData<ProductDeleteResponse>()
-    var getProductListingsSuccess = MutableLiveData<ProductRequestResponse>()
+    var updateProductRequest = MutableLiveData<ProductDeleteResponse>()
+    var cancelRequestSuccess = MutableLiveData<CancelRequestReponse>()
+    var getProductListingsSuccess = MutableLiveData<MyListingResponse>()
+    var getMyRequestsSuccess = MutableLiveData<MyRequestResponse>()
+    var initPaymentSuccess = MutableLiveData<InitPaymentModel>()
+    var updatePaymentSuccess = MutableLiveData<UpdatePaymentModel>()
+    var sendFeedbackSuccess = MutableLiveData<FeedbackModel>()
+    var searchSuccess = MutableLiveData<SearchModel>()
+    var chatSuccess = MutableLiveData<ChatResponse>()
     var supportDataSuccess  = MutableLiveData<SupportResponse>()
     var getAllcategoriesSuccess  = MutableLiveData<AllCategoryResponse>()
     var reportProductSuccess  = MutableLiveData<ReportProductResponse>()
@@ -308,6 +321,28 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
 
         }
     }
+fun getRequestDetails(
+        headerMap: HashMap<String, String>,
+        id: String
+    ) {
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.getRequestDetails(headerMap,id)
+            callApi(::call, object : CallHelper<RequestDetails>{
+                override fun onSuccessful(data: RequestDetails) {
+                    requestDetailsuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+
+            })
+            isLoading.value = false
+
+        }
+    }
 
     //NEW - Delete product
     fun deleteProduct(
@@ -321,6 +356,29 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
             callApi(::call, object : CallHelper<ProductDeleteResponse>{
                 override fun onSuccessful(data: ProductDeleteResponse) {
                     deleteProductSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+
+            })
+            isLoading.value = false
+        }
+    }
+
+    fun updateProduct(
+        headerMap: HashMap<String, String>,
+        id: String,
+        body: Map<String,String>
+    ) {
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.updateProduct(headerMap,id,body)
+            callApi(::call, object : CallHelper<UpdatedProductData>{
+                override fun onSuccessful(data: UpdatedProductData) {
+                    updateProductSuccess.value = data
                 }
 
                 override fun onError(errorResponse: HttpErrorResponse) {
@@ -355,6 +413,52 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
         }
     }
 
+    fun updateProductRequest(
+        headerMap: HashMap<String, String>,
+        id: String,
+        body:String
+    ) {
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.updateProductRequest(headerMap,id,body)
+            callApi(::call, object : CallHelper<ProductDeleteResponse>{
+                override fun onSuccessful(data: ProductDeleteResponse) {
+                    updateProductRequest.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+
+            })
+            isLoading.value = false
+        }
+    }
+
+    fun cancelProductRequest(
+        headerMap: HashMap<String, String>,
+        id: String
+    ) {
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.cancelProductRequest(headerMap,id)
+            callApi(::call, object : CallHelper<CancelRequestReponse>{
+                override fun onSuccessful(data: CancelRequestReponse) {
+                    cancelRequestSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+
+            })
+            isLoading.value = false
+        }
+    }
+
+
     fun getProductListings(
         headerMap: HashMap<String, String>
     ) {
@@ -362,8 +466,8 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
             isLoading.value = true
 
             suspend fun call() = repository.getProductListing(headerMap)
-            callApi(::call, object : CallHelper<ProductRequestResponse>{
-                override fun onSuccessful(data: ProductRequestResponse) {
+            callApi(::call, object : CallHelper<MyListingResponse>{
+                override fun onSuccessful(data: MyListingResponse) {
                     getProductListingsSuccess.value = data
                 }
 
@@ -371,6 +475,129 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
                     errorMessage.value = errorResponse.responseMessage
                 }
 
+            })
+            isLoading.value = false
+        }
+    }
+
+    fun getMyRequests(
+        headerMap: HashMap<String, String>
+    ) {
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.getMyRequests(headerMap)
+            callApi(::call, object : CallHelper<MyRequestResponse>{
+                override fun onSuccessful(data: MyRequestResponse) {
+                    getMyRequestsSuccess .value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+            isLoading.value = false
+        }
+    }
+
+    fun initPayment(
+        headerMap: HashMap<String, String>,body:HashMap<String, String>
+    ) {
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.initPayment(headerMap,body)
+            callApi(::call, object : CallHelper<InitPaymentModel>{
+                override fun onSuccessful(data: InitPaymentModel) {
+                    initPaymentSuccess .value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+            isLoading.value = false
+        }
+    }
+
+    fun updatePayment(
+        headerMap: HashMap<String, String>,body:HashMap<String, String>
+    ) {
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.updatePayment(headerMap,body)
+            callApi(::call, object : CallHelper<UpdatePaymentModel>{
+                override fun onSuccessful(data: UpdatePaymentModel) {
+                    updatePaymentSuccess .value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+            isLoading.value = false
+        }
+    }
+
+    fun sendFeedback(
+        headerMap: HashMap<String, String>,
+        id: String, body:HashMap<String, String>
+    ) {
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.sendFeedback(headerMap,id,body)
+            callApi(::call, object : CallHelper<FeedbackModel>{
+                override fun onSuccessful(data: FeedbackModel) {
+                    sendFeedbackSuccess .value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+            isLoading.value = false
+        }
+    }
+
+    fun searchQuery(
+        headerMap: HashMap<String, String>,
+        page:String,
+        lat:Double,long:Double,maxDistance:Int
+    ) {
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.searchQuery(headerMap,page,lat,long,maxDistance)
+            callApi(::call, object : CallHelper<SearchModel>{
+                override fun onSuccessful(data: SearchModel) {
+                    searchSuccess .value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+            isLoading.value = false
+        }
+    }
+
+    fun sendNotification(
+        headerMap: HashMap<String, String>,
+        body: HashMap<String, String>) {
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.sendNotification(headerMap,body)
+            callApi(::call, object : CallHelper<ChatResponse>{
+                override fun onSuccessful(data: ChatResponse) {
+                    chatSuccess .value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
             })
             isLoading.value = false
         }
@@ -722,5 +949,6 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
 
         }
     }
+
 
 }

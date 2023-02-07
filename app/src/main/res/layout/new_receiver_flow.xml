@@ -85,7 +85,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <EditText
+                        <TextView
                             android:id="@+id/search_edit"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -94,6 +94,7 @@
                             android:layout_marginEnd="8dp"
                             android:layout_marginBottom="7dp"
                             android:background="@color/white"
+                            android:editable="false"
                             android:fontFamily="@font/montserrat_regular"
                             android:hint="What are you looking for?"
                             android:imeOptions="actionSearch"
@@ -135,4 +136,19 @@
         </androidx.core.widget.NestedScrollView>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <TextView
+        android:id="@+id/nodata"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fontFamily="@font/montserrat_bold"
+        android:gravity="center"
+        android:text="No Products"
+        android:textColor="@color/title_color"
+        android:textSize="22sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/sRL_home" />
 </androidx.constraintlayout.widget.ConstraintLayout>

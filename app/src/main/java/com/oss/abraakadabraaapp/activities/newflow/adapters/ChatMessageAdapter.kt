@@ -7,9 +7,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.oss.abraakadabraaapp.R
-import java.util.ArrayList
+import com.oss.abraakadabraaapp.activities.newflow.chat.ChatModel
+import kotlin.collections.ArrayList
 
-class ChatMessageAdapter (val context: Context, var list: List<String>) :
+class ChatMessageAdapter(val context: Context, var list: ArrayList<ChatModel>) :
     RecyclerView.Adapter<ChatMessageAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var message = itemView.findViewById<TextView>(R.id.message)
@@ -22,14 +23,14 @@ class ChatMessageAdapter (val context: Context, var list: List<String>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.message.text = list[position]
+        holder.message.text = list[position].text
     }
 
     override fun getItemCount(): Int {
         return list.size
     }
 
-    fun setList(list1: ArrayList<String>) {
-        this.list = list1
-    }
+//    fun setList(list1: ArrayList<ChatModel>) {
+//        this.list = list1
+//    }
 }

@@ -8,8 +8,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.oss.abraakadabraaapp.activities.newflow.chat.AllChatsFragment
 import com.oss.abraakadabraaapp.activities.newflow.chat.GivingChatsFragment
 import com.oss.abraakadabraaapp.activities.newflow.chat.ReceivingChatsFragment
-import com.oss.abraakadabraaapp.fragments.GiverFragment
-import com.oss.abraakadabraaapp.fragments.ReceiverFragment
 
 data class RequestTabAdapter(
     var fragmentManager: FragmentManager,
@@ -19,8 +17,8 @@ data class RequestTabAdapter(
 
     override fun createFragment(position: Int): Fragment {
         when (position) {
-            0 -> return  AllChatsFragment()
-            1 -> return AllChatsFragment()
+            0 -> return  GivingChatsFragment()
+            1 -> return ReceivingChatsFragment()
             //2 -> return ReceivingChatsFragment()
         }
         return  AllChatsFragment()

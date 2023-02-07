@@ -49,6 +49,8 @@
         android:theme="@style/Theme.AbraaKaDabraa.App"
         android:usesCleartextTraffic="true"
         tools:ignore="HardcodedDebugMode,LockedOrientationActivity">
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="@string/google_api_key"/>
+
         <activity
             android:name=".activities.newflow.chat.ChatDetailActivity"
             android:exported="false"

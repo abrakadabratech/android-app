@@ -35,7 +35,7 @@ class MyListingActivity : BaseActivity() , MyListingAdapter.OnResponseClick {
 
         setUpRecyclerView()
         setUpObserver()
-        loaddata()
+
 
         application = (this as BaseActivity)
         application.postEvent(Constants.PAGE_MY_LISTING, null)
@@ -47,6 +47,10 @@ class MyListingActivity : BaseActivity() , MyListingAdapter.OnResponseClick {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        loaddata()
+    }
 
     private fun loaddata() {
         val map = HashMap<String, String>()
@@ -84,7 +88,7 @@ class MyListingActivity : BaseActivity() , MyListingAdapter.OnResponseClick {
 
             binding.rvMyListing.apply {
                 layoutManager =
-                    LinearLayoutManager(this@MyListingActivity, LinearLayoutManager.HORIZONTAL, false)
+                    LinearLayoutManager(this@MyListingActivity)
                 adapter = adapterList
                 recycledViewPool.setMaxRecycledViews(1, 0)
                 isNestedScrollingEnabled = false

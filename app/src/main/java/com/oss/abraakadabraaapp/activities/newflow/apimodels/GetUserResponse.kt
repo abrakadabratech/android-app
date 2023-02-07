@@ -16,12 +16,14 @@ data class GetUserResponse(
 data class UsersData (
 
     @SerializedName("phone"            ) var phone          : String? = null,
+    @SerializedName("status"            ) var status          : String? = null,
     @SerializedName("social_link_type" ) var socialLinkType : String? = null,
     @SerializedName("social_link"      ) var socialLink     : String? = null,
     @SerializedName("user_avatar"      ) var userAvatar     : String? = null,
     @SerializedName("email"            ) var email          : String? = null,
     @SerializedName("name"             ) var name           : String? = null,
     @SerializedName("uid"              ) var uid            : String? = null,
+    @SerializedName("location"              ) var location            : String? = null,
     @SerializedName("fcmToken"         ) var fcmToken            : String? = null
+) {constructor():this("","","","","","","","","","")}
 
-)

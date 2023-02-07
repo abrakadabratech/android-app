@@ -149,12 +149,15 @@
                 app:layout_constraintStart_toStartOf="@+id/textView6"
                 app:layout_constraintTop_toBottomOf="@+id/textView8">
 
-                <TextView
+                <EditText
+                    android:id="@+id/cateogoryTxt"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="9"
                     android:fontFamily="@font/montserrat_medium"
                     android:text="Category"
+                    android:background="@color/transparent"
+                    android:editable="false"
                     android:textColor="@color/title_color"
                     android:textSize="15sp" />
 
@@ -179,10 +182,13 @@
                 app:layout_constraintStart_toStartOf="@+id/catgoryLinearLayout"
                 app:layout_constraintTop_toBottomOf="@+id/catgoryLinearLayout">
 
-                <TextView
+                <EditText
+                    android:id="@+id/conditionTxt"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="9"
+                    android:background="@color/transparent"
+                    android:editable="false"
                     android:fontFamily="@font/montserrat_medium"
                     android:text="Condition of Product"
                     android:textColor="@color/title_color"
@@ -209,12 +215,15 @@
                 app:layout_constraintStart_toStartOf="@+id/conditionLinearLayout"
                 app:layout_constraintTop_toBottomOf="@+id/conditionLinearLayout">
 
-                <TextView
+                <EditText
+                    android:id="@+id/usedForTxt"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="9"
                     android:fontFamily="@font/montserrat_medium"
                     android:text="Used For"
+                    android:background="@color/transparent"
+                    android:editable="false"
                     android:textColor="@color/title_color"
                     android:textSize="15sp" />
 

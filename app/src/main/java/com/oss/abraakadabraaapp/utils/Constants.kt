@@ -3,6 +3,7 @@ package com.oss.abraakadabraaapp.utils
 object Constants {
     //Page tags for GA-4
 
+    const val CHATS_DATA: String = "chats_data"
     const val PRODUCT: String = "product_detail"
     val facebook: String = "facebook"
     val linkedin: String = "linkedin"
@@ -106,6 +107,7 @@ object Constants {
     const val PAGE_MY_LISTING: String = "page_my_listing"
     const val BUTTON_BACK_IN_MY_LISTINS = "button_back_in_my_listing"
     const val BUTTON_MY_LISTING_CARD = "button_my_listing_item"
+    const val BUTTON_MY_REQUEST_CARD = "button_my_request_item"
     const val PAGE_MY_LISTING_DETAIL: String = "page_my_listing_detail"
     const val BUTTON_BACK_IN_MYLISTING_DETAILS: String = "button_back_in_mylisting_detail"
     const val PAGE_PROFILE: String = "page_profile"

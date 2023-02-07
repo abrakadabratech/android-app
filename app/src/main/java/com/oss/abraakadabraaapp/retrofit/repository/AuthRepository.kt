@@ -68,6 +68,12 @@ class AuthRepository(private val apiHelper: APIs) {
         id: String
     ) = apiHelper.deleteProduct(map,id)
 
+    suspend fun updateProduct(
+        map: HashMap<String, String>,
+        id: String,
+        body: Map<String,String>
+    ) = apiHelper.updateProduct(map,id,body)
+
     suspend fun getSupportData(
         map: HashMap<String, String>)
       = apiHelper.getSupportData(map)
@@ -89,10 +95,63 @@ class AuthRepository(private val apiHelper: APIs) {
     )
       = apiHelper.postProductRequest(map,id,body)
 
+    suspend fun updateProductRequest(
+        map: HashMap<String, String>,
+        id: String,
+        body: String
+    )
+            = apiHelper.updateProductRequest(map,id,body)
+
+    suspend fun cancelProductRequest(
+        map: HashMap<String, String>,
+        id: String
+    )
+            = apiHelper.cancelProductRequest(map,id)
+
+    suspend fun getRequestDetails(
+        map: HashMap<String, String>,
+        id: String)
+      = apiHelper.getRequestDetails(map,id)
+
     suspend fun getProductListing(
         map: HashMap<String, String>,
     )
       = apiHelper.getProductListings(map)
+
+    suspend fun getMyRequests(
+        map: HashMap<String, String>,
+    )
+      = apiHelper.getMyRequests(map)
+
+    suspend fun initPayment(
+        map: HashMap<String, String>,
+        id: HashMap<String, String>)
+            = apiHelper.initPayment(map,id)
+
+    suspend fun updatePayment(
+        map: HashMap<String, String>,
+        id: HashMap<String, String>)
+            = apiHelper.updatePayment(map,id)
+
+    suspend fun sendFeedback(
+        map: HashMap<String, String>,
+        id:String,
+        body: HashMap<String, String>)
+            = apiHelper.sendFeedback(map,id,body)
+
+    suspend fun searchQuery(
+        map: HashMap<String, String>,
+        page:String,
+        lat:Double,long:Double,maxDistance:Int
+    )
+            = apiHelper.searchQuery(map,page,lat,long,maxDistance)
+
+    suspend fun sendNotification(
+        map: HashMap<String, String>,
+        body: HashMap<String, String>
+
+    )
+            = apiHelper.sendNotification(map,body)
 
     //=================================================================================//
     suspend fun loginWithPhoneNumber(

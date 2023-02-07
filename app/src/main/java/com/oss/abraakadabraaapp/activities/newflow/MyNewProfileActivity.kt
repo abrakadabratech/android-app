@@ -23,7 +23,6 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
-import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.SocialShareAdapter
@@ -87,7 +86,19 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             nameEdit.setText(userInfo.data?.name)
             emailEdit.setText(userInfo.data?.email)
             phoneEdit.setText(userInfo.data?.phone)
-            instaEdit.setText(userInfo.data?.socialLink)
+            val userlocation = PreferencesManagement.getUserLocation(this@MyNewProfileActivity)
+            locationEdit.setText(getAddress(userlocation?.lat!!.toDouble(), userlocation.long.toDouble()))
+            if (userInfo.data?.status == "pending"){
+                profileStatus.setText(userInfo.data?.status!!.capitalize())
+                profileStatus.setTextColor(resources.getColor(R.color.status_pending))
+                profileStatusImage.setImageResource(R.drawable.status_pending)
+
+            }else{
+                profileStatus.setText(userInfo.data?.status?.capitalize())
+                profileStatus.setTextColor(resources.getColor(R.color.status_accepted))
+                profileStatusImage.setImageResource(R.drawable.status_accepted)
+            }
+            instaEdit.setText(if(userInfo.data?.socialLink == null) "Update your profile here" else userInfo.data?.socialLink)
             Glide.with(this@MyNewProfileActivity)
                 .load(userInfo.data?.userAvatar)
                 .placeholder(resources.getDrawable(R.drawable.ic_profile))
@@ -170,7 +181,9 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                     userAvatar = it.data,
                     email = userInfo.data?.email,
                     uid = userInfo.data?.uid,
-                    fcmToken = userInfo.data?.fcmToken
+                    location = userInfo.data?.location,
+                    fcmToken = userInfo.data?.fcmToken,
+
                 )
                 val newUserInfo = GetUserResponse(
                     code = userInfo.code,
@@ -193,6 +206,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                 userAvatar = userInfo.data?.userAvatar,
                 email = userInfo.data?.email,
                 uid = userInfo.data?.uid,
+                location = userInfo.data?.location,
                 fcmToken = userInfo.data?.fcmToken
             )
             val newUserInfo = GetUserResponse(
@@ -206,7 +220,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             Log.d(API_TAG, "postSocialProfileSuccess: ${Gson().toJson(newUserInfo)}")
             binding.socialProfileLayout.visibility = View.GONE
             binding.successLayout.visibility = View.VISIBLE
-            binding.instaEdit.text = it.data?.socialLink
+            binding.instaEdit.setText(if(userInfo.data?.socialLink == null) "Update your profile here" else userInfo.data?.socialLink)
             binding.socialProfilePopUPLayout.visibility = View.GONE
             editMode(false)
         }
@@ -453,11 +467,23 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
     }
 
     private fun openYourActivity() {
-        val intent = Intent()
-        intent.type = "image/*"
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-        intent.action = Intent.ACTION_GET_CONTENT
-        launchSomeActivity.launch(intent)
+        val intent = Intent(this, ImagePickerActivity::class.java)
+        intent.putExtra(
+            ImagePickerActivity.INTENT_IMAGE_PICKER_OPTION,
+            ImagePickerActivity.REQUEST_GALLERY_IMAGE
+        )
+
+        intent.putExtra(ImagePickerActivity.INTENT_SET_BITMAP_MAX_WIDTH_HEIGHT, true)
+        intent.putExtra(ImagePickerActivity.INTENT_BITMAP_MAX_WIDTH, 1000)
+        intent.putExtra(ImagePickerActivity.INTENT_BITMAP_MAX_HEIGHT, 1000)
+
+        businessProofImageActivity.launch(intent)
+
+//        val intent = Intent()
+//        intent.type = "image/*"
+//        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+//        intent.action = Intent.ACTION_GET_CONTENT
+//        launchSomeActivity.launch(intent)
     }
 
     private var businessProofImageActivity =

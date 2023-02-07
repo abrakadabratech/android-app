@@ -22,12 +22,15 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.HomeActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.DataClass
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.databinding.ActivityLoginBinding
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.*
 import com.oss.abraakadabraaapp.utils.Constants.USER_NOT_FOUND
 import com.oss.abraakadabraaapp.utils.customView.CustomTypefaceSpan
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
+import org.json.JSONObject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.concurrent.TimeUnit
 
@@ -94,13 +97,6 @@ class LoginActivity : BaseActivity() {
             }
 
             otpVerifyBtn.setOnClickListener {
-
-                //New Code
-//                val intent =
-//                    Intent(this@OtpVerificationActivity, AuthUserDetailActivity::class.java)
-//                startActivity(intent)
-
-                // Old Code
                 val otpString = binding.firstEdit.text.toString() +
                         binding.secondEdit.text.toString() +
                         binding.thirdEdit.text.toString() +
@@ -187,6 +183,7 @@ class LoginActivity : BaseActivity() {
                                     val map = HashMap<String,String>()
 
                                     map[RequestKeys.authorization] = auth
+                                    postFCMtoken()
                                     authViewModel.getUser(map)
 
                                     /*val clipboard =
@@ -212,6 +209,8 @@ class LoginActivity : BaseActivity() {
 //                    )
 
                 } else {
+                    authViewModel.isLoading.value = false
+                    showToast("Wrong OTP Entered.Please try again")
                     // Sign in failed, display a message and update the UI
                     Log.w("FIREBASE", "signInWithCredential:failure", task.exception)
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {
@@ -226,7 +225,31 @@ class LoginActivity : BaseActivity() {
         "zzg":"2","zzh":false,"zzi":{"zza":1673599438274,"zzb":1673598888449},"zzj":false},"zzb":{"zzd":false}}
         * */
     }
+    fun postFCMtoken(){
+        generateAuthToken()
+        FirebaseMessaging.getInstance().token.addOnSuccessListener {
+            PreferencesManagement.saveFCMToken(this,it)
+            val data = UsersData(
+                fcmToken = PreferencesManagement.getFCMToken(this)!!
+            )
+            val dataClass = DataClass(data)
 
+            val map = java.util.HashMap<String, String>()
+            val token = PreferencesManagement.getAuthToken(this)!!
+            map[RequestKeys.authorization] = token
+            Log.d(
+                NewHomeActivity.TAG,
+                "Token in Accounts fragment: ${JSONObject(Gson().toJson(dataClass))}"
+            )
+            authViewModel.updateUser(map, dataClass)
+
+        }.addOnFailureListener {
+            loader(false)
+            if (BuildConfig.DEBUG) showToast("Error Please try again ! ${it.localizedMessage}") else showToast(
+                "Error Please try again !"
+            )
+        }
+    }
     // callback method is called on Phone auth provider.
     private val   // initializing our callbacks for on
     // verification callback method.
@@ -316,40 +339,6 @@ class LoginActivity : BaseActivity() {
             Log.d("FIREBASE", "phone no:${binding.etPhoneNumber.text.toString()} sent to fb")
 
         }
-
-
-        //Old Code
-        /*if (isValidate()) {
-            if (isNetworkAvailable()) {
-                if (isLocationEnabled()) getLastLocation()
-
-                val map = HashMap<String, String>()
-
-                map[RequestKeys.phoneNumber] = binding.etPhoneNumber.text.toString().trim()
-                map[RequestKeys.deviceId] = getDeviceId()
-                map[RequestKeys.deviceType] = ApiConstants.deviceType
-
-                if (PreferencesManagement.getUserLocation(this@LoginActivity) != null) {
-                    val userLocation = PreferencesManagement.getUserLocation(this@LoginActivity)!!
-                    latitude = userLocation.lat
-                    longitude = userLocation.long
-                    address = userLocation.address ?: ""
-                }
-
-                map[RequestKeys.lat] = latitude
-                map[RequestKeys.lng] = longitude
-                map[RequestKeys.fullAddress] = address
-                map[RequestKeys.smsKey] = smsToken
-
-                getFCMToken(map)
-
-            } else {
-                showSnackBar(
-                    binding.clLogin,
-                    applicationContext.resources.getString(R.string.no_internet_connection_found)
-                )
-            }
-        }*/
     }
 
      fun getFCMToken1() {
@@ -405,7 +394,9 @@ class LoginActivity : BaseActivity() {
                     val intent =
                         Intent(this@LoginActivity, AuthUserDetailActivity::class.java)
                     intent.putExtra(Constants.phoneNumber,phoneNumber)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     startActivity(intent)
+                    finish()
                 }
             }else{
                 val intent =

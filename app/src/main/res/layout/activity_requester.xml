@@ -249,7 +249,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/textView3"
+                    android:id="@+id/categoryTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -270,8 +270,8 @@
                     android:text="Wooden Chair"
                     android:textColor="@color/new_action_bar_title_color"
                     android:textSize="24sp"
-                    app:layout_constraintStart_toStartOf="@+id/textView3"
-                    app:layout_constraintTop_toBottomOf="@+id/textView3" />
+                    app:layout_constraintStart_toStartOf="@+id/categoryTxt"
+                    app:layout_constraintTop_toBottomOf="@+id/categoryTxt" />
 
                 <LinearLayout
                     android:id="@+id/linearLayout1"
@@ -292,6 +292,7 @@
                         android:src="@drawable/ic_location" />
 
                     <TextView
+                        android:id="@+id/locationName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
@@ -436,6 +437,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/textView24">
 
                     <TextView
+                        android:id="@+id/descriptionTxt"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="5dp"
@@ -491,7 +493,7 @@
                         app:cardCornerRadius="10dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView108">
+                        app:layout_constraintTop_toBottomOf="@+id/userName">
 
                         <ImageView
                             android:id="@+id/imageView20"
@@ -502,7 +504,7 @@
                     </androidx.cardview.widget.CardView>
 
                     <TextView
-                        android:id="@+id/textView108"
+                        android:id="@+id/userName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -521,13 +523,13 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:layout_marginStart="16dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/textView109"
+                        app:layout_constraintBottom_toBottomOf="@+id/userLocation"
                         app:layout_constraintStart_toEndOf="@+id/cardView6"
-                        app:layout_constraintTop_toTopOf="@+id/textView109"
+                        app:layout_constraintTop_toTopOf="@+id/userLocation"
                         app:srcCompat="@drawable/ic_location_home" />
 
                     <TextView
-                        android:id="@+id/textView109"
+                        android:id="@+id/userLocation"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
@@ -545,12 +547,12 @@
                         android:layout_marginTop="8dp"
                         app:layout_constraintBottom_toBottomOf="@+id/cardView6"
                         app:layout_constraintStart_toStartOf="@+id/imageView17"
-                        app:layout_constraintTop_toBottomOf="@+id/textView109"
+                        app:layout_constraintTop_toBottomOf="@+id/userLocation"
                         app:layout_constraintVertical_bias="0.0"
                         app:srcCompat="@drawable/ic_mobile_icon" />
 
                     <TextView
-                        android:id="@+id/textView110"
+                        android:id="@+id/phone"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
@@ -574,11 +576,11 @@
                         app:srcCompat="@drawable/ic_email" />
 
                     <TextView
-                        android:id="@+id/textView111"
+                        android:id="@+id/email"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:layout_marginEnd="24dp"
+                        android:layout_marginEnd="8dp"
                         android:fontFamily="@font/montserrat_regular"
                         android:text="alex123@gmail.com"
                         app:layout_constraintBottom_toBottomOf="@+id/imageView37"
@@ -602,6 +604,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/postedBy">
 
                     <TextView
+                        android:id="@+id/userMessage"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="5dp"
@@ -621,7 +624,7 @@
                     android:textColor="#2D7A76"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textView3" />
+                    app:layout_constraintTop_toTopOf="@+id/categoryTxt" />
 
                 <ImageView
                     android:id="@+id/imageediView16"
@@ -632,7 +635,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/textView107"
                     app:layout_constraintEnd_toStartOf="@+id/textView107"
                     app:layout_constraintTop_toTopOf="@+id/textView107"
-                    app:srcCompat="@drawable/ic_icon_check_solid" />
+                    app:srcCompat="@drawable/status_accepted" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
@@ -691,6 +694,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
+                android:id="@+id/acceptTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"

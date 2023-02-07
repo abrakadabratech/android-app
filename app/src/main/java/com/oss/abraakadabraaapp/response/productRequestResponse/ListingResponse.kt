@@ -3,10 +3,12 @@ package com.oss.abraakadabraaapp.response.productRequestResponse
 import com.google.gson.annotations.SerializedName
 
 data class ListingResponse (
+
     @SerializedName("code"     ) var code     : Int?              = null,
     @SerializedName("status"   ) var status   : Int?              = null,
     @SerializedName("product"  ) var product  : ListingProduct?          = ListingProduct(),
-    @SerializedName("requests" ) var requests : ArrayList<String> = arrayListOf()
+    @SerializedName("requests" ) var requests : ArrayList<Requests> = arrayListOf()
+
 )
 
 data class PostedBy (
@@ -25,7 +27,7 @@ data class Coordinates (
 
 data class ListingProduct (
 
-    @SerializedName("category"      ) var category     : String?           = null,
+    @SerializedName("category"      ) var category     : Category?           = null,
     @SerializedName("images"        ) var images       : ArrayList<String> = arrayListOf(),
     @SerializedName("condition"     ) var condition    : String?           = null,
     @SerializedName("energy_saving" ) var energySaving : Int?              = null,
@@ -38,5 +40,25 @@ data class ListingProduct (
     @SerializedName("coordinates"   ) var coordinates  : Coordinates?      = Coordinates(),
     @SerializedName("location_name" ) var locationName : String?           = null,
     @SerializedName("created_at"    ) var createdAt    : String?           = null
+
+)
+data class Requests (
+
+    @SerializedName("request_id"   ) var requestId   : String?      = null,
+    @SerializedName("status"       ) var status      : String?      = null,
+    @SerializedName("coordinates"  ) var coordinates : Coordinates? = Coordinates(),
+    @SerializedName("productId"    ) var productId   : String?      = null,
+    @SerializedName("message"      ) var message     : String?      = null,
+    @SerializedName("userId"       ) var userId      : String?      = null,
+    @SerializedName("username"     ) var username    : String?      = null,
+    @SerializedName("email"        ) var email       : String?      = null,
+    @SerializedName("phone"        ) var phone       : String?      = null,
+    @SerializedName("requested_at" ) var requestedAt : String?      = null
+)
+
+data class Category (
+
+    @SerializedName("id"   ) var id   : String? = null,
+    @SerializedName("name" ) var name : String? = null
 
 )

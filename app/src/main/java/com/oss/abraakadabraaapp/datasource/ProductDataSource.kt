@@ -1,15 +1,18 @@
 package com.oss.abraakadabraaapp.datasource
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.anilhappy.paginationsample.APIService
+import com.google.gson.Gson
 import com.oss.abraakadabraaapp.datasource.products.Product
+import org.greenrobot.eventbus.EventBus
 
 class ProductDataSource(private val apiService: APIService,
                         private val headers:Map<String,String>,
                         private val maxDistance:Int,
                         private val lat:Double,
-                        private val long:Double) : PagingSource<Int, Product>() {
+                        private val long:Double,
+                        private val categories:String) : PagingSource<Int, Product>() {
 
     override fun getRefreshKey(state: PagingState<Int, Product>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
@@ -21,17 +24,18 @@ class ProductDataSource(private val apiService: APIService,
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Product> {
         try {
             val currentLoadingPageKey = params.key ?: 1
-            val response = apiService.getProductsData(headers,currentLoadingPageKey,maxDistance,lat,long)
+            val response = apiService.getProductsData(headers,currentLoadingPageKey,maxDistance,lat,long,categories)
             val responseData = mutableListOf<Product>()
+            EventBus.getDefault().post(response.data.products)
             val data = response.data.products ?: emptyList()
             responseData.addAll(data)
-
+            Log.d("TAG - ", "load: ${Gson().toJson(responseData)}")
             val prevKey = if (currentLoadingPageKey == 1) null else currentLoadingPageKey - 1
 
             return LoadResult.Page(
                 data = responseData,
                 prevKey = prevKey,
-                nextKey = currentLoadingPageKey.plus(1)
+                nextKey = if (response.data.products.isEmpty()) null else currentLoadingPageKey + 1
             )
         }catch (e: Exception) {
             return LoadResult.Error(e)

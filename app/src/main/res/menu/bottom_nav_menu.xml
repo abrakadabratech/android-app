@@ -6,10 +6,10 @@
         android:icon="@drawable/ic_home"
         android:title="@string/title_home" />
 
-    <item
+ <!--   <item
         android:id="@+id/navigation_community"
         android:icon="@drawable/ic_community_team"
-        android:title="@string/title_community" />
+        android:title="@string/title_community" />-->
 
     <item
         android:id="@+id/navigation_account"

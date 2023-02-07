@@ -1,5 +1,7 @@
 package com.oss.abraakadabraaapp.adapter
 
+import Data
+import SearchModel
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,7 +18,7 @@ import com.oss.abraakadabraaapp.utils.ImageUtils
 
 
 class LatestProductAdapter(
-    private val data: ArrayList<LatestProductData>,
+    private var data: ArrayList<Data>,
     var context: Context,
     private var callback: LatestProductAdapterInterface
 ) : RecyclerView.Adapter<LatestProductAdapter.LatestProductAdapterVH>() {
@@ -32,6 +34,9 @@ class LatestProductAdapter(
         val item = data[position]
 
         Glide.with(context).load(item.image).into(holder.binding.ivProduct)
+        holder.binding.tvProductDistance.text = "${item.distance?.div(1000)} KM"
+        holder.binding.tvProductName.text = item.name?.capitalize()
+        holder.binding.tvProductLocation.text = item.locationName
 
         /*with(holder.binding) {
 
@@ -77,12 +82,16 @@ class LatestProductAdapter(
         return 1
     }
 
+    fun setData(d: ArrayList<Data>) {
+        data = d
+    }
+
     class LatestProductAdapterVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = ItemProductBinding.bind(itemView)
     }
 
     interface LatestProductAdapterInterface {
-        fun onItemDetail(data: LatestProductData, position: Int)
+        fun onItemDetail(data: Data, position: Int)
     }
 
 }

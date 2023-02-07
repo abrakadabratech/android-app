@@ -1,14 +1,16 @@
 package com.oss.abraakadabraaapp.retrofit.api
 
-import com.oss.abraakadabraaapp.datasource.products.GetProducts
+import RequestDetails
+import SearchModel
+import UpdatedProductData
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param
 import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.*
 import com.oss.abraakadabraaapp.activities.newflow.menu.LogoutResponse
 import com.oss.abraakadabraaapp.activities.newflow.menu.SupportResponse
-import com.oss.abraakadabraaapp.activities.newflow.model.AllCategoryResponse
-import com.oss.abraakadabraaapp.activities.newflow.model.ProductDeleteResponse
-import com.oss.abraakadabraaapp.activities.newflow.model.ReportProductResponse
-import com.oss.abraakadabraaapp.activities.newflow.requests.ReportProductRequest
+import com.oss.abraakadabraaapp.activities.newflow.model.*
+import com.oss.abraakadabraaapp.activities.newflow.requests.CancelRequestReponse
+import com.oss.abraakadabraaapp.datasource.products.GetProducts
 import com.oss.abraakadabraaapp.response.authResponse.*
 import com.oss.abraakadabraaapp.response.commonResponse.CommonResponse
 import com.oss.abraakadabraaapp.response.commonResponse.ContentManagementResponse
@@ -16,7 +18,8 @@ import com.oss.abraakadabraaapp.response.locationResponse.LocationAddressRespons
 import com.oss.abraakadabraaapp.response.mainResponse.*
 import com.oss.abraakadabraaapp.response.notificationResponse.NotificationResponse
 import com.oss.abraakadabraaapp.response.productRequestResponse.ListingResponse
-import com.oss.abraakadabraaapp.response.productRequestResponse.ProductRequestResponse
+import com.oss.abraakadabraaapp.response.productRequestResponse.MyListingResponse
+import com.oss.abraakadabraaapp.response.productRequestResponse.MyRequestResponse
 import com.oss.abraakadabraaapp.response.productdetails.ProductDetailsData
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -117,8 +120,9 @@ interface APIs {
     @PUT("product/{id}")
     suspend fun updateProduct(
         @HeaderMap header: Map<String, String>,
-        @Path("id") id: String
-    ): Response<ProductDetailsData>
+        @Path("id") id: String,
+        @Body body: Map<String,String>
+    ): Response<UpdatedProductData>
 
     //Get all product categories
     @GET("product/categories")
@@ -133,11 +137,17 @@ interface APIs {
         @Body body: HashMap<String, String>
     ): Response<ReportProductResponse>
 
-    //Report product
+    //My listings
     @GET("product/mylistings")
     suspend fun getProductListings(
         @HeaderMap header: Map<String, String>
-    ): Response<ProductRequestResponse>
+    ): Response<MyListingResponse>
+
+    //Get my requests product
+    @GET("product/myrequests")
+    suspend fun getMyRequests(
+        @HeaderMap header: Map<String, String>
+    ): Response<MyRequestResponse>
 
     //Request a product
     @POST("product/request/{id}")
@@ -145,6 +155,14 @@ interface APIs {
         @HeaderMap header: Map<String, String>,
         @Path("id") id: String,
         @Body body : HashMap<String, String>
+    ): Response<ProductDeleteResponse>
+
+    //Request a product request
+    @PUT("product/request/{id}")
+    suspend fun updateProductRequest(
+        @HeaderMap header: Map<String, String>,
+        @Path("id") id: String,
+        @Query("status") status : String
     ): Response<ProductDeleteResponse>
 
     //Get product request
@@ -162,11 +180,53 @@ interface APIs {
     ): Response<ProductDetailsData>
 
     //Cancel product request
-    @DELETE("product/requests/{id}")
+    @DELETE("product/request/{id}")
     suspend fun cancelProductRequest(
         @HeaderMap header: Map<String, String>,
         @Path("id") id: String
-    ): Response<ProductDetailsData>
+    ): Response<CancelRequestReponse>
+
+    //Request details
+    @GET("product/myrequest/{id}")
+    suspend fun getRequestDetails(
+        @HeaderMap header: Map<String, String>,
+        @Path("id") id: String
+    ): Response<RequestDetails>
+
+    //=============Payment related
+    @POST("init_payment")
+    suspend fun initPayment(
+        @HeaderMap header: Map<String, String>,
+        @Body body : HashMap<String, String>
+    ): Response<InitPaymentModel>
+
+    @POST("update_payment")
+    suspend fun updatePayment(
+        @HeaderMap header: Map<String, String>,
+        @Body body : HashMap<String, String>
+    ): Response<UpdatePaymentModel>
+
+    @POST("product/{id}/feedback")
+    suspend fun sendFeedback(
+        @HeaderMap header: Map<String, String>,
+        @Path("id") id:String,
+        @Body body : HashMap<String, String>
+    ): Response<FeedbackModel>
+
+  @GET("products/search")
+    suspend fun searchQuery(
+        @HeaderMap header: Map<String, String>,
+        @Query("query") page:String,
+        @Query("lat") lat:Double,
+        @Query("long") long:Double,
+        @Query("maxDistance") maxDistance:Int
+    ): Response<SearchModel>
+
+    @POST("product/chats/send-notification")
+    suspend fun sendNotification(
+        @HeaderMap header: Map<String, String>,
+        @Body body: Map<String, String>
+    ): Response<ChatResponse>
 
 
     //For pagination

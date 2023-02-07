@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.oss.abraakadabraaapp.R
-import com.oss.abraakadabraaapp.receiver.SMSReceiver
+import com.oss.abraakadabraaapp.response.receiver.SMSReceiver
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.databinding.ActivityOtpVerificationBinding
 import com.oss.abraakadabraaapp.model.UserData

@@ -8,6 +8,8 @@ import com.google.gson.annotations.SerializedName
 data class Product(
     @SerializedName("condition")
     val condition: String,
+    @SerializedName("timestamp")
+    val timestamp: String,
     @SerializedName("distance")
     val distance: Int,
     @SerializedName("id")
@@ -15,5 +17,6 @@ data class Product(
     @SerializedName("image")
     val image: String,
     @SerializedName("name")
-    val name: String
-)
+    val name: String,
+    @SerializedName("location_name" ) var locationName : String? = null
+    )

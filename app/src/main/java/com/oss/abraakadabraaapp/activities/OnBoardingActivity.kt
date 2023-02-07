@@ -11,6 +11,7 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.auth.LoginActivity
 import com.oss.abraakadabraaapp.databinding.ActivityOnBoardingBinding
 import com.oss.abraakadabraaapp.adapter.OnboardingViewPagerAdapter
+import com.oss.abraakadabraaapp.utils.PreferencesManagement
 
 class OnBoardingActivity : BaseActivity() {
 
@@ -39,7 +40,9 @@ class OnBoardingActivity : BaseActivity() {
     }
 
     private fun skip() {
-        startActivity(Intent(this@OnBoardingActivity, LoginActivity::class.java))
+        if(PreferencesManagement.setFistOpen(this,false)){
+            startActivity(Intent(this@OnBoardingActivity, LoginActivity::class.java))
+        }
     }
 
     private fun initSlider() {

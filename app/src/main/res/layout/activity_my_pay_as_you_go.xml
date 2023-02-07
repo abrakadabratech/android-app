@@ -163,13 +163,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/textView95">
 
-            <TextView
+            <EditText
+                android:id="@+id/customAmount"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:fontFamily="@font/montserrat_regular"
                 android:padding="10dp"
-                android:text="Add Custom Amount" />
+                android:hint="Add Custom Amount" />
         </androidx.cardview.widget.CardView>
 
         <TextView

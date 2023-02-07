@@ -1,4 +1,4 @@
-package com.anilhappy.paginationsample
+package com.oss.abraakadabraaapp.datasource
 
 import com.oss.abraakadabraaapp.datasource.products.GetProducts
 import retrofit2.Retrofit
@@ -15,6 +15,7 @@ interface APIService {
         @Query("maxDistance") maxDistance:Int,
         @Query("lat") lat:Double,
         @Query("long") long:Double,
+        @Query("category") categories:String,
 
         ): GetProducts
 

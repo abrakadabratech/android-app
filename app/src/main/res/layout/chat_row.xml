@@ -30,15 +30,15 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:id="@+id/imageView20"
+                android:id="@+id/profilePic"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-
+                android:scaleType="fitXY"
                 android:src="@drawable/new_bg_theme" />
         </androidx.cardview.widget.CardView>
 
         <TextView
-            android:id="@+id/textView108"
+            android:id="@+id/userName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -53,18 +53,18 @@
             app:layout_constraintTop_toTopOf="@+id/cardView6" />
 
         <TextView
-            android:id="@+id/textView109"
+            android:id="@+id/productName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_medium"
             android:text="Ladies Hand Bag"
             android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/textView111"
-            app:layout_constraintStart_toStartOf="@+id/textView108"
-            app:layout_constraintTop_toBottomOf="@+id/textView108" />
+            app:layout_constraintBottom_toTopOf="@+id/message"
+            app:layout_constraintStart_toStartOf="@+id/userName"
+            app:layout_constraintTop_toBottomOf="@+id/userName" />
 
         <TextView
-            android:id="@+id/textView111"
+            android:id="@+id/message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="24dp"
@@ -74,19 +74,19 @@
             android:text="Hi... When can you collect"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/textView109" />
+            app:layout_constraintStart_toStartOf="@+id/productName" />
 
         <TextView
-            android:id="@+id/textView113"
+            android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/montserrat_regular"
             android:text="15 Sep 2022"
             android:textColor="@color/edit_text_color"
-            app:layout_constraintBottom_toBottomOf="@+id/textView108"
+            app:layout_constraintBottom_toBottomOf="@+id/userName"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textView108" />
+            app:layout_constraintTop_toTopOf="@+id/userName" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

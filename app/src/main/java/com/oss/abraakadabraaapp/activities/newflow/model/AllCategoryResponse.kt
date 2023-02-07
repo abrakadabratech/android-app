@@ -1,5 +1,6 @@
 package com.oss.abraakadabraaapp.activities.newflow.model
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import com.oss.abraakadabraaapp.response.mainResponse.CategoryData
 
@@ -13,7 +14,8 @@ data class AllCategoryResponse(
 data class UserCatData (
 
     @SerializedName("id"    ) var id    : String? = null,
-    @SerializedName("title" ) var title : String? = null,
-    @SerializedName("image" ) var image : String? = null
+    @SerializedName("name" ) var title : String? = null,
+    @SerializedName("image" ) var image : String? = null,
+    var isSelect:Boolean = false
 
 )

@@ -218,8 +218,8 @@
                 android:fontFamily="@font/montserrat_bold"
                 android:text="https://www.facebook.com/"
                 android:textSize="@dimen/sp_16"
-                android:visibility="gone"
                 android:textStyle="bold"
+                android:visibility="gone"
                 app:layout_constraintEnd_toStartOf="@+id/socialProfileEdt"
                 app:layout_constraintStart_toStartOf="@+id/rv_social_links"
                 app:layout_constraintTop_toBottomOf="@+id/rv_social_links" />
@@ -265,10 +265,10 @@
                 android:layout_marginStart="2dp"
                 android:layout_marginEnd="8dp"
                 android:ems="10"
-                android:visibility="gone"
                 android:hint="Enter Profile"
                 android:inputType="textPersonName"
                 android:textSize="18sp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/socialProfileHeader"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/socialProfileHeader"
@@ -368,7 +368,7 @@
         android:enabled="false"
 
         android:fontFamily="@font/montserrat_bold"
-        android:hint="Walter M"
+        android:hint="Edit your Name"
         android:textColor="#1D2126"
         android:textColorHint="#1D2126"
         android:textSize="24sp"
@@ -386,7 +386,7 @@
         app:layout_constraintTop_toBottomOf="@+id/nameEdit" />
 
     <TextView
-        android:id="@+id/textView122"
+        android:id="@+id/profileStatus"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -396,7 +396,7 @@
         android:fontFamily="@font/montserrat_semi_bold"
         android:text="Pending"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView38"
+        app:layout_constraintStart_toEndOf="@+id/profileStatusImage"
         app:layout_constraintTop_toBottomOf="@+id/nameEdit" />
 
     <LinearLayout
@@ -428,7 +428,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:hint="Walter@gmail.com"
+                android:hint="Edit your email"
                 android:textSize="18sp"
                 android:enabled="false"
                 android:inputType="textEmailAddress"
@@ -469,7 +469,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:hint="+91 97406123456"
+                android:hint="Edit your phone number"
                 android:textSize="18sp"
                 android:enabled="false"
                 android:inputType="phone"
@@ -579,7 +579,7 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/imageView38"
+        android:id="@+id/profileStatusImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"

@@ -160,4 +160,12 @@ dependencies {
 // Android Jetpack Paging 3.0
 //    implementation "androidx.paging:paging-runtime:3.0.0-alpha06"
 
+    implementation 'com.google.firebase:firebase-firestore-ktx'
+
+    //Razor pay
+    implementation 'com.razorpay:checkout:1.6.26'
+
+    // FirebaseUI for Cloud Firestore
+    implementation 'com.firebaseui:firebase-ui-firestore:8.0.2'
+
 }

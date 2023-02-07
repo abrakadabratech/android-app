@@ -41,7 +41,7 @@ class MyListingAdapter(val newMyRequestActivity: Context,
         }
 
         holder.nameTxt.setText(data.get(position).name)
-        holder.listedOnTxt.setText(data.get(position).createdAt)
+        holder.listedOnTxt.setText("Listed on "+data.get(position).createdAt)
         holder.statusTxt.setText("Status - "+data.get(position).status)
         if (data.get(position).status == "given"){
             holder.statusTxt.setTextColor(newMyRequestActivity.resources.getColor(R.color.given_color))

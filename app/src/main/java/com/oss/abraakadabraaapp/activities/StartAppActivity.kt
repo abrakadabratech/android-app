@@ -23,6 +23,10 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.gms.location.*
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.gson.Gson
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -30,16 +34,23 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
+import com.oss.abraakadabraaapp.activities.auth.AuthUserDetailActivity
 import com.oss.abraakadabraaapp.activities.auth.LoginActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.DataClass
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.databinding.ActivityStartAppBinding
 import com.oss.abraakadabraaapp.databinding.SplashContentBinding
 import com.oss.abraakadabraaapp.model.UserLocation
 import com.oss.abraakadabraaapp.module.GlideApp
+import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.retrofit.utils.ApiConstants
+import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.ImageUtils
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
+import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import com.oss.abraakadabraaapp.viewModel.MainViewModel
+import org.json.JSONObject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.IOException
 import java.util.*
@@ -48,6 +59,7 @@ class StartAppActivity : BaseActivity() {
 
     private lateinit var binding: ActivityStartAppBinding
     private lateinit var contentBinding: SplashContentBinding
+    private val authViewModel: AuthViewModel by viewModel()
 
     private val mainViewModel: MainViewModel by viewModel()
     lateinit var mAuth : FirebaseAuth
@@ -67,13 +79,17 @@ class StartAppActivity : BaseActivity() {
             )
 
 
-       // setUpObserver() // Old Code
+        setUpObserver() // Old Code
        // startApp() //New Code
     }
 
     private fun setUpObserver() {
 
-        mainViewModel.addressSuccess.observe(this) {
+        authViewModel.updateUserSuccess.observe(this){
+
+        }
+
+        /*mainViewModel.addressSuccess.observe(this) {
             val data = it.results[0]
 //            val fullAddress = data.formattedAddress
 //            var pinCode = ""
@@ -110,7 +126,7 @@ class StartAppActivity : BaseActivity() {
             )
 
             startApp()
-        }
+        }*/
     }
 
 
@@ -273,14 +289,55 @@ class StartAppActivity : BaseActivity() {
     }
 
     private fun startApp() {
+
         Handler(Looper.getMainLooper()).postDelayed({
 //            if (PreferencesManagement.getUserData(this) != null) {
+
             if (mAuth.currentUser != null) {
                 generateAuthToken()
+                FirebaseMessaging.getInstance().token.addOnSuccessListener {
+                    PreferencesManagement.saveFCMToken(this,it)
+                    val data = UsersData(
+                        fcmToken = PreferencesManagement.getFCMToken(this)!!
+                    )
+                    val dataClass = DataClass(data)
+
+                    val map = HashMap<String, String>()
+                    val token = PreferencesManagement.getAuthToken(this)!!
+                    map[RequestKeys.authorization] = token
+                    Log.d(
+                        NewHomeActivity.TAG,
+                        "Token in Accounts fragment: ${JSONObject(Gson().toJson(dataClass))}"
+                    )
+                    authViewModel.updateUser(map, dataClass)
+
+                }.addOnFailureListener {
+                    loader(false)
+                    if (BuildConfig.DEBUG) showToast("Error Please try again ! ${it.localizedMessage}") else showToast(
+                        "Error Please try again !"
+                    )
+                }
+
                 startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
             } else {
-                startActivity(Intent(this@StartAppActivity, OnBoardingActivity::class.java))
+
+                if (PreferencesManagement.isFistOpen(this)){
+                    startActivity(Intent(this@StartAppActivity, OnBoardingActivity::class.java))
+
+                }else{
+                    startActivity(Intent(this@StartAppActivity, LoginActivity::class.java))
+
+                }
             }
+            /*if (PreferencesManagement.getUserInfo(this)?.data?.phone != null){
+
+            }else{
+                showToast("Seems! you haven't setup name and email. Please login again")
+                Firebase.auth.signOut()
+                startActivity(Intent(this@StartAppActivity, LoginActivity::class.java))
+
+            }
+*/
             finish()
 //        }, if (BuildConfig.DEBUG) 0 else 2000)
         }, 2000)

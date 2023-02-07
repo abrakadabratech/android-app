@@ -1,5 +1,6 @@
 package com.oss.abraakadabraaapp.activities
 
+import Data
 import android.Manifest
 import android.app.Activity
 import android.content.Context
@@ -65,7 +66,7 @@ class HomeActivity : BaseActivity(),
     private var categoryList: ArrayList<UserCatData> = ArrayList()
     private val categoryAdapter = CategoryAdapter(categoryList, this, this,"")
 
-    private var latestProductList: ArrayList<LatestProductData> = ArrayList()
+    private var latestProductList: ArrayList<Data> = ArrayList()
     private val latestProductAdapter = LatestProductAdapter(latestProductList, this, this)
 
     private var pageStart = 1
@@ -355,7 +356,7 @@ class HomeActivity : BaseActivity(),
 
             if (latestProductData.isNotEmpty()) {
                 if (currentPage == pageStart) latestProductList.clear()
-                latestProductList.addAll(latestProductData)
+//                latestProductList.addAll(latestProductData)
                 latestProductAdapter.notifyDataSetChanged()
                 noDataBinding.clNoData.visibility = View.GONE
 
@@ -702,11 +703,11 @@ class HomeActivity : BaseActivity(),
         )
     }
 
-    override fun onItemDetail(data: LatestProductData, position: Int) {
-        productData = data
+    override fun onItemDetail(data: Data, position: Int) {
+//        productData = data
         this.position = position.toString()
         val intent = Intent(this@HomeActivity, ProductDetailActivity::class.java)
-        intent.putExtra(Constants.productId, data.productId.toString())
+        intent.putExtra(Constants.productId, data.id.toString())
         intent.putExtra(Constants.newRequest, Constants.newRequest)
         launchProductDetailActivity.launch(intent)
     }
@@ -717,7 +718,7 @@ class HomeActivity : BaseActivity(),
             if (result.resultCode == Activity.RESULT_OK) {
                 if (data != null && data.hasExtra(Constants.success)) {
                     when (data.getStringExtra(Constants.success)!!) {
-                        Constants.success -> {
+                       /* Constants.success -> {
                             productData = data.getParcelableExtra(Constants.editProduct)!!
                             latestProductList[position.toInt()].fullAddress =
                                 productData.fullAddress
@@ -725,7 +726,7 @@ class HomeActivity : BaseActivity(),
                             latestProductList[position.toInt()].image = productData.image
                             latestProductList[position.toInt()].productId = productData.productId
                             latestProductList[position.toInt()].userId = productData.userId
-                        }
+                        }*/
                         Constants.failure -> {
                             latestProductList.removeAt(position.toInt())
                         }

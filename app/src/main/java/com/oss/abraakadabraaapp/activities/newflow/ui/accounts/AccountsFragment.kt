@@ -1,5 +1,6 @@
 package com.oss.abraakadabraaapp.activities.newflow.ui.accounts
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -11,11 +12,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
-import com.oss.abraakadabraaapp.activities.auth.AuthUserDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.*
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
 import com.oss.abraakadabraaapp.databinding.FragmentAccountsBinding
-import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.API_TAG
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_ON_ACCOUNTS
@@ -23,6 +22,7 @@ import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 class AccountsFragment : Fragment(), View.OnClickListener {
 
@@ -49,7 +49,10 @@ class AccountsFragment : Fragment(), View.OnClickListener {
 
         binding.ivBack.setOnClickListener{
             application.postClick(BUTTON_BACK_ON_ACCOUNTS)
-            requireActivity().onBackPressed()
+            val activity: Activity? = activity
+            if (activity != null) {
+                requireActivity().onBackPressed()
+            }
         }
         binding.myListingLayout.setOnClickListener(this)
         binding.myRequestLayout.setOnClickListener(this)
@@ -72,26 +75,29 @@ class AccountsFragment : Fragment(), View.OnClickListener {
         setUpProfile()
     }
     private fun setUpObserver() {
-
-        authViewModel.getUserSuccess.observe(requireActivity()) {
+        val activity: Activity? = activity
+        if (activity != null) {
+            authViewModel.getUserSuccess.observe(requireActivity()) {
 //            showToast(it.responseMessage.toString())
-            PreferencesManagement.saveUserInfo(requireContext(),it)
-            setUpProfile()
+                PreferencesManagement.saveUserInfo(requireContext(),it)
+                setUpProfile()
+            }
+
+            authViewModel.errorMessage.observe(requireActivity()) { if (it.isNotBlank()) Log.d(
+                API_TAG,
+                "setUpObserver: $it"
+            ) }
+
+            authViewModel.isLoading.observe(requireActivity()) { application.loader(it) }
         }
 
-        authViewModel.errorMessage.observe(requireActivity()) { if (it.isNotBlank()) Log.d(
-            API_TAG,
-            "setUpObserver: $it"
-        ) }
-
-        authViewModel.isLoading.observe(requireActivity()) { application.loader(it) }
     }
 
     private fun setUpProfile() {
         val it: GetUserResponse? = PreferencesManagement.getUserInfo(requireContext())
         if (it != null){
             with(binding){
-                userName.text = it.data?.name
+                userName.text = if(it.data?.name != null) it.data?.name.toString() else "Set Ur Name"
                 Glide.with(this@AccountsFragment)
                     .load(it.data?.userAvatar)
                     .placeholder(resources.getDrawable(R.drawable.ic_profile))

@@ -36,8 +36,12 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.MyListingActivity
+import com.oss.abraakadabraaapp.activities.newflow.adapters.CatMainAdapter
 import com.oss.abraakadabraaapp.activities.newflow.adapters.CategoryDialogAdapter
+import com.oss.abraakadabraaapp.activities.newflow.adapters.ConditionDialogAdapter
+import com.oss.abraakadabraaapp.activities.newflow.model.AllCategoryResponse
 import com.oss.abraakadabraaapp.activities.newflow.model.CatData
+import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.adapter.ImageAdapter
 import com.oss.abraakadabraaapp.databinding.NewGiverFlowFragmentBinding
 import com.oss.abraakadabraaapp.model.ProductImage
@@ -54,18 +58,22 @@ import id.zelory.compressor.Compressor
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
+import org.greenrobot.eventbus.EventBus
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
-    CategoryDialogAdapter.CategoryDialogAdapterInterface {
-    private var PROD_CATEGORY: String = "Electronics"
-    private var PROD_CONDITION: String = "Almost New"
-    private var PROD_USED_FOR: String = "Less Than 6 Months"
+    CategoryDialogAdapter.CategoryDialogAdapterInterface,
+CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAdapterInterface{
+    private var PROD_CATEGORY: String = ""
+    private var PROD_CONDITION: String = ""
+    private var PROD_USED_FOR: String = ""
     private var LOCATION_NAME: String = ""
     private var lattitude: Double = 0.0
     private var longitude: Double = 0.0
     lateinit var application: BaseActivity
+
+    lateinit var userCatData: AllCategoryResponse
 
     private val mainViewModel: AuthViewModel by viewModel()
     private var photoList = ArrayList<ProductImage>()
@@ -74,6 +82,7 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
     private lateinit var imageAdapter: ImageAdapter
     private var deleteDataString = ""
     var list = arrayListOf<CatData>()
+    var listConditon = arrayListOf<CatData>()
 
     lateinit var userLocation: UserLocation
 
@@ -85,8 +94,9 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
 
     lateinit var alertDialog: AlertDialog
     lateinit var alertAdaper: CategoryDialogAdapter
-
-
+    lateinit var condtionAdapter: ConditionDialogAdapter
+    lateinit var mainCatAdapter: CatMainAdapter
+    lateinit var mainAdapterList:ArrayList<UserCatData>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -101,16 +111,26 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
 
         application = (activity as BaseActivity)
 
-        userLocation = PreferencesManagement.getUserLocation(requireContext())!!
+        if(PreferencesManagement.getUserLocation(requireContext()) != null){
+            userLocation = PreferencesManagement.getUserLocation(requireContext())!!
+        }else{
+            application.getLastLocation()
+        }
 
+        userCatData = PreferencesManagement.getCategories(requireActivity())!!
+
+        if (userCatData.data.size > 0){
+            mainAdapterList = userCatData.data
+            mainAdapterList[0].isSelect = true
+        }
         application.postEvent(Constants.PAGE_GIVER, null)
 
         imageAdapter = ImageAdapter(photoList, requireContext(), this)
 
         initUI()
+        loadUsedForData()
+        loadConditionData()
         setUpObserver()
-
-
         clickEvents()
 
         getUserLocation()
@@ -124,7 +144,16 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
     }
 
     private fun clickEvents() {
-        alertAdaper = CategoryDialogAdapter(requireContext(), arrayListOf(), this,"")
+
+        //Cat adpater
+        mainCatAdapter = CatMainAdapter(requireContext(),mainAdapterList,this)
+
+        //Used for adapter
+        alertAdaper = CategoryDialogAdapter(requireContext(),list, this,"")
+
+        //Condition adapter
+        condtionAdapter = ConditionDialogAdapter(requireContext(), listConditon, this)
+
         binding.catgoryLinearLayout.setOnClickListener {
             application.postClick(Constants.BUTTON_CATEGORY_SELECT)
             showCategoryFilterDialog()
@@ -141,7 +170,8 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
             application.postClick(Constants.BUTTON_SUBMIT)
             if (binding.iAgreeCheckbox.isChecked) {
                 if (isValidate()) {
-                    showSubmitCautionDialog()
+                    //showSubmitCautionDialog()
+                    postNewProduct()
                 }
             } else {
                 showToast("Please select I Agree to continue")
@@ -321,11 +351,17 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
     }
 
     private fun openYourActivity() {
-        val intent = Intent()
-        intent.type = "image/*"
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-        intent.action = Intent.ACTION_GET_CONTENT
-        launchSomeActivity.launch(intent)
+        val intent = Intent(requireContext(), ImagePickerActivity::class.java)
+        intent.putExtra(
+            ImagePickerActivity.INTENT_IMAGE_PICKER_OPTION,
+            ImagePickerActivity.REQUEST_GALLERY_IMAGE
+        )
+
+        intent.putExtra(ImagePickerActivity.INTENT_SET_BITMAP_MAX_WIDTH_HEIGHT, true)
+        intent.putExtra(ImagePickerActivity.INTENT_BITMAP_MAX_WIDTH, 1000)
+        intent.putExtra(ImagePickerActivity.INTENT_BITMAP_MAX_HEIGHT, 1000)
+        businessProofImageActivity.launch(intent)
+
     }
 
     private fun showCategoryFilterDialog() {
@@ -341,16 +377,17 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
         val catRecycler = dialogView.findViewById<RecyclerView>(R.id.catRecycler)
 
         catRecycler.layoutManager = LinearLayoutManager(context)
-        alertAdaper.i = loadData()
-        alertAdaper.alerttype = "category"
-        alertAdaper = alertAdaper
-        catRecycler.adapter = alertAdaper
+//        alertAdaper.i = loadData()
+//        alertAdaper.alerttype = "category"
+//        alertAdaper = alertAdaper
+        catRecycler.adapter = mainCatAdapter
         alertAdaper.notifyDataSetChanged()
 
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
-
+        PROD_CATEGORY = mainAdapterList[0].id.toString()
+        binding.cateogoryTxt.error = null
         alertDialog.show()
     }
 
@@ -364,14 +401,16 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
         alertName.text = "Condition"
         val catRecycler = dialogView.findViewById<RecyclerView>(R.id.catRecycler)
         catRecycler.layoutManager = LinearLayoutManager(context)
-        alertAdaper.i = loadConditionData()
-        alertAdaper.alerttype = "condition"
-        catRecycler.adapter = alertAdaper
-        alertAdaper.notifyDataSetChanged()
+
+        // Condition adapter
+        catRecycler.adapter = condtionAdapter
+        condtionAdapter.notifyDataSetChanged()
 
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
+        PROD_CONDITION = listConditon[0].toString()
+        binding.conditionTxt.error = null
 
         alertDialog.show()
     }
@@ -388,8 +427,8 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
         alertName.text = "Used For"
         val catRecycler = dialogView.findViewById<RecyclerView>(R.id.catRecycler)
         catRecycler.layoutManager = LinearLayoutManager(context)
-        alertAdaper.i = loadUsedForData()
-        alertAdaper.alerttype = "used_for"
+//        alertAdaper.i = loadUsedForData()
+//        alertAdaper.alerttype = "used_for"
 
         catRecycler.adapter = alertAdaper
         alertAdaper.notifyDataSetChanged()
@@ -397,6 +436,8 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
+        PROD_USED_FOR = list[0].toString()
+        binding.usedForTxt.error = null
 
         alertDialog.show()
     }
@@ -438,17 +479,21 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
             addImage()
             if (application.isNetworkAvailable()) {
                 application.generateAuthToken()
-                val map = HashMap<String, RequestBody>()
-                map["name"] = JavaUtils.toRequestBody(binding.etProductName.text.toString().trim())
-                map["category"] = JavaUtils.toRequestBody(PROD_CATEGORY)
-                map["description"] = JavaUtils.toRequestBody(binding.descEdt.text.toString().trim())
-                map["condition"] = JavaUtils.toRequestBody(PROD_CONDITION)
-                map["used_for"] = JavaUtils.toRequestBody(PROD_USED_FOR)
-                map["location_name"] = JavaUtils.toRequestBody(userLocation.address)
-                map["latitude"] = JavaUtils.toRequestBody(userLocation.lat)
-                map["longitude"] = JavaUtils.toRequestBody(userLocation.long)
+                if (userLocation != null){
+                    val map = HashMap<String, RequestBody>()
+                    map["name"] = JavaUtils.toRequestBody(binding.etProductName.text.toString().trim())
+                    map["category"] = JavaUtils.toRequestBody(PROD_CATEGORY)
+                    map["description"] = JavaUtils.toRequestBody(binding.descEdt.text.toString().trim())
+                    map["condition"] = JavaUtils.toRequestBody(PROD_CONDITION)
+                    map["used_for"] = JavaUtils.toRequestBody(PROD_USED_FOR)
+                    map["location_name"] = JavaUtils.toRequestBody(userLocation.address)
+                    map["latitude"] = JavaUtils.toRequestBody(userLocation.lat)
+                    map["longitude"] = JavaUtils.toRequestBody(userLocation.long)
 
-                manageProduct(map)
+                    manageProduct(map)
+                }else{
+                    showToast("Please turn on your location")
+                }
             }
         }
     }
@@ -465,21 +510,28 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
     }
 
     private fun setUpObserver() {
+        val activity: Activity? = activity
+        if (activity != null) {
+            mainViewModel.postProductSuccess.observe(requireActivity()) {
+                it.responseMessage?.let { it1 ->
+                    showToast(it1)
+                    alertDialog.dismiss()
+                    clearAll()
+                    EventBus.getDefault().post("clear")
+//                requireActivity().finish()
+                    val intent = Intent(context, MyListingActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
+                }
 
-        mainViewModel.postProductSuccess.observe(requireActivity()) {
-            it.responseMessage?.let { it1 ->
-                showToast(it1)
-                alertDialog.dismiss()
-                clearAll()
-                startActivity(Intent(context, MyListingActivity::class.java))
             }
+            mainViewModel.isLoading.observe(requireActivity(), { application.loader(it) })
 
+            mainViewModel.errorMessage.observe(
+                requireActivity(),
+                { if (it.isNotBlank()) showToast(it) })
         }
-        mainViewModel.isLoading.observe(requireActivity(), { application.loader(it) })
 
-        mainViewModel.errorMessage.observe(
-            requireActivity(),
-            { if (it.isNotBlank()) showToast(it) })
     }
 
     private fun clearAll() {
@@ -557,6 +609,9 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
     }
 
     private fun loadData(): ArrayList<CatData> {
+
+        userCatData = PreferencesManagement.getCategories(requireContext())!!
+//        list.addAll(userCatData.data)
         list.clear()
         list.add(CatData("Electronics", true))
         list.add(CatData("Clothing", false))
@@ -573,13 +628,13 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
     }
 
     private fun loadConditionData(): ArrayList<CatData> {
-        list.clear()
-        list.add(CatData("Almost New", true))
-        list.add(CatData("Good", false))
-        list.add(CatData("Average", false))
-        list.add(CatData("Needs Repair", false))
+        listConditon.clear()
+        listConditon.add(CatData("Almost New", true))
+        listConditon.add(CatData("Good", false))
+        listConditon.add(CatData("Average", false))
+        listConditon.add(CatData("Needs Repair", false))
 
-        return list
+        return listConditon
     }
 
     private fun loadUsedForData(): ArrayList<CatData> {
@@ -592,18 +647,7 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
         return list
     }
 
-    override fun onItemClick(position: Int, isSelect: Boolean,alerttype:String) {
-//        list.get(position).isSelect = isSelect
-        when(alerttype){
-            "category" ->   PROD_CATEGORY = list[position].name
-            "condition" ->   PROD_CONDITION = list[position].name
-            "used_for" ->   PROD_USED_FOR = list[position].name
-        }
-        for (i in 0 until list.size) list[i].isSelect = i == position
 
-        alertAdaper.notifyDataSetChanged()
-//        alertDialog.dismiss()
-    }
 
     private fun isValidate(): Boolean {
         with(binding) {
@@ -611,12 +655,32 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
             if (etProductName.text!!.toString().trim().isNotBlank()) {
                 textView6.isErrorEnabled = false
             }
+            if (PROD_CONDITION == ""){
+                showToast("Please select a condition of product")
+                conditionTxt.error = "Please select a condition of product"
+            }
 
             return when {
                 etProductName.text!!.toString().trim().isBlank() -> {
                     textView6.error = "Please Enter Product Name"
                     false
                 }
+                PROD_CATEGORY == "" -> {
+                    cateogoryTxt.error = "Please select category of product"
+                    showToast("Please select category of product!")
+                    false
+                }
+                PROD_CONDITION == "" -> {
+                    conditionTxt.error = "Please Select condition of product"
+                    showToast("Please select condition of product!")
+                    false
+                }
+                PROD_USED_FOR == "" -> {
+                    usedForTxt.error = "Please select used for"
+                    showToast("Please select used for!")
+                    false
+                }
+
                 /*genderSpinner.selectedItem.toString() == resources.getString(R.string.select_gender) -> {
                     showToast("Please Select Gender")
                     false
@@ -645,13 +709,18 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
                     textInputDescription.error = "Please Enter Product Description"
                     false
                 }*/
+
                 descEdt.text!!.toString().trim().length > 300 -> {
                     descEdt.error =
                         "Please Enter Product Description less than 300 characters"
                     false
                 }
-                photoList.size < 2 -> {
+                photoList.size <= 2 -> {
                     showToast("Please add at least 1 image")
+                    false
+                }
+                photoList.size >= 5 -> {
+                    showToast("Maximum photo are 5.Please remove some")
                     false
                 }
                 else -> true
@@ -659,5 +728,27 @@ class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
         }
     }
 
+    override fun onMainItemClick(position: Int, isSelect: Boolean) {
+        PROD_CATEGORY = mainAdapterList[position].id.toString()
+
+        for (i in 0 until mainAdapterList.size) mainAdapterList[i].isSelect = i == position
+
+        mainCatAdapter.notifyDataSetChanged()
+    }
+
+    override fun onConditionItemClick(position: Int, isSelect: Boolean) {
+        for (i in 0 until listConditon.size) listConditon[i].isSelect = i == position
+        PROD_CONDITION = listConditon[position].name.toString()
+
+        condtionAdapter.notifyDataSetChanged()
+    }
+    override fun onItemClick(position: Int, isSelect: Boolean,alerttype:String) {
+//        list.get(position).isSelect = isSelect
+        for (i in 0 until list.size) list[i].isSelect = i == position
+        PROD_USED_FOR = list[position].name.toString()
+
+        alertAdaper.notifyDataSetChanged()
+//        alertDialog.dismiss()
+    }
 
 }

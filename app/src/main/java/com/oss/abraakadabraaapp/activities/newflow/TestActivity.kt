@@ -1,5 +1,6 @@
 package com.oss.abraakadabraaapp.activities.newflow
 
+import Data
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.content.ContentProviderCompat.requireContext
@@ -33,7 +34,7 @@ class TestActivity : AppCompatActivity(),CategoryAdapter.CategoryAdapterInterfac
         setContentView(binding.root)
 
         categoryAdapter = CategoryAdapter(categoryList, this, this, "")
-        latestProductAdapter = LatestProductAdapter(latestProductList, this, this)
+//        latestProductAdapter = LatestProductAdapter(latestProductList, this, this)
 
         setUpRecyclerView()
 
@@ -43,16 +44,14 @@ class TestActivity : AppCompatActivity(),CategoryAdapter.CategoryAdapterInterfac
         TODO("Not yet implemented")
     }
 
+/*
     override fun onItemDetail(data: LatestProductData, position: Int) {
         TODO("Not yet implemented")
     }
+*/
 
 
     private fun setUpRecyclerView() {
-//        val view = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
-
-//        view.visibility = View.GONE
-//        val navBar = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
 
         val lm = GridLayoutManager(this, 2)
 //        binding.rvHomeCategory.isNestedScrollingEnabled = false
@@ -97,6 +96,10 @@ class TestActivity : AppCompatActivity(),CategoryAdapter.CategoryAdapterInterfac
                 }else EventBus.getDefault().post(1)*/
             }
         })
+    }
+
+    override fun onItemDetail(data: Data, position: Int) {
+        TODO("Not yet implemented")
     }
 
 }

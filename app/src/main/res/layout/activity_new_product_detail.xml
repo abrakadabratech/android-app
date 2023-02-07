@@ -173,7 +173,7 @@
                         android:padding="8dp"
                         android:rotation="90"
                         android:src="@drawable/ic_menu_dots"
-                        android:visibility="visible" />
+                        android:visibility="gone" />
 
                     <com.denzcoskun.imageslider.ImageSlider
                         android:id="@+id/image_slider"
@@ -378,7 +378,7 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView3"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="94dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 app:cardCornerRadius="8dp"
@@ -392,6 +392,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="5dp"
+                    android:padding="8dp"
                     android:fontFamily="@font/montserrat_regular"
                     android:text="Eg- Ladies Bag, bought it on my first foreign trip in running condition.\n\nGive close description of the item as possible to increase the response"
                     android:textColor="@color/edit_text_color"
@@ -491,7 +492,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView31"
                 app:layout_constraintVertical_bias="0.0">
 
-                <com.google.android.gms.maps.MapView
+                <FrameLayout
                     android:id="@+id/maps_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />

@@ -4,19 +4,20 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.cardview.widget.CardView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.newflow.MyListingDetialActivity
-import com.oss.abraakadabraaapp.activities.newflow.NewMyRequestActivity
 import com.oss.abraakadabraaapp.activities.newflow.RequesterActivity
-import com.oss.abraakadabraaapp.activities.newflow.ui.MyRequestDetailsActivity
+import com.oss.abraakadabraaapp.response.productRequestResponse.Requests
 
-class MyRequestedUsersAdapter(val newMyRequestActivity: MyListingDetialActivity, val i: Int)
+class MyRequestedUsersAdapter(val context: MyListingDetialActivity, val data: ArrayList<Requests>,val onclick:OnRequestClicks)
     : RecyclerView.Adapter<MyRequestedUsersAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-//        var cardItem = itemView.findViewById<CardView>(R.id.cardItem)
+        var userName = itemView.findViewById<TextView>(R.id.userName)
+        var message = itemView.findViewById<TextView>(R.id.message)
+        var locatinName = itemView.findViewById<TextView>(R.id.locatinName)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -24,13 +25,21 @@ class MyRequestedUsersAdapter(val newMyRequestActivity: MyListingDetialActivity,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.userName.setText(data[position].username)
+        holder.message.setText(data[position].message)
+        holder.locatinName.setText(context.getAddress(data[position].coordinates?.Latitude?.toDouble()!!,
+            data[position].coordinates?.Longitude?.toDouble()!!
+        ))
         holder.itemView.setOnClickListener {
-            newMyRequestActivity.startActivity(Intent(newMyRequestActivity,RequesterActivity::class.java))
+            onclick.onClick(position)
         }
     }
 
-
     override fun getItemCount(): Int {
-        return i
+        return data.size
+    }
+
+    interface OnRequestClicks{
+        fun onClick(position:Int)
     }
 }

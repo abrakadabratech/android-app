@@ -1,5 +1,6 @@
 package com.oss.abraakadabraaapp.activities.newflow.ui.menu
 
+import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
@@ -7,8 +8,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
@@ -17,14 +16,12 @@ import com.google.firebase.ktx.Firebase
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.ContentManagementActivity
 import com.oss.abraakadabraaapp.activities.auth.LoginActivity
-import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.databinding.NewMenuScreenBinding
-import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
-import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 class MenuFragment : Fragment() {
     lateinit var application: BaseActivity
@@ -110,26 +107,29 @@ class MenuFragment : Fragment() {
     }
 
     private fun setUpObserver() {
+        val activity: Activity? = activity
+        if (activity != null) {
+            authViewModel.logoutNewSuccess.observe(requireActivity()) {
+                if (it.code == 200) {
+                    application.showToast(it.responseMessage.toString())
+                    Firebase.auth.signOut()
+                    requireActivity().finish()
+                    requireActivity().startActivity(
+                        Intent(requireActivity(), LoginActivity::class.java)
+                    )
+                }
+            }
 
-        authViewModel.logoutNewSuccess.observe(requireActivity()) {
-            if (it.code == 200) {
-                application.showToast(it.responseMessage.toString())
-                Firebase.auth.signOut()
-                requireActivity().finish()
-                requireActivity().startActivity(
-                    Intent(requireActivity(), LoginActivity::class.java)
+            authViewModel.errorMessage.observe(requireActivity()) {
+                if (it.isNotBlank()) Log.d(
+                    Constants.API_TAG,
+                    "setUpObserver: $it"
                 )
             }
+
+            authViewModel.isLoading.observe(requireActivity()) { application.loader(it) }
         }
 
-        authViewModel.errorMessage.observe(requireActivity()) {
-            if (it.isNotBlank()) Log.d(
-                Constants.API_TAG,
-                "setUpObserver: $it"
-            )
-        }
-
-        authViewModel.isLoading.observe(requireActivity()) { application.loader(it) }
     }
 
 

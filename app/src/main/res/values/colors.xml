@@ -67,5 +67,8 @@
     <color name="cat_select_color">#3C8F7C</color>
     <color name="cat_unselect_color">#727C8E</color>
     <color name="blue_text_color">#355389</color>
+    <color name="status_pending">#FE962F</color>
+    <color name="status_accepted">#2D7A76</color>
+    <color name="status_declined">#F95565</color>
 
 </resources>

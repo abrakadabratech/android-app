@@ -2,10 +2,13 @@ package com.oss.abraakadabraaapp.utils
 
 import android.content.Context
 import com.google.gson.Gson
-import com.oss.abraakadabraaapp.activities.auth.LoginActivity
+import com.oss.abraakadabraaapp.activities.StartAppActivity
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
+import com.oss.abraakadabraaapp.activities.newflow.model.AllCategoryResponse
+import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.model.UserData
 import com.oss.abraakadabraaapp.model.UserLocation
+import kotlin.collections.ArrayList
 
 
 object PreferencesManagement {
@@ -135,5 +138,47 @@ object PreferencesManagement {
 
         return json
 
+    }
+
+    fun saveCategories(context: Context, data: AllCategoryResponse):Boolean {
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        val prefsEditor = pref.edit()
+
+        if (data == null) {
+            prefsEditor.putString("userCategories", null)
+        } else {
+            val json = Gson().toJson(data)
+            prefsEditor.putString("userCategories", json)
+        }
+        return prefsEditor.commit()
+    }
+
+    fun getCategories(context: Context): AllCategoryResponse? {
+
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        val json = pref.getString("userCategories", null)
+
+        return if (json == null)
+            null
+        else
+            Gson().fromJson(json, AllCategoryResponse::class.java)
+
+    }
+
+    fun isFistOpen(context: Context): Boolean {
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        return pref.getBoolean("IS_FIRST_OPEN",true)
+    }
+
+    fun setFistOpen(context: Context,boolean: Boolean): Boolean {
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        val prefsEditor = pref.edit()
+        prefsEditor.putBoolean("IS_FIRST_OPEN", boolean)
+
+        return prefsEditor.commit()
     }
 }

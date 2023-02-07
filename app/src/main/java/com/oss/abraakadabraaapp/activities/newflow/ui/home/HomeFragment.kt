@@ -15,6 +15,7 @@ import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.HomeActivity
+import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewNotificationActivity
 import com.oss.abraakadabraaapp.databinding.FragmentHomeBinding
 import com.oss.abraakadabraaapp.location.livedata.LocationViewModel
@@ -24,6 +25,8 @@ import com.oss.abraakadabraaapp.utils.Constants.BUTTON_NOTIFICATION
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SHARE
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.IOException
 import java.util.*
@@ -121,9 +124,6 @@ class HomeFragment : Fragment() {
         val userLocation = PreferencesManagement.getUserLocation(requireContext())
         binding.locationOnActionbar.text = userLocation?.address
     }
-    override fun onStart() {
-        super.onStart()
-    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -134,13 +134,8 @@ class HomeFragment : Fragment() {
         val i = Intent(Intent.ACTION_SEND)
         i.type = "text/plain"
         i.putExtra(Intent.EXTRA_SUBJECT, "Subject test")
-        i.putExtra(Intent.EXTRA_TEXT, "Try this great app Abra Ka Dabra to share second hand products with others for free. App is available at the below link: link")
+        i.putExtra(Intent.EXTRA_TEXT, "Try this great app Abra Ka Dabra to share second hand products with others for free. App is available at the below link: https://play.google.com/store/apps/details?id=com.oss.abraakadabraaapp")
         startActivity(Intent.createChooser(i, "Share"))
-
-//        val modalBottomSheet = ModalBottomSheet()
-//
-//        modalBottomSheet.show(requireActivity().supportFragmentManager, ModalBottomSheet.TAG)
-
     }
 
     fun getAddress(lat: Double, lng: Double) :String{
@@ -189,5 +184,31 @@ class HomeFragment : Fragment() {
             Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
         }
         return ""
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: String?) {
+
+        // Do something
+        if(event == "clear"){
+            binding.receiveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
+            binding.receiveBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
+            binding.giveBtn.setTextColor(resources.getColor(R.color.hyper_link_text_color))
+            binding.giveBtn.background = null
+            fragmentManager?.beginTransaction()
+                ?.replace(R.id.container, NewReceiverFragment::class.java, null)
+                ?.setReorderingAllowed(true)
+//                .addToBackStack("name") // name can be null
+                ?.commit()
+            EventBus.getDefault().post(1)
+        }
+    }
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
     }
 }

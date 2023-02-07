@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,109 +7,239 @@
     android:background="@color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/transparent"
-        android:fitsSystemWindows="true">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/editMenuDialog"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/alert_bg_color"
+        android:elevation="4dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/toolbar_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:toolbarId="@+id/toolbar">
-            <ImageView
-                android:id="@+id/iv_back"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="@dimen/dp_17"
-                android:background="@drawable/rounded_rect_shape_white_color"
-                android:clickable="true"
-                android:padding="8dp"
-                android:contentDescription="@null"
-                android:focusable="true"
-                android:elevation="8dp"
-                android:src="@drawable/ic_back_arrow"
-                android:visibility="visible" />
-            <ImageView
-                android:id="@+id/iv_menu"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="@dimen/dp_17"
-                android:background="@drawable/rounded_rect_shape_white_color"
-                android:clickable="true"
-                android:padding="8dp"
-                android:layout_gravity="right"
-                android:contentDescription="@null"
-                android:focusable="true"
-                android:elevation="8dp"
-                android:rotation="90"
-                android:src="@drawable/ic_menu_dots"
-                android:visibility="gone" />
-            <com.denzcoskun.imageslider.ImageSlider
-                android:id="@+id/image_slider"
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/editCardview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/new_bg_color"
+            app:cardCornerRadius="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.4"
+            app:layout_constraintHorizontal_bias="0.94"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.050000012"
+            app:layout_constraintWidth_percent="0.8">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="350dp"
-                app:iss_auto_cycle="false"
-                app:layout_constraintHeight_percent="0.36"
-                android:scaleType="centerCrop"
-                app:iss_selected_dot="@drawable/gradient_rect_with_stroke"
-                app:iss_unselected_dot="@drawable/white_solid_circle"
-                app:iss_title_background="@color/transparent"
-                app:iss_placeholder="@mipmap/ic_launcher"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="5dp">
 
-            <!-- <androidx.appcompat.widget.Toolbar
-                 android:id="@+id/toolbar"
-                 android:layout_width="match_parent"
-                 android:layout_height="?attr/actionBarSize"
-                 app:layout_collapseMode="parallax" />
- -->
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
+                <LinearLayout
+                    android:id="@+id/editProduct"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
 
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_edit_product" />
 
-    </com.google.android.material.appbar.AppBarLayout>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:text="Edit Product"
+                        android:textColor="@color/title_color"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/shareProduct"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_share_icon" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:text="Share Product"
+                        android:textColor="@color/title_color"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/deleteProduct"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_delete_product" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:text="Delete Product"
+                        android:textColor="@color/title_color"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/app_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/transparent"
+                android:fitsSystemWindows="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.appbar.CollapsingToolbarLayout
+                    android:id="@+id/toolbar_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fitsSystemWindows="true"
+                    app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                    app:toolbarId="@+id/toolbar">
+
+                    <ImageView
+                        android:id="@+id/iv_back"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="@dimen/dp_17"
+                        android:background="@drawable/rounded_rect_shape_white_color"
+                        android:clickable="true"
+                        android:contentDescription="@null"
+                        android:elevation="8dp"
+                        android:focusable="true"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_back_arrow"
+                        android:visibility="visible" />
+
+                    <ImageView
+                        android:id="@+id/iv_menu"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="right"
+                        android:layout_marginTop="@dimen/dp_17"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/rounded_rect_shape_white_color"
+                        android:clickable="true"
+                        android:contentDescription="@null"
+                        android:elevation="8dp"
+                        android:focusable="true"
+                        android:padding="8dp"
+                        android:rotation="90"
+                        android:src="@drawable/ic_menu_dots"
+                        android:visibility="visible" />
+
+                    <com.denzcoskun.imageslider.ImageSlider
+                        android:id="@+id/image_slider"
+                        android:layout_width="match_parent"
+                        android:layout_height="350dp"
+                        android:scaleType="centerCrop"
+                        app:iss_auto_cycle="false"
+                        app:iss_placeholder="@mipmap/ic_launcher"
+                        app:iss_selected_dot="@drawable/gradient_rect_with_stroke"
+                        app:iss_title_background="@color/transparent"
+                        app:iss_unselected_dot="@drawable/white_solid_circle"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHeight_percent="0.36"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <!-- <androidx.appcompat.widget.Toolbar
+                         android:id="@+id/toolbar"
+                         android:layout_width="match_parent"
+                         android:layout_height="?attr/actionBarSize"
+                         app:layout_collapseMode="parallax" />
+         -->
+                </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+
+            </com.google.android.material.appbar.AppBarLayout>
 
             <TextView
                 android:id="@+id/categoryTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:fontFamily="@font/montserrat_medium"
                 android:text="Furniture"
-                android:textSize="16sp"
                 android:textColor="@color/new_text_color"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/app_bar" />
 
-            <TextView
-                android:id="@+id/productName"
+            <!--<EditText
+                android:id="@+id/productNameEdt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/montserrat_bold"
                 android:text="Ladies Bag"
-                android:textSize="24sp"
+                android:background=""
                 android:textColor="@color/new_action_bar_title_color"
+                android:textSize="24sp"
+                android:visibility="invisible"
+                app:layout_constraintStart_toStartOf="@+id/categoryTxt"
+                app:layout_constraintTop_toBottomOf="@+id/categoryTxt"/>-->
+            <EditText
+                android:id="@+id/productName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@color/transparent"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="Ladies Bag"
+                android:textColor="@color/new_action_bar_title_color"
+                android:textSize="24sp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/categoryTxt"
                 app:layout_constraintTop_toBottomOf="@+id/categoryTxt" />
 
@@ -134,12 +264,12 @@
                     android:id="@+id/locationName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="9"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="32dp"
-                    android:textColor="@color/blue_text_color"
+                    android:layout_weight="9"
                     android:fontFamily="@font/montserrat_regular"
                     android:text="Mantri flora Apartment , 1 Sec , PWD Qtrs HSR Layout, Bengaluru , Karnataka 560102 , India"
+                    android:textColor="@color/blue_text_color"
                     android:textSize="14sp" />
 
 
@@ -152,20 +282,20 @@
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/montserrat_bold"
                 android:text="Condition"
-                android:textSize="16sp"
                 android:textColor="@color/title_color"
-                app:layout_constraintEnd_toStartOf="@+id/usedForTxt"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toStartOf="@+id/usedForTxt1"
                 app:layout_constraintStart_toStartOf="@+id/linearLayout1"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout1" />
 
             <TextView
-                android:id="@+id/usedForTxt"
+                android:id="@+id/usedForTxt1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserrat_bold"
                 android:text="Used For"
-                android:textSize="16sp"
                 android:textColor="@color/title_color"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView16"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/textView16"
@@ -178,20 +308,20 @@
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/montserrat_medium"
                 android:text="Barely Used"
-                android:textSize="16sp"
                 android:textColor="@color/sub_text_color"
-                app:layout_constraintEnd_toStartOf="@+id/textView19"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toStartOf="@+id/usedForTxt"
                 app:layout_constraintStart_toStartOf="@+id/textView16"
                 app:layout_constraintTop_toBottomOf="@+id/textView16" />
 
             <TextView
-                android:id="@+id/textView19"
+                android:id="@+id/usedForTxt"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserrat_medium"
                 android:text="Lessthan 6 months"
-                android:textSize="16sp"
                 android:textColor="@color/sub_text_color"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/conditionTxt"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/conditionTxt"
@@ -204,8 +334,8 @@
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/montserrat_bold"
                 android:text="Cost Saving"
-                android:textSize="16sp"
                 android:textColor="@color/title_color"
+                android:textSize="16sp"
                 app:layout_constraintEnd_toStartOf="@+id/textView21"
                 app:layout_constraintStart_toStartOf="@+id/conditionTxt"
                 app:layout_constraintTop_toBottomOf="@+id/conditionTxt" />
@@ -216,8 +346,8 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserrat_bold"
                 android:text="Energy Saving"
-                android:textSize="16sp"
                 android:textColor="@color/title_color"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/textView20"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/textView20"
@@ -230,8 +360,8 @@
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/montserrat_medium"
                 android:text="Rs. 11111"
-                android:textSize="16sp"
                 android:textColor="@color/sub_text_color"
+                android:textSize="16sp"
                 app:layout_constraintEnd_toStartOf="@+id/textView23"
                 app:layout_constraintStart_toStartOf="@+id/textView20"
                 app:layout_constraintTop_toBottomOf="@+id/textView20" />
@@ -242,8 +372,8 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserrat_medium"
                 android:text="X Units"
-                android:textSize="16sp"
                 android:textColor="@color/sub_text_color"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/costSavingTxt"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/costSavingTxt"
@@ -256,8 +386,8 @@
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/montserrat_bold"
                 android:text="Description"
-                android:textSize="16sp"
                 android:textColor="@color/title_color"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="@+id/costSavingTxt"
                 app:layout_constraintTop_toBottomOf="@+id/costSavingTxt" />
 
@@ -273,14 +403,24 @@
                 app:layout_constraintStart_toStartOf="@+id/textView24"
                 app:layout_constraintTop_toBottomOf="@+id/textView24">
 
-                <TextView
+               <!-- <EditText
+                    android:id="@+id/descriptionEdt"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:visibility="gone"
+                    android:fontFamily="@font/montserrat_regular"
+                    android:text="Eg- Ladies Bag, bought it on my first foreign trip in running condition.\n\nGive close description of the item as possible to increase the response"
+                    android:textColor="@color/edit_text_color"/>
+              -->  <EditText
                     android:id="@+id/descriptionTxt"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="5dp"
-                    android:textColor="@color/edit_text_color"
+                android:background="@color/transparent"
                     android:fontFamily="@font/montserrat_regular"
-                    android:text="Eg- Ladies Bag, bought it on my first foreign trip in running condition.\n\nGive close description of the item as possible to increase the response" />
+                    android:text="Eg- Ladies Bag, bought it on my first foreign trip in running condition.\n\nGive close description of the item as possible to increase the response"
+                    android:textColor="@color/edit_text_color" />
             </androidx.cardview.widget.CardView>
 
             <TextView
@@ -290,8 +430,8 @@
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/montserrat_bold"
                 android:text="3 Responses"
-                android:textSize="16sp"
                 android:textColor="@color/title_color"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="@+id/cardView3"
                 app:layout_constraintTop_toBottomOf="@+id/cardView3" />
 
@@ -310,19 +450,45 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvRequestedUsers"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginBottom="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/responsesTwo" />
 
+            <LinearLayout
+                android:id="@+id/updateBtn"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/btn_bg_rounded_rect"
+                android:gravity="center"
+                android:visibility="gone"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:textAllCaps="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rvRequestedUsers">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:fontFamily="@font/montserrat_medium"
+                    android:text="Update Product"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/sp_16" />
+
+            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

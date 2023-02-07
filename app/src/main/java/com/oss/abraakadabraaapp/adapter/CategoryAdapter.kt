@@ -15,6 +15,7 @@ import com.bumptech.glide.request.target.Target
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.newflow.CategorySelectActivity
 import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
+import com.oss.abraakadabraaapp.databinding.ItemCategory2Binding
 import com.oss.abraakadabraaapp.databinding.ItemCategoryBinding
 import com.oss.abraakadabraaapp.response.mainResponse.CategoryData
 import com.oss.abraakadabraaapp.module.GlideApp
@@ -28,7 +29,7 @@ class CategoryAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryAdapterVH {
         return CategoryAdapterVH(
-            LayoutInflater.from(context).inflate(R.layout.item_category, parent, false)
+            LayoutInflater.from(context).inflate(R.layout.item_category2, parent, false)
         )
     }
 
@@ -112,7 +113,7 @@ class CategoryAdapter(
     }
 
     class CategoryAdapterVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val binding = ItemCategoryBinding.bind(itemView)
+        val binding = ItemCategory2Binding.bind(itemView)
     }
 
     interface CategoryAdapterInterface {

@@ -1,5 +1,6 @@
 package com.oss.abraakadabraaapp.activities.newflow
 
+import LocationFragment
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -9,18 +10,28 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.oss.abraakadabraaapp.datasource.products.Product
-import com.denzcoskun.imageslider.ImageSlider
+import androidx.core.os.bundleOf
+import androidx.fragment.app.add
+import androidx.fragment.app.commit
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
-import com.oss.abraakadabraaapp.activities.newflow.requests.ReportProductRequest
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
+import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
+import com.oss.abraakadabraaapp.activities.newflow.ui.home.NewGiverFragment
 import com.oss.abraakadabraaapp.databinding.ActivityNewProductDetailBinding
+import com.oss.abraakadabraaapp.datasource.products.Product
 import com.oss.abraakadabraaapp.response.productdetails.ProductDetailsData
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
@@ -34,14 +45,19 @@ import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class NewProductDetailActivity : BaseActivity() /*,OnMapReadyCallback*/ {
+class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
     private lateinit var binding: ActivityNewProductDetailBinding
 
-    //    private var mMap: GoogleMap? = null
+        private var mMap: GoogleMap? = null
+    var mMapView: MapView? = null
+
     private val mainViewModel: AuthViewModel by viewModel()
     private var productDetails: ProductDetailsData? = null
     lateinit var product: Product
     private var reportType = "Inappropriate Content"
+
+    var lattitude = ""
+    var longitude = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNewProductDetailBinding.inflate(layoutInflater)
@@ -59,9 +75,6 @@ class NewProductDetailActivity : BaseActivity() /*,OnMapReadyCallback*/ {
 
         loaddata()
 
-//        val mapFragment = supportFragmentMa nager
-//            .findFragmentById(R.id.maps_view) as SupportMapFragment?
-//        mapFragment!!.getMapAsync(this)
         binding.requestBtn.setOnClickListener {
             postClick(Constants.BUTTON_REQUEST_IN_DETAILS_PAGE)
 
@@ -102,7 +115,41 @@ class NewProductDetailActivity : BaseActivity() /*,OnMapReadyCallback*/ {
         }
         binding.chatBtn.setOnClickListener {
             postClick(Constants.BUTTON_CHAT_IN_DETAILS_PAGE)
-            showToast("under development")
+            sendToChat()
+        }
+    }
+
+    private fun sendToChat() {
+        val receiver_id = productDetails?.data?.postedBy?.uid
+        val product_id = productDetails?.data?.id
+        val sender_id = FirebaseAuth.getInstance().currentUser?.uid
+
+        val db = Firebase.firestore
+        var product = productDetails?.data?.name
+        val receiver_name = productDetails?.data?.postedBy?.name
+
+        val senderInfo = db.collection("users").document(sender_id.toString())
+        senderInfo.get().addOnSuccessListener { doc->
+            Log.d("TAG - ", "sendToChat: ${doc.data}")
+            Log.d("TAG - ", "sendToChat: ${doc.data?.get("user_avatar")}")
+            val userInfo = doc.toObject(UsersData::class.java)!!
+
+            val chat_room = hashMapOf(
+                "from" to sender_id,
+                "sender_id" to sender_id,
+                "sender_name" to userInfo.name,
+                "sender_avatar" to doc.data?.get("user_avatar"),
+                "receiver_id" to receiver_id,
+                "receiver_name" to receiver_name,
+                "receiver_avatar" to productDetails?.data?.postedBy?.userAvatar,
+                "product_id" to product_id,
+                "product_name" to product
+            )
+
+            val intent = Intent(this,ChatDetailActivity::class.java)
+            intent.putExtra(Constants.CHATS_DATA,chat_room)
+            intent.putExtra("data_from","activity")
+            startActivity(intent)
         }
     }
 
@@ -150,17 +197,54 @@ class NewProductDetailActivity : BaseActivity() /*,OnMapReadyCallback*/ {
         }
         binding.imageSlider.setImageList(imageList)
 
-        binding.categoryTxt.setText(it.data.category)
+        binding.categoryTxt.setText(it.data.category?.name)
         binding.productName.setText(it.data.name)
         binding.conditionTxt.setText(it.data.condition)
         binding.usedForTxt.setText(it.data.usedFor)
         binding.costSavingTxt.setText("Rs ${it.data.costSaving}")
-        binding.postedByTxt.text = (it.data.postedBy.toString())
+        binding.postedByTxt.text = (it.data.postedBy?.name.toString())
         binding.dateOfPostTxt.text = (it.data.createdAt.toString())
         binding.descriptionTxt.text = (it.data.description.toString())
         binding.locationName.text = (it.data.locationName.toString())
 
+        lattitude = it.data.coordinates?.Latitude.toString()
+        longitude = it.data.coordinates?.Longitude.toString()
+
+        val bundle = bundleOf("lat_value" to lattitude,
+            "lang_value" to longitude)
+        supportFragmentManager.commit {
+            setReorderingAllowed(true)
+            add<LocationFragment>(R.id.maps_view,args = bundle)
+        }
+
+        if (it.data.isRequested!!){
+            binding.requestBtn.setText("Requested")
+            binding.requestBtn.isEnabled = false
+        }
+        if (it.data.isReported!!){
+            binding.reportThis.setText("Reported")
+            binding.reportThis.setTextColor(resources.getColor(R.color.status_declined))
+            binding.reportThis.isEnabled = false
+        }
+
+      /*  binding.mapsView.settings.javaScriptEnabled = true
+        binding.mapsView.setWebViewClient(
+            WebViewClient());
+        binding.mapsView.loadUrl("http://maps.google.com/maps?q=$lattitude,$longitude")
+*/
+        /*val supportMapFragment = (supportFragmentManager.findFragmentById(R.id.maps_view) as
+                SupportMapFragment?)!!
+        supportMapFragment.getMapAsync(this@NewProductDetailActivity)*/
+
     }
+
+     override fun onMapReady(p0: GoogleMap?) {
+         /*val latLng = LatLng(lattitude.toDouble(), longitude.toDouble())
+         val markerOptions = MarkerOptions().position(latLng).title("I am here!")
+         mMap?.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+         mMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 5f))
+         mMap?.addMarker(markerOptions)*/
+     }
 
     private fun showReportThisDialog() {
         val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
@@ -279,15 +363,4 @@ class NewProductDetailActivity : BaseActivity() /*,OnMapReadyCallback*/ {
 //        alertDialog.window?.setLayout(800, 700)
 //        alertDialog.window?.setLayout(800, 700)
     }
-
-    /* override fun onMapReady(p0: GoogleMap?) {
-         val userLocation = PreferencesManagement.getUserLocation(this)
-         val sydney = LatLng(userLocation!!.lat.toDouble(), userLocation!!.long.toDouble())
-         mMap!!.addMarker(
-             MarkerOptions()
-                 .position(sydney)
-                 .title("Marker in Sydney")
-         )
-         mMap!!.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-     }*/
 }
