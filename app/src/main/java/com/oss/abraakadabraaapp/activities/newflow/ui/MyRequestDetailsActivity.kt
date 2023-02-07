@@ -264,23 +264,18 @@ class MyRequestDetailsActivity : BaseActivity() {
             .placeholder(resources.getDrawable(R.drawable.ic_profile))
             .into(binding.imageView20)
 
-        binding.categoryTxt.setText(it.data?.category?.name)
-        binding.productName.setText(it.data?.name)
+        binding.categoryTxt.setText(it.data?.category?.name?.capitalize())
+        binding.productName.setText(it.data?.name?.capitalize())
         binding.condition.setText(it.data?.condition)
         binding.usedFor.setText(it.data?.usedFor)
         binding.castSaving.setText("Rs ${it.data?.costSaving}")
         binding.energySaving.text = (it.data?.energySaving?.toString())
         binding.prodcutLocation.text = (it.data?.locationName.toString())
-        binding.descriptionTxt.text = (it.data?.description.toString())
+        binding.descriptionTxt.text = (it.data?.description.toString().capitalize())
         binding.postedUserName.text = (it.data?.postedBy?.name.toString().capitalize())
         binding.phone.text = (it.data?.postedBy?.phone.toString())
         binding.email.text = (it.data?.postedBy?.email.toString())
-        if (it.data!!.coordinates?.Latitude != null){
-            binding.postedLocation.text = getAddress(
-                it.data!!.coordinates?.Latitude!!,
-                it.data!!.coordinates?.Longitude!!
-            )
-        }
+        binding.postedLocation.text = (it.data?.locationName.toString())
 //        binding.locationName.text = (it.data.locationName.toString())
 
     }

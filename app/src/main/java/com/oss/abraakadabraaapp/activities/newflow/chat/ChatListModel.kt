@@ -13,6 +13,7 @@ data class ChatListModel(
     @SerializedName("sender_id"  ) var sender_id  : String? = null,
     @SerializedName("sender_name"  ) var sender_name  : String? = null,
     @SerializedName("last_message"  ) var last_message  : String? = null,
+    @SerializedName("date"  ) var date  : String? = null,
     @SerializedName("Messages") var messages:List<ChatModel>? = null
 ){constructor():this("","","","",
     "","","","","","",null)}

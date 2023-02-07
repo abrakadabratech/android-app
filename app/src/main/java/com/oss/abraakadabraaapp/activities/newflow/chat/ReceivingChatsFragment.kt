@@ -66,8 +66,9 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
             override fun onBindViewHolder(holder: UsersViewholder, position: Int, model: ChatListModel) {
                 val user=model
                 holder.bind(model)
-                holder.binding.userName.text = model.receiver_name
-                holder.binding.productName.text = model.product_name
+                holder.binding.userName.text = model.product_name
+                holder.binding.productName.text = model.receiver_name
+                holder.binding.message.text = model.last_message
 //                holder.binding.message.text = model.messages?.get(model.messages?.size?.minus(1)!!).toString()
                 Glide.with(requireContext()).load(model.receiver_avatar)
                     .placeholder(resources.getDrawable(R.drawable.ic_profile))

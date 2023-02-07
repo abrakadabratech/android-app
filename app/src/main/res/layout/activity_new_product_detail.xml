@@ -346,12 +346,12 @@
                 android:text="Rs. 11111"
                 android:textColor="@color/sub_text_color"
                 android:textSize="16sp"
-                app:layout_constraintEnd_toStartOf="@+id/textView23"
+                app:layout_constraintEnd_toStartOf="@+id/energySaving"
                 app:layout_constraintStart_toStartOf="@+id/textView20"
                 app:layout_constraintTop_toBottomOf="@+id/textView20" />
 
             <TextView
-                android:id="@+id/textView23"
+                android:id="@+id/energySaving"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserrat_medium"

@@ -197,14 +197,15 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
         }
         binding.imageSlider.setImageList(imageList)
 
-        binding.categoryTxt.setText(it.data.category?.name)
-        binding.productName.setText(it.data.name)
+        binding.categoryTxt.setText(it.data.category?.name?.capitalize())
+        binding.productName.setText(it.data.name?.capitalize())
+        binding.energySaving.setText(it.data.energySaving.toString())
         binding.conditionTxt.setText(it.data.condition)
         binding.usedForTxt.setText(it.data.usedFor)
         binding.costSavingTxt.setText("Rs ${it.data.costSaving}")
         binding.postedByTxt.text = (it.data.postedBy?.name.toString())
         binding.dateOfPostTxt.text = (it.data.createdAt.toString())
-        binding.descriptionTxt.text = (it.data.description.toString())
+        binding.descriptionTxt.text = (it.data.description.toString()?.capitalize())
         binding.locationName.text = (it.data.locationName.toString())
 
         lattitude = it.data.coordinates?.Latitude.toString()

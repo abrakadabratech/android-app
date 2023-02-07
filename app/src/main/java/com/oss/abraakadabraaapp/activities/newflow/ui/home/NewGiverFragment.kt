@@ -716,11 +716,11 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                     false
                 }
                 photoList.size <= 2 -> {
-                    showToast("Please add at least 1 image")
+                    showToast("Please add at least 2 images")
                     false
                 }
-                photoList.size >= 5 -> {
-                    showToast("Maximum photo are 5.Please remove some")
+                photoList.size > 5 -> {
+                    showToast("Maximum photo are 4.Please remove some")
                     false
                 }
                 else -> true

@@ -587,7 +587,7 @@ fun getRequestDetails(
         headerMap: HashMap<String, String>,
         body: HashMap<String, String>) {
         viewModelScope.launch {
-            isLoading.value = true
+//            isLoading.value = true
 
             suspend fun call() = repository.sendNotification(headerMap,body)
             callApi(::call, object : CallHelper<ChatResponse>{
@@ -599,7 +599,7 @@ fun getRequestDetails(
                     errorMessage.value = errorResponse.responseMessage
                 }
             })
-            isLoading.value = false
+//            isLoading.value = false
         }
     }
 

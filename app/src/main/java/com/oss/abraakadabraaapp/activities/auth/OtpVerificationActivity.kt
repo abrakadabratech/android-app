@@ -85,8 +85,19 @@ class OtpVerificationActivity : BaseActivity(), SMSReceiver.OTPReceiveListener {
         }
 
     }
+    override fun onBackPressed() {
+//        super.onBackPressed()
+        if (shouldAllowBack()) {
+            super.onBackPressed();
+        } else {
+            showToast("Do not press back. Please complete your profile")
+        }
+    }
 
-    private fun verifyOtp() {
+    private fun shouldAllowBack(): Boolean {
+        return false
+    }
+        private fun verifyOtp() {
         if (isValidate()) {
             if (isNetworkAvailable()) {
 
