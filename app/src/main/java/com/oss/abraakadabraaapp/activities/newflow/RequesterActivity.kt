@@ -203,6 +203,7 @@ class RequesterActivity : BaseActivity() {
         }else if(it.requests[position].status == "rejected"){
             binding.markAsDelivered.setText("Rejected")
             binding.markAsDelivered.isEnabled = false
+            binding.acceptBtn.visibility = View.GONE
         }else if(it.requests[position].status == "delivered" || it.requests[position].status == "received"){
             binding.markAsDelivered.setText("Delivered")
             //binding.successLayout2.visibility = View.VISIBLE
@@ -232,7 +233,7 @@ class RequesterActivity : BaseActivity() {
             val chat_room = hashMapOf(
                 "from" to sender_id,
                 "sender_id" to sender_id,
-                "sender_name" to userInfo.name,
+                "sender_name" to doc.data?.get("user_avatar"),
                 "sender_avatar" to doc.data?.get("user_avatar"),
                 "receiver_id" to receiver_id,
                 "receiver_name" to receiver_name,

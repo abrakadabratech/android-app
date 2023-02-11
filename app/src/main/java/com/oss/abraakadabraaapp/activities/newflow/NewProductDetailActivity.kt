@@ -190,6 +190,7 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
         mainViewModel.reportProductSuccess.observe(this){
             if (it.code == 201){
                 showToast("Product reported")
+                productDetails?.data?.isReported = true
             }else{
                 showToast(it.responseMessage.toString())
             }
@@ -238,7 +239,7 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
         if (it.data.isReported!!){
            /* binding.reportThis.setText("Reported")
             binding.reportThis.setTextColor(resources.getColor(R.color.status_declined))*/
-            binding.reportThis.isEnabled = false
+//            binding.reportThis.isEnabled = false
 //            binding.chatBtn.visibility = View.GONE
             binding.chatBtn.isEnabled = false
         }

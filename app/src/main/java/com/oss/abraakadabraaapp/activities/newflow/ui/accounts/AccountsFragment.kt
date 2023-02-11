@@ -103,8 +103,10 @@ class AccountsFragment : Fragment(), View.OnClickListener {
         if (it != null){
             with(binding){
                 userName.text = if(it.data?.name != null) it.data?.name.toString() else "Set Ur Name"
+//                giversCount.text = it.data?.userStats?.given.toString()
                 giversCount.text = if(it.data?.userStats?.given != null) it.data?.userStats?.given.toString()+" Items" else "0 Items"
                 receiverCount.text = if(it.data?.userStats?.received != null) it.data?.userStats?.received.toString()+" Items" else "0 Items"
+//                receiverCount.text = it.data?.userStats?.received.toString()
                 Glide.with(this@AccountsFragment)
                     .load(it.data?.userAvatar)
                     .placeholder(resources.getDrawable(R.drawable.ic_profile))

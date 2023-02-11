@@ -1,6 +1,6 @@
 package com.oss.abraakadabraaapp.retrofit.repository
 
-import com.oss.abraakadabraaapp.activities.newflow.apimodels.DataClass
+import DataClass
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.ProductRequest
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.activities.newflow.requests.ReportProductRequest

@@ -1,5 +1,6 @@
 package com.oss.abraakadabraaapp.viewModel
 
+import DataClass
 import RequestDetails
 import SearchModel
 import UpdatedProductData
@@ -7,7 +8,6 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.common.config.GservicesValue.value
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.*
 import com.oss.abraakadabraaapp.activities.newflow.menu.LogoutResponse
@@ -200,7 +200,8 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
     }
 
     fun postUserSocialProfile(
-        headerMap: HashMap<String, String>,bodyMap: HashMap<String, String>) {
+        headerMap: HashMap<String, String>, bodyMap: HashMap<String, String>
+    ) {
         viewModelScope.launch {
 
             isLoading.value = true

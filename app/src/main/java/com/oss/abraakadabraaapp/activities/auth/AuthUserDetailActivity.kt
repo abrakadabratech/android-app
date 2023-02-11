@@ -5,9 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.VIEW_MODEL_STORE_OWNER_KEY
 import androidx.recyclerview.widget.GridLayoutManager
-import com.google.android.gms.analytics.Tracker
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.BuildConfig
@@ -18,7 +16,6 @@ import com.oss.abraakadabraaapp.activities.newflow.adapters.SocialShareAdapter
 import com.oss.abraakadabraaapp.activities.newflow.model.SocialData
 import com.oss.abraakadabraaapp.databinding.ActivityAuthUserDetailBinding
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
-import com.oss.abraakadabraaapp.retrofit.utils.ApiConstants
 import com.oss.abraakadabraaapp.utils.*
 import com.oss.abraakadabraaapp.utils.Constants.API_TAG
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_LETS_START_SOCIAL_PROFILE

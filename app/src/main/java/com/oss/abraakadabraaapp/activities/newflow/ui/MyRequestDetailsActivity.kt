@@ -160,7 +160,7 @@ class MyRequestDetailsActivity : BaseActivity() {
                     val intent = Intent(this,FeedbackActivity::class.java)
                     intent.putExtra("from","requesting")
                     intent.putExtra("PRODUCT_ID", productDetial?.data?.productId)
-                    intent.putExtra("USER_ID",product.postedBy?.uid)
+                    intent.putExtra("USER_ID",productDetial?.data?.postedBy?.id)
                     startActivity(intent)
                 }
 

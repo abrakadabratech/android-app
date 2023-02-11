@@ -1,13 +1,13 @@
 package com.oss.abraakadabraaapp.activities.newflow
 
+import DataClass
+import UsersUpdateData
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.text.Editable
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -15,7 +15,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
-import com.google.firebase.auth.UserInfo
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import com.karumi.dexter.Dexter
@@ -26,7 +25,6 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.SocialShareAdapter
-import com.oss.abraakadabraaapp.activities.newflow.apimodels.DataClass
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.activities.newflow.model.SocialData
@@ -62,7 +60,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
     private val authViewModel: AuthViewModel by viewModel()
     private var socialLinkType = "facebook"
     private lateinit var userInfo: GetUserResponse
-
+    private var profileLink = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMyProfile2Binding.inflate(layoutInflater)
@@ -171,6 +169,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                 showToast(it.responseMessage.toString())
             }else {
                 PreferencesManagement.saveUserInfo(this, it)
+                editMode(false)
                 setUpProfile(it)
             }
         }
@@ -198,6 +197,9 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                     data = userData
                 )
                 PreferencesManagement.saveUserInfo(this,newUserInfo)
+                binding.instaEdit.setText(profileLink)
+
+//                setUpProfile(it)
 //            getUserProfileApi()
             }
 
@@ -304,6 +306,9 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             binding.nameEdit.setSelection(binding.nameEdit.text.toString().length)
             binding.saveBtn.visibility = View.VISIBLE
             binding.editProfile.visibility = View.INVISIBLE
+            binding.instaEdit.setText(if(userInfo.data?.socialLink == null)
+                "Update your profile here" else userInfo.data?.socialLink)
+
         } else {
             binding.saveBtn.visibility = View.GONE
             binding.editProfile.visibility = View.VISIBLE
@@ -327,8 +332,13 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                 val map = HashMap<String, String>()
 
                 map[RequestKeys.social_link_type] = socialLinkType
+
+                profileLink = binding.socialProfileHeader.text.toString().trim()+
+                        binding.profileLink.text.toString().trim()
                 map[RequestKeys.social_link] = binding.socialProfileHeader.text.toString().trim()+
                         binding.profileLink.text.toString().trim()
+
+
 
                 authViewModel.postUserSocialProfile(mapAuth, map)
             }
@@ -337,13 +347,13 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
 
     private fun isUserProfileValidate(): Boolean {
         with(binding) {
-            if (socialProfileEdt.text!!.length <= 3) {
-                showToast("Please Enter Valid Full Name")
+            if (profileLink.text!!.toString() == "") {
+                showToast("Please Enter your profile ID")
                 return false
             }
 
-            if (socialProfileEdt.text!!.length > 50) {
-                showToast("Full Name must be less than 50 character")
+            if (profileLink.text!!.length > 30) {
+                showToast("Profile ID must be less than 30 character")
                 return false
             }
 
@@ -355,7 +365,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
         if (isValidate()) {
             generateAuthToken()
             //getFCMToken()
-            val data = UsersData(
+            val data = UsersUpdateData(
                 name = binding.nameEdit.text.toString(),
                 email = binding.emailEdit.text.toString(),
                 fcmToken = PreferencesManagement.getFCMToken(this)!!

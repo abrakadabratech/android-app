@@ -73,7 +73,7 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
     private fun takeToPayment(s: String) {
         generateAuthToken()
         val map = HashMap<String,String>()
-        map["amount"] = (s.toInt()*100).toString()
+        map["amount"] = (s).toString()
         map["productId"] = productId
         val authMap = Utility.getAuthentication(this)
         authMap["logging"] = "true"
@@ -110,7 +110,7 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
         checkout.setKeyID("rzp_test_dtfqkGM0oeWPnY")
 //        checkout.setKeyID(Constants.razor_pay_id)
 
-        val payloadHelper = PayloadHelper("INR", (amount), order!!)
+        val payloadHelper = PayloadHelper("INR", amount, order!!)
         payloadHelper.description = "$amount Rupees from ${productDetial?.data?.postedBy?.name}"
         payloadHelper.prefillEmail = productDetial?.data?.postedBy?.email
         payloadHelper.prefillContact = productDetial?.data?.postedBy?.phone
@@ -132,6 +132,16 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
 
     override fun onPaymentError(p0: Int, p1: String?) {
         Log.d("Razorpay - ", "Failed: $p0  : $p1")
+        showToast("Payment Failed!")
+        generateAuthToken()
+        val map = HashMap<String,String>()
+        map["orderId"] = orderId
+        map["transactionId"] = "null"
+        map["status"] = "failed"
+
+        val authMap = Utility.getAuthentication(this)
+        authMap["logging"] = "true"
+        mainViewModel.updatePayment(authMap,map)
     }
 
 }

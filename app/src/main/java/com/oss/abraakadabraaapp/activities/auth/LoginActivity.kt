@@ -1,5 +1,7 @@
 package com.oss.abraakadabraaapp.activities.auth
 
+import DataClass
+import UsersUpdateData
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -21,8 +23,6 @@ import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
-import com.oss.abraakadabraaapp.activities.newflow.apimodels.DataClass
-import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.databinding.ActivityLoginBinding
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.*
@@ -237,7 +237,7 @@ class LoginActivity : BaseActivity() {
         generateAuthToken()
         FirebaseMessaging.getInstance().token.addOnSuccessListener {
             PreferencesManagement.saveFCMToken(this,it)
-            val data = UsersData(
+            val data = UsersUpdateData(
                 fcmToken = PreferencesManagement.getFCMToken(this)!!
             )
             val dataClass = DataClass(data)
@@ -397,6 +397,7 @@ class LoginActivity : BaseActivity() {
 
         authViewModel.getUserSuccess.observe(this) {
 //            showToast(it.responseMessage.toString())
+            PreferencesManagement.saveUserInfo(this,it)
             if (it.responseMessage != null){
                 if (it.responseMessage == USER_NOT_FOUND){
                     val intent =

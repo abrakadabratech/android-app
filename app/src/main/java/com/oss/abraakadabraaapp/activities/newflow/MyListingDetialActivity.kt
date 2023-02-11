@@ -182,8 +182,6 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         binding.rvRequestedUsers.layoutManager = LinearLayoutManager(this)
         binding.rvRequestedUsers.adapter = adapter
 
-
-
     }
     private fun loadShareData() {
 

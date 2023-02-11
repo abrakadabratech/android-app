@@ -1,5 +1,6 @@
 package com.oss.abraakadabraaapp.retrofit.api
 
+import DataClass
 import RequestDetails
 import SearchModel
 import UpdatedProductData

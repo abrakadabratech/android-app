@@ -1,5 +1,7 @@
 package com.oss.abraakadabraaapp.activities
 
+import DataClass
+import UsersUpdateData
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -37,8 +39,6 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.auth.AuthUserDetailActivity
 import com.oss.abraakadabraaapp.activities.auth.LoginActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
-import com.oss.abraakadabraaapp.activities.newflow.apimodels.DataClass
-import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.databinding.ActivityStartAppBinding
 import com.oss.abraakadabraaapp.databinding.SplashContentBinding
 import com.oss.abraakadabraaapp.model.UserLocation
@@ -297,7 +297,7 @@ class StartAppActivity : BaseActivity() {
                 generateAuthToken()
                 FirebaseMessaging.getInstance().token.addOnSuccessListener {
                     PreferencesManagement.saveFCMToken(this,it)
-                    val data = UsersData(
+                    val data = UsersUpdateData(
                         fcmToken = PreferencesManagement.getFCMToken(this)!!
                     )
                     val dataClass = DataClass(data)
