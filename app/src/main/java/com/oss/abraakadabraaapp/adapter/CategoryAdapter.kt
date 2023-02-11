@@ -39,7 +39,7 @@ class CategoryAdapter(
 
         with(holder.binding) {
 
-            tvCategoryName.text = item.title?.trim()
+            tvCategoryName.text = item.title?.capitalize()?.trim()
 
 //            progressBar.visibility = View.VISIBLE
 
@@ -89,8 +89,9 @@ class CategoryAdapter(
         holder.itemView.setOnClickListener {
             if (!keyFrom.equals("search")){
                 if (position == data.size-1){
-                    context.startActivity(Intent(context, CategorySelectActivity::class.java))
-                }else  callback.onCategoryClick(item)
+                    callback.onCategoryClick(item,0)
+//                    context.
+                }else  callback.onCategoryClick(item,1)
             }else{
                 //callback.onCategoryClick(item)
             }
@@ -117,7 +118,7 @@ class CategoryAdapter(
     }
 
     interface CategoryAdapterInterface {
-        fun onCategoryClick(data: UserCatData)
+        fun onCategoryClick(data: UserCatData,position: Int)
     }
 
 }

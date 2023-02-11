@@ -3,11 +3,11 @@ package com.oss.abraakadabraaapp.activities.newflow.chat
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
+import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
@@ -15,20 +15,21 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ChatAdapter
 import com.oss.abraakadabraaapp.activities.newflow.customeview.WrapContentLinearLayoutManager
-import com.oss.abraakadabraaapp.databinding.ChatMessageRowBinding
 import com.oss.abraakadabraaapp.databinding.ChatRowBinding
 import com.oss.abraakadabraaapp.databinding.FragmentGivingChatsBinding
 import com.oss.abraakadabraaapp.utils.Constants
+import java.text.SimpleDateFormat
+import java.util.*
 
 class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
     lateinit var application: BaseActivity
     lateinit var binding: FragmentGivingChatsBinding
+    lateinit var  nodata :TextView
     lateinit var rvChats: RecyclerView
     lateinit var firestoreUserAdapter: FirestoreRecyclerAdapter<ChatListModel, UsersViewholder>
 
@@ -41,6 +42,7 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
         val view = inflater.inflate(R.layout.fragment_giving_chats, container, false)
 
         rvChats = view.findViewById(R.id.rvChats)
+        nodata = view.findViewById(R.id.nodata3)
         application = (activity as BaseActivity)
 
         application.postEvent(Constants.PAGE_GIVER_CHAT, null)
@@ -55,6 +57,14 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
         val docRef = db.collection("chats").whereEqualTo("receiver_id", currentUserId)
+
+        docRef.get().addOnSuccessListener { snap ->
+            if(snap.isEmpty){
+                nodata.visibility = View.VISIBLE
+            }else{
+                nodata.visibility = View.GONE
+            }
+        }
 
 //            .whereNotEqualTo("Messages",null)
 
@@ -79,7 +89,18 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
                     val user = model
                     holder.bind(model)
                     holder.binding.userName.text = model.sender_name
-                    holder.binding.productName.text = model.product_name
+                    holder.binding.productName.text = model.product
+                    holder.binding.message.text = model.last_message
+                    holder.binding.time.text = model.time_stamp
+
+                    //Wed Feb 08 23:02:23 GMT+05:30 2023
+                   /* val dateFormat = SimpleDateFormat("dd/MM/yyyy")
+
+
+                    val currentDate: String = dateFormat.format(model.time_stamp)
+
+                    holder.binding.time.text = currentDate*/
+
                     Glide.with(requireContext()).load(model.sender_avatar)
                         .placeholder(resources.getDrawable(R.drawable.ic_profile))
                         .into(holder.binding.profilePic)
@@ -93,7 +114,7 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
                             "receiver_name" to model.receiver_name,
                             "receiver_avatar" to model.receiver_avatar,
                             "product_id" to model.product_id,
-                            "product_name" to model.product_name
+                            "product" to model.product
                         )
 
                         val intent = Intent(requireContext(), ChatDetailActivity::class.java)
@@ -122,6 +143,7 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
         )
 
         val intent = Intent(requireContext(), ChatDetailActivity::class.java)
+        intent.putExtra("data_from","fragment")
         intent.putExtra(Constants.CHATS_DATA, chat_room)
         startActivity(intent)
     }

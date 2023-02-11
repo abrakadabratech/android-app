@@ -361,7 +361,7 @@ class RequestProductDetailActivity : BaseActivity(),
             super.onBackPressed()
         }
         if (intent.hasExtra(Constants.hasNotificationData)) {
-            startActivity(HomeActivity.createIntent(this@RequestProductDetailActivity))
+//            startActivity(HomeActivity.createIntent(this@RequestProductDetailActivity))
         }
     }
 }

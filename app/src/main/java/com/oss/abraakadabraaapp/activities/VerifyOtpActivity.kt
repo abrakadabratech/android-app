@@ -35,7 +35,7 @@ class VerifyOtpActivity : BaseActivity() {
         }
 
         binding.verifyBtn.setOnClickListener {
-            startActivity(Intent(this, HomeActivity::class.java))
+//            startActivity(Intent(this, HomeActivity::class.java))
         }
 
         if (intent.hasExtra(Constants.email)) {
@@ -124,7 +124,7 @@ class VerifyOtpActivity : BaseActivity() {
     }
 
     private fun otpVerification(it: CommonResponse) {
-        when{
+       /* when{
             intent.hasExtra(Constants.emailVerification)-> {
                 showToast(it.responseMessage)
                 loginInUser(intent.getParcelableExtra(Constants.userData)!!)
@@ -138,7 +138,7 @@ class VerifyOtpActivity : BaseActivity() {
                 showToast("Signup Successfully")
                 loginInUser(intent.getParcelableExtra(Constants.userData)!!)
             }
-        }
+        }*/
     }
 
     private fun resendOtp(map: HashMap<String, String>) {

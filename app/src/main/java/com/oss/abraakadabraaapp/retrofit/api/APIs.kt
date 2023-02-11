@@ -93,8 +93,9 @@ interface APIs {
         @Query("maxDistance") maxDistance:Int,
         @Query("lat") lat:Double,
         @Query("long") long:Double,
+        @Query("category") category:String
 
-        ): GetProducts
+        ): Response<GetProducts>
 
     //Get product when click on card (single product)
     @GET("product/{id}")
@@ -219,7 +220,8 @@ interface APIs {
         @Query("query") page:String,
         @Query("lat") lat:Double,
         @Query("long") long:Double,
-        @Query("maxDistance") maxDistance:Int
+        @Query("maxDistance") maxDistance:Int,
+        @Query("page") pageNumber:Int
     ): Response<SearchModel>
 
     @POST("product/chats/send-notification")

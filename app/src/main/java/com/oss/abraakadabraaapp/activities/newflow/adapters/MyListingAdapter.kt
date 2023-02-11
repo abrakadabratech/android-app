@@ -40,9 +40,9 @@ class MyListingAdapter(val newMyRequestActivity: Context,
 //            newMyRequestActivity.startActivity(Intent(newMyRequestActivity,MyListingDetialActivity::class.java))
         }
 
-        holder.nameTxt.setText(data.get(position).name)
+        holder.nameTxt.setText(data.get(position).name?.capitalize())
         holder.listedOnTxt.setText("Listed on "+data.get(position).createdAt)
-        holder.statusTxt.setText("Status - "+data.get(position).status)
+        holder.statusTxt.setText("Status - "+data.get(position).status?.capitalize())
         if (data.get(position).status == "given"){
             holder.statusTxt.setTextColor(newMyRequestActivity.resources.getColor(R.color.given_color))
         }

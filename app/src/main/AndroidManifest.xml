@@ -57,6 +57,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AbraaKaDabraa.NoActionBar"/>
         <activity
+            android:name=".activities.newflow.TermsAndConditionsActivity"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar"
+            android:exported="false" />
+
+        <activity
             android:name=".activities.newflow.RequesterActivity"
             android:exported="false"
             android:screenOrientation="portrait"

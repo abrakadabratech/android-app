@@ -58,6 +58,7 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
 
     var lattitude = ""
     var longitude = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNewProductDetailBinding.inflate(layoutInflater)
@@ -111,11 +112,19 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
 
         binding.reportThis.setOnClickListener {
             postClick(Constants.BUTTON_REPORT_THIS_IN_DETAILS_PAGE)
-            showReportThisDialog()
+            if (productDetails?.data?.isReported!!){
+                showToast("Already Reported")
+            }else{
+                showReportThisDialog()
+            }
         }
         binding.chatBtn.setOnClickListener {
             postClick(Constants.BUTTON_CHAT_IN_DETAILS_PAGE)
-            sendToChat()
+            if (productDetails?.data?.requestedStatus!!){
+                sendToChat()
+            }else{
+                showToast("Chat request will be enable after\nyour request is accepted")
+            }
         }
     }
 
@@ -221,11 +230,22 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
         if (it.data.isRequested!!){
             binding.requestBtn.setText("Requested")
             binding.requestBtn.isEnabled = false
+            //binding.chatBtn.isEnabled = true
+
+
+//            binding.chatBtn.visibility = View.VISIBLE
         }
         if (it.data.isReported!!){
-            binding.reportThis.setText("Reported")
-            binding.reportThis.setTextColor(resources.getColor(R.color.status_declined))
+           /* binding.reportThis.setText("Reported")
+            binding.reportThis.setTextColor(resources.getColor(R.color.status_declined))*/
             binding.reportThis.isEnabled = false
+//            binding.chatBtn.visibility = View.GONE
+            binding.chatBtn.isEnabled = false
+        }
+
+        if (it.data.requestedStatus!!){
+            binding.requestBtn.setText("Accepted")
+            binding.requestBtn.isEnabled = false
         }
 
       /*  binding.mapsView.settings.javaScriptEnabled = true

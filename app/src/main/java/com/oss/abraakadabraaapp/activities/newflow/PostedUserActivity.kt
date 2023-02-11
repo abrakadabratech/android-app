@@ -18,6 +18,7 @@ import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_POSTED_USER
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility.getAuthentication
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
+import org.greenrobot.eventbus.EventBus
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PostedUserActivity : BaseActivity() {
@@ -49,6 +50,8 @@ class PostedUserActivity : BaseActivity() {
             generateAuthToken()
 //            if(generateAuthToken())
 
+
+
             val useLocation = PreferencesManagement.getUserLocation(this)
             val body = HashMap<String,String>()
             body["message"] = binding.requestMsg.text.toString()
@@ -56,23 +59,43 @@ class PostedUserActivity : BaseActivity() {
             body["longitude"] = useLocation?.long.toString()
 
             if (binding.requestMsg.text.isNotEmpty()){
-                mainViewModel.postProductRequest(getAuthentication(this),
-                    productDetails?.data?.id.toString(),body
-                )
+                val userInfo = PreferencesManagement.getUserInfo(this)
+                if(userInfo?.data?.status == "active"){
+                    mainViewModel.postProductRequest(getAuthentication(this),
+                        productDetails?.data?.id.toString(),body
+                    )
+                }else{
+                    showToast("Your profile not verified yet.")
+                }
             }else{
                 showToast("Please Enter Message.")
             }
         }
 
-        binding.successOkBtn.setOnClickListener {
+        binding.skipTxt.setOnClickListener {
             postClick(Constants.BUTTON_OK_GOTIT_IN_POSTED_USERS_PAGE)
 //            showToast("Under development, should I navigate to My Listing as per Design?")
             binding.successAlertDialog.visibility = View.GONE
-            startActivity(Intent(this,NewMyRequestActivity::class.java))
+//            EventBus.getDefault().post("clear")
+
+            val intent = Intent(this, NewMyRequestActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            startActivity(intent)
+            finish()
+        }
+        binding.successOkBtn.setOnClickListener {
+            postClick(Constants.BUTTON_PAY_AS_YOU_WISH)
+            val i = Intent(this, MyPayAsYouGoActivity::class.java)
+            i.putExtra("productId",productDetails?.data?.id)
+            i.putExtra("product_data",Gson().toJson(productDetails))
+//            i.putExtra("receiver_data", Gson().toJson(productDetailData))
+            startActivity(i)
+
+//            startActivity(Intent(this,NewMyRequestActivity::class.java))
         }
 
         binding.successAlertDialog.setOnClickListener {
-            binding.successAlertDialog.visibility = View.GONE
+            binding.successAlertDialog.visibility = View.VISIBLE
         }
 
         binding.ivBack.setOnClickListener {
@@ -101,9 +124,9 @@ class PostedUserActivity : BaseActivity() {
 
     private fun setData(productDetails: ProductDetailsData) {
         with(binding){
-            productName.setText(productDetails?.data?.name)
+            productName.setText(productDetails?.data?.name?.capitalize())
             locationTxt.setText(productDetails?.data?.locationName)
-            postedBy.setText("Posted By " + productDetails?.data?.postedBy?.name)
+            postedBy.setText("Posted By " + productDetails?.data?.postedBy?.name?.capitalize())
             Glide.with(this@PostedUserActivity).load(productDetails.data.images[0])
                 .placeholder(resources.getDrawable(R.drawable.ic_profile)).into(imageView20)
             if (productDetails.data.postedBy?.userAvatar != null){

@@ -11,6 +11,6 @@ data class InitPaymentModel(
 data class Data (
 
     @SerializedName("orderId" ) var orderId : String? = null,
-    @SerializedName("amount"  ) var amount  : Int?    = null
+    @SerializedName("amount"  ) var amount  : Int?    = 0
 
 )

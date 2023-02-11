@@ -7,6 +7,21 @@
     android:background="@color/white"
     tools:context=".activities.newflow.NewSearchActivity">
 
+    <TextView
+        android:id="@+id/nodata2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fontFamily="@font/montserrat_bold"
+        android:gravity="center"
+        android:text="No Products"
+        android:textColor="@color/title_color"
+        android:textSize="22sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/nestedScroll" />
+
     <ImageView
         android:id="@+id/iv_back"
         android:layout_width="24dp"

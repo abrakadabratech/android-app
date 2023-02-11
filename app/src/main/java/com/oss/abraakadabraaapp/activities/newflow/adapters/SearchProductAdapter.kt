@@ -1,28 +1,21 @@
-package com.oss.abraakadabraaapp.adapter
+package com.oss.abraakadabraaapp.activities.newflow.adapters
 
-import Data
-import SearchModel
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.oss.abraakadabraaapp.R
+import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.databinding.ItemProductBinding
-import com.oss.abraakadabraaapp.databinding.LayoutProductBinding
-import com.oss.abraakadabraaapp.datasource.products.Product
-import com.oss.abraakadabraaapp.response.mainResponse.LatestProductData
-import com.oss.abraakadabraaapp.utils.ImageUtils
+import Data
 
-
-class LatestProductAdapter(
-    private var data: ArrayList<Product>,
+class SearchProductAdapter(
+    private var data: ArrayList<Data>,
     var context: Context,
     private var callback: LatestProductAdapterInterface
-) : RecyclerView.Adapter<LatestProductAdapter.LatestProductAdapterVH>() {
+) : RecyclerView.Adapter<SearchProductAdapter.LatestProductAdapterVH>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LatestProductAdapterVH {
         return LatestProductAdapterVH(
@@ -39,33 +32,9 @@ class LatestProductAdapter(
         holder.binding.tvProductName.text = item.name?.capitalize()
         holder.binding.tvProductLocation.text = item.condition
 
-        /*with(holder.binding) {
-
-            if (item.isGiven == 1) {
-                //ivGiven.visibility = View.VISIBLE
-                cv.elevation = 0f
-//                clMain.background = null
-            } else {
-//                ivGiven.visibility = View.GONE
-//                clMain.background = ContextCompat.getDrawable(context, R.drawable.bg_product)
-                cv.elevation = 1f
-            }
-
-            tvProductName.text = item.title
-            tvProductLocation.text = item.fullAddress
-
-            ImageUtils.setImage(
-                context,
-                ivProduct,
-                item.image ?: "",
-                null,
-                R.drawable.home_toolbar_app_logo
-            )
-
-        }*/
 
         holder.itemView.setOnClickListener {
-            callback.onItemDetail(item, position)
+            callback.onSearchItemDetail(item, position)
         }
 
     }
@@ -83,7 +52,7 @@ class LatestProductAdapter(
         return 1
     }
 
-    fun setData(d: ArrayList<Product>) {
+    fun setData(d: ArrayList<Data>) {
         data = d
     }
 
@@ -92,7 +61,7 @@ class LatestProductAdapter(
     }
 
     interface LatestProductAdapterInterface {
-        fun onItemDetail(data: Product, position: Int)
+        fun onSearchItemDetail(data: Data, position: Int)
     }
 
 }

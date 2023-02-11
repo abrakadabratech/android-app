@@ -63,17 +63,22 @@ class AccountsFragment : Fragment(), View.OnClickListener {
         binding.userName.setOnClickListener(this)
 
         setUpObserver()
-        application.generateAuthToken()
-
-        authViewModel.getUser(Utility.getAuthentication(requireContext()))
 
         return root
     }
 
     override fun onResume() {
         super.onResume()
-        setUpProfile()
+        callUser()
+
     }
+
+    private fun callUser() {
+        application.generateAuthToken()
+
+        authViewModel.getUser(Utility.getAuthentication(requireContext()))
+    }
+
     private fun setUpObserver() {
         val activity: Activity? = activity
         if (activity != null) {
@@ -98,6 +103,8 @@ class AccountsFragment : Fragment(), View.OnClickListener {
         if (it != null){
             with(binding){
                 userName.text = if(it.data?.name != null) it.data?.name.toString() else "Set Ur Name"
+                giversCount.text = if(it.data?.userStats?.given != null) it.data?.userStats?.given.toString()+" Items" else "0 Items"
+                receiverCount.text = if(it.data?.userStats?.received != null) it.data?.userStats?.received.toString()+" Items" else "0 Items"
                 Glide.with(this@AccountsFragment)
                     .load(it.data?.userAvatar)
                     .placeholder(resources.getDrawable(R.drawable.ic_profile))

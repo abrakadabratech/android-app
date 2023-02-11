@@ -108,7 +108,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:fontFamily="@font/montserrat_medium"
-                    android:text="Furniture"
+                    android:text=""
                     android:textColor="@color/new_text_color"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -120,7 +120,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:fontFamily="@font/montserrat_bold"
-                    android:text="Wooden Chair"
+                    android:text=""
                     android:textColor="@color/new_action_bar_title_color"
                     android:textSize="24sp"
                     app:layout_constraintStart_toStartOf="@+id/categoryTxt"
@@ -152,7 +152,7 @@
                         android:layout_marginEnd="32dp"
                         android:layout_weight="9"
                         android:fontFamily="@font/montserrat_regular"
-                        android:text="Mantri flora Apartment , 1 Sec , PWD Qtrs HSR Layout, Bengaluru , Karnataka 560102 , India"
+                        android:text=""
                         android:textColor="#355389"
                         android:textSize="14sp" />
 
@@ -191,7 +191,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:fontFamily="@font/montserrat_medium"
-                    android:text="Barely Used"
+                    android:text=""
                     android:textColor="@color/sub_text_color"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toStartOf="@+id/usedFor"
@@ -203,7 +203,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/montserrat_medium"
-                    android:text="Lessthan 6 months"
+                    android:text=""
                     android:textColor="@color/sub_text_color"
 
                     android:textSize="16sp"
@@ -244,7 +244,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:fontFamily="@font/montserrat_medium"
-                    android:text="Rs. 11111"
+                    android:text=""
                     android:textColor="@color/sub_text_color"
 
                     android:textSize="16sp"
@@ -257,7 +257,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/montserrat_medium"
-                    android:text="X Units"
+                    android:text=""
                     android:textColor="@color/sub_text_color"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="@+id/castSaving"
@@ -296,7 +296,7 @@
                         android:layout_margin="5dp"
                         android:padding="4dp"
                         android:fontFamily="@font/montserrat_regular"
-                        android:text="sample text . Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam\n"
+                        android:text=""
                         android:textColor="@color/edit_text_color" />
                 </androidx.cardview.widget.CardView>
 
@@ -364,7 +364,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
                         android:fontFamily="@font/montserrat_bold"
-                        android:text="Alex M"
+                        android:text=""
                         android:textSize="@dimen/sp_16"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.3"
@@ -376,10 +376,9 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:layout_marginStart="16dp"
-                        android:layout_marginBottom="17dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/postedLocation"
+                        android:layout_marginTop="8dp"
                         app:layout_constraintStart_toEndOf="@+id/cardView6"
-                        app:layout_constraintTop_toTopOf="@+id/postedLocation"
+                        app:layout_constraintTop_toBottomOf="@+id/postedUserName"
                         app:srcCompat="@drawable/ic_location_home" />
 
                     <TextView
@@ -389,10 +388,10 @@
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="24dp"
                         android:fontFamily="@font/montserrat_regular"
-                        android:text="HSR Layout, Bengaluru karnataka."
+                        android:text=""
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/imageView17"
-                        app:layout_constraintTop_toTopOf="@+id/cardView6" />
+                        app:layout_constraintTop_toTopOf="@+id/imageView17" />
 
                     <ImageView
                         android:id="@+id/imageView36"
@@ -402,6 +401,7 @@
                         app:layout_constraintBottom_toBottomOf="@+id/cardView6"
                         app:layout_constraintStart_toStartOf="@+id/imageView17"
                         app:layout_constraintTop_toTopOf="@+id/imageView17"
+                        app:layout_constraintVertical_bias="0.42000002"
                         app:srcCompat="@drawable/ic_mobile_icon" />
 
                     <TextView
@@ -411,7 +411,7 @@
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="24dp"
                         android:fontFamily="@font/montserrat_regular"
-                        android:text="+91 9999888982"
+                        android:text=""
                         app:layout_constraintBottom_toBottomOf="@+id/imageView36"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -435,7 +435,6 @@
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
                         android:fontFamily="@font/montserrat_regular"
-                        android:text="alex123@gmail.com"
                         app:layout_constraintBottom_toBottomOf="@+id/imageView37"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/imageView37"

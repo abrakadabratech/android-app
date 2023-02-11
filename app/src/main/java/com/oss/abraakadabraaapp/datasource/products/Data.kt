@@ -13,5 +13,5 @@ data class Data(
     val page: String,
     @SerializedName("category" ) var category : ArrayList<String>   = arrayListOf(),
     @SerializedName("products")
-    val products: List<Product>
+    val products: ArrayList<Product>
 )

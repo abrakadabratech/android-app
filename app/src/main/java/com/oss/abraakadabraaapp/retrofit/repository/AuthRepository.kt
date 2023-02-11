@@ -9,6 +9,7 @@ import com.oss.abraakadabraaapp.utils.Utility
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import org.json.JSONObject
+import kotlin.math.max
 
 class AuthRepository(private val apiHelper: APIs) {
 
@@ -78,6 +79,12 @@ class AuthRepository(private val apiHelper: APIs) {
         map: HashMap<String, String>)
       = apiHelper.getSupportData(map)
 
+    suspend fun getProductsData(
+        map: HashMap<String, String>,
+        page:Int,maxDistance:Int,lat:Double,lang:Double,category:String)
+            = apiHelper.getProductsData(map,page, maxDistance,lat,lang,category)
+
+
     suspend fun getAllCategories(
         map: HashMap<String, String>)
       = apiHelper.getAllCategories(map)
@@ -142,9 +149,9 @@ class AuthRepository(private val apiHelper: APIs) {
     suspend fun searchQuery(
         map: HashMap<String, String>,
         page:String,
-        lat:Double,long:Double,maxDistance:Int
+        lat:Double,long:Double,maxDistance:Int,pageNumber:Int
     )
-            = apiHelper.searchQuery(map,page,lat,long,maxDistance)
+            = apiHelper.searchQuery(map,page,lat,long,maxDistance,pageNumber)
 
     suspend fun sendNotification(
         map: HashMap<String, String>,

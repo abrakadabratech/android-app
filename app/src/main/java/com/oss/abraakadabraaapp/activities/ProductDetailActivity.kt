@@ -90,7 +90,7 @@ class ProductDetailActivity : BaseActivity(), ProductSliderAdapter.ProductSlider
                 super.onBackPressed()
             }
             if (intent.hasExtra(Constants.hasNotificationData)) {
-                startActivity(HomeActivity.createIntent(this@ProductDetailActivity))
+//                startActivity(HomeActivity.createIntent(this@ProductDetailActivity))
             }
         }
     }

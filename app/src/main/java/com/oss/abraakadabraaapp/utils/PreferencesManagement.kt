@@ -1,10 +1,12 @@
 package com.oss.abraakadabraaapp.utils
 
 import android.content.Context
+import androidx.appcompat.app.AlertDialog
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.activities.StartAppActivity
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
 import com.oss.abraakadabraaapp.activities.newflow.model.AllCategoryResponse
+import com.oss.abraakadabraaapp.activities.newflow.model.Filters
 import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.model.UserData
 import com.oss.abraakadabraaapp.model.UserLocation
@@ -181,4 +183,31 @@ object PreferencesManagement {
 
         return prefsEditor.commit()
     }
+
+    fun getFilters(context: Context): Filters? {
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        val json = pref.getString("Filters_key", Gson().toJson(Filters(true,false)))
+
+        return if (json == null)
+            null
+        else
+            Gson().fromJson(json, Filters::class.java)
+
+    }
+
+    fun setFilters(context: Context, data: Filters):Boolean {
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        val prefsEditor = pref.edit()
+
+        if (data == null) {
+            prefsEditor.putString("Filters_key", null)
+        } else {
+            val json = Gson().toJson(data)
+            prefsEditor.putString("Filters_key", json)
+        }
+        return prefsEditor.commit()
+    }
+
 }

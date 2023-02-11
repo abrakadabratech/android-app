@@ -202,7 +202,7 @@ class AllCategoryActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInter
             }
         }
 
-    override fun onCategoryClick(data: UserCatData) {
+    override fun onCategoryClick(data: UserCatData,posi:Int) {
         launchSearchActivity.launch(
             SearchActivity.createIntent(
                 this@AllCategoryActivity,

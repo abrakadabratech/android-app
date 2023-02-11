@@ -462,10 +462,10 @@ abstract class BaseActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun loginInUser(userData: UserData) {
+    /*fun loginInUser(userData: UserData) {
         PreferencesManagement.saveUserData(this, userData)
         startActivity(HomeActivity.createIntent(this))
-    }
+    }*/
 
     fun showPermissionSnackBar(view: View) {
         val snack = Snackbar.make(

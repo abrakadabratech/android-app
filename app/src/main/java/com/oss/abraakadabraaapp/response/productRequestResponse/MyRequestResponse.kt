@@ -30,5 +30,4 @@ data class PostedByUser1 (
     @SerializedName("member_since" ) var memberSince : String? = null,
     @SerializedName("fcm_token" ) var fcm_token : String? = null
 
-
 )

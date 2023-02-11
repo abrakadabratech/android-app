@@ -71,6 +71,7 @@
             android:layout_marginBottom="8dp"
             android:fontFamily="@font/montserrat_regular"
             android:textSize="@dimen/sp_16"
+            android:maxLines="1"
             android:text="Hi... When can you collect"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

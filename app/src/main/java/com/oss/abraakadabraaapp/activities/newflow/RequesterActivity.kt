@@ -9,10 +9,15 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.MyRequestedUsersAdapter
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
+import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.ui.FeedbackActivity
 import com.oss.abraakadabraaapp.databinding.ActivityRequesterBinding
 import com.oss.abraakadabraaapp.response.productRequestResponse.ListingResponse
@@ -23,6 +28,7 @@ import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_REQUESTER
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_MARK_AS_DELIVERED_IN_REQUESTER
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_OK_GOT_IT_IN_REQUESTER
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_OK_GOT_IT_TO_FEEDBACK
+import com.oss.abraakadabraaapp.utils.Constants.UNDER_DEV
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
@@ -55,12 +61,17 @@ class RequesterActivity : BaseActivity() {
             //
             postClick(BUTTON_ACCEPT_IN_REQUESTER)
 
-            generateAuthToken()
-            mainViewModel.updateProductRequest(
-                Utility.getAuthentication(this),
-                productDetails?.requests!![position].requestId.toString(),
-                "accepted"
-            )
+            if (binding.acceptTxt.text == "Chat"){
+                sendToChat()
+                showToast(productDetails?.product?.name.toString())
+            }else{
+                generateAuthToken()
+                mainViewModel.updateProductRequest(
+                    Utility.getAuthentication(this),
+                    productDetails?.requests!![position].requestId.toString(),
+                    "accepted"
+                )
+            }
         }
         binding.markAsDelivered.setOnClickListener {
             postClick(BUTTON_MARK_AS_DELIVERED_IN_REQUESTER)
@@ -163,14 +174,14 @@ class RequesterActivity : BaseActivity() {
         val data = it.product!!
         binding.imageSlider.setImageList(imageList)
 
-        binding.categoryTxt.setText(data.category?.name)
+        binding.categoryTxt.setText(data.category?.name?.capitalize())
         binding.condition.setText(data.condition)
-        binding.productName.setText(data.name)
-        binding.usedFor.setText(data.usedFor)
+        binding.productName.setText(data.name?.capitalize())
+        binding.usedFor.setText(data.usedFor?.capitalize())
         binding.castSaving.setText("Rs ${data.costSaving}")
         binding.energySaving.text = (data.energySaving.toString())
 //        binding.dateOfPostTxt.text = (it.data.createdAt.toString())
-        binding.descriptionTxt.text = (data.description.toString())
+        binding.descriptionTxt.text = (data.description?.capitalize().toString())
         binding.locationName.text = (data.locationName.toString())
         binding.userLocation.text = "location ?"
         binding.userName.text = it.requests[position].username
@@ -184,8 +195,9 @@ class RequesterActivity : BaseActivity() {
         if (it.requests[position].status == "accepted"){
             binding.successLayout.visibility = View.VISIBLE
             binding.markAsDelivered.text = "Mark As\nDelivered"
-            binding.acceptTxt.text = "Accepted"
-            binding.acceptBtn.isClickable = false
+            binding.acceptTxt.text = "Chat"
+            binding.acceptBtn.isClickable = true
+            binding.chatIcon.visibility = View.VISIBLE
             binding.markAsDelivered.isEnabled = true
             binding.markAsDelivered.setTextColor(resources.getColor(R.color.title_color))
         }else if(it.requests[position].status == "rejected"){
@@ -201,5 +213,38 @@ class RequesterActivity : BaseActivity() {
 //        binding.responsesOne.text = "${it.requests.size} Responses"
 //        binding.responsesTwo.text = "${it.requests.size} Responses"
 
+    }
+    private fun sendToChat() {
+        val receiver_id = productDetails?.requests!![position].userId
+        val product_id = productDetails?.product?.id
+        val sender_id = FirebaseAuth.getInstance().currentUser?.uid
+
+        val db = Firebase.firestore
+        var product = productDetails?.product?.name?.capitalize()
+        val receiver_name = productDetails?.requests!![position].username
+
+        val senderInfo = db.collection("users").document(sender_id.toString())
+        senderInfo.get().addOnSuccessListener { doc->
+            Log.d("TAG - ", "sendToChat: ${doc.data}")
+            Log.d("TAG - ", "sendToChat: ${doc.data?.get("user_avatar")}")
+            val userInfo = doc.toObject(UsersData::class.java)!!
+
+            val chat_room = hashMapOf(
+                "from" to sender_id,
+                "sender_id" to sender_id,
+                "sender_name" to userInfo.name,
+                "sender_avatar" to doc.data?.get("user_avatar"),
+                "receiver_id" to receiver_id,
+                "receiver_name" to receiver_name,
+                "receiver_avatar" to productDetails?.requests!![position].user_avatar,
+                "product_id" to product_id,
+                "product" to product
+            )
+
+            val intent = Intent(this, ChatDetailActivity::class.java)
+            intent.putExtra(Constants.CHATS_DATA,chat_room)
+            intent.putExtra("data_from","activity")
+            startActivity(intent)
+        }
     }
 }

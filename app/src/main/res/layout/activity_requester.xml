@@ -692,6 +692,13 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/markAsDelivered"
             app:layout_constraintTop_toTopOf="parent">
+            <ImageView
+                android:id="@+id/chatIcon"
+                android:layout_width="@dimen/dp_16"
+                android:layout_height="@dimen/dp_16"
+                android:layout_marginEnd="2dp"
+                android:visibility="gone"
+                android:src="@drawable/ic_icons_whatsapp_two" />
 
             <TextView
                 android:id="@+id/acceptTxt"

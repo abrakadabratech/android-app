@@ -159,6 +159,12 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
 
     private fun setUpObserver() {
         authViewModel.isLoading.observe(this) { loader(it) }
+
+        authViewModel.getUserSuccess.observe(this){
+            if (it.code == 200){
+                setUpProfile(it)
+            }
+        }
         authViewModel.updateUserSuccess.observe(this) {
 //            showToast(it.responseMessage.toString())
             if (it.code == 500){

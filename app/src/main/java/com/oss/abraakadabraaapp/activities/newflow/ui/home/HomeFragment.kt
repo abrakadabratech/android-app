@@ -11,11 +11,8 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.analytics.Tracker
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
-import com.oss.abraakadabraaapp.activities.HomeActivity
-import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewNotificationActivity
 import com.oss.abraakadabraaapp.databinding.FragmentHomeBinding
 import com.oss.abraakadabraaapp.location.livedata.LocationViewModel
@@ -120,6 +117,7 @@ class HomeFragment : Fragment() {
 
         return root
     }
+
     private fun getUserLocation() {
         val userLocation = PreferencesManagement.getUserLocation(requireContext())
         binding.locationOnActionbar.text = userLocation?.address

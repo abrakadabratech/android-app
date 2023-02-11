@@ -168,10 +168,15 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         }
         binding.button.setOnClickListener {
             application.postClick(Constants.BUTTON_SUBMIT)
+            val userInfo = PreferencesManagement.getUserInfo(requireContext())
             if (binding.iAgreeCheckbox.isChecked) {
                 if (isValidate()) {
                     //showSubmitCautionDialog()
-                    postNewProduct()
+                    if (userInfo?.data?.status == "active"){
+                        postNewProduct()
+                    }else{
+                        showToast("Your profile not verified yet.")
+                    }
                 }
             } else {
                 showToast("Please select I Agree to continue")
@@ -218,11 +223,11 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
     }
 
     override fun addProductImage() {
-        if (photoList.size < 11) {
+        if (photoList.size < 5) {
             selectImage()
         } else {
             showToast(
-                "Select only 10 Images",
+                "Select only 4 Images",
             )
         }
     }
@@ -409,7 +414,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
-        PROD_CONDITION = listConditon[0].toString()
+        PROD_CONDITION = listConditon[0].name.toString()
         binding.conditionTxt.error = null
 
         alertDialog.show()
@@ -436,7 +441,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
-        PROD_USED_FOR = list[0].toString()
+        PROD_USED_FOR = list[0].name.toString()
         binding.usedForTxt.error = null
 
         alertDialog.show()

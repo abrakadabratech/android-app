@@ -142,7 +142,7 @@ class OtpVerificationActivity : BaseActivity(), SMSReceiver.OTPReceiveListener {
         showToast(it.responseMessage)
         cancelTimer()
         if (userData != null) {
-            loginInUser(intent.getParcelableExtra(Constants.userData)!!)
+//            loginInUser(intent.getParcelableExtra(Constants.userData)!!)
         } else {
             val intent =
                 Intent(this@OtpVerificationActivity, AuthUserDetailActivity::class.java)

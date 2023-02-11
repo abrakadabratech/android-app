@@ -1,4 +1,5 @@
 import com.google.gson.annotations.SerializedName
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.UserStats
 
 class RequestDetails(
 
@@ -9,10 +10,13 @@ class RequestDetails(
 
 data class PostedByUser (
 
-    @SerializedName("phone"       ) var phone      : String? = null,
-    @SerializedName("email"       ) var email      : String? = null,
-    @SerializedName("user_avatar" ) var userAvatar : String? = null,
-    @SerializedName("name"        ) var name       : String? = null
+    @SerializedName("name"        ) var name       : String?    = null,
+    @SerializedName("email"       ) var email      : String?    = null,
+    @SerializedName("role"        ) var role       : String?    = null,
+    @SerializedName("user_stats"  ) var userStats  : UserStats? = UserStats(),
+    @SerializedName("phone"       ) var phone      : String?    = null,
+    @SerializedName("user_avatar" ) var userAvatar : String?    = null,
+    @SerializedName("id"          ) var id         : String?    = null
 
 )
 data class UserData (

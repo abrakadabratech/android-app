@@ -19,10 +19,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.codersroute.flexiblewidgets.FlexibleSwitch
 import com.codersroute.flexiblewidgets.FlexibleSwitch.OnStatusChangedListener
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -36,19 +36,17 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
+import com.oss.abraakadabraaapp.activities.newflow.CategorySelectActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewProductDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewSearchActivity
 import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.adapter.CategoryAdapter
+import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.databinding.NewReceiverFlowBinding
-import com.oss.abraakadabraaapp.datasource.APIService
-import com.oss.abraakadabraaapp.datasource.MainViewModel
-import com.oss.abraakadabraaapp.datasource.MainViewModelFactory
 import com.oss.abraakadabraaapp.datasource.ProductAdapter
 import com.oss.abraakadabraaapp.datasource.products.Data
 import com.oss.abraakadabraaapp.datasource.products.Product
 import com.oss.abraakadabraaapp.location.livedata.LocationViewModel
-import com.oss.abraakadabraaapp.response.mainResponse.LatestProductData
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SWIPE_REFRESH
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
@@ -59,10 +57,13 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface,
-    ProductAdapter.OnProductClicked {
+   LatestProductAdapter.LatestProductAdapterInterface{
     private val MY_PERMISSIONS_REQUEST_FINE_LOCATION: Int = 1001
     lateinit var application: BaseActivity
 
@@ -78,8 +79,9 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     private var isLoading = false
     private var isLastPage = false
     lateinit var mFusedLocationClient: FusedLocationProviderClient
+    private lateinit var latestProductAdapter: LatestProductAdapter
 
-    private var latestProductList: ArrayList<LatestProductData> = ArrayList()
+    private var latestProductList: ArrayList<Product> = ArrayList()
     //Pagination
 
     //    private lateinit var latestProductAdapter: LatestProductAdapter
@@ -138,7 +140,36 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
         return root
     }
-
+    private fun setupList() {
+        latestProductAdapter = LatestProductAdapter(latestProductList, requireContext(), this)
+        val lm = GridLayoutManager(requireContext(), 2)
+        binding.rvLatestProduct.apply {
+//            layoutManager = LinearLayoutManager(requireContext())
+            layoutManager = lm
+            addItemDecoration(
+                MarginItemDecoration(18)
+            )
+            adapter = latestProductAdapter
+        }
+        binding.rvLatestProduct.addOnScrollListener(object :
+            RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, oldScrollY: Int) {
+                super.onScrolled(recyclerView, dx, oldScrollY)
+                Log.d("scroll", "scrolling")
+                val total: Int = lm.itemCount
+                val lastVisibleItemCount: Int = lm.findLastVisibleItemPosition()
+                if (!isLoading) {
+                    if (total > 0) if (total - 1 == lastVisibleItemCount) {
+                        if (!noMoreData) {
+                            isLoading = true
+                            isLastPage = true
+                            getProductFromServer()
+                        }
+                    }
+                }
+            }
+        })
+    }
     override fun onStart() {
         super.onStart()
         EventBus.getDefault().register(this)
@@ -235,7 +266,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
 //                checkPermissions()
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                val uri: Uri = Uri.fromParts("package", requireActivity().getPackageName(), null)
+                val uri: Uri = Uri.fromParts("package", requireActivity().packageName, null)
                 intent.data = uri
                 startActivity(intent)
                 dialog.dismiss()
@@ -250,11 +281,40 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                 setUpCategories()
 
                 PreferencesManagement.saveCategories(requireActivity(),it)
-                categoryAdapter.setData(it.data)
+                categoryList = it.data
+                categoryList.add(UserCatData("", "More", ""))
+                categoryAdapter.setData(categoryList)
                 categoryAdapter.notifyDataSetChanged()
                 isLoading = false
             }
             binding.sRLHome.isRefreshing = false
+
+        }
+        authViewModel.allproductsSuccess.observe(requireActivity()) {
+
+//            latestProductAdapter.setData(it.data.products)
+//            binding.textView75.text = "${it.data.products.size} Items"
+//            latestProductAdapter.notifyDataSetChanged()
+
+            if (it.data.products.isNotEmpty()) {
+                if (currentPage == pageStart) latestProductList.clear()
+                latestProductList.addAll(it.data.products)
+                latestProductAdapter.notifyDataSetChanged()
+//                noDataBinding.clNoData.visibility = View.GONE
+
+                val lastPosition = latestProductList.size - it.data.products.size
+
+                if (latestProductList.size == it.data.products.size) {
+                    binding.rvLatestProduct.smoothScrollToPosition(latestProductList.size)
+                } else {
+                    binding.rvLatestProduct.smoothScrollToPosition(lastPosition + 1)
+                }
+
+                currentPage += 1
+            } else {
+                //noDataFound()
+            }
+            //            binding.sRLHome.isRefreshing = false
 
         }
 
@@ -285,7 +345,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         }
     }
 */
-    private fun setupList() {
+   /* private fun setupList() {
         mainListAdapter = ProductAdapter(this)
         val lm = GridLayoutManager(requireContext(), 2)
         binding.rvLatestProduct.apply {
@@ -296,11 +356,10 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             )
             adapter = mainListAdapter
         }
-    }
+    }*/
 
     private fun setupViewModel() {
         if (application.isNetworkAvailable()) {
-            val userLocation = PreferencesManagement.getUserLocation(requireContext())
             application.generateAuthToken()
 //            lateinit var viewModel: MainViewModel
 
@@ -315,15 +374,17 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                         if (activity != null) {
                             if(PreferencesManagement.saveAuthToken(requireActivity(),auth))
                             {
+                                val userLocation = PreferencesManagement.getUserLocation(requireContext())
 
                                 val map = HashMap<String, String>()
                                 val token = PreferencesManagement.getAuthToken(requireContext())!!
                                 map["Authorization"] = token
-                                map["logging"] = "true"
 
                                 authViewModel.getAllCategoriesData(map)
 
-                                val viewModel =
+                                getProductFromServer()
+
+                                /*val viewModel =
                                     ViewModelProvider(
                                         this,
                                         MainViewModelFactory(
@@ -340,7 +401,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                                         mainListAdapter?.submitData(it)
 //                                    categoryAdapter.setData()
                                     }
-                                }
+                                }*/
 
                             }else{
                                 application.showToast("Error generating the token!")
@@ -352,6 +413,21 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
         }
 
+    }
+
+    private fun getProductFromServer() {
+
+        val userLocation = PreferencesManagement.getUserLocation(requireContext())
+
+        val map = HashMap<String, String>()
+        val token = PreferencesManagement.getAuthToken(requireContext())!!
+        map["Authorization"] = token
+//                                map["logging"] = "true"
+
+        authViewModel.getProductsData(map,currentPage,
+            50,
+            userLocation!!.lat.toDouble(),
+            userLocation.long.toDouble(),"")
     }
 
     private fun clickEvents() {
@@ -375,14 +451,22 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         _binding = null
     }
 
-    override fun onCategoryClick(data: UserCatData) {
-        var cats = ArrayList<UserCatData>()
-        cats.add(data)
-        val intent = Intent(context, NewSearchActivity::class.java)
-        intent.putExtra("CATEGORIES",Gson().toJson(cats))
-        intent.putExtra("from","category")
+    override fun onCategoryClick(data: UserCatData,position: Int) {
+        if (position == 0){
 
-        startActivity(intent)
+            val intent = Intent(context, CategorySelectActivity::class.java)
+//            intent.putExtra("CATEGORIES",PreferencesManagement.getCategories())
+            startActivity(intent)
+        }else{
+            var cats = ArrayList<UserCatData>()
+            cats.add(data)
+            val intent = Intent(context, NewSearchActivity::class.java)
+            intent.putExtra("CATEGORIES",Gson().toJson(cats))
+            intent.putExtra("from","category")
+
+            startActivity(intent)
+        }
+
     }
 
 //    override fun onItemDetail(data: LatestProductData, position: Int) {
@@ -391,7 +475,8 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
     //Alert Dialog for show nearby filter
     private fun showNearByFilterDialog() {
-
+        var filters = PreferencesManagement.getFilters(requireContext())
+        Log.d("TAG - ", "showNearByFilterDialog: ${Gson().toJson(filters)}")
         val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
         val inflater = this.layoutInflater
         val dialogView: View = inflater.inflate(R.layout.alert_nearby_filter, null)
@@ -406,20 +491,59 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         val applyBtn = dialogView.findViewById<TextView>(R.id.applyBtn)
         val closeBtn = dialogView.findViewById<ImageView>(R.id.closeBtn)
 
+        if (filters?.nearest!!){
+            nearToMeTxt.setTextColor(resources.getColor(R.color.cat_select_color))
+            newestFirstTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
+            newestFirstSwitch.isChecked = false
+            nearToMeSwitch.isChecked = true
+        }else{
+            nearToMeTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
+            newestFirstTxt.setTextColor(resources.getColor(R.color.cat_select_color))
+            newestFirstSwitch.isChecked = true
+            nearToMeSwitch.isChecked = false
+        }
+
         nearToMeSwitch.addOnStatusChangedListener(OnStatusChangedListener {
-            if (it) nearToMeTxt.setTextColor(resources.getColor(R.color.cat_select_color))
-            else nearToMeTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
+            if (it){
+                filters?.newest = false
+                filters?.nearest = true
+
+                nearToMeTxt.setTextColor(resources.getColor(R.color.cat_select_color))
+//                nearToMeSwitch.isChecked = true
+                newestFirstSwitch.isChecked = false
+                newestFirstTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
+
+            }
+            else{
+                filters?.newest = true
+                filters?.nearest = false
+
+                nearToMeTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
+                newestFirstTxt.setTextColor(resources.getColor(R.color.cat_select_color))
+                newestFirstSwitch.isChecked = true
+            }
         })
 
         newestFirstSwitch.addOnStatusChangedListener(OnStatusChangedListener {
-            if (it) newestFirstTxt.setTextColor(resources.getColor(R.color.cat_select_color))
-            else newestFirstTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
+            if (it){
+                filters?.newest = true
+                filters?.nearest = false
+
+                newestFirstTxt.setTextColor(resources.getColor(R.color.cat_select_color))
+                nearToMeTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
+                nearToMeSwitch.isChecked = false
+            }
+            else{
+                filters?.newest = false
+                filters?.nearest = true
+
+                newestFirstTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
+                nearToMeTxt.setTextColor(resources.getColor(R.color.cat_select_color))
+                nearToMeSwitch.isChecked = true
+            }
         })
 
-        applyBtn.setOnClickListener {
-            application.postClick(Constants.BUTTON_FILTER_APPLY)
-            Toast.makeText(context, "Under Development", Toast.LENGTH_SHORT).show()
-        }
+
 
         val alertDialog: AlertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -428,14 +552,19 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         closeBtn.setOnClickListener {
             alertDialog.dismiss()
         }
+        applyBtn.setOnClickListener {
+            application.postClick(Constants.BUTTON_FILTER_APPLY)
+            Toast.makeText(context, "Under Development ${newestFirstSwitch.isChecked}", Toast.LENGTH_SHORT).show()
+            if (filters.newest){
+                sort()
+            }else{
+                getProductFromServer()
+            }
+            PreferencesManagement.setFilters(requireContext(),filters)
+            alertDialog.dismiss()
+        }
         alertDialog.window?.setLayout(800, 700)
 
-    }
-
-    override fun onProductClicked(product: Product) {
-        val intent = Intent(requireContext(),NewProductDetailActivity::class.java)
-        intent.putExtra(Constants.PRODUCT,Gson().toJson(product))
-        startActivity(intent)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -448,9 +577,19 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 //        application.showToast(data?.data?.products?.size.toString())
     }
 
+    fun sort(){
+        latestProductList.sortByDescending { list -> list.timestamp }
+        latestProductAdapter.notifyDataSetChanged()
+    }
 
     override fun onStop() {
         super.onStop()
         EventBus.getDefault().unregister(this)
+    }
+
+    override fun onItemDetail(data: Product, position: Int) {
+        val intent = Intent(requireContext(),NewProductDetailActivity::class.java)
+        intent.putExtra(Constants.PRODUCT,Gson().toJson(data))
+        startActivity(intent)
     }
 }

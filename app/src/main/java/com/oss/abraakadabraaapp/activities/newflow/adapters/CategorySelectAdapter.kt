@@ -12,8 +12,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.newflow.model.CatData
+import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 
-class CategorySelectAdapter(val context: Context, val i: ArrayList<CatData>)
+class CategorySelectAdapter(val context: Context, var i: ArrayList<UserCatData>,val onclick:OnCategoryClicked)
     : RecyclerView.Adapter<CategorySelectAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View):
@@ -28,8 +29,15 @@ class CategorySelectAdapter(val context: Context, val i: ArrayList<CatData>)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
-        holder.cardName.text = i[position].name
+        if (i[position].isSelect){
+            holder.checkBox.setBackgroundResource(R.drawable.ic_check)
+        }else{
+            holder.checkBox.setBackgroundResource(R.drawable.ic_uncheck)
+        }
+        holder.itemView.setOnClickListener {
+            onclick.onClick()
+        }
+        holder.cardName.text = i[position].title?.capitalize()
         holder.cardLayout.setOnClickListener {
             if (i[position].isSelect){
                 holder.checkBox.setBackgroundResource(R.drawable.ic_uncheck)
@@ -45,6 +53,14 @@ class CategorySelectAdapter(val context: Context, val i: ArrayList<CatData>)
 
     override fun getItemCount(): Int {
         return i.size
+    }
+
+    fun setList(list: java.util.ArrayList<UserCatData>) {
+        i = list
+    }
+
+    interface OnCategoryClicked{
+        fun onClick()
     }
 
 }

@@ -73,6 +73,9 @@ class NewHomeActivity : BaseActivity() {
                     )
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
     companion object {
         const val TAG = "ModalBottomSheet"
     }

@@ -69,7 +69,7 @@ class NotificationActivity : BaseActivity(), NotificationAdapter.NotificationAda
             onBackPressed()
         }
 
-        setUpRecyclerView()
+        //setUpRecyclerView()
         setUpObserver()
         getNotificationData()
         LocalBroadcastManager.getInstance(this@NotificationActivity)
@@ -205,7 +205,7 @@ class NotificationActivity : BaseActivity(), NotificationAdapter.NotificationAda
         binding.rvNotification.setHasFixedSize(false)
         binding.rvNotification.layoutManager =
             LinearLayoutManager(this@NotificationActivity, LinearLayoutManager.VERTICAL, false)
-        binding.rvNotification.adapter = notificationAdapter
+//        binding.rvNotification.adapter = notificationAdapter
 
         binding.sv.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
             val lastChild = binding.sv.getChildAt(binding.sv.childCount - 1)

@@ -19,7 +19,7 @@ class NewNotificationActivity : BaseActivity() {
         postEvent(Constants.PAGE_NOTIFICATIONS,null)
 
         binding.rvNotification.layoutManager = LinearLayoutManager(this)
-        binding.rvNotification.adapter = NewNotificationAdapter(this,4)
+        //binding.rvNotification.adapter = NewNotificationAdapter(this,4)
 
         binding.ivBack.setOnClickListener {
             postClick(BUTTON_BACK_IN_NOTIFICATIONS)

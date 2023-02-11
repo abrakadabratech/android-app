@@ -3,11 +3,11 @@ package com.oss.abraakadabraaapp.activities.newflow.chat
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
+import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
@@ -22,11 +22,14 @@ import com.oss.abraakadabraaapp.activities.newflow.adapters.ChatAdapter
 import com.oss.abraakadabraaapp.activities.newflow.customeview.WrapContentLinearLayoutManager
 import com.oss.abraakadabraaapp.databinding.ChatRowBinding
 import com.oss.abraakadabraaapp.utils.Constants
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
     lateinit var application: BaseActivity
     lateinit var rvChats: RecyclerView
+    lateinit var  nodata : TextView
     lateinit var firestoreUserAdapter: FirestoreRecyclerAdapter<ChatListModel, UsersViewholder>
 
     override fun onCreateView(
@@ -37,9 +40,11 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
 
         val view = inflater.inflate(R.layout.fragment_receiving_chats, container, false)
         rvChats = view.findViewById(R.id.rvChats)
-        setUpRecyclerview()
+        nodata = view.findViewById(R.id.nodata3)
 
+        setUpRecyclerview()
         application = (activity as BaseActivity)
+
         application.postEvent(Constants.PAGE_RECEIVER_CHAT,null)
 
         return view
@@ -52,6 +57,13 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
 
         val docRef = db.collection("chats").whereEqualTo("sender_id",currentUserId)
 
+        docRef.get().addOnSuccessListener { snap ->
+            if(snap.isEmpty){
+                nodata.visibility = View.VISIBLE
+            }else{
+                nodata.visibility = View.GONE
+            }
+        }
         val options: FirestoreRecyclerOptions<ChatListModel> = FirestoreRecyclerOptions.Builder<ChatListModel>()
             .setQuery(docRef,ChatListModel::class.java)
             .build()
@@ -66,9 +78,10 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
             override fun onBindViewHolder(holder: UsersViewholder, position: Int, model: ChatListModel) {
                 val user=model
                 holder.bind(model)
-                holder.binding.userName.text = model.product_name
+                holder.binding.userName.text = model.product
                 holder.binding.productName.text = model.receiver_name
                 holder.binding.message.text = model.last_message
+                holder.binding.time.text = model.time_stamp
 //                holder.binding.message.text = model.messages?.get(model.messages?.size?.minus(1)!!).toString()
                 Glide.with(requireContext()).load(model.receiver_avatar)
                     .placeholder(resources.getDrawable(R.drawable.ic_profile))
@@ -83,8 +96,7 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
                         "receiver_name" to model.receiver_name,
                         "receiver_avatar" to model.receiver_avatar,
                         "product_id" to model.product_id,
-                        "product_name" to model.product_name
-                    )
+                        "product" to model.product)
 
                     val intent = Intent(requireContext(),ChatDetailActivity::class.java)
                     intent.putExtra(Constants.CHATS_DATA,chat_room)
@@ -111,6 +123,7 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
         )
 
         val intent = Intent(requireContext(),ChatDetailActivity::class.java)
+        intent.putExtra("data_from","fragment")
         intent.putExtra(Constants.CHATS_DATA,chat_room)
         startActivity(intent)
     }

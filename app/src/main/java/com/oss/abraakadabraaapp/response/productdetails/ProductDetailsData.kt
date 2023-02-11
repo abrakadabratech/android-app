@@ -28,6 +28,7 @@ data class Products (
     @SerializedName("energy_saving" ) var energySaving : Int?              = null,
     @SerializedName("isReported"    ) var isReported   : Boolean?          = null,
     @SerializedName("isRequested"   ) var isRequested  : Boolean?          = null,
+    @SerializedName("requestAccepted"   ) var requestedStatus  : Boolean?          = null,
     @SerializedName("created_at"    ) var createdAt    : String?           = null
 
 )

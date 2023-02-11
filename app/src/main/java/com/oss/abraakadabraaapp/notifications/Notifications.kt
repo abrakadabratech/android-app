@@ -9,7 +9,6 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.App
-import com.oss.abraakadabraaapp.activities.HomeActivity
 import com.oss.abraakadabraaapp.activities.ProductDetailActivity
 import com.oss.abraakadabraaapp.activities.RequestProductDetailActivity
 import com.oss.abraakadabraaapp.utils.Constants
@@ -95,7 +94,7 @@ object Notifications {
                 notificationBuilder.setContentIntent(pendingIntent)
             }
             else -> {
-                val intent = Intent(context, HomeActivity::class.java)
+                /*val intent = Intent(context, HomeActivity::class.java)
 
                 val pendingIntent =  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     PendingIntent.getActivity(
@@ -109,9 +108,9 @@ object Notifications {
                         context,
                         0, intent, PendingIntent.FLAG_ONE_SHOT
                     )
-                }
+                }*/
 
-                notificationBuilder.setContentIntent(pendingIntent)
+//                notificationBuilder.setContentIntent(pendingIntent)
             }
         }
 

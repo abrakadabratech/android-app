@@ -89,6 +89,7 @@ class NewMyRequestActivity : BaseActivity() , MyRequestAdapter.OnResponseClick{
         postClick(Constants.BUTTON_MY_REQUEST_CARD)
         val intent = Intent(this,MyRequestDetailsActivity::class.java)
         intent.putExtra(Constants.PRODUCT, Gson().toJson(item))
+        Log.d("ok", "onCreate in linsting activity: $${Gson().toJson(item)}")
         startActivity(intent)
     }
 }

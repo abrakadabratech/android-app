@@ -15,6 +15,19 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginBottom="16dp">
 
+        <TextView
+            android:id="@+id/skipPay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:fontFamily="@font/montserrat_medium"
+            android:text="@string/skip_pay"
+            android:textColor="#727C8E"
+            android:textSize="16sp"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toBottomOf="@+id/textView82"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textView82" />
 
         <ImageView
             android:id="@+id/ivBack"
@@ -31,14 +44,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginEnd="8dp"
             android:fontFamily="@font/montserrat_bold"
             android:gravity="center"
             android:text="Pay As you Wish"
             android:textColor="#1D2126"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="@+id/ivBack"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/skipPay"
             app:layout_constraintStart_toEndOf="@+id/ivBack"
             app:layout_constraintTop_toTopOf="@+id/ivBack" />
 

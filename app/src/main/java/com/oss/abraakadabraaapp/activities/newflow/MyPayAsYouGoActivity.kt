@@ -27,6 +27,7 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
     var orderId = ""
     private var productDetial: RequestDetails? = null
     private val mainViewModel: AuthViewModel by viewModel()
+    private lateinit var from: String
 
     private lateinit var binding:ActivityMyPayAsYouGoBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +35,7 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
 
         binding = ActivityMyPayAsYouGoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        from = intent.extras?.getString("from", "").toString()
 
         productId = intent.extras?.getString("productId","")!!
 //        productDetial = Gson().fromJson(intent.extras?.getString("product_data","")!!,RequestDetails::class.java)!!
@@ -43,23 +45,26 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
             postClick(BUTTON_BACK_IN_PAYASWISH)
             onBackPressed()
         }
+        binding.skipPay.setOnClickListener {
+            finish()
+        }
         binding.button3.setOnClickListener {
             postClick(BUTTON_100)
             takeToPayment("100")
-            showToast(Constants.UNDER_DEV)
+
         }
         binding.button5.setOnClickListener {
             postClick(BUTTON_200)
             takeToPayment("200")
-            showToast(Constants.UNDER_DEV) }
+             }
         binding.button6.setOnClickListener {
             postClick(BUTTON_500)
             takeToPayment("500")
-            showToast(Constants.UNDER_DEV) }
+            }
         binding.button7.setOnClickListener {
             postClick(BUTTON_CONTRIBUTE)
             takeToPayment(binding.customAmount.text.toString())
-            showToast(Constants.UNDER_DEV) }
+            }
 
         setUpObserver()
 
@@ -68,7 +73,7 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
     private fun takeToPayment(s: String) {
         generateAuthToken()
         val map = HashMap<String,String>()
-        map["amount"] = s
+        map["amount"] = (s.toInt()*100).toString()
         map["productId"] = productId
         val authMap = Utility.getAuthentication(this)
         authMap["logging"] = "true"
@@ -80,9 +85,8 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
 
         mainViewModel.initPaymentSuccess.observe(this){
             if (it.code == 200){
-                showToast("Order generated")
                 orderId = it.data?.orderId.toString()
-                sendToRazorPay(it.data?.orderId,it.data?.amount)
+                sendToRazorPay(it.data?.orderId, it.data?.amount!!)
             }
         }
 
@@ -97,16 +101,16 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
 
     }
 
-    private fun sendToRazorPay(order: String?, amount: Int?) {
+    private fun sendToRazorPay(order: String?, amount: Int) {
         val activity: Activity = this
-        var amount = (amount?.times(100))
+//        var amount = (amount?.times(100))
         Log.d("Razorpay - ", "onPaymentSuccess: $amount")
 
         val checkout = Checkout()
         checkout.setKeyID("rzp_test_dtfqkGM0oeWPnY")
 //        checkout.setKeyID(Constants.razor_pay_id)
 
-        val payloadHelper = PayloadHelper("INR", (amount?.times(100)!!), order!!)
+        val payloadHelper = PayloadHelper("INR", (amount), order!!)
         payloadHelper.description = "$amount Rupees from ${productDetial?.data?.postedBy?.name}"
         payloadHelper.prefillEmail = productDetial?.data?.postedBy?.email
         payloadHelper.prefillContact = productDetial?.data?.postedBy?.phone

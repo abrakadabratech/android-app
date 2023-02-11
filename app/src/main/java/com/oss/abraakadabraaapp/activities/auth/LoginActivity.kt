@@ -20,7 +20,6 @@ import com.google.gson.Gson
 import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
-import com.oss.abraakadabraaapp.activities.HomeActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.DataClass
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
@@ -111,14 +110,23 @@ class LoginActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        if (binding.otpLayout.visibility == View.VISIBLE){
-            binding.otpLayout.visibility = View.GONE
-            binding.loginLayout.visibility = View.VISIBLE
-        }else{
-            finish()
+//        super.onBackPressed()
+        if (shouldAllowBack()) {
+            super.onBackPressed();
+        } else {
+            showToast("Do not press back. Please complete your profile")
         }
+        /*if (binding.otpLayout.visibility == View.VISIBLE) {
+            binding.otpLayout.visibility = View.VISIBLE
+            binding.loginLayout.visibility = View.VISIBLE
+            showToast("Do not press back button")
+
+        }*/
     }
+
+        private fun shouldAllowBack(): Boolean {
+            return false
+        }
     private fun resendOtp() {
         loginUser()
     }
@@ -377,7 +385,7 @@ class LoginActivity : BaseActivity() {
         binding.tvTermsConditions.makeLinks(
             Pair("Privacy Policy", View.OnClickListener {
                 LaunchUtility.launchUrl(
-                    "https://abrakadabraapp.app/app/privacy-policy",
+                    "https://abra-ka-dabra.com/privacy-policy/",
                     this@LoginActivity
                 )
             })

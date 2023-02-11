@@ -58,6 +58,10 @@ class MyRequestAdapter(
                 holder.status.setTextColor(newMyRequestActivity.getColor(R.color.status_accepted))
                 holder.status.setText(data[position].status?.capitalize())
             }
+            "delivered" -> {
+                holder.status.setTextColor(newMyRequestActivity.getColor(R.color.status_accepted))
+                holder.status.setText(data[position].status?.capitalize())
+            }
         }
 
         Glide.with(newMyRequestActivity)

@@ -37,7 +37,7 @@
         app:layout_constraintTop_toTopOf="@+id/textView83" />
 
     <TextView
-        android:id="@+id/textView85"
+        android:id="@+id/giversCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -49,7 +49,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView83" />
 
     <TextView
-        android:id="@+id/textView86"
+        android:id="@+id/receiverCount"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -57,10 +57,10 @@
         android:text="1 Item"
         android:textSize="16sp"
         android:textColor="#223749"
-        app:layout_constraintBottom_toBottomOf="@+id/textView85"
+        app:layout_constraintBottom_toBottomOf="@+id/giversCount"
         app:layout_constraintEnd_toEndOf="@+id/textView84"
-        app:layout_constraintStart_toEndOf="@+id/textView85"
-        app:layout_constraintTop_toTopOf="@+id/textView85" />
+        app:layout_constraintStart_toEndOf="@+id/giversCount"
+        app:layout_constraintTop_toTopOf="@+id/giversCount" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout4"
@@ -167,7 +167,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView85">
+        app:layout_constraintTop_toBottomOf="@+id/giversCount">
 
         <TextView
             android:id="@+id/textView87"

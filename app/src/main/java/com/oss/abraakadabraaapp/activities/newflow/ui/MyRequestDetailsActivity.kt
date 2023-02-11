@@ -36,7 +36,6 @@ class MyRequestDetailsActivity : BaseActivity() {
     lateinit var product: Data
     private val mainViewModel: AuthViewModel by viewModel()
 
-
     private lateinit var binding:ActivityMyRequestingDetailBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +47,7 @@ class MyRequestDetailsActivity : BaseActivity() {
 
         product =
             Gson().fromJson(intent.extras?.getString(Constants.PRODUCT, ""), Data::class.java)
+        Log.d("ok", "onCreate in linsting activity: $${Gson().toJson(product)}")
 
 
         binding.chatBtn.setOnClickListener{
@@ -57,15 +57,18 @@ class MyRequestDetailsActivity : BaseActivity() {
             val db = Firebase.firestore
 
             val chat_room = hashMapOf(
-                "receiver_id" to product.postedBy?.uid,
+                "receiver_id" to productDetial?.data?.postedBy?.id,
                 "sender_id" to sender_id,
                 "product_id" to product.product?.id,
-                "receiver_name" to product.postedBy?.name,
-                "product" to product.product?.name,
+                "receiver_name" to  productDetial?.data?.postedBy?.name,
+                "product" to productDetial?.data?.name,
                 "user_avatar" to product.postedBy?.userAvatar
             )
             val intent = Intent(this, ChatDetailActivity::class.java)
             intent.putExtra(Constants.CHATS_DATA,chat_room)
+            Log.d("ok", "sending to chat activity: $${Gson().toJson(chat_room)}")
+
+            intent.putExtra("data_from","activity")
             startActivity(intent)
         }
 
@@ -219,10 +222,11 @@ class MyRequestDetailsActivity : BaseActivity() {
 
         when(it.data?.requestStatus){
             "requested" -> {
-                binding.status.setText("Pending")
+                binding.status.setText("Requested")
                 binding.status.setTextColor(resources.getColor(R.color.status_pending))
                 binding.statusIcon.setImageResource(R.drawable.status_pending)
                 binding.markAsDelivered.setText("Cancel")
+                binding.chatBtn.isEnabled = false
             }
             "accepted" -> {
                 binding.status.setText("Accepted")
@@ -231,6 +235,7 @@ class MyRequestDetailsActivity : BaseActivity() {
                 binding.markAsDelivered.setText("Mark As\nReceived")
                 binding.payAsYouWish.visibility = View.VISIBLE
                 binding.chatBtn.isEnabled = true
+
             }
             "rejected" -> {
                 binding.status.setText("Declined")
@@ -249,6 +254,15 @@ class MyRequestDetailsActivity : BaseActivity() {
                 binding.statusIcon.setImageResource(R.drawable.status_accepted)
                 binding.payAsYouWish.visibility = View.VISIBLE
                 binding.markAsDelivered.setText("Received")
+                binding.chatBtn.isEnabled = true
+                binding.constraintLayout3.visibility = View.GONE
+            }
+            "delivered" -> {
+                binding.status.setText("Delivered")
+                binding.status.setTextColor(resources.getColor(R.color.status_accepted))
+                binding.statusIcon.setImageResource(R.drawable.status_accepted)
+                binding.payAsYouWish.visibility = View.VISIBLE
+                binding.markAsDelivered.setText("Delivered")
                 binding.chatBtn.isEnabled = true
                 binding.constraintLayout3.visibility = View.GONE
             }

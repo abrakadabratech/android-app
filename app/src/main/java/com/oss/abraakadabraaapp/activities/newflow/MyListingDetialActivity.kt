@@ -166,14 +166,14 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         val data = it.product!!
         binding.imageSlider.setImageList(imageList)
 
-        binding.categoryTxt.text = data.category?.name
+        binding.categoryTxt.text = data.category?.name?.capitalize()
         binding.conditionTxt.text = data.condition
-        binding.productName.setText(data.name)
+        binding.productName.setText(data.name?.capitalize())
         binding.usedForTxt.text = data.usedFor
         binding.costSavingTxt.text = "Rs ${data.costSaving}"
 //        binding.responsesOne.text = (data.postedBy.toString())
 //        binding.dateOfPostTxt.text = (it.data.createdAt.toString())
-        binding.descriptionTxt.setText(data.description.toString())
+        binding.descriptionTxt.setText(data.description?.capitalize().toString())
         binding.locationName.text = (data.locationName.toString())
         binding.responsesOne.text = "${it.requests.size} Responses"
         binding.responsesTwo.text = "${it.requests.size} Responses"

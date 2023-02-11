@@ -19,7 +19,7 @@ class ProductAdapter(val onClick: OnProductClicked) : PagingDataAdapter<Product,
         var tv_product_location=itemView.rootView.findViewById<TextView>(R.id.tv_product_location)
         var iv=itemView.rootView.findViewById<ImageView>(R.id.iv_product)
         fun bind(item: Product?) {
-            tv.text=item?.name
+            tv.text=item?.name?.capitalize()
             Glide.with(itemView.context).load(item?.image).into(iv)
             tv_product_distance.setText("${(item?.distance?.div(1000))} KM")
             tv_product_location.setText("${item?.condition}")

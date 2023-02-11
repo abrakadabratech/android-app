@@ -57,6 +57,8 @@ class ChatDetailActivity : BaseActivity() {
 
         chatData = intent.getSerializableExtra(CHATS_DATA) as HashMap<String, String>
         data_from = intent.getStringExtra("data_from")!!
+
+        Log.d("ok", "onCreate: $chatData")
         setUpObserver()
         setUpRecycler()
 
@@ -139,68 +141,73 @@ class ChatDetailActivity : BaseActivity() {
     }
 
     private fun sendMessage(message: String) {
-        val db = Firebase.firestore
-        val sender_id = FirebaseAuth.getInstance().currentUser?.uid
+        if (message == ""){
+            showToast("Please enter some message")
+        }else{
+            val db = Firebase.firestore
+            val sender_id = FirebaseAuth.getInstance().currentUser?.uid
+            val calendar = Calendar.getInstance()
+            val sdf = SimpleDateFormat("dd MMM yyyy")
+            val currentDate: String = sdf.format(calendar.time)
+            chatData["last_message"] = message
+            val c = Calendar.getInstance().time
+            chatData["time_stamp"] = currentDate
 
-        chatData["last_message"] = message
-        db.collection("chats")
-            .document(
-                chatData["product_id"]!! + setOneToOneChat(
+            db.collection("chats")
+                .document(
+                    chatData["product_id"]!! + setOneToOneChat(
+                        chatData["sender_id"].toString(),
+                        chatData["receiver_id"].toString()
+                    )
+                )
+                .set(chatData)
+                .addOnSuccessListener {
+                    Log.d("TAG - ", "sendToChat: chat room created")
+
+                }
+                .addOnFailureListener {
+
+                }
+
+            val chats = hashMapOf(
+                "chatNode" to setOneToOneChat(
                     chatData["sender_id"].toString(),
                     chatData["receiver_id"].toString()
-                )
+                ),
+                "receiverId" to chatData["receiver_id"],
+                "senderId" to sender_id,
+                "text" to message,
+                "from" to sender_id,
+                "timestamp" to System.currentTimeMillis()
             )
-            .set(chatData)
-            .addOnSuccessListener {
-                Log.d("TAG - ", "sendToChat: chat room created")
 
-            }
-            .addOnFailureListener {
-
-            }
-
-        val chats = hashMapOf(
-            "chatNode" to setOneToOneChat(
-                chatData["sender_id"].toString(),
-                chatData["receiver_id"].toString()
-            ),
-            "receiverId" to chatData["receiver_id"],
-            "senderId" to sender_id,
-            "text" to message,
-            "from" to sender_id,
-            "timestamp" to Calendar.getInstance().time.toString()
-        )
-
-        val date = Calendar.getInstance().time
-        val sdf = SimpleDateFormat("HH:mm")
-        val str: String = sdf.format(Date())
-        Log.d("TAG - ", "Date and time:$str")
-
-        db.collection("chats")
-            .document(
-                chatData["product_id"]!! + setOneToOneChat(
-                    chatData["sender_id"].toString(),
-                    chatData["receiver_id"].toString()
+            db.collection("chats")
+                .document(
+                    chatData["product_id"]!! + setOneToOneChat(
+                        chatData["sender_id"].toString(),
+                        chatData["receiver_id"].toString()
+                    )
                 )
-            )
-            .collection("Messages")
-            .add(chats)
-            .addOnSuccessListener {
-                generateAuthToken()
+                .collection("Messages")
+                .add(chats)
+                .addOnSuccessListener {
+                    generateAuthToken()
 
-                val notification_user = if (sender_id == chatData["sender_id"].toString()) chatData["receiver_id"].toString() else chatData["sender_id"].toString()
-                val map = HashMap<String, String>()
-                map["receiverId"] = notification_user //chatData["receiver_id"].toString()
-                map["message"] = message
-                mainViewModel.sendNotification(Utility.getAuthentication(this), map)
-                Log.d("TAG - ", "sendToChat: chat posted")
-                /*val intent = Intent(this,ChatDetailActivity::class.java)
-                intent.putExtra(Constants.CHATS_DATA,chat_room)
-                startActivity(intent)*/
-            }
-            .addOnFailureListener {
+                    val notification_user = if (sender_id == chatData["sender_id"].toString()) chatData["receiver_id"].toString() else chatData["sender_id"].toString()
+                    val map = HashMap<String, String>()
+                    map["receiverId"] = notification_user //chatData["receiver_id"].toString()
+                    map["message"] = message
+                    mainViewModel.sendNotification(Utility.getAuthentication(this), map)
+                    Log.d("TAG - ", "sendToChat: chat posted")
+                    /*val intent = Intent(this,ChatDetailActivity::class.java)
+                    intent.putExtra(Constants.CHATS_DATA,chat_room)
+                    startActivity(intent)*/
+                }
+                .addOnFailureListener {
 
-            }
+                }
+        }
+
     }
 
     // what is pointer in C

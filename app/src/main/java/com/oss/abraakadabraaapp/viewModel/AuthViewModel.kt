@@ -15,6 +15,7 @@ import com.oss.abraakadabraaapp.activities.newflow.menu.SupportResponse
 import com.oss.abraakadabraaapp.activities.newflow.model.*
 import com.oss.abraakadabraaapp.activities.newflow.requests.CancelRequestReponse
 import com.oss.abraakadabraaapp.activities.newflow.requests.ReportProductRequest
+import com.oss.abraakadabraaapp.datasource.products.GetProducts
 import com.oss.abraakadabraaapp.response.authResponse.*
 import com.oss.abraakadabraaapp.response.commonResponse.CommonResponse
 import com.oss.abraakadabraaapp.response.commonResponse.HttpErrorResponse
@@ -65,6 +66,7 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
     var searchSuccess = MutableLiveData<SearchModel>()
     var chatSuccess = MutableLiveData<ChatResponse>()
     var supportDataSuccess  = MutableLiveData<SupportResponse>()
+    var allproductsSuccess  = MutableLiveData<GetProducts>()
     var getAllcategoriesSuccess  = MutableLiveData<AllCategoryResponse>()
     var reportProductSuccess  = MutableLiveData<ReportProductResponse>()
 
@@ -564,12 +566,12 @@ fun getRequestDetails(
     fun searchQuery(
         headerMap: HashMap<String, String>,
         page:String,
-        lat:Double,long:Double,maxDistance:Int
+        lat:Double,long:Double,maxDistance:Int,pageNumber:Int
     ) {
         viewModelScope.launch {
-            isLoading.value = true
+//            isLoading.value = true
 
-            suspend fun call() = repository.searchQuery(headerMap,page,lat,long,maxDistance)
+            suspend fun call() = repository.searchQuery(headerMap,page,lat,long,maxDistance,pageNumber)
             callApi(::call, object : CallHelper<SearchModel>{
                 override fun onSuccessful(data: SearchModel) {
                     searchSuccess .value = data
@@ -579,7 +581,7 @@ fun getRequestDetails(
                     errorMessage.value = errorResponse.responseMessage
                 }
             })
-            isLoading.value = false
+//            isLoading.value = false
         }
     }
 
@@ -624,7 +626,29 @@ fun getRequestDetails(
         }
     }
 
-    //NEW
+    fun getProductsData(
+        headerMap: HashMap<String, String>,page:Int,maxDistance:Int,lat:Double,lang:Double,category:String
+    ) {
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() =
+                repository.getProductsData(headerMap, page, maxDistance, lat, lang, category)
+            callApi(::call, object : CallHelper<GetProducts> {
+                override fun onSuccessful(data: GetProducts) {
+                    allproductsSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+
+            })
+            isLoading.value = false
+
+        }
+    }
+            //NEW
     fun getAllCategoriesData(
         headerMap: HashMap<String, String>
     ) {
