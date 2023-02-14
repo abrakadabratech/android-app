@@ -68,6 +68,11 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
     private var PROD_CATEGORY: String = ""
     private var PROD_CONDITION: String = ""
     private var PROD_USED_FOR: String = ""
+
+    private var selectedProdCategory:String = ""
+    private var selectedCondition:String = ""
+    private var selectedUsedFor:String = ""
+
     private var LOCATION_NAME: String = ""
     private var lattitude: Double = 0.0
     private var longitude: Double = 0.0
@@ -391,9 +396,14 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
-        PROD_CATEGORY = mainAdapterList[0].id.toString()
+        if (selectedProdCategory == "") selectedProdCategory = mainAdapterList[0].title?.capitalize().toString()
+        if (PROD_CATEGORY == "") PROD_CATEGORY = mainAdapterList[0].id.toString()
+
+        binding.categorySelectedTxt.text = selectedProdCategory
+//        PROD_CATEGORY = mainAdapterList[0].id.toString()
         binding.cateogoryTxt.error = null
         alertDialog.show()
+        binding.categorySelectedTxt.visibility = View.VISIBLE
     }
 
     private fun showConditionDialog() {
@@ -414,10 +424,13 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
-        PROD_CONDITION = listConditon[0].name.toString()
-        binding.conditionTxt.error = null
+        if(PROD_CONDITION == "") PROD_CONDITION = listConditon[0].name.toString()
+        else PROD_CONDITION = PROD_CONDITION
 
+        binding.conditionSelectedTxt.text = PROD_CONDITION
+        binding.conditionTxt.error = null
         alertDialog.show()
+        binding.conditionSelectedTxt.visibility = View.VISIBLE
     }
 
     private fun showUsedForDialog() {
@@ -441,7 +454,11 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
-        PROD_USED_FOR = list[0].name.toString()
+        if(PROD_USED_FOR == "") PROD_USED_FOR = list[0].name.toString()
+
+        binding.usedForSelectedTxt.text = PROD_USED_FOR
+        binding.usedForSelectedTxt.visibility = View.VISIBLE
+
         binding.usedForTxt.error = null
 
         alertDialog.show()
@@ -735,25 +752,37 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
 
     override fun onMainItemClick(position: Int, isSelect: Boolean) {
         PROD_CATEGORY = mainAdapterList[position].id.toString()
+        selectedProdCategory = mainAdapterList[position].title?.capitalize().toString()
+
+        binding.categorySelectedTxt.text = selectedProdCategory
+        binding.categorySelectedTxt.visibility = View.VISIBLE
 
         for (i in 0 until mainAdapterList.size) mainAdapterList[i].isSelect = i == position
 
         mainCatAdapter.notifyDataSetChanged()
+        alertDialog.dismiss()
     }
 
     override fun onConditionItemClick(position: Int, isSelect: Boolean) {
         for (i in 0 until listConditon.size) listConditon[i].isSelect = i == position
         PROD_CONDITION = listConditon[position].name.toString()
 
+        binding.conditionSelectedTxt.text = listConditon[position].name
+        binding.conditionSelectedTxt.visibility = View.VISIBLE
+
         condtionAdapter.notifyDataSetChanged()
+        alertDialog.dismiss()
     }
     override fun onItemClick(position: Int, isSelect: Boolean,alerttype:String) {
 //        list.get(position).isSelect = isSelect
         for (i in 0 until list.size) list[i].isSelect = i == position
         PROD_USED_FOR = list[position].name.toString()
 
+        binding.usedForSelectedTxt.text = PROD_USED_FOR
+        binding.usedForSelectedTxt.visibility = View.VISIBLE
+
         alertAdaper.notifyDataSetChanged()
-//        alertDialog.dismiss()
+        alertDialog.dismiss()
     }
 
 }

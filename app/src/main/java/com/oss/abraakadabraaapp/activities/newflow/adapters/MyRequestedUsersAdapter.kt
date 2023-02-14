@@ -4,8 +4,10 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.newflow.MyListingDetialActivity
 import com.oss.abraakadabraaapp.activities.newflow.RequesterActivity
@@ -18,6 +20,7 @@ class MyRequestedUsersAdapter(val context: MyListingDetialActivity, val data: Ar
         var userName = itemView.findViewById<TextView>(R.id.userName)
         var message = itemView.findViewById<TextView>(R.id.message)
         var locatinName = itemView.findViewById<TextView>(R.id.locatinName)
+        var imgaeView = itemView.findViewById<ImageView>(R.id.imageView20)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -25,6 +28,9 @@ class MyRequestedUsersAdapter(val context: MyListingDetialActivity, val data: Ar
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        Glide.with(context).load(data[position].user_avatar)
+            .placeholder(context.resources.getDrawable(R.drawable.ic_profile))
+            .into(holder.imgaeView)
         holder.userName.setText(data[position].username)
         holder.message.setText(data[position].message)
         holder.locatinName.setText(context.getAddress(data[position].coordinates?.Latitude?.toDouble()!!,

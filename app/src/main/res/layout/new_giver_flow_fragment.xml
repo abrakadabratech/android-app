@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -16,6 +15,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -55,12 +55,12 @@
                     android:id="@+id/locationTxt"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_weight="9"
                     android:fontFamily="@font/montserrat_medium"
-                    android:layout_gravity="center"
                     android:text="HSR Layout,Bangaluru India"
-                    android:textSize="14sp"
-                    android:textColor="@color/edit_text_color"/>
+                    android:textColor="@color/edit_text_color"
+                    android:textSize="14sp" />
 
 
             </LinearLayout>
@@ -100,7 +100,7 @@
                     android:hint="@string/new_product_name"
                     android:imeOptions="actionNext"
                     android:inputType="textCapSentences"
-                    android:maxLength="20"
+                    android:maxLength="40"
                     android:maxLines="1"
                     android:paddingStart="4dp"
                     android:paddingEnd="16dp"
@@ -130,7 +130,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/montserrat_regular"
-                android:text="20 Characters Max"
+                android:text="40 Characters Max"
                 android:textColor="@color/message_color"
                 android:textSize="10sp"
                 app:layout_constraintEnd_toEndOf="@+id/textView6"
@@ -142,31 +142,47 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:orientation="horizontal"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
+                android:orientation="vertical"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/textView6"
                 app:layout_constraintTop_toBottomOf="@+id/textView8">
 
-                <EditText
-                    android:id="@+id/cateogoryTxt"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="9"
-                    android:fontFamily="@font/montserrat_medium"
-                    android:text="Category"
-                    android:background="@color/transparent"
-                    android:editable="false"
-                    android:textColor="@color/title_color"
-                    android:textSize="15sp" />
+                    android:orientation="horizontal">
 
-                <ImageView
-                    android:layout_width="0dp"
+
+                    <EditText
+                        android:id="@+id/cateogoryTxt"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:background="@color/transparent"
+                        android:editable="false"
+                        android:fontFamily="@font/montserrat_medium"
+                        android:text="Category"
+                        android:textColor="@color/title_color"
+                        android:textSize="15sp" />
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:src="@drawable/ic_drop_down" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/categorySelectedTxt"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:src="@drawable/ic_drop_down" />
+                    android:fontFamily="@font/montserrat_bold"
+                    android:text="Electronics"
+                    android:visibility="gone"
+                    android:textSize="18sp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -175,31 +191,44 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:orientation="horizontal"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
+                android:orientation="vertical"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/catgoryLinearLayout"
                 app:layout_constraintTop_toBottomOf="@+id/catgoryLinearLayout">
 
-                <EditText
-                    android:id="@+id/conditionTxt"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="9"
-                    android:background="@color/transparent"
-                    android:editable="false"
-                    android:fontFamily="@font/montserrat_medium"
-                    android:text="Condition of Product"
-                    android:textColor="@color/title_color"
-                    android:textSize="15sp" />
+                    android:orientation="horizontal">
+                    <EditText
+                        android:id="@+id/conditionTxt"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="9"
+                        android:background="@color/transparent"
+                        android:editable="false"
+                        android:fontFamily="@font/montserrat_medium"
+                        android:text="Condition of Product"
+                        android:textColor="@color/title_color"
+                        android:textSize="15sp" />
 
-                <ImageView
-                    android:layout_width="0dp"
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:src="@drawable/ic_drop_down" />
+                </LinearLayout>
+                <TextView
+                    android:id="@+id/conditionSelectedTxt"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:src="@drawable/ic_drop_down" />
+                    android:fontFamily="@font/montserrat_bold"
+                    android:text="Electronics"
+                    android:visibility="gone"
+                    android:textSize="18sp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -208,22 +237,26 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:orientation="horizontal"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
+                android:orientation="vertical"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/conditionLinearLayout"
                 app:layout_constraintTop_toBottomOf="@+id/conditionLinearLayout">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
                 <EditText
                     android:id="@+id/usedForTxt"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="9"
-                    android:fontFamily="@font/montserrat_medium"
-                    android:text="Used For"
                     android:background="@color/transparent"
                     android:editable="false"
+                    android:fontFamily="@font/montserrat_medium"
+                    android:text="Used For"
                     android:textColor="@color/title_color"
                     android:textSize="15sp" />
 
@@ -233,6 +266,16 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:src="@drawable/ic_drop_down" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/usedForSelectedTxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:text="Electronics"
+                    android:visibility="gone"
+                    android:textSize="18sp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -289,13 +332,61 @@
                 android:id="@+id/textView9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:fontFamily="@font/montserrat_medium"
                 android:text="Description - Share your story"
-                android:textSize="@dimen/sp_16"
                 android:textColor="@color/title_color"
+                android:textSize="@dimen/sp_16"
                 app:layout_constraintStart_toStartOf="@+id/linearLayout5"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout51" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout51"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="9"
+                android:orientation="vertical"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                app:layout_constraintEnd_toEndOf="@+id/linearLayout5"
+                app:layout_constraintStart_toStartOf="@+id/linearLayout5"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout5">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="9"
+                    android:fontFamily="@font/montserrat_medium"
+                    android:text="Price"
+                    android:textColor="@color/title_color"
+                    android:textSize="@dimen/sp_16" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/textView5"
+                    app:layout_constraintTop_toBottomOf="@+id/textView5">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/et_product_brand1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:fontFamily="@font/montserrat_regular"
+                        android:hint="Approximate Value of the product"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="16dp"
+                        android:textColor="@color/edit_text_color"
+                        android:textColorHint="@color/edit_text_color"
+                        android:textSize="14sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView3"
@@ -309,18 +400,25 @@
                 app:layout_constraintStart_toStartOf="@+id/textView9"
                 app:layout_constraintTop_toBottomOf="@+id/textView9">
 
-                <EditText
-                    android:id="@+id/descEdt"
+                <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="8dp"
-                    android:background="@android:color/transparent"
-                    android:fontFamily="@font/montserrat_regular"
-                    android:gravity="top"
-                    android:hint="Eg- Ladies Bag, bought it on my first foreign trip in running condition.\n\nGive close description of the item as possible to increase the response"
-                    android:maxLength="300"
-                    android:textColor="@color/edit_text_color"
-                    android:textSize="14sp" />
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/descEdt"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="8dp"
+                        android:background="@android:color/transparent"
+                        android:fontFamily="@font/montserrat_regular"
+                        android:gravity="top"
+                        android:hint="Eg- Ladies Bag, bought it on my first foreign trip in running condition.\n\nGive close description of the item as possible to increase the response"
+                        android:maxLength="300"
+                        android:textColor="@color/edit_text_color"
+                        android:textSize="14sp" />
+                </ScrollView>
+
+
             </androidx.cardview.widget.CardView>
 
             <TextView
@@ -356,8 +454,8 @@
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/montserrat_medium"
                 android:text="Upload Image of the Item"
-                android:textSize="@dimen/sp_16"
                 android:textColor="@color/title_color"
+                android:textSize="@dimen/sp_16"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/textView2"
                 app:layout_constraintTop_toBottomOf="@+id/textView2" />
@@ -394,8 +492,8 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp"
                 android:fontFamily="@font/montserrat_regular"
-                android:textColor="@color/title_color"
                 android:text="@string/ensuring_user"
+                android:textColor="@color/title_color"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/rv_images"
@@ -423,8 +521,8 @@
                 android:layout_marginBottom="18dp"
                 android:background="@drawable/btn_bg_rounded_rect"
                 android:fontFamily="@font/montserrat_medium"
-                android:text="Submit"
                 android:gravity="center"
+                android:text="Submit"
                 android:textAllCaps="false"
                 android:textColor="#fff"
                 android:textSize="@dimen/sp_16"

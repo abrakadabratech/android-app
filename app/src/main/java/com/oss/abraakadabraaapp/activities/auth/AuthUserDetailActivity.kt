@@ -155,9 +155,9 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
             R.drawable.insta_icon
         )
         list.add(SocialData(R.drawable.fb_icon,true))
-        list.add(SocialData(R.drawable.linked_in_icon,false))
-        list.add(SocialData(R.drawable.twitter_icon,false))
         list.add(SocialData(R.drawable.insta_icon,false))
+        list.add(SocialData(R.drawable.twitter_icon,false))
+        list.add(SocialData(R.drawable.linked_in_icon,false))
 
         adapter = SocialShareAdapter(this, list,this)
         val layoutManager = GridLayoutManager(this, 4)

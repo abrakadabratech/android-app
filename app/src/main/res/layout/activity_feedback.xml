@@ -263,6 +263,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="5dp"
+            android:gravity="top"
+            android:text="djfajk"
             android:fontFamily="@font/montserrat_regular"
             android:background="@color/transparent"
             android:hint="Eg - Ladies Bag , bought it on my first foreign trip , in running condition.. \n\nGive close description of the item as possible to increase response"

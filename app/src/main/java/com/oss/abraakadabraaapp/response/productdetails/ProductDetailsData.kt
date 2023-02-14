@@ -38,6 +38,7 @@ data class PostedByUser (
     @SerializedName("name"         ) var name        : String? = null,
     @SerializedName("user_avatar"  ) var userAvatar  : String? = null,
     @SerializedName("member_since" ) var memberSince : String? = null,
+    @SerializedName("given" ) var given : String? = "0",
     @SerializedName("fcm_token" ) var fcm_token : String? = null
 
 

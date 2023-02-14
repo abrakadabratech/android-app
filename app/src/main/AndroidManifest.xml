@@ -49,7 +49,8 @@
         android:theme="@style/Theme.AbraaKaDabraa.App"
         android:usesCleartextTraffic="true"
         tools:ignore="HardcodedDebugMode,LockedOrientationActivity">
-        <meta-data android:name="com.google.android.geo.API_KEY" android:value="@string/google_api_key"/>
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="@string/maps_api"/>
 
         <activity
             android:name=".activities.newflow.chat.ChatDetailActivity"
@@ -88,9 +89,7 @@
             android:name=".activities.newflow.ui.FeedbackActivity"
             android:exported="false"
             android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
-        <activity
-            android:name=".activities.newflow.TestActivity"
-            android:exported="true" />
+
         <activity
             android:name=".activities.newflow.CategorySelectActivity"
             android:exported="false"
@@ -227,9 +226,7 @@
             android:name=".activities.ContentManagementActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
-        <activity
-            android:name=".activities.HomeActivity"
-            android:screenOrientation="portrait" />
+
         <activity
             android:name=".activities.ResetPasswordActivity"
             android:screenOrientation="portrait"

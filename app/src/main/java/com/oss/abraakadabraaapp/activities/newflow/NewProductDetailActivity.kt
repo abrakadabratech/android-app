@@ -42,6 +42,7 @@ import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SHARE_PRODUCT
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
+import okhttp3.internal.notify
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -119,12 +120,17 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
             }
         }
         binding.chatBtn.setOnClickListener {
-            postClick(Constants.BUTTON_CHAT_IN_DETAILS_PAGE)
             if (productDetails?.data?.requestedStatus!!){
-                sendToChat()
+                if (productDetails?.data?.requestedStatus!!){
+                    sendToChat()
+                }else{
+                    showToast("Chat request will be enable after\nyour request is accepted")
+                }
             }else{
-                showToast("Chat request will be enable after\nyour request is accepted")
+                showToast("Product not accepted yet!")
             }
+            postClick(Constants.BUTTON_CHAT_IN_DETAILS_PAGE)
+
         }
     }
 
@@ -222,11 +228,13 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
         longitude = it.data.coordinates?.Longitude.toString()
 
         val bundle = bundleOf("lat_value" to lattitude,
-            "lang_value" to longitude)
+            "lang_value" to longitude,
+        "title" to productDetails?.data?.name)
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             add<LocationFragment>(R.id.maps_view,args = bundle)
         }
+
 
         if (it.data.isRequested!!){
             binding.requestBtn.setText("Requested")
@@ -359,27 +367,30 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
         submitBtn.setOnClickListener {
             postEvent(Constants.BUTTON_SUBMIT_IN_REPORT_THIS_DETAILS_PAGE, null)
 
-            generateAuthToken()
+            if (reportEdt.text.toString() == ""){
+                showToast("Please enter some text")
+            }else{
+                generateAuthToken()
 
-            val map = HashMap<String, String>()
-            val token = PreferencesManagement.getAuthToken(this)!!
-            map[RequestKeys.authorization] = token
+                val map = HashMap<String, String>()
+                val token = PreferencesManagement.getAuthToken(this)!!
+                map[RequestKeys.authorization] = token
 
-            if (productDetails!=null){
-                if (isNetworkAvailable()){
+                if (productDetails!=null){
+                    if (isNetworkAvailable()){
 //                    val request = ReportProductRequest(productDetails!!.data.id,reportType,reportEdt.text.toString())
 
-                    val requestMap = HashMap<String,String>()
-                    requestMap["productId"] = productDetails!!.data.id.toString()
-                    requestMap["type"] = reportType
-                    requestMap["message"] = reportEdt.text.toString()
+                        val requestMap = HashMap<String,String>()
+                        requestMap["productId"] = productDetails!!.data.id.toString()
+                        requestMap["type"] = reportType
+                        requestMap["message"] = reportEdt.text.toString()
 
 
-                    mainViewModel.reportProduct(map, requestMap)
+                        mainViewModel.reportProduct(map, requestMap)
+                    }
                 }
-
+                alertDialog.dismiss()
             }
-            alertDialog.dismiss()
         }
         alertDialog.show()
 //        alertDialog.window?.setLayout(800, 700)

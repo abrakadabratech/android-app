@@ -105,33 +105,33 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             when (userInfo.data?.socialLinkType) {
                 facebook -> {
                     list.add(SocialData(R.drawable.fb_icon, true))
-                    list.add(SocialData(R.drawable.linked_in_icon, false))
-                    list.add(SocialData(R.drawable.twitter_icon, false))
                     list.add(SocialData(R.drawable.insta_icon, false))
+                    list.add(SocialData(R.drawable.twitter_icon, false))
+                    list.add(SocialData(R.drawable.linked_in_icon, false))
                 }
                 linkedin -> {
                     list.add(SocialData(R.drawable.fb_icon, false))
-                    list.add(SocialData(R.drawable.linked_in_icon, true))
-                    list.add(SocialData(R.drawable.twitter_icon, false))
                     list.add(SocialData(R.drawable.insta_icon, false))
+                    list.add(SocialData(R.drawable.twitter_icon, false))
+                    list.add(SocialData(R.drawable.linked_in_icon, true))
                 }
                 twitter -> {
                     list.add(SocialData(R.drawable.fb_icon, false))
-                    list.add(SocialData(R.drawable.linked_in_icon, false))
-                    list.add(SocialData(R.drawable.twitter_icon, true))
                     list.add(SocialData(R.drawable.insta_icon, false))
+                    list.add(SocialData(R.drawable.twitter_icon, true))
+                    list.add(SocialData(R.drawable.linked_in_icon, false))
                 }
                 instagram -> {
                     list.add(SocialData(R.drawable.fb_icon, false))
-                    list.add(SocialData(R.drawable.linked_in_icon, false))
-                    list.add(SocialData(R.drawable.twitter_icon, false))
                     list.add(SocialData(R.drawable.insta_icon, true))
+                    list.add(SocialData(R.drawable.twitter_icon, false))
+                    list.add(SocialData(R.drawable.linked_in_icon, false))
                 }
                 else -> {
                     list.add(SocialData(R.drawable.fb_icon, true))
-                    list.add(SocialData(R.drawable.linked_in_icon, false))
-                    list.add(SocialData(R.drawable.twitter_icon, false))
                     list.add(SocialData(R.drawable.insta_icon, false))
+                    list.add(SocialData(R.drawable.twitter_icon, false))
+                    list.add(SocialData(R.drawable.linked_in_icon, false))
                 }
             }
 //            val parsedText = getUserNameFromSocialLink(userInfo.data?.socialLink,

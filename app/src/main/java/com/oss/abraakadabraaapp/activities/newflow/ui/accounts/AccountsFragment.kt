@@ -54,6 +54,7 @@ class AccountsFragment : Fragment(), View.OnClickListener {
                 requireActivity().onBackPressed()
             }
         }
+        setUpProfile(PreferencesManagement.getUserInfo(requireContext())!!)
         binding.myListingLayout.setOnClickListener(this)
         binding.myRequestLayout.setOnClickListener(this)
         binding.myChatsLayout.setOnClickListener(this)
@@ -84,8 +85,8 @@ class AccountsFragment : Fragment(), View.OnClickListener {
         if (activity != null) {
             authViewModel.getUserSuccess.observe(requireActivity()) {
 //            showToast(it.responseMessage.toString())
-                PreferencesManagement.saveUserInfo(requireContext(),it)
-                setUpProfile()
+//                PreferencesManagement.saveUserInfo(requireContext(),it)
+                setUpProfile(it)
             }
 
             authViewModel.errorMessage.observe(requireActivity()) { if (it.isNotBlank()) Log.d(
@@ -98,7 +99,7 @@ class AccountsFragment : Fragment(), View.OnClickListener {
 
     }
 
-    private fun setUpProfile() {
+    private fun setUpProfile(getUserResponse: GetUserResponse) {
         val it: GetUserResponse? = PreferencesManagement.getUserInfo(requireContext())
         if (it != null){
             with(binding){
@@ -112,6 +113,20 @@ class AccountsFragment : Fragment(), View.OnClickListener {
                     .placeholder(resources.getDrawable(R.drawable.ic_profile))
                     .into(profilePic)
             }
+        }else{
+            with(binding){
+                userName.text = if(getUserResponse.data?.name != null) getUserResponse.data?.name.toString() else "Set Ur Name"
+//                giversCount.text = it.data?.userStats?.given.toString()
+                giversCount.text = if(getUserResponse.data?.userStats?.given != null)
+                    getUserResponse.data?.userStats?.given.toString()+" Items" else "0 Items"
+                receiverCount.text = if(getUserResponse.data?.userStats?.received != null)
+                    getUserResponse.data?.userStats?.received.toString()+" Items" else "0 Items"
+                Glide.with(this@AccountsFragment)
+                    .load(getUserResponse.data?.userAvatar)
+                    .placeholder(resources.getDrawable(R.drawable.ic_profile))
+                    .into(profilePic)
+            }
+            PreferencesManagement.saveUserInfo(requireContext(),getUserResponse)
         }
     }
 

@@ -15,17 +15,17 @@ data class UpdatedCoordinates (
 
 data class UpdatedData (
 
-    @SerializedName("posted_by"     ) var postedBy     : String?           = null,
-    @SerializedName("coordinates"   ) var coordinates  : UpdatedCoordinates?      = UpdatedCoordinates(),
-    @SerializedName("cost_saving"   ) var costSaving   : Int?              = null,
     @SerializedName("used_for"      ) var usedFor      : String?           = null,
-    @SerializedName("description"   ) var description  : String?           = null,
-    @SerializedName("images"        ) var images       : ArrayList<String> = arrayListOf(),
-    @SerializedName("category"      ) var category     : Categories?           = null,
+    @SerializedName("coordinates"   ) var coordinates  : Coordinates?      = Coordinates(),
     @SerializedName("name"          ) var name         : String?           = null,
-    @SerializedName("location_name" ) var locationName : String?           = null,
+    @SerializedName("cost_saving"   ) var costSaving   : Int?              = null,
     @SerializedName("condition"     ) var condition    : String?           = null,
+    @SerializedName("description"   ) var description  : String?           = null,
+    @SerializedName("location_name" ) var locationName : String?           = null,
+    @SerializedName("images"        ) var images       : ArrayList<String> = arrayListOf(),
     @SerializedName("energy_saving" ) var energySaving : Int?              = null,
+    @SerializedName("posted_by"     ) var postedBy     : String?           = null,
+    @SerializedName("category"      ) var category     : String?           = null,
     @SerializedName("created_at"    ) var createdAt    : String?           = null
 
 )

@@ -134,6 +134,7 @@ object Constants {
     const val BUTTON_EDIT_PRODUCT = "button_edit_product"
     const val BUTTON_SHARE_PRODUCT = "button_share_product"
     const val BUTTON_DELETE_PRODUCT = "button_delete_product"
+    const val BUTTON_UPDATE_PRODUCT = "button_update_product"
     const val BUTTON_BACK_IN_PRODUCT_DETAILS = "button_back_in_product_details"
     const val BUTTON_BACK_IN_POSTED_USER = "button_back_in_posted_user"
     const val BUTTON_REQUEST_IN_DETAILS_PAGE = "button_request_in_details_page"

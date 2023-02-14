@@ -51,25 +51,31 @@ class MyRequestDetailsActivity : BaseActivity() {
 
 
         binding.chatBtn.setOnClickListener{
+
+            if (productDetial?.data?.requestStatus == "accepted"){
+                val sender_id = FirebaseAuth.getInstance().currentUser?.uid
+
+                val db = Firebase.firestore
+
+                val chat_room = hashMapOf(
+                    "receiver_id" to productDetial?.data?.postedBy?.id,
+                    "sender_id" to sender_id,
+                    "product_id" to product.product?.id,
+                    "receiver_name" to  productDetial?.data?.postedBy?.name,
+                    "product" to productDetial?.data?.name,
+                    "user_avatar" to product.postedBy?.userAvatar
+                )
+                val intent = Intent(this, ChatDetailActivity::class.java)
+                intent.putExtra(Constants.CHATS_DATA,chat_room)
+                Log.d("ok", "sending to chat activity: $${Gson().toJson(chat_room)}")
+
+                intent.putExtra("data_from","activity")
+                startActivity(intent)
+            }else{
+                showToast("Product not accepted yet!")
+            }
             postClick(Constants.BUTTON_CHAT_IN_REQUEST_DETAILS)
-            val sender_id = FirebaseAuth.getInstance().currentUser?.uid
 
-            val db = Firebase.firestore
-
-            val chat_room = hashMapOf(
-                "receiver_id" to productDetial?.data?.postedBy?.id,
-                "sender_id" to sender_id,
-                "product_id" to product.product?.id,
-                "receiver_name" to  productDetial?.data?.postedBy?.name,
-                "product" to productDetial?.data?.name,
-                "user_avatar" to product.postedBy?.userAvatar
-            )
-            val intent = Intent(this, ChatDetailActivity::class.java)
-            intent.putExtra(Constants.CHATS_DATA,chat_room)
-            Log.d("ok", "sending to chat activity: $${Gson().toJson(chat_room)}")
-
-            intent.putExtra("data_from","activity")
-            startActivity(intent)
         }
 
         binding.ivBack.setOnClickListener {
@@ -226,7 +232,7 @@ class MyRequestDetailsActivity : BaseActivity() {
                 binding.status.setTextColor(resources.getColor(R.color.status_pending))
                 binding.statusIcon.setImageResource(R.drawable.status_pending)
                 binding.markAsDelivered.setText("Cancel")
-                binding.chatBtn.isEnabled = false
+//                binding.chatBtn.isEnabled = false
             }
             "accepted" -> {
                 binding.status.setText("Accepted")

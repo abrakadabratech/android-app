@@ -131,9 +131,10 @@
                 android:layout_marginStart="11dp"
                 android:layout_marginEnd="8dp"
                 android:fontFamily="@font/montserrat_semi_bold"
-                android:text="Posted by : Alex M"
+                android:text="Posted by : Alex Mfadsfdas dfadfafa "
                 android:textColor="@color/title_color"
                 android:textSize="@dimen/sp_16"
+                android:maxLines="2"
                 app:layout_constraintBottom_toBottomOf="@+id/cardView8"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/cardView8"
@@ -141,7 +142,7 @@
                 app:layout_constraintVertical_bias="0.0" />
 
             <TextView
-                android:id="@+id/textView49"
+                android:id="@+id/memberSince"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserrat_medium"
@@ -157,20 +158,20 @@
                 android:layout_width="97.75dp"
                 android:layout_height="17dp"
                 android:layout_marginTop="6dp"
-                app:layout_constraintStart_toStartOf="@+id/textView49"
-                app:layout_constraintTop_toBottomOf="@+id/textView49"
+                app:layout_constraintStart_toStartOf="@+id/memberSince"
+                app:layout_constraintTop_toBottomOf="@+id/memberSince"
                 app:srcCompat="@drawable/dummy_stars" />
 
             <TextView
-                android:id="@+id/memberSince"
+                android:id="@+id/givenItems"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="4dp"
                 android:fontFamily="@font/montserrat_medium"
                 android:text="Given : 2 items"
                 android:textColor="#355389"
                 android:textSize="@dimen/sp_16"
-                app:layout_constraintEnd_toEndOf="@+id/textView49"
+                app:layout_constraintEnd_toEndOf="@+id/memberSince"
                 app:layout_constraintStart_toStartOf="@+id/imageView23"
                 app:layout_constraintTop_toBottomOf="@+id/imageView23" />
 
@@ -178,7 +179,7 @@
                 android:id="@+id/textView51"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="4dp"
                 android:layout_marginEnd="8dp"
                 android:fontFamily="@font/montserrat_semi_bold"
                 android:text="Please follow the following guidelines while making requests"
@@ -186,7 +187,7 @@
                 android:textSize="@dimen/sp_16"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/cardView8"
-                app:layout_constraintTop_toBottomOf="@+id/cardView8" />
+                app:layout_constraintTop_toBottomOf="@+id/givenItems" />
 
             <TextView
                 android:id="@+id/textView52"

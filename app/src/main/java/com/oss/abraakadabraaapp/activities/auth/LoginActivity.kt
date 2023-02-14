@@ -191,7 +191,7 @@ class LoginActivity : BaseActivity() {
                                     val map = HashMap<String,String>()
 
                                     map[RequestKeys.authorization] = auth
-                                    postFCMtoken()
+
                                     authViewModel.getUser(map)
 
                                     /*val clipboard =
@@ -396,10 +396,10 @@ class LoginActivity : BaseActivity() {
     private fun setUpObserver() {
 
         authViewModel.getUserSuccess.observe(this) {
-//            showToast(it.responseMessage.toString())
             PreferencesManagement.saveUserInfo(this,it)
             if (it.responseMessage != null){
                 if (it.responseMessage == USER_NOT_FOUND){
+
                     val intent =
                         Intent(this@LoginActivity, AuthUserDetailActivity::class.java)
                     intent.putExtra(Constants.phoneNumber,phoneNumber)

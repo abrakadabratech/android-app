@@ -1,6 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-<!--    <string name="akd" translatable="false" tools:ignore="Typos">AIzaSyD7Svot1Qs4Qv_GczkyfdIZ0LNH-yYCPZg</string>-->
-    <string name="akd" translatable="false" tools:ignore="Typos">AIzaSyADspGzwPXvG6IKP7-1i74kZRxHS45_urE</string>
+    <string name="akd" translatable="false"
+        tools:ignore="Typos">AIzaSyD7Svot1Qs4Qv_GczkyfdIZ0LNH-yYCPZg</string>
+
+   <string name="maps_api" translatable="false"
+        tools:ignore="Typos">AIzaSyD7Svot1Qs4Qv_GczkyfdIZ0LNH-yYCPZg</string>
+<!--    <string name="akd" translatable="false" tools:ignore="Typos">AIzaSyADspGzwPXvG6IKP7-1i74kZRxHS45_urE</string>-->
 
     <string name="not_now">Not now</string>
     <string name="settings">Settings</string>

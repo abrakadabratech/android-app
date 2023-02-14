@@ -98,7 +98,6 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
         }
         mainViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
         mainViewModel.isLoading.observe(this) { loader(it) }
-
     }
 
     private fun sendToRazorPay(order: String?, amount: Int) {

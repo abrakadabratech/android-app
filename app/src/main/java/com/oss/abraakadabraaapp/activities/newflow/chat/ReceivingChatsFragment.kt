@@ -78,8 +78,8 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
             override fun onBindViewHolder(holder: UsersViewholder, position: Int, model: ChatListModel) {
                 val user=model
                 holder.bind(model)
-                holder.binding.userName.text = model.product
-                holder.binding.productName.text = model.receiver_name
+                holder.binding.userName.text = model.receiver_name
+                holder.binding.productName.text = model.product
                 holder.binding.message.text = model.last_message
                 holder.binding.time.text = model.time_stamp
 //                holder.binding.message.text = model.messages?.get(model.messages?.size?.minus(1)!!).toString()
