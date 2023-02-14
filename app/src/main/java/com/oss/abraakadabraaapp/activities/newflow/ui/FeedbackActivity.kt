@@ -5,6 +5,7 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
@@ -100,6 +101,9 @@ class FeedbackActivity : BaseActivity() {
             }
 
         }
+        binding.backButton.setOnClickListener {
+            onBackPressed()
+        }
         setUpObserver()
     }
 
@@ -122,4 +126,5 @@ class FeedbackActivity : BaseActivity() {
         mainViewModel.isLoading.observe(this) { loader(it) }
 
     }
+
 }

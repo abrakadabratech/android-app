@@ -9,7 +9,7 @@
     tools:context=".activities.newflow.ui.FeedbackActivity">
 
     <ImageView
-        android:id="@+id/imageView18"
+        android:id="@+id/back_button"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginStart="16dp"
@@ -30,10 +30,10 @@
         android:text="How was your experience ?"
         android:textColor="#1D2126"
         android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView18"
+        app:layout_constraintBottom_toBottomOf="@+id/back_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView18"
-        app:layout_constraintTop_toTopOf="@+id/imageView18" />
+        app:layout_constraintStart_toEndOf="@+id/back_button"
+        app:layout_constraintTop_toTopOf="@+id/back_button" />
 
     <LinearLayout
         android:id="@+id/linearLayout3"

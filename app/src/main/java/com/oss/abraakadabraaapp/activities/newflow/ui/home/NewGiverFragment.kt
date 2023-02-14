@@ -3,6 +3,7 @@ package com.oss.abraakadabraaapp.activities.newflow.ui.home
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.ImageDecoder
@@ -20,6 +21,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.NonNull
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
@@ -28,6 +30,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.common.api.Status
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.model.TypeFilter
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -60,6 +68,7 @@ import kotlinx.coroutines.launch
 import okhttp3.RequestBody
 import org.greenrobot.eventbus.EventBus
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.*
 
 
 class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
@@ -143,9 +152,51 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         return root
     }
 
+    fun placesinit(){
+        val apiKey = getString(R.string.maps_api)
+        if (!Places.isInitialized()) {
+            Places.initialize(application, apiKey)
+        }
+
+        // Create a new Places client instance.
+
+        // Create a new Places client instance.
+        var placesClient = Places.createClient(application)
+
+        val autocompleteFragment: AutocompleteSupportFragment = application.getSupportFragmentManager().findFragmentById(R.id.place_autocomplete_fragment) as AutocompleteSupportFragment
+        autocompleteFragment.setTypeFilter(TypeFilter.CITIES)
+        autocompleteFragment.setPlaceFields(
+            Arrays.asList(
+                Place.Field.ID,
+                Place.Field.NAME
+            )
+        )
+
+        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
+            override fun onPlaceSelected(@NonNull place: Place) {
+                // TODO: Get info about the selected place.
+                Toast.makeText(
+                    application,
+                    place.name,
+                    Toast.LENGTH_SHORT
+                ).show()
+                binding.locationTxt.text=place.name
+            }
+
+            override fun onError(@NonNull status: Status) {
+                // TODO: Handle the error.
+                Toast.makeText(
+                    application,
+                    status.toString(),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+    }
+
     private fun getUserLocation() {
         val userLocation = PreferencesManagement.getUserLocation(requireContext())
-        binding.locationTxt.text = userLocation?.address
+        //binding.locationTxt.text = userLocation?.address
     }
 
     private fun clickEvents() {

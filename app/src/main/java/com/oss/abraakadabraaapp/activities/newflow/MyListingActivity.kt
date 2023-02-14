@@ -3,6 +3,7 @@ package com.oss.abraakadabraaapp.activities.newflow
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
@@ -64,8 +65,15 @@ class MyListingActivity : BaseActivity() , MyListingAdapter.OnResponseClick {
             Log.d("TAG - Product deails", "is it rue : ${it}")
 
             if (it.code == 200) {
-                adapterList.setData(it.data)
-                adapterList.notifyDataSetChanged()
+                if(it.data.isEmpty()){
+                    binding.rvMyListing.visibility=View.GONE
+                    binding.noRequestSend.visibility=View.VISIBLE
+                }else {
+                    binding.rvMyListing.visibility=View.VISIBLE
+                    binding.noRequestSend.visibility=View.GONE
+                    adapterList.setData(it.data)
+                    adapterList.notifyDataSetChanged()
+                }
             } else {
                 Log.d("TAG -", "setUpObserver: fail")
             }

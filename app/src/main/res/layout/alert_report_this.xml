@@ -214,6 +214,7 @@
             android:layout_marginStart="17dp"
             android:layout_marginTop="21dp"
             android:src="@drawable/ic_close_icon"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -221,13 +222,15 @@
             android:id="@+id/textView117"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
             android:fontFamily="@font/montserrat_semi_bold"
             android:text="Report This Ad"
             android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="@+id/reportClose"
+            app:layout_constraintBottom_toTopOf="@+id/initLayout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/reportClose"
-            app:layout_constraintTop_toTopOf="@+id/reportClose" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
 
