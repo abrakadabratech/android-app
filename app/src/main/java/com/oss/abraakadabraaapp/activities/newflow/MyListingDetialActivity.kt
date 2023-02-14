@@ -55,6 +55,9 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
     private var PROD_CATEGORY: String = ""
     private var PROD_CONDITION: String = ""
     private var PROD_USED_FOR: String = ""
+
+    private var selectedProdCategory:String = ""
+
     lateinit var userCatData: AllCategoryResponse
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +71,9 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
 
         application = this
         application.postEvent(Constants.PAGE_MY_LISTING_DETAIL,null)
+
+        loadUsedForData()
+        loadConditionData()
 
         userCatData = PreferencesManagement.getCategories(this)!!
 
@@ -101,6 +107,9 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
             postClick(Constants.BUTTON_EDIT_PRODUCT)
             binding.productName.isEnabled = true
             binding.descriptionTxt.isEnabled = true
+            binding.conditionTxt.isEnabled = true
+            binding.usedForTxt.isEnabled = true
+            binding.categoryTxt.isEnabled = true
             binding.productName.requestFocus()
             binding.productName.setSelection(binding.productName.text.toString().length)
 
@@ -116,15 +125,24 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
 
         binding.conditionTxt.setOnClickListener {
             //conditon popup
-            showCategoryFilterDialog()
+            for(i in listConditon){
+                i.isSelect = i.name?.capitalize() == productDetails?.product?.condition.toString().capitalize()
+            }
+            showConditionDialog()
         }
         binding.usedForTxt.setOnClickListener {
             //used for popup
-            showConditionDialog()
+            for(i in list){
+                i.isSelect = i.name?.capitalize() == productDetails?.product?.usedFor.toString().capitalize()
+            }
+            showUsedForDialog()
         }
 
         binding.categoryTxt.setOnClickListener {
             //category pop up
+            for(i in mainAdapterList){
+                i.isSelect = i.title?.capitalize() == productDetails?.product?.category.toString().capitalize()
+            }
             showCategoryFilterDialog()
         }
 
@@ -188,7 +206,25 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         loaddata()
 
     }
+    private fun loadConditionData(): ArrayList<CatData> {
+        listConditon.clear()
+        listConditon.add(CatData("Almost New", true))
+        listConditon.add(CatData("Good", false))
+        listConditon.add(CatData("Average", false))
+        listConditon.add(CatData("Needs Repair", false))
 
+        return listConditon
+    }
+
+    private fun loadUsedForData(): ArrayList<CatData> {
+        list.clear()
+        list.add(CatData("Less Than 6 Months", true))
+        list.add(CatData("6 Months to 1 Year", false))
+        list.add(CatData("1 Year to 3 Years", false))
+        list.add(CatData("More than 3 Years", false))
+
+        return list
+    }
     private fun loaddata() {
         val map = HashMap<String, String>()
         val token = PreferencesManagement.getAuthToken(this)!!
@@ -235,6 +271,11 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
     }
 
     private fun setUpProductDetails(it: ListingResponse) {
+//        PROD_CATEGORY = it.product!!.category.toString()
+        selectedProdCategory = it.product!!.category.toString()
+        PROD_CONDITION = it.product!!.condition.toString()
+        PROD_USED_FOR = it.product!!.usedFor.toString()
+
         val imageList = ArrayList<SlideModel>()
         for (i in it.product?.images!!) {
             imageList.add(SlideModel(i, "", ScaleTypes.FIT))
@@ -301,9 +342,11 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
-        if (PROD_CATEGORY == "") PROD_CATEGORY = mainAdapterList[0].id.toString()
+        if (selectedProdCategory == "") PROD_CATEGORY = mainAdapterList[0].id.toString()
         else PROD_CATEGORY = PROD_CATEGORY
-        binding.categoryTxt.text = PROD_CATEGORY
+        if (selectedProdCategory == "") selectedProdCategory = mainAdapterList[0].title?.capitalize().toString()
+
+        binding.categoryTxt.text = selectedProdCategory
 
 //        binding.cateogoryTxt.error = null
         alertDialog.show()
@@ -361,7 +404,7 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         if(PROD_USED_FOR == "") PROD_USED_FOR = list[0].name.toString()
         else PROD_USED_FOR = PROD_USED_FOR
 
-        binding.usedForTxt.text = list[0].name
+        binding.usedForTxt.text = PROD_USED_FOR
 //        binding.usedForSelectedTxt.visibility = View.VISIBLE
 
 //        binding.usedForTxt.error = null
@@ -370,8 +413,8 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
     }
     override fun onMainItemClick(position: Int, isSelect: Boolean) {
         PROD_CATEGORY = mainAdapterList[position].id.toString()
-
-        binding.categoryTxt.text = mainAdapterList[position].title
+        selectedProdCategory = mainAdapterList[position].title?.capitalize().toString()
+        binding.categoryTxt.text = selectedProdCategory
 
         for (i in 0 until mainAdapterList.size) mainAdapterList[i].isSelect = i == position
 
@@ -383,7 +426,7 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         for (i in 0 until listConditon.size) listConditon[i].isSelect = i == position
         PROD_CONDITION = listConditon[position].name.toString()
 
-        binding.conditionTxt.text = listConditon[position].name
+        binding.conditionTxt.text = PROD_CONDITION
 //        binding.conditionSelectedTxt.visibility = View.VISIBLE
 
         condtionAdapter.notifyDataSetChanged()
@@ -394,7 +437,7 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         for (i in 0 until list.size) list[i].isSelect = i == position
         PROD_USED_FOR = list[position].name.toString()
 
-        binding.usedForTxt.text = list[position].name
+        binding.usedForTxt.text = PROD_USED_FOR
 
         alertAdaper.notifyDataSetChanged()
         alertDialog.dismiss()
