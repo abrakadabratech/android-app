@@ -204,5 +204,6 @@
     <string name="u_pay_as_you_wish_u"><u>Pay As You Wish</u></string>
     <string name="skip_pay"><u>Skip</u></string>
     <string name="default_notification_channel_id">com.oss.abraakadabraaapp</string>
+    <string name="edit_phone_number"><u>Edit phone number</u></string>
 
 </resources>

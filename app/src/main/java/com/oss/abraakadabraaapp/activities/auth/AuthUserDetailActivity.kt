@@ -245,9 +245,14 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
 
         authViewModel.postSocialProfileSuccess.observe(this){
             Log.d(API_TAG, "postSocialProfileSuccess: ${Gson().toJson(it)}")
-            showToast(it.responseMessage.toString())
             if (it.code == 200){
-                startActivity(Intent(applicationContext,NewHomeActivity::class.java))
+                showToast("Social link submitted.")
+                val intent =
+                    Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                intent.putExtra(Constants.phoneNumber, phoneNumber)
+                startActivity(intent)
+                finish()
             }
 //            if (it.responseMessage == "")
         }

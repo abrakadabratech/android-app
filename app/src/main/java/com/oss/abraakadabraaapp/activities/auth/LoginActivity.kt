@@ -39,6 +39,7 @@ class LoginActivity : BaseActivity() {
 
     private lateinit var countDownTimer: CountDownTimer
     private var isOtpSend = false
+    private var editMode = false
     private var verificationId: String? = null
 
     private lateinit var phoneNumber: String
@@ -107,6 +108,11 @@ class LoginActivity : BaseActivity() {
                 Log.d("FIREBASE", "onCreate: $otpString")
                 verifyOtp(otpString)
             }
+            editPhoneNumber.setOnClickListener {
+                editMode = true
+                binding.otpLayout.visibility = View.VISIBLE
+                binding.loginLayout.visibility = View.VISIBLE
+            }
         }
 
     }
@@ -114,7 +120,8 @@ class LoginActivity : BaseActivity() {
     override fun onBackPressed() {
 //        super.onBackPressed()
         if (binding.otpLayout.visibility == View.VISIBLE) {
-            binding.otpLayout.visibility = View.VISIBLE
+            editMode = true
+            binding.otpLayout.visibility = View.GONE
             binding.loginLayout.visibility = View.VISIBLE
 //            showToast("Do not press back button")
 //            onBack = true
@@ -140,6 +147,7 @@ class LoginActivity : BaseActivity() {
         if (isValidate()) {
             if (isNetworkAvailable()) {
                 loader(true)
+                editMode = false
                 //verify firebase otp here
                 Log.d("FIREBASE", "verifyOtp: verification ID: $verificationId code: $code")
                 val credential = PhoneAuthProvider.getCredential(verificationId!!, code)
@@ -297,7 +305,7 @@ class LoginActivity : BaseActivity() {
 
                 // checking if the code
                 // is null or not.
-                if (otp != null) {
+                if (otp != null && !editMode) {
 
                     binding.firstEdit.setText("${otp[0]}")
                     binding.secondEdit.setText("${otp[1]}")
