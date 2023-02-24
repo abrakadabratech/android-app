@@ -92,6 +92,12 @@ class LoginActivity : BaseActivity() {
 
 
         with(binding) {
+            editPhoneNumber.setOnClickListener {
+                editMode = true
+                binding.otpLayout.visibility = View.GONE
+                binding.loginLayout.visibility = View.VISIBLE
+            }
+
             tvResendOtp.setOnClickListener {
                 if (isOtpSend) {
                     resendOtp()
@@ -108,11 +114,7 @@ class LoginActivity : BaseActivity() {
                 Log.d("FIREBASE", "onCreate: $otpString")
                 verifyOtp(otpString)
             }
-            editPhoneNumber.setOnClickListener {
-                editMode = true
-                binding.otpLayout.visibility = View.VISIBLE
-                binding.loginLayout.visibility = View.VISIBLE
-            }
+
         }
 
     }

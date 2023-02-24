@@ -317,8 +317,21 @@ class StartAppActivity : BaseActivity() {
                         "Error Please try again !"
                     )
                 }
-
-                startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
+                if(PreferencesManagement.getUserInfo(this@StartAppActivity)!!.data?.name!=null) {
+                    if(PreferencesManagement.getUserInfo(this@StartAppActivity)!!.data?.socialLink!=null) {
+                        startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
+                    }else{
+                        val intent = Intent(this@StartAppActivity, AuthUserDetailActivity::class.java)
+                        intent.putExtra(Constants.phoneNumber, PreferencesManagement.getUserInfo(this@StartAppActivity)!!.data?.phone)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        startActivity(intent)
+                    }
+                }else{
+                    val intent = Intent(this@StartAppActivity, AuthUserDetailActivity::class.java)
+                    intent.putExtra(Constants.phoneNumber, PreferencesManagement.getUserInfo(this@StartAppActivity)!!.data?.phone)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
+                }
             } else {
 
                 if (PreferencesManagement.isFistOpen(this)){

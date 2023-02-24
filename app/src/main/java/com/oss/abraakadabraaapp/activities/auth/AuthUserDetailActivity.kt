@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.firebase.messaging.FirebaseMessaging
@@ -13,6 +15,9 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.SocialShareAdapter
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.UserStats
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.activities.newflow.model.SocialData
 import com.oss.abraakadabraaapp.databinding.ActivityAuthUserDetailBinding
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
@@ -26,6 +31,7 @@ import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import kotlin.math.log
 
 class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfileClicked {
 
@@ -39,6 +45,9 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
     private var longitude = ""
     private var address = ""
     private var socialLinkType = "facebook"
+    private var name = ""
+    private var email = ""
+    private var phone = ""
 
     var list = arrayListOf<SocialData>()
     lateinit var adapter:SocialShareAdapter
@@ -48,9 +57,13 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
         binding = ActivityAuthUserDetailBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
-        binding.userDetailsLayout.visibility = View.VISIBLE
-        binding.socialProfileLayout.visibility = View.GONE
+        if(PreferencesManagement.getUserInfoFlag(this)!!) {
+            binding.userDetailsLayout.visibility = View.GONE
+            binding.socialProfileLayout.visibility = View.VISIBLE
+        }else{
+            binding.userDetailsLayout.visibility = View.VISIBLE
+            binding.socialProfileLayout.visibility = View.GONE
+        }
 
         postEvent(Constants.PAGE_ADD_USER_PROFILE_ONBOARDING,null)
 
@@ -185,10 +198,12 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
                 mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
 
                 val map = HashMap<String, String>()
-
-                map[RequestKeys.name] = binding.etName.text.toString().trim()
-                map[RequestKeys.email] = binding.etEmail.text.toString().trim()
-                map[RequestKeys.phoneNumber] = phoneNumber.trim()
+                name=binding.etName.text.toString().trim()
+                email=binding.etEmail.text.toString().trim()
+                phone=phoneNumber.trim()
+                map[RequestKeys.name] = name
+                map[RequestKeys.email] = email
+                map[RequestKeys.phoneNumber] = phone
 
                 /*if (PreferencesManagement.getUserLocation(this@AuthUserDetailActivity) != null) {
                     val userLocation =
@@ -225,6 +240,8 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
                 binding.userDetailsLayout.visibility = View.GONE
                 binding.socialProfileLayout.visibility = View.VISIBLE
 
+                PreferencesManagement.saveUserFlag(this,true)
+
                 val mapAuth = HashMap<String,String>()
                 /*if (PreferencesManagement.getAuthToken(this@AuthUserDetailActivity) != null){
                     mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
@@ -245,19 +262,29 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
 
         authViewModel.postSocialProfileSuccess.observe(this){
             Log.d(API_TAG, "postSocialProfileSuccess: ${Gson().toJson(it)}")
+
+            showToast("")
             if (it.code == 200){
-                showToast("Social link submitted.")
-                val intent =
-                    Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                intent.putExtra(Constants.phoneNumber, phoneNumber)
-                startActivity(intent)
-                finish()
+                successDialog()
             }
 //            if (it.responseMessage == "")
         }
 
         authViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
+    }
+
+    private fun successDialog(){
+        val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
+        val inflater = this.layoutInflater
+        val dialogView: View = inflater.inflate(R.layout.alert_submit_success_dialog, null)
+        dialogBuilder.setView(dialogView)
+
+        val alertName = dialogView.findViewById<TextView>(R.id.success_ok_btn)
+        alertName.setOnClickListener {
+            startActivity(Intent(applicationContext,NewHomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK))
+            finish()
+        }
+
     }
 
     private fun getFCMToken(map: HashMap<String, String>) {

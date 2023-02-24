@@ -2,6 +2,7 @@ package com.oss.abraakadabraaapp.utils
 
 import android.content.Context
 import androidx.appcompat.app.AlertDialog
+import com.google.android.datatransport.runtime.scheduling.jobscheduling.SchedulerConfig.Flag
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.activities.StartAppActivity
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
@@ -102,6 +103,24 @@ object PreferencesManagement {
             prefsEditor.putString("userInfo", json)
         }
         return prefsEditor.commit()
+    }
+
+    fun saveUserFlag(context: Context, flag: Boolean): Boolean {
+
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        val prefsEditor = pref.edit()
+        prefsEditor.putBoolean("userInfoflag", flag)
+        return prefsEditor.commit()
+    }
+
+    fun getUserInfoFlag(context: Context): Boolean? {
+
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        val json = pref.getBoolean("userInfoflag", false)
+
+        return json
+
     }
 
     fun getUserInfo(context: Context): GetUserResponse? {
