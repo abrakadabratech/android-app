@@ -25,6 +25,10 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
     var productId = ""
     var orderId = ""
+
+    var name = ""
+    var email = ""
+    var phone = ""
     private var productDetial: RequestDetails? = null
     private val mainViewModel: AuthViewModel by viewModel()
     private lateinit var from: String
@@ -38,9 +42,11 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
         from = intent.extras?.getString("from", "").toString()
 
         productId = intent.extras?.getString("productId","")!!
-//        productDetial = Gson().fromJson(intent.extras?.getString("product_data","")!!,RequestDetails::class.java)!!
 
-        Log.d("TAG:::", "onCreate: ${intent.extras?.getString("product_data","")}")
+        name = intent.extras?.getString("name","")!!
+        email = intent.extras?.getString("email","")!!
+        phone = intent.extras?.getString("phone","")!!
+
         binding.ivBack.setOnClickListener {
             postClick(BUTTON_BACK_IN_PAYASWISH)
             onBackPressed()
@@ -82,7 +88,6 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
 
     private fun setUpObserver()
     {
-
         mainViewModel.initPaymentSuccess.observe(this){
             if (it.code == 200){
                 orderId = it.data?.orderId.toString()
@@ -92,7 +97,7 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
 
         mainViewModel.updatePaymentSuccess.observe(this){
             if (it.code == 200){
-                showToast(it.data?.paymentStatus.toString())
+                showToast("Payment Success")
 //                sendToRazorPay(it.data?.orderId,it.data?.amount)
             }
         }
@@ -110,9 +115,9 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
 //        checkout.setKeyID(Constants.razor_pay_id)
 
         val payloadHelper = PayloadHelper("INR", amount, order!!)
-        payloadHelper.description = "$amount Rupees from ${productDetial?.data?.postedBy?.name}"
-        payloadHelper.prefillEmail = productDetial?.data?.postedBy?.email
-        payloadHelper.prefillContact = productDetial?.data?.postedBy?.phone
+        payloadHelper.description = "$amount Rupees from ${name}"
+        payloadHelper.prefillEmail = email
+        payloadHelper.prefillContact = phone
         checkout.open(activity, payloadHelper.getJson())
     }
 

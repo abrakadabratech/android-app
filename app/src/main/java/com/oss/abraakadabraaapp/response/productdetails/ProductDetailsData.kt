@@ -25,11 +25,22 @@ data class Products (
     @SerializedName("condition"     ) var condition    : String?           = null,
     @SerializedName("posted_by"     ) var postedBy     : PostedByUser?   ,
     @SerializedName("location_name" ) var locationName : String?           = null,
+    @SerializedName("brand" ) var brand : String?           = null,
     @SerializedName("energy_saving" ) var energySaving : Int?              = null,
     @SerializedName("isReported"    ) var isReported   : Boolean?          = null,
     @SerializedName("isRequested"   ) var isRequested  : Boolean?          = null,
     @SerializedName("requestAccepted"   ) var requestedStatus  : Boolean?          = null,
     @SerializedName("created_at"    ) var createdAt    : String?           = null
+
+)
+
+data class UserStats (
+
+    @SerializedName("energy_saving" ) var energySaving : Int? = null,
+    @SerializedName("received"      ) var received     : Int? = null,
+    @SerializedName("rating"        ) var rating       : Int? = null,
+    @SerializedName("given"         ) var given        : Int? = null,
+    @SerializedName("cost_saving"   ) var costSaving   : Int? = null
 
 )
 data class PostedByUser (
@@ -39,6 +50,7 @@ data class PostedByUser (
     @SerializedName("user_avatar"  ) var userAvatar  : String? = null,
     @SerializedName("member_since" ) var memberSince : String? = null,
     @SerializedName("given" ) var given : String? = "0",
+    @SerializedName("user_stats"   ) var userStats   : UserStats? = UserStats(),
     @SerializedName("fcm_token" ) var fcm_token : String? = null
 
 

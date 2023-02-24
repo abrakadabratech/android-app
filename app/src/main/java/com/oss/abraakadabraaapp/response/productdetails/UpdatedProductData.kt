@@ -15,23 +15,47 @@ data class UpdatedCoordinates (
 
 data class UpdatedData (
 
+    @SerializedName("id"            ) var id           : String?           = null,
+    @SerializedName("price"         ) var price        : Int?              = null,
     @SerializedName("used_for"      ) var usedFor      : String?           = null,
-    @SerializedName("coordinates"   ) var coordinates  : Coordinates?      = Coordinates(),
-    @SerializedName("name"          ) var name         : String?           = null,
-    @SerializedName("cost_saving"   ) var costSaving   : Int?              = null,
-    @SerializedName("condition"     ) var condition    : String?           = null,
-    @SerializedName("description"   ) var description  : String?           = null,
     @SerializedName("location_name" ) var locationName : String?           = null,
+    @SerializedName("coordinates"   ) var coordinates  : Coordinates?      = Coordinates(),
+    @SerializedName("status"        ) var status       : String?           = null,
+    @SerializedName("condition"     ) var condition    : String?           = null,
+    @SerializedName("brand"         ) var brand        : String?           = null,
+    @SerializedName("cost_saving"   ) var costSaving   : Int?              = null,
+    @SerializedName("category"      ) var category     : Categories?         = Categories(),
+    @SerializedName("description"   ) var description  : String?           = null,
     @SerializedName("images"        ) var images       : ArrayList<String> = arrayListOf(),
+    @SerializedName("name"          ) var name         : String?           = null,
     @SerializedName("energy_saving" ) var energySaving : Int?              = null,
-    @SerializedName("posted_by"     ) var postedBy     : String?           = null,
-    @SerializedName("category"      ) var category     : String?           = null,
+    @SerializedName("posted_by"     ) var postedBy     : PostedBy?         = PostedBy(),
+    @SerializedName("updated_at"    ) var updatedAt    : String?           = null,
     @SerializedName("created_at"    ) var createdAt    : String?           = null
 
 )
 data class Categories (
 
-    @SerializedName("id"  ) var id  : String? = null,
-    @SerializedName("name" ) var name : String? = null
+    @SerializedName("id"    ) var id    : String? = null,
+    @SerializedName("image" ) var image : String? = null,
+    @SerializedName("name"  ) var name  : String? = null
+
+)
+data class UserStats (
+
+    @SerializedName("given"         ) var given        : Int? = null,
+    @SerializedName("rating"        ) var rating       : Int? = null,
+    @SerializedName("energy_saving" ) var energySaving : Int? = null,
+    @SerializedName("cost_saving"   ) var costSaving   : Int? = null,
+    @SerializedName("received"      ) var received     : Int? = null
+
+)
+data class PostedBy (
+
+    @SerializedName("uid"          ) var uid         : String?    = null,
+    @SerializedName("name"         ) var name        : String?    = null,
+    @SerializedName("user_avatar"  ) var userAvatar  : String?    = null,
+    @SerializedName("member_since" ) var memberSince : Int?       = null,
+    @SerializedName("user_stats"   ) var userStats   : UserStats? = UserStats()
 
 )

@@ -351,6 +351,32 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView20" />
 
             <TextView
+                android:id="@+id/some111"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="Brand"
+                android:textColor="@color/title_color"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/costSavingTxt"
+                app:layout_constraintTop_toBottomOf="@+id/costSavingTxt" />
+
+            <TextView
+                android:id="@+id/brandTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/montserrat_medium"
+                android:text=""
+                android:textColor="@color/sub_text_color"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/some111"
+                app:layout_constraintTop_toBottomOf="@+id/some111" />
+
+            <TextView
                 android:id="@+id/energySaving"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -372,8 +398,8 @@
                 android:text="Description"
                 android:textColor="@color/title_color"
                 android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="@+id/costSavingTxt"
-                app:layout_constraintTop_toBottomOf="@+id/costSavingTxt" />
+                app:layout_constraintStart_toStartOf="@+id/some111"
+                app:layout_constraintTop_toBottomOf="@+id/brandTxt" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView3"

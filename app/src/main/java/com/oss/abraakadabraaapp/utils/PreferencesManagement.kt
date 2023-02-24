@@ -97,9 +97,7 @@ object PreferencesManagement {
 
         val prefsEditor = pref.edit()
 
-        if (userData == null) {
-            prefsEditor.putString("userInfo", null)
-        } else {
+        if (userData != null) {
             val json = Gson().toJson(userData)
             prefsEditor.putString("userInfo", json)
         }

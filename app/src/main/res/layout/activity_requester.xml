@@ -82,6 +82,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
                     android:layout_marginEnd="14dp"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_close_theme" />
@@ -214,6 +215,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <TextView
+                    android:id="@+id/status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:fontFamily="@font/montserrat_medium"
+                    android:textColor="#2D7A76"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/categoryTxt" />
+
                 <ImageView
                     android:id="@+id/iv_back"
                     android:layout_width="30dp"
@@ -260,7 +272,15 @@
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/image_slider" />
-
+                <ImageView
+                    android:id="@+id/statusIcon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/status"
+                    app:layout_constraintEnd_toStartOf="@+id/status"
+                    app:layout_constraintTop_toTopOf="@+id/status"
+                    app:srcCompat="@drawable/status_accepted" />
                 <TextView
                     android:id="@+id/productName"
                     android:layout_width="wrap_content"
@@ -489,7 +509,7 @@
                         android:layout_height="90dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="4dp"
-                        android:layout_marginBottom="4dp"
+                        android:layout_marginBottom="8dp"
                         app:cardCornerRadius="10dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -514,7 +534,7 @@
                         android:text="Alex M"
                         android:textSize="@dimen/sp_16"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.3"
+                        app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -533,7 +553,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:layout_marginEnd="24dp"
+                        android:layout_marginEnd="8dp"
                         android:fontFamily="@font/montserrat_regular"
                         android:text="HSR Layout, Bengaluru karnataka."
                         app:layout_constraintEnd_toEndOf="parent"
@@ -556,7 +576,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:layout_marginEnd="24dp"
+                        android:layout_marginEnd="8dp"
                         android:fontFamily="@font/montserrat_regular"
                         android:text="+91 9999888982"
                         app:layout_constraintBottom_toBottomOf="@+id/imageView36"
@@ -570,7 +590,8 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:layout_marginTop="8dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/cardView6"
+                        android:layout_marginBottom="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/imageView36"
                         app:layout_constraintTop_toBottomOf="@+id/imageView36"
                         app:srcCompat="@drawable/ic_email" />
@@ -580,7 +601,6 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
                         android:fontFamily="@font/montserrat_regular"
                         android:text="alex123@gmail.com"
                         app:layout_constraintBottom_toBottomOf="@+id/imageView37"
@@ -636,6 +656,23 @@
                     app:layout_constraintEnd_toStartOf="@+id/textView107"
                     app:layout_constraintTop_toTopOf="@+id/textView107"
                     app:srcCompat="@drawable/status_accepted" />
+
+                <TextView
+                    android:id="@+id/payAsYouWish"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:fontFamily="@font/montserrat_medium"
+                    android:text="@string/u_pay_as_you_wish_u"
+                    android:textColor="@color/hyper_link_text_color"
+                    android:textSize="16sp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cardView31" />
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

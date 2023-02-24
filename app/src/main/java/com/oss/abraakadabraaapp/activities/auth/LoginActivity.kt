@@ -23,6 +23,7 @@ import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
+import com.oss.abraakadabraaapp.activities.newflow.TermsAndConditionsActivity
 import com.oss.abraakadabraaapp.databinding.ActivityLoginBinding
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.*
@@ -48,6 +49,7 @@ class LoginActivity : BaseActivity() {
 
     private var latitude = ""
     private var longitude = ""
+    var onBack = false
     private var address = ""
 //    private val authToken by lazy { PreferencesManagement.getAuthToken(this)!! }
 
@@ -111,21 +113,24 @@ class LoginActivity : BaseActivity() {
 
     override fun onBackPressed() {
 //        super.onBackPressed()
-        if (shouldAllowBack()) {
-            super.onBackPressed();
-        } else {
-            showToast("Do not press back. Please complete your profile")
-        }
-        /*if (binding.otpLayout.visibility == View.VISIBLE) {
+        if (binding.otpLayout.visibility == View.VISIBLE) {
             binding.otpLayout.visibility = View.VISIBLE
             binding.loginLayout.visibility = View.VISIBLE
-            showToast("Do not press back button")
+//            showToast("Do not press back button")
+//            onBack = true
+        }else{
+            super.onBackPressed()
+        }
+
+        /*if (shouldAllowBack()) {
+            super.onBackPressed()
+        } else {
 
         }*/
     }
 
         private fun shouldAllowBack(): Boolean {
-            return false
+            return onBack
         }
     private fun resendOtp() {
         loginUser()
@@ -134,7 +139,7 @@ class LoginActivity : BaseActivity() {
     private fun verifyOtp(code: String) {
         if (isValidate()) {
             if (isNetworkAvailable()) {
-                authViewModel.isLoading.value = true
+                loader(true)
                 //verify firebase otp here
                 Log.d("FIREBASE", "verifyOtp: verification ID: $verificationId code: $code")
                 val credential = PhoneAuthProvider.getCredential(verificationId!!, code)
@@ -174,7 +179,7 @@ class LoginActivity : BaseActivity() {
                         .addOnCompleteListener(object : OnCompleteListener<GetTokenResult?>,
                             com.google.android.gms.tasks.OnCompleteListener<GetTokenResult> {
                             override fun onComplete(task: Task<GetTokenResult?>) {
-                                authViewModel.isLoading.value = false
+                                loader(false)
                                 if (task.isSuccessful()) {
                                     val idToken: String = task.getResult().getToken()!!
                                     Log.d(NewHomeActivity.TAG, "onComplete: $idToken")
@@ -185,7 +190,7 @@ class LoginActivity : BaseActivity() {
 
                             override fun onComplete(task: com.google.android.gms.tasks.Task<GetTokenResult>) {
                                 if (task.isSuccessful()) {
-                                    authViewModel.isLoading.value = false
+                                    loader(false)
                                     val idToken: String = task.getResult().getToken()!!
                                     val auth = "Bearer "+idToken
                                     val map = HashMap<String,String>()
@@ -217,7 +222,7 @@ class LoginActivity : BaseActivity() {
 //                    )
 
                 } else {
-                    authViewModel.isLoading.value = false
+                    loader(false)
                     showToast("Wrong OTP Entered.Please try again")
                     // Sign in failed, display a message and update the UI
                     Log.w("FIREBASE", "signInWithCredential:failure", task.exception)
@@ -267,7 +272,7 @@ class LoginActivity : BaseActivity() {
             // OTP is sent from Firebase
             override fun onCodeSent(s: String, forceResendingToken: ForceResendingToken) {
                 super.onCodeSent(s, forceResendingToken)
-                authViewModel.isLoading.value = false
+                loader(false)
 
                 // when we receive the OTP it
                 // contains a unique id which
@@ -283,7 +288,7 @@ class LoginActivity : BaseActivity() {
             // this method is called when user
             // receive OTP from Firebase.
             override fun onVerificationCompleted(phoneAuthCredential: PhoneAuthCredential) {
-                authViewModel.isLoading.value = false
+                loader(false)
 
                 // below line is used for getting OTP code
                 // which is sent in phone auth credentials.
@@ -318,7 +323,7 @@ class LoginActivity : BaseActivity() {
             // this method is called when firebase doesn't
             // sends our OTP code due to any error or issue.
             override fun onVerificationFailed(e: FirebaseException) {
-                authViewModel.isLoading.value = false
+                loader(false)
 
                 // displaying error message with firebase exception.
                 Log.d("FIREBASE", "onVerificationFailed: ${e.message}")
@@ -327,13 +332,8 @@ class LoginActivity : BaseActivity() {
         }
 
     private fun loginUser() {
-
-        // New Code
-        /*val intent = Intent(this@LoginActivity, OtpVerificationActivity::class.java)
-        startActivity(intent)*/
-
         if (isValidate()) {
-            authViewModel.isLoading.value = true
+            loader(true)
             val options = PhoneAuthOptions.newBuilder(mAuth)
                 .setPhoneNumber(
                     "+91" + binding.etPhoneNumber.text.toString().trim()
@@ -384,10 +384,13 @@ class LoginActivity : BaseActivity() {
 
         binding.tvTermsConditions.makeLinks(
             Pair("Privacy Policy", View.OnClickListener {
-                LaunchUtility.launchUrl(
+                val intent = Intent(this, TermsAndConditionsActivity::class.java)
+                intent.putExtra("FROM_KEY", Constants.privacyPolicy)
+                startActivity(intent)
+               /* LaunchUtility.launchUrl(
                     "https://abra-ka-dabra.com/privacy-policy/",
                     this@LoginActivity
-                )
+                )*/
             })
         )
 
@@ -395,31 +398,59 @@ class LoginActivity : BaseActivity() {
 
     private fun setUpObserver() {
 
+        authViewModel.updateUserSuccess.observe(this) {
+            val intent =
+                Intent(this@LoginActivity, NewHomeActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            intent.putExtra(Constants.phoneNumber, phoneNumber)
+            startActivity(intent)
+            finish()
+        }
+
         authViewModel.getUserSuccess.observe(this) {
-            PreferencesManagement.saveUserInfo(this,it)
-            if (it.responseMessage != null){
-                if (it.responseMessage == USER_NOT_FOUND){
+            PreferencesManagement.saveUserInfo(this, it)
+            if (it.responseMessage != null) {
+                if (it.responseMessage == USER_NOT_FOUND) {
 
                     val intent =
                         Intent(this@LoginActivity, AuthUserDetailActivity::class.java)
-                    intent.putExtra(Constants.phoneNumber,phoneNumber)
+                    intent.putExtra(Constants.phoneNumber, phoneNumber)
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     startActivity(intent)
                     finish()
                 }
-            }else{
-                val intent =
-                    Intent(this@LoginActivity, NewHomeActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                intent.putExtra(Constants.phoneNumber,phoneNumber)
-                startActivity(intent)
-                finish()
+            } else {
+                if (mAuth.currentUser != null) {
+                    generateAuthToken()
+                    FirebaseMessaging.getInstance().token.addOnSuccessListener {
+                        PreferencesManagement.saveFCMToken(this, it)
+                        val data = UsersUpdateData(
+                            fcmToken = PreferencesManagement.getFCMToken(this)!!
+                        )
+                        val dataClass = DataClass(data)
+
+                        val map = java.util.HashMap<String, String>()
+                        val token = PreferencesManagement.getAuthToken(this)!!
+                        map[RequestKeys.authorization] = token
+                        Log.d(
+                            NewHomeActivity.TAG,
+                            "Token in Accounts fragment: ${JSONObject(Gson().toJson(dataClass))}"
+                        )
+                        authViewModel.updateUser(map, dataClass)
+
+                    }.addOnFailureListener {
+                        loader(false)
+                        if (BuildConfig.DEBUG) showToast("Error Please try again ! ${it.localizedMessage}") else showToast(
+                            "Error Please try again !"
+                        )
+                    }
+                }
             }
+
+            authViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
+
+            authViewModel.isLoading.observe(this) { loader(it) }
         }
-
-        authViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
-
-        authViewModel.isLoading.observe(this) { loader(it) }
     }
 
     ////OTP functions

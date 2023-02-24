@@ -4,17 +4,20 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.TaskStackBuilder
 import androidx.core.content.ContextCompat
-import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.App
+import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.ProductDetailActivity
 import com.oss.abraakadabraaapp.activities.RequestProductDetailActivity
+import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
+import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
+import com.oss.abraakadabraaapp.activities.newflow.ui.MyRequestDetailsActivity
 import com.oss.abraakadabraaapp.utils.Constants
-import android.os.Build
-
-
 
 
 object Notifications {
@@ -93,8 +96,54 @@ object Notifications {
 
                 notificationBuilder.setContentIntent(pendingIntent)
             }
+            Constants.productRequestDetails -> {
+                Log.d("Notification -", "notifyMessage: requesting activity")
+                val intent = Intent(context, MyRequestDetailsActivity::class.java)
+                intent.putExtra(Constants.productId, map["productId"])
+                intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
+                val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(context)
+                stackBuilder.addNextIntentWithParentStack(intent)
+                val pendingIntent =  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    PendingIntent.getActivity(
+                        context,
+                        0,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                } else {
+                    PendingIntent.getActivity(
+                        context,
+                        0, intent, PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+                }
+
+                notificationBuilder.setContentIntent(pendingIntent)
+            }
+            Constants.chatDetails -> {
+            Log.d("Notification -", "notifyMessage: requesting activity")
+            val intent = Intent(context, ChatDetailActivity::class.java)
+            intent.putExtra(Constants.productId, map["chatNode"])
+            intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
+            val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(context)
+            stackBuilder.addNextIntentWithParentStack(intent)
+            val pendingIntent =  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                PendingIntent.getActivity(
+                    context,
+                    0,
+                    intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+            } else {
+                PendingIntent.getActivity(
+                    context,
+                    0, intent, PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            }
+
+            notificationBuilder.setContentIntent(pendingIntent)
+            }
             else -> {
-                /*val intent = Intent(context, HomeActivity::class.java)
+                val intent = Intent(context, NewHomeActivity::class.java)
 
                 val pendingIntent =  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     PendingIntent.getActivity(
@@ -108,9 +157,9 @@ object Notifications {
                         context,
                         0, intent, PendingIntent.FLAG_ONE_SHOT
                     )
-                }*/
+                }
 
-//                notificationBuilder.setContentIntent(pendingIntent)
+                notificationBuilder.setContentIntent(pendingIntent)
             }
         }
 

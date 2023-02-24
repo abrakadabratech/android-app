@@ -29,6 +29,7 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
+import com.oss.abraakadabraaapp.activities.newflow.chat.ChatListModel
 import com.oss.abraakadabraaapp.activities.newflow.ui.home.NewGiverFragment
 import com.oss.abraakadabraaapp.databinding.ActivityNewProductDetailBinding
 import com.oss.abraakadabraaapp.datasource.products.Product
@@ -79,10 +80,15 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
 
         binding.requestBtn.setOnClickListener {
             postClick(Constants.BUTTON_REQUEST_IN_DETAILS_PAGE)
-
-            val intent = Intent(this,PostedUserActivity::class.java)
-            intent.putExtra(Constants.PRODUCT,Gson().toJson(productDetails))
-            startActivity(intent)
+            val userInfo = PreferencesManagement.getUserInfo(this)
+            if (userInfo?.data?.status != "active"){
+                //Show a pop up that is not verified yet
+                showNotActivePopUp()
+            }else{
+                val intent = Intent(this,PostedUserActivity::class.java)
+                intent.putExtra(Constants.PRODUCT,Gson().toJson(productDetails))
+                startActivity(intent)
+            }
         }
 
         binding.ivMenu.setOnClickListener {
@@ -96,6 +102,8 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
 
         binding.shareProduct.setOnClickListener {
             postClick(BUTTON_SHARE_PRODUCT)
+//            ""
+            loadShareData()
         }
 
         binding.deleteProduct.setOnClickListener {
@@ -134,6 +142,28 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
         }
     }
 
+    private fun loadShareData() {
+
+        val i = Intent(Intent.ACTION_SEND)
+        i.type = "text/plain"
+        i.putExtra(Intent.EXTRA_SUBJECT, "Share Product")
+        i.putExtra(Intent.EXTRA_TEXT, "Check out the product I have listed on this great app Abra Ka Dabra where we can share second hand products with others for free: https://play.google.com/store/apps/details?id=com.oss.abraakadabraaapp")
+        startActivity(Intent.createChooser(i, "Share"))
+    }
+
+    private fun showNotActivePopUp() {
+        var alertDialog = AlertDialog.Builder(this)
+        alertDialog.setTitle("Alert!")
+        alertDialog.setMessage("To request products you must be a verified user, please submit your any social profile link to start verification.")
+
+        alertDialog.setPositiveButton("Submit") { dialog, id ->
+            //cancel the request
+            val intent = Intent(this,MyNewProfileActivity::class.java)
+            intent.putExtra("from","activity")
+            startActivity(intent)
+        }
+        alertDialog.show()
+    }
     private fun sendToChat() {
         val receiver_id = productDetails?.data?.postedBy?.uid
         val product_id = productDetails?.data?.id
@@ -149,7 +179,19 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
             Log.d("TAG - ", "sendToChat: ${doc.data?.get("user_avatar")}")
             val userInfo = doc.toObject(UsersData::class.java)!!
 
-            val chat_room = hashMapOf(
+            var sender_avatar = doc.data?.get("user_avatar")
+
+            val chat_room = ChatListModel()
+            chat_room.from = sender_id
+            chat_room.sender_avatar = sender_avatar.toString()
+            chat_room.sender_id = sender_id
+            chat_room.sender_name = userInfo.name
+            chat_room.receiver_id = receiver_id
+            chat_room.receiver_name = receiver_name
+            chat_room.receiver_avatar = productDetails?.data?.postedBy?.userAvatar
+            chat_room.product_id = product_id
+            chat_room.product = product
+            /*val chat_room = hashMapOf(
                 "from" to sender_id,
                 "sender_id" to sender_id,
                 "sender_name" to userInfo.name,
@@ -159,10 +201,10 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
                 "receiver_avatar" to productDetails?.data?.postedBy?.userAvatar,
                 "product_id" to product_id,
                 "product_name" to product
-            )
+            )*/
 
             val intent = Intent(this,ChatDetailActivity::class.java)
-            intent.putExtra(Constants.CHATS_DATA,chat_room)
+            intent.putExtra(Constants.CHATS_DATA,Gson().toJson(chat_room))
             intent.putExtra("data_from","activity")
             startActivity(intent)
         }
@@ -223,6 +265,12 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
         binding.dateOfPostTxt.text = (it.data.createdAt.toString())
         binding.descriptionTxt.text = (it.data.description.toString()?.capitalize())
         binding.locationName.text = (it.data.locationName.toString())
+        if (it.data.brand == null || it.data.brand == "No Brand" || it.data.brand == ""){
+            binding.brandTxt.visibility = View.GONE
+            binding.some111.visibility = View.GONE
+        }else{
+            binding.brandTxt.text = (it.data.brand.toString())
+        }
 
         lattitude = it.data.coordinates?.Latitude.toString()
         longitude = it.data.coordinates?.Longitude.toString()
@@ -234,7 +282,6 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
             setReorderingAllowed(true)
             add<LocationFragment>(R.id.maps_view,args = bundle)
         }
-
 
         if (it.data.isRequested!!){
             binding.requestBtn.setText("Requested")
@@ -249,12 +296,16 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
             binding.reportThis.setTextColor(resources.getColor(R.color.status_declined))*/
 //            binding.reportThis.isEnabled = false
 //            binding.chatBtn.visibility = View.GONE
-            binding.chatBtn.isEnabled = false
+//            binding.chatBtn.isEnabled = false
+            binding.chatBtn.background = resources.getDrawable(R.drawable.white_chat_disabled_bg)
+
         }
 
         if (it.data.requestedStatus!!){
             binding.requestBtn.setText("Accepted")
             binding.requestBtn.isEnabled = false
+            binding.chatBtn.background = resources.getDrawable(R.drawable.rounded_rect_white_gray_stroke)
+
         }
 
       /*  binding.mapsView.settings.javaScriptEnabled = true

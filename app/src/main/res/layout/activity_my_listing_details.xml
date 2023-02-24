@@ -236,6 +236,7 @@
                 android:background="@color/transparent"
                 android:fontFamily="@font/montserrat_bold"
                 android:text=""
+                android:enabled="false"
                 android:textColor="@color/new_action_bar_title_color"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -366,7 +367,31 @@
                 app:layout_constraintEnd_toStartOf="@+id/textView23"
                 app:layout_constraintStart_toStartOf="@+id/textView20"
                 app:layout_constraintTop_toBottomOf="@+id/textView20" />
+            <TextView
+                android:id="@+id/some111"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="Brand"
+                android:textColor="@color/title_color"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/costSavingTxt"
+                app:layout_constraintTop_toBottomOf="@+id/costSavingTxt" />
 
+            <TextView
+                android:id="@+id/brandTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/montserrat_medium"
+                android:text=""
+                android:textColor="@color/sub_text_color"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/some111"
+                app:layout_constraintTop_toBottomOf="@+id/some111" />
             <TextView
                 android:id="@+id/textView23"
                 android:layout_width="0dp"
@@ -390,7 +415,7 @@
                 android:textColor="@color/title_color"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="@+id/costSavingTxt"
-                app:layout_constraintTop_toBottomOf="@+id/costSavingTxt" />
+                app:layout_constraintTop_toBottomOf="@+id/brandTxt" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView3"
@@ -421,6 +446,7 @@
                     android:layout_margin="5dp"
                     android:maxLength="300"
                     android:padding="5dp"
+                    android:enabled="false"
                     android:background="@color/transparent"
                     android:fontFamily="@font/montserrat_regular"
                     android:text=""

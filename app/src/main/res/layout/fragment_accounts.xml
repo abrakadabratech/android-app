@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/montserrat_medium"
-        android:text="3 Items"
+        android:text=""
         android:textSize="16sp"
         android:textColor="#223749"
         app:layout_constraintStart_toStartOf="@+id/textView83"
@@ -54,7 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:fontFamily="@font/montserrat_medium"
-        android:text="1 Item"
+        android:text=""
         android:textSize="16sp"
         android:textColor="#223749"
         app:layout_constraintBottom_toBottomOf="@+id/giversCount"
@@ -112,8 +112,8 @@
                 android:id="@+id/profilePic"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                android:src="@drawable/new_bg_theme" />
+                android:padding="3dp"
+                android:src="@drawable/ic_profile" />
         </androidx.cardview.widget.CardView>
 
         <TextView

@@ -1,13 +1,13 @@
 package com.oss.abraakadabraaapp.activities.newflow.ui
 
 import RequestDetails
-import android.content.DialogInterface
-import android.content.Intent
+import android.content.*
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.CompoundButton
 import androidx.appcompat.app.AlertDialog
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
@@ -18,7 +18,9 @@ import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.MyPayAsYouGoActivity
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
+import com.oss.abraakadabraaapp.activities.newflow.chat.ChatListModel
 import com.oss.abraakadabraaapp.databinding.ActivityMyRequestingDetailBinding
 import com.oss.abraakadabraaapp.response.productRequestResponse.Data
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
@@ -33,8 +35,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class MyRequestDetailsActivity : BaseActivity() {
     private var productDetial: RequestDetails? = null
     lateinit var application: BaseActivity
-    lateinit var product: Data
+//    var product: Data? = null
     private val mainViewModel: AuthViewModel by viewModel()
+    private lateinit var productId: String
 
     private lateinit var binding:ActivityMyRequestingDetailBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,32 +48,80 @@ class MyRequestDetailsActivity : BaseActivity() {
         application = (this as BaseActivity)
         application.postEvent(Constants.PAGE_MY_REQUEST_DETAILS,null)
 
-        product =
-            Gson().fromJson(intent.extras?.getString(Constants.PRODUCT, ""), Data::class.java)
-        Log.d("ok", "onCreate in linsting activity: $${Gson().toJson(product)}")
+        if (intent.hasExtra(Constants.productId)) {
+            productId = intent.getStringExtra(Constants.productId)!!
+        }
 
+       /* if (intent.hasExtra(Constants.PRODUCT)) {
+            product =
+                Gson().fromJson(intent.extras?.getString(Constants.PRODUCT, ""), Data::class.java)
+            Log.d("ok", "onCreate in linsting activity: $${Gson().toJson(product)}")
+        }*/
+
+        LocalBroadcastManager.getInstance(this@MyRequestDetailsActivity)
+            .registerReceiver(mReceiver, IntentFilter(Constants.notificationReceived))
+
+        clickEvents()
+
+        setUpObserver()
+
+        loaddata()
+
+        Log.d("TAG - ", "onCreate: product ID ${productDetial?.data?.productId}")
+//        Log.d("TAG - ", "onCreate: User ID ${product.postedBy?.uid}")
+//        tempData()
+    }
+
+    private fun clickEvents() {
 
         binding.chatBtn.setOnClickListener{
 
-            if (productDetial?.data?.requestStatus == "accepted"){
+            if (productDetial?.data?.requestStatus == "accepted" || productDetial?.data?.requestStatus == "received"
+                || productDetial?.data?.requestStatus == "delivered"){
                 val sender_id = FirebaseAuth.getInstance().currentUser?.uid
 
                 val db = Firebase.firestore
 
-                val chat_room = hashMapOf(
-                    "receiver_id" to productDetial?.data?.postedBy?.id,
-                    "sender_id" to sender_id,
-                    "product_id" to product.product?.id,
-                    "receiver_name" to  productDetial?.data?.postedBy?.name,
-                    "product" to productDetial?.data?.name,
-                    "user_avatar" to product.postedBy?.userAvatar
-                )
-                val intent = Intent(this, ChatDetailActivity::class.java)
-                intent.putExtra(Constants.CHATS_DATA,chat_room)
-                Log.d("ok", "sending to chat activity: $${Gson().toJson(chat_room)}")
+                val senderInfo = db.collection("users").document(sender_id.toString())
+                senderInfo.get().addOnSuccessListener { doc->
+                    Log.d("TAG - ", "sendToChat: ${doc.data}")
+                    Log.d("TAG - ", "sendToChat: ${doc.data?.get("user_avatar")}")
+                    val userInfo = doc.toObject(UsersData::class.java)!!
 
-                intent.putExtra("data_from","activity")
-                startActivity(intent)
+                    /*val chat_room = hashMapOf(
+                        "from" to sender_id,
+                        "sender_id" to sender_id,
+                        "sender_name" to doc.data?.get("name"),
+                        "sender_avatar" to doc.data?.get("user_avatar"),
+                        "receiver_id" to productDetial?.data?.postedBy?.id,
+                        "receiver_name" to productDetial?.data?.postedBy?.name,
+                        "receiver_avatar" to productDetial?.data!!.postedBy?.userAvatar,
+                        "product_id" to productDetial?.data!!.productId,
+                        "product" to productDetial?.data?.name?.capitalize(),
+                        "product_giver" to productDetial?.data?.postedBy?.id, //Product Giver
+                        "product_receiver" to sender_id //Product Receiver
+                    )*/
+
+                    val chat_room = ChatListModel()
+                    chat_room.from = sender_id
+                    chat_room.sender_avatar = doc.data?.get("user_avatar").toString()
+                    chat_room.sender_id = sender_id
+                    chat_room.sender_name = doc.data?.get("name").toString()
+                    chat_room.receiver_id = productDetial?.data?.postedBy?.id
+                    chat_room.receiver_name = productDetial?.data?.postedBy?.name
+                    chat_room.receiver_avatar = productDetial?.data!!.postedBy?.userAvatar
+                    chat_room.product_id = productDetial?.data!!.productId
+                    chat_room.product = productDetial?.data?.name?.capitalize()
+                    chat_room.product_giver = productDetial?.data?.postedBy?.id
+                    chat_room.product_receiver = sender_id
+
+                    val intent = Intent(this, ChatDetailActivity::class.java)
+                    intent.putExtra(Constants.CHATS_DATA,Gson().toJson(chat_room))
+                    intent.putExtra("data_from","activity")
+                    startActivity(intent)
+                }
+
+
             }else{
                 showToast("Product not accepted yet!")
             }
@@ -95,7 +146,7 @@ class MyRequestDetailsActivity : BaseActivity() {
                 alertDialog.setPositiveButton("Yes", DialogInterface.OnClickListener{dialog, id ->
                     //cancel the request
                     mainViewModel.cancelProductRequest(Utility.getAuthentication(this),
-                        product.id.toString()
+                        productId
                     )
                     dialog.dismiss()
                 })
@@ -103,8 +154,17 @@ class MyRequestDetailsActivity : BaseActivity() {
                     dialog.dismiss()
                 })
                 alertDialog.show()
-            }else /*if(status == "Mark As\\nReceived"){*/
-                //send mark as delivered
+            } else if(status == "Pay\nAs you wish"){
+                val i = Intent(this, MyPayAsYouGoActivity::class.java)
+                i.putExtra("productId",productDetial?.data?.productId)
+                i.putExtra("phone", productDetial?.data?.postedBy?.phone)
+                i.putExtra("email", productDetial?.data?.postedBy?.email)
+                i.putExtra("name", productDetial?.data?.postedBy?.name)
+                i.putExtra("product_data",Gson().toJson(productDetial))
+                startActivity(i)
+            }
+            else /*if(status == "Mark As\\nReceived"){*/
+            //send mark as delivered
             {
                 generateAuthToken()
                 mainViewModel.updateProductRequest(
@@ -136,24 +196,37 @@ class MyRequestDetailsActivity : BaseActivity() {
         binding.payAsYouWish.setOnClickListener {
             postClick(BUTTON_PAY_AS_YOU_WISH)
             val i = Intent(this, MyPayAsYouGoActivity::class.java)
-            i.putExtra("productId",product.id)
+            i.putExtra("productId",productId)
             i.putExtra("product_data",Gson().toJson(productDetial))
 //            i.putExtra("receiver_data", Gson().toJson(productDetailData))
             startActivity(i)
         }
-        setUpObserver()
-
-        loaddata()
-
-        Log.d("TAG - ", "onCreate: product ID ${productDetial?.data?.productId}")
-        Log.d("TAG - ", "onCreate: User ID ${product.postedBy?.uid}")
-//        tempData()
     }
+
+    private var mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action.equals(Constants.notificationReceived, ignoreCase = true)) {
+                if (intent.extras != null && intent.getStringExtra(Constants.notificationReceived) != null) {
+                    loaddata()
+                }
+            }
+        }
+    }
+
     private fun loaddata() {
-        val map = HashMap<String, String>()
-        val token = PreferencesManagement.getAuthToken(this)!!
-        map[RequestKeys.authorization] = token
-        mainViewModel.getRequestDetails(map, product.id!!)
+        val mUser = FirebaseAuth.getInstance().currentUser
+        mUser!!.getIdToken(true)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    val idToken = it.result.token
+                    val auth = "Bearer $idToken"
+
+                    val map = HashMap<String, String>()
+                    map[RequestKeys.authorization] = auth
+                    mainViewModel.getRequestDetails(map,productId)
+                }
+            }
+
     }
 
     private fun setUpObserver() {
@@ -198,7 +271,7 @@ class MyRequestDetailsActivity : BaseActivity() {
                 productDetial = it
 
                 Log.d("TAG - ", "onCreate: product ID ${productDetial?.data?.productId}")
-                Log.d("TAG - ", "onCreate: User ID ${product.postedBy?.uid}")
+//                Log.d("TAG - ", "onCreate: User ID ${product.postedBy?.uid}")
 
             } else {
                 Log.d("TAG -", "setUpObserver: fail")
@@ -232,6 +305,7 @@ class MyRequestDetailsActivity : BaseActivity() {
                 binding.status.setTextColor(resources.getColor(R.color.status_pending))
                 binding.statusIcon.setImageResource(R.drawable.status_pending)
                 binding.markAsDelivered.setText("Cancel")
+                binding.chatBtn.background = (resources.getDrawable(R.drawable.chat_disabled_bg))
 //                binding.chatBtn.isEnabled = false
             }
             "accepted" -> {
@@ -239,8 +313,9 @@ class MyRequestDetailsActivity : BaseActivity() {
                 binding.status.setTextColor(resources.getColor(R.color.status_accepted))
                 binding.statusIcon.setImageResource(R.drawable.status_accepted)
                 binding.markAsDelivered.setText("Mark As\nReceived")
-                binding.payAsYouWish.visibility = View.VISIBLE
+//                binding.payAsYouWish.visibility = View.VISIBLE
                 binding.chatBtn.isEnabled = true
+                binding.chatBtn.background = (resources.getDrawable(R.drawable.btn_bg_rounded_rect))
 
             }
             "rejected" -> {
@@ -248,30 +323,38 @@ class MyRequestDetailsActivity : BaseActivity() {
                 binding.status.setTextColor(resources.getColor(R.color.status_declined))
                 binding.statusIcon.setImageResource(R.drawable.status_declined)
                 binding.markAsDelivered.visibility = View.GONE
-                binding.payAsYouWish.visibility = View.GONE
+//                binding.payAsYouWish.visibility = View.GONE
                 binding.markAsDelivered.setText("Rejected")
                 binding.chatBtn.isEnabled = false
+                binding.chatBtn.background = (resources.getDrawable(R.drawable.chat_disabled_bg))
                 //hiding the accept and chat button
                 binding.constraintLayout3.visibility = View.GONE
             }
+          /*  "delivered" -> {
+                binding.status.setText("Delivered")
+                binding.status.setTextColor(resources.getColor(R.color.status_accepted))
+                binding.statusIcon.setImageResource(R.drawable.status_accepted)
+//                binding.payAsYouWish.visibility = View.VISIBLE
+                binding.chatBtn.isEnabled = true
+                binding.chatBtn.background = (resources.getDrawable(R.drawable.btn_bg_rounded_rect))
+                binding.markAsDelivered.setText("Mark As\nReceived")
+//                binding.payAsYouWish.visibility = View.VISIBLE
+                binding.chatBtn.background = (resources.getDrawable(R.drawable.btn_bg_rounded_rect))
+//                binding.constraintLayout3.visibility = View.GONE
+            }*/
             "received" -> {
                 binding.status.setText("Received")
                 binding.status.setTextColor(resources.getColor(R.color.status_accepted))
                 binding.statusIcon.setImageResource(R.drawable.status_accepted)
-                binding.payAsYouWish.visibility = View.VISIBLE
-                binding.markAsDelivered.setText("Received")
+//                binding.chatBtn.isEnabled = true
+                binding.chatBtn.background = (resources.getDrawable(R.drawable.btn_bg_rounded_rect))
+//                binding.payAsYouWish.visibility = View.VISIBLE
+                binding.markAsDelivered.setText("Pay\nAs you wish")
                 binding.chatBtn.isEnabled = true
-                binding.constraintLayout3.visibility = View.GONE
+                binding.chatBtn.background = (resources.getDrawable(R.drawable.btn_bg_rounded_rect))
+//                binding.constraintLayout3.visibility = View.GONE
             }
-            "delivered" -> {
-                binding.status.setText("Delivered")
-                binding.status.setTextColor(resources.getColor(R.color.status_accepted))
-                binding.statusIcon.setImageResource(R.drawable.status_accepted)
-                binding.payAsYouWish.visibility = View.VISIBLE
-                binding.markAsDelivered.setText("Delivered")
-                binding.chatBtn.isEnabled = true
-                binding.constraintLayout3.visibility = View.GONE
-            }
+
         }
 
         val imageList = ArrayList<SlideModel>()

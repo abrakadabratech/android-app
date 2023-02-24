@@ -35,6 +35,8 @@ data class ListingProduct (
     @SerializedName("name"          ) var name         : String?           = null,
     @SerializedName("energy_saving" ) var energySaving : Int?              = null,
     @SerializedName("cost_saving"   ) var costSaving   : Int?              = null,
+    @SerializedName("price"   ) var price   : Int?              = null,
+    @SerializedName("brand"   ) var brand   : String?              = null,
     @SerializedName("status"        ) var status       : String?           = null,
     @SerializedName("used_for"      ) var usedFor      : String?           = null,
     @SerializedName("posted_by"     ) var postedBy     : PostedBy?         = PostedBy(),
@@ -47,6 +49,8 @@ data class ListingProduct (
 data class Requests (
 
     @SerializedName("request_id"   ) var requestId   : String?      = null,
+    @SerializedName("timestamp"    ) var timestamp   : Int?         = null,
+    @SerializedName("distance"    ) var distance   : Int?         = null,
     @SerializedName("status"       ) var status      : String?      = null,
     @SerializedName("coordinates"  ) var coordinates : Coordinates? = Coordinates(),
     @SerializedName("productId"    ) var productId   : String?      = null,

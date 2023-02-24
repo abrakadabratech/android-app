@@ -37,10 +37,15 @@ class ImageAdapter(
                 llDeleteBtn.visibility = View.VISIBLE
 
                 llAddProductImage.visibility = View.GONE
-
-                GlideApp.with(context)
-                    .load(item.uri ?: item.image)
-                    .into(ivProductImage)
+                if (item.uri != null) {
+                    GlideApp.with(context)
+                        .load(item.uri ?: item.image)
+                        .into(ivProductImage)
+                }else{
+                    GlideApp.with(context)
+                        .load(item.image)
+                        .into(ivProductImage)
+                }
             }
 
             if (item.id != -2) {

@@ -70,14 +70,6 @@ interface APIs {
         @Part filePart: MultipartBody.Part
     ): Response<UploadProfileResponse>
 
-    //Post new product
-    @Multipart
-    @POST("product/new")
-    suspend fun postProduct(
-        @HeaderMap header: Map<String, String>,
-        @PartMap partMap: Map<String, RequestBody>,
-        @Part filePart: Array<MultipartBody.Part>
-    ): Response<PostProductResponse>
 
     //Get app support data
     @GET("app/support")
@@ -118,12 +110,25 @@ interface APIs {
         @Path("id") id: String
     ): Response<ProductDeleteResponse>
 
+    //Post new product
+    @Multipart
+    @POST("product/new")
+    suspend fun postProduct(
+        @HeaderMap header: Map<String, String>,
+        @PartMap partMap: Map<String, RequestBody>,
+        @Part filePart: Array<MultipartBody.Part>
+    ): Response<PostProductResponse>
+
     //update product
+    @Multipart
     @PUT("product/{id}")
     suspend fun updateProduct(
         @HeaderMap header: Map<String, String>,
         @Path("id") id: String,
-        @Body body: Map<String,String>
+//        @Query("images") body: ArrayList<String>,
+        @PartMap partMap: Map<String, RequestBody>,
+        @Part filePart: Array<MultipartBody.Part>,
+
     ): Response<UpdatedProductData>
 
     //Get all product categories

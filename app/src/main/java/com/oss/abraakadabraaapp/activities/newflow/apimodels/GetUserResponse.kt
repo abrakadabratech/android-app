@@ -34,5 +34,6 @@ data class UsersData (
     @SerializedName("uid"              ) var uid            : String? = null,
     @SerializedName("location"              ) var location            : String? = null,
     @SerializedName("fcmToken"         ) var fcmToken            : String? = null
-) {constructor():this("","","","","","","",null,"","","")}
+) {constructor():this("","","","",
+    "","","",null,"","","")}
 

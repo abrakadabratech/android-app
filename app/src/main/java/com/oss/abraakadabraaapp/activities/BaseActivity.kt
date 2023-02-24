@@ -3,8 +3,6 @@ package com.oss.abraakadabraaapp.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -29,19 +27,14 @@ import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.Tracker
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.play.core.tasks.OnCompleteListener
-import com.google.android.play.core.tasks.Task
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GetTokenResult
 import com.google.firebase.messaging.FirebaseMessaging
 import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.auth.LoginActivity
-import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.dialog.ProgressDialog
 import com.oss.abraakadabraaapp.location.livedata.LocationViewModel
-import com.oss.abraakadabraaapp.model.UserData
 import com.oss.abraakadabraaapp.model.UserLocation
 import com.oss.abraakadabraaapp.retrofit.utils.ApiConstants
 import com.oss.abraakadabraaapp.retrofit.utils.NetworkHelper
@@ -105,7 +98,7 @@ abstract class BaseActivity : AppCompatActivity() {
     public fun postClick(event_tag: String){
         val bundle = Bundle()
         bundle.putString(event_tag, "1")
-        firebaseAnalytics.logEvent(event_tag, bundle)
+//        firebaseAnalytics.logEvent(event_tag, bundle)
         debugLog(event_tag)
 
     }
@@ -116,7 +109,7 @@ abstract class BaseActivity : AppCompatActivity() {
 //        val bundle = Bundle()
 //        bundle.putString(FirebaseAnalytics.Param.METHOD, "Test method")
 
-       // firebaseAnalytics.logEvent(event_tag, bundle)
+//        firebaseAnalytics.logEvent(event_tag, bundle)
 
         //init analytics
         /*  mTracker = application.defaultTracker
@@ -144,8 +137,8 @@ abstract class BaseActivity : AppCompatActivity() {
             val latitude = it.latitude.toString()
             val longitude = it.longitude.toString()
 
-            Log.d("getLocationData", "latitude $latitude")
-            Log.d("getLocationData", "longitude $longitude")
+//            Log.d("getLocationData", "latitude $latitude")
+//            Log.d("getLocationData", "longitude $longitude")
 
             if (PreferencesManagement.getUserLocation(this@BaseActivity) != null) {
                 val userLocation = PreferencesManagement.getUserLocation(this@BaseActivity)
@@ -169,48 +162,60 @@ abstract class BaseActivity : AppCompatActivity() {
     }
     fun getAddress(lat: Double, lng: Double) :String{
         val geocoder = Geocoder(this, Locale.getDefault())
+
+        //        val geocoder = Geocoder(context, Locale.getDefault())
+
+        /* var result: String? = null
+        try {
+            val addressList = geocoder.getFromLocation(
+                lat, lng, 1
+            )
+            if (addressList != null && addressList.size > 0) {
+                val address = addressList[0]
+                val sb = StringBuilder()
+                for (i in 0 until address.maxAddressLineIndex) {
+                    sb.append(address.getAddressLine(i)).append("\n")
+                }
+                sb.append(address.premises).append("\n")
+                sb.append(address.subLocality).append("\n")
+                sb.append(address.locality).append("\n")
+                sb.append(address.postalCode).append("\n")
+                sb.append(address.countryName)
+                result = sb.toString()
+                Log.e("TAG--->", "Location Details are:${result.toString()}")
+
+            }
+        } catch (e: IOException) {
+            Log.e("TAG--->", "Unable connect to Geocoder", e)
+        }*/
+
         try {
             val addresses = geocoder.getFromLocation(lat, lng, 1)
             val obj = addresses[0]
             var add = obj.getAddressLine(0)
-            add = """
-            $add
-            ${obj.countryName}
-            """.trimIndent()
-            add = """
-            $add
-            ${obj.countryCode}
-            """.trimIndent()
-            add = """
-            $add
-            ${obj.adminArea}
-            """.trimIndent()
-            add = """
-            $add
-            ${obj.postalCode}
-            """.trimIndent()
-            add = """
-            $add
-            ${obj.subAdminArea}
-            """.trimIndent()
-            add = """
-            $add
-            ${obj.locality}
-            """.trimIndent()
-            add = """
-            $add
-            ${obj.subThoroughfare}
-            """.trimIndent()
-            Log.v("IGA", "Address$add")
-            return obj.locality+","+obj.adminArea
-            // Toast.makeText(this, "Address=>" + add,
-            // Toast.LENGTH_SHORT).show();
+            var string = ""
+            if(obj.subLocality != null){
+                string = "${obj.subLocality},${obj.locality}"
+            }else{
+                string = obj.locality+","+obj.adminArea
+            }
+//            Toast.makeText(requireContext(),string,Toast.LENGTH_SHORT).show()
+//            Log.d("TAG--->", "maxAddressLineIndex: ${obj.maxAddressLineIndex}")
+//            Log.d("TAG--->", "locality: ${obj.locality}")
+//            Log.d("TAG--->", "subLocality: ${obj.subLocality}")
+//            Log.d("TAG--->", "adminArea: ${obj.adminArea}")
+//            Log.d("TAG--->", "subAdminArea: ${obj.subAdminArea}")
+//            Log.d("TAG--->", "premises: ${obj.premises}")
+//            Log.d("TAG--->", "countryName: ${obj.countryName}")
+//            Log.d("TAG--->", "locale: ${obj.locale}")
+//            Log.d("TAG--->", "featureName: ${obj.featureName}")
+//            Log.d("TAG--->", "complete address: ${obj.getAddressLine(0)}")
+            return string
 
-            // TennisAppActivity.showDialog(add);
         } catch (e: IOException) {
             // TODO Auto-generated catch block
             e.printStackTrace()
-//            Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
         }
         return ""
     }
@@ -320,7 +325,7 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
-    private fun getLocationAddress() {
+    public fun getLocationAddress() {
         if (BuildConfig.DEBUG) {
             showToast("lat $lat,long $lng")
         }
@@ -580,11 +585,11 @@ abstract class BaseActivity : AppCompatActivity() {
                     val idToken = it.result.token
                     val auth = "Bearer $idToken"
 
-                    val clipboard =
+                    /*val clipboard =
                         getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     val clip = ClipData.newPlainText(android.R.attr.label.toString(), idToken)
                     clipboard.setPrimaryClip(clip)
-
+*/
                     if(PreferencesManagement.saveAuthToken(this@BaseActivity,auth))
                     {
                         Log.d("akd_debug", "generateAuthToken: Data saved in preferences.")

@@ -38,8 +38,8 @@ public class ImagePickerActivity extends AppCompatActivity {
     public static final int REQUEST_IMAGE_CAPTURE = 0;
     public static final int REQUEST_GALLERY_IMAGE = 1;
 
-    private boolean lockAspectRatio = false, setBitmapMaxWidthHeight = false;
-    private int ASPECT_RATIO_X = 16, ASPECT_RATIO_Y = 9, bitmapMaxWidth = 1000, bitmapMaxHeight = 1000;
+    private boolean lockAspectRatio = true, setBitmapMaxWidthHeight = false;
+    private int ASPECT_RATIO_X = 1, ASPECT_RATIO_Y = 1, bitmapMaxWidth = 1000, bitmapMaxHeight = 1000;
     private int IMAGE_COMPRESSION = 80;
     public static String fileName;
 
@@ -151,6 +151,7 @@ public class ImagePickerActivity extends AppCompatActivity {
     public void cropImage(Uri sourceUri) {
         Uri destinationUri = Uri.fromFile(new File(getCacheDir(), queryName(getContentResolver(), sourceUri)));
         UCrop.Options options = new UCrop.Options();
+
         options.setCompressionQuality(IMAGE_COMPRESSION);
 
         // applying UI theme
@@ -165,6 +166,7 @@ public class ImagePickerActivity extends AppCompatActivity {
             options.withMaxResultSize(bitmapMaxWidth, bitmapMaxHeight);
 
         UCrop.of(sourceUri, destinationUri)
+                .withAspectRatio(1, 1)
                 .withOptions(options)
                 .start(this);
     }

@@ -103,10 +103,8 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         mFusedLocationClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
         categoryAdapter = CategoryAdapter(categoryList, requireContext(), this, "home")
-//        latestProductAdapter = LatestProductAdapter(latestProductList, requireContext(), this)
 
         with(binding) {
-//            sRLHome.setColorSchemeResources(R.color.theme_color)
 
             sRLHome.setOnRefreshListener {
                 application.postClick(BUTTON_SWIPE_REFRESH)
@@ -128,15 +126,10 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             startActivity(Intent(requireContext(), NewSearchActivity::class.java))
         }
         setUpObserver()
-//        setupViewModel()
-        setupList()
-//        setupView()
 
-//        Log.d("TAG-", "setupList: ${Gson().toJson(passengersAdapter.snapshot().items)}")
+        setupList()
 
         clickEvents()
-
-//        setUpRecyclerView()
 
         return root
     }
@@ -295,24 +288,28 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 //            latestProductAdapter.setData(it.data.products)
 //            binding.textView75.text = "${it.data.products.size} Items"
 //            latestProductAdapter.notifyDataSetChanged()
-
-            if (it.data.products.isNotEmpty()) {
-                if (currentPage == pageStart) latestProductList.clear()
-                latestProductList.addAll(it.data.products)
-                latestProductAdapter.notifyDataSetChanged()
+            if (currentPage == pageStart) latestProductList.clear()
+            latestProductList.addAll(it.data.products)
+            latestProductAdapter.notifyDataSetChanged()
 //                noDataBinding.clNoData.visibility = View.GONE
 
-                val lastPosition = latestProductList.size - it.data.products.size
+            val lastPosition = latestProductList.size - it.data.products.size
 
-                if (latestProductList.size == it.data.products.size) {
-                    binding.rvLatestProduct.smoothScrollToPosition(latestProductList.size)
-                } else {
-                    binding.rvLatestProduct.smoothScrollToPosition(lastPosition + 1)
-                }
-
-                currentPage += 1
+            if (latestProductList.size == it.data.products.size) {
+                binding.rvLatestProduct.smoothScrollToPosition(latestProductList.size)
             } else {
-                //noDataFound()
+                binding.rvLatestProduct.smoothScrollToPosition(lastPosition + 1)
+            }
+
+            currentPage += 1
+
+            if (latestProductList.size == 0){
+                binding.nodata.visibility = View.VISIBLE
+            }
+            if (it.data.products.isNotEmpty()) {
+
+            } else {
+//                binding.nodata.visibility = View.VISIBLE
             }
             //            binding.sRLHome.isRefreshing = false
 
@@ -554,7 +551,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         }
         applyBtn.setOnClickListener {
             application.postClick(Constants.BUTTON_FILTER_APPLY)
-            Toast.makeText(context, "Under Development ${newestFirstSwitch.isChecked}", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context, "Under Development ${newestFirstSwitch.isChecked}", Toast.LENGTH_SHORT).show()
             if (filters.newest){
                 sort()
             }else{

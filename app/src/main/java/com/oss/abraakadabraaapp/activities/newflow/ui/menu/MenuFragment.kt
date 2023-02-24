@@ -104,30 +104,38 @@ class MenuFragment : Fragment() {
             alertDialog.setPositiveButton("Yes") { dialog, id ->
 
                 val mUser = FirebaseAuth.getInstance().currentUser
-                mUser!!.getIdToken(true)
-                    .addOnCompleteListener {
-                        if (it.isSuccessful) {
-                            val idToken = it.result.token
-                            val auth = "Bearer $idToken"
+                if (mUser != null){
+                    mUser!!.getIdToken(true)
+                        .addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                val idToken = it.result.token
+                                val auth = "Bearer $idToken"
 
-                            val activity: Activity? = activity
-                            if (activity != null) {
-                                if (PreferencesManagement.saveAuthToken(requireActivity(), auth)) {
+                                val activity: Activity? = activity
+                                if (activity != null) {
+                                    if (PreferencesManagement.saveAuthToken(requireActivity(), auth)) {
 
-                                    val map = HashMap<String, String>()
-                                    val token =
-                                        PreferencesManagement.getAuthToken(requireContext())!!
-                                    map["Authorization"] = token
-                                    authViewModel.logoutUser(map)
+                                        val map = HashMap<String, String>()
+                                        val token =
+                                            PreferencesManagement.getAuthToken(requireContext())!!
+                                        map["Authorization"] = token
+                                        authViewModel.logoutUser(map)
 
 
-                                } else {
-                                    application.showToast("Error generating the token!")
+                                    } else {
+                                        application.showToast("Error generating the token!")
+                                    }
                                 }
-                            }
 
+                            }
                         }
-                    }
+                }else{
+                    Firebase.auth.signOut()
+                    requireActivity().startActivity(
+                        Intent(requireActivity(), LoginActivity::class.java)
+                    )
+                    requireActivity().finish()
+                }
 
 
 
@@ -151,12 +159,12 @@ class MenuFragment : Fragment() {
         if (activity != null) {
             authViewModel.logoutNewSuccess.observe(requireActivity()) {
                 if (it.code == 200) {
-                    application.showToast(it.responseMessage.toString())
                     Firebase.auth.signOut()
-                    requireActivity().finish()
-                    requireActivity().startActivity(
+                    application.showToast(it.responseMessage.toString())
+                    activity.startActivity(
                         Intent(requireActivity(), LoginActivity::class.java)
                     )
+                    activity.finish()
                 }
             }
 

@@ -10,10 +10,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.android.gms.wallet.IsReadyToPayRequest.fromJson
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
@@ -22,6 +24,7 @@ import com.oss.abraakadabraaapp.activities.newflow.customeview.WrapContentLinear
 import com.oss.abraakadabraaapp.activities.newflow.ui.FeedbackActivity
 import com.oss.abraakadabraaapp.databinding.ActivityChatDetailBinding
 import com.oss.abraakadabraaapp.databinding.ChatMessageRowBinding
+import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_CHAT_DETAILS
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_CHAT_BLOCK_USER
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_CHAT_DELETE
@@ -43,8 +46,9 @@ class ChatDetailActivity : BaseActivity() {
     private lateinit var binding: ActivityChatDetailBinding
     private lateinit var adapter: ChatMessageAdapter
     private var list: ArrayList<String> = ArrayList()
-    var chatData = HashMap<String, String>()
+    var chatData : ChatListModel? = null
     var data_from = ""
+    var chatNode = ""
 
     lateinit var firestoreUserAdapter: FirestoreRecyclerAdapter<ChatModel, UsersViewholder>
     private val mainViewModel: AuthViewModel by viewModel()
@@ -55,8 +59,15 @@ class ChatDetailActivity : BaseActivity() {
         setContentView(binding.root)
         postEvent(PAGE_CHATS_DETAILS, null)
 
-        chatData = intent.getSerializableExtra(CHATS_DATA) as HashMap<String, String>
-        data_from = intent.getStringExtra("data_from")!!
+        if (intent.hasExtra(CHATS_DATA)) {
+            chatData = Gson().fromJson(intent.extras?.getString(CHATS_DATA,""),ChatListModel::class.java)
+        }
+        if (intent.hasExtra("data_from")) {
+            data_from = intent.getStringExtra("data_from")!!
+        }
+        if (intent.hasExtra(Constants.productId)){
+            chatData
+        }
 
         Log.d("ok", "onCreate: $chatData")
         setUpObserver()
@@ -64,17 +75,17 @@ class ChatDetailActivity : BaseActivity() {
 
         if (chatData != null) {
             if (data_from == "activity") {
-                binding.chatName.text = chatData["receiver_name"]
-                Glide.with(this).load(chatData["receiver_avatar"])
+                binding.chatName.text = chatData!!.receiver_name.toString()
+                Glide.with(this).load(chatData!!.receiver_avatar)
                     .placeholder(resources.getDrawable(R.drawable.ic_profile))
                     .into(binding.profilePic)
-            } else {
-                binding.chatName.text = chatData["sender_name"]
-                Glide.with(this).load(chatData["sender_avatar"])
+            } else if(data_from == "fragment"){
+                binding.chatName.text = chatData!!.sender_name
+                Glide.with(this).load(chatData!!.sender_avatar)
                     .placeholder(resources.getDrawable(R.drawable.ic_profile))
                     .into(binding.profilePic)
             }
-            binding.productName.text = chatData["product"]
+            binding.productName.text = chatData!!.product
         }
 
         clickEvents()
@@ -149,18 +160,21 @@ class ChatDetailActivity : BaseActivity() {
             val calendar = Calendar.getInstance()
             val sdf = SimpleDateFormat("dd MMM yyyy")
             val currentDate: String = sdf.format(calendar.time)
-            chatData["last_message"] = message
+            chatData!!.last_message = message
             val c = Calendar.getInstance().time
-            chatData["time_stamp"] = currentDate
+            chatData!!.time_stamp = currentDate
+
+            if (data_from == "activity"){
+
+            }
+            chatNode = chatData!!.product_id!! + setOneToOneChat(
+                chatData!!.sender_id.toString(),
+                chatData!!.receiver_id.toString()
+            )
 
             db.collection("chats")
-                .document(
-                    chatData["product_id"]!! + setOneToOneChat(
-                        chatData["sender_id"].toString(),
-                        chatData["receiver_id"].toString()
-                    )
-                )
-                .set(chatData)
+                .document(chatNode)
+                .set(chatData!!)
                 .addOnSuccessListener {
                     Log.d("TAG - ", "sendToChat: chat room created")
 
@@ -171,10 +185,10 @@ class ChatDetailActivity : BaseActivity() {
 
             val chats = hashMapOf(
                 "chatNode" to setOneToOneChat(
-                    chatData["sender_id"].toString(),
-                    chatData["receiver_id"].toString()
+                    chatData!!.sender_id.toString(),
+                    chatData!!.receiver_id.toString()
                 ),
-                "receiverId" to chatData["receiver_id"],
+                "receiverId" to chatData!!.receiver_id,
                 "senderId" to sender_id,
                 "text" to message,
                 "from" to sender_id,
@@ -183,9 +197,9 @@ class ChatDetailActivity : BaseActivity() {
 
             db.collection("chats")
                 .document(
-                    chatData["product_id"]!! + setOneToOneChat(
-                        chatData["sender_id"].toString(),
-                        chatData["receiver_id"].toString()
+                    chatData!!.product_id + setOneToOneChat(
+                        chatData!!.sender_id.toString(),
+                        chatData!!.receiver_id.toString()
                     )
                 )
                 .collection("Messages")
@@ -193,10 +207,11 @@ class ChatDetailActivity : BaseActivity() {
                 .addOnSuccessListener {
                     generateAuthToken()
 
-                    val notification_user = if (sender_id == chatData["sender_id"].toString()) chatData["receiver_id"].toString() else chatData["sender_id"].toString()
+                    val notification_user = if (sender_id == chatData!!.sender_id.toString()) chatData!!.receiver_id.toString() else chatData!!.sender_id.toString()
                     val map = HashMap<String, String>()
                     map["receiverId"] = notification_user //chatData["receiver_id"].toString()
                     map["message"] = message
+                    map["chatNode"] = chatNode
                     mainViewModel.sendNotification(Utility.getAuthentication(this), map)
                     Log.d("TAG - ", "sendToChat: chat posted")
                     /*val intent = Intent(this,ChatDetailActivity::class.java)
@@ -214,9 +229,9 @@ class ChatDetailActivity : BaseActivity() {
 //    depends on project vacancies
     fun setOneToOneChat(uid1: String, uid2: String): String {
         return if (uid1 < uid2) {
-            uid1 + uid2;
+            uid1 + uid2
         } else {
-            uid2 + uid1;
+            uid2 + uid1
         }
     }
 
@@ -228,9 +243,9 @@ class ChatDetailActivity : BaseActivity() {
 
         val query = db.collection("chats")
             .document(
-                chatData["product_id"]!! + setOneToOneChat(
-                    chatData["sender_id"].toString(),
-                    chatData["receiver_id"].toString()
+                chatData!!.product_id + setOneToOneChat(
+                    chatData!!.sender_id.toString(),
+                    chatData!!.receiver_id.toString()
                 )
             )
             .collection("Messages")

@@ -371,14 +371,16 @@ fun getRequestDetails(
     }
 
     fun updateProduct(
-        headerMap: HashMap<String, String>,
+        map: HashMap<String, String>,
         id: String,
-        body: Map<String,String>
+        images:ArrayList<String>,
+        body: Map<String, RequestBody>,
+        file: Array<MultipartBody.Part>
     ) {
         viewModelScope.launch {
             isLoading.value = true
 
-            suspend fun call() = repository.updateProduct(headerMap,id,body)
+            suspend fun call() = repository.updateProduct(map,id,images,body,file)
             callApi(::call, object : CallHelper<UpdatedProductData>{
                 override fun onSuccessful(data: UpdatedProductData) {
                     updateProductSuccess.value = data

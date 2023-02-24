@@ -63,15 +63,14 @@
                             android:id="@+id/tv_toolbar_title"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
                             android:fontFamily="@font/montserrat_bold"
-                            android:text="My Chats"
                             android:gravity="center"
+                            android:text="My Chats"
                             android:textColor="@color/title_color"
                             android:textSize="24sp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/iv_back"
+                            app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
 

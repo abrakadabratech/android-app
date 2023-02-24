@@ -15,6 +15,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import com.karumi.dexter.Dexter
@@ -26,6 +29,7 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.SocialShareAdapter
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.User_Stats
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.activities.newflow.model.SocialData
 import com.oss.abraakadabraaapp.databinding.ActivityMyProfile2Binding
@@ -51,6 +55,8 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 
 class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileClicked {
@@ -61,11 +67,15 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
     private var socialLinkType = "facebook"
     private lateinit var userInfo: GetUserResponse
     private var profileLink = ""
+    var from = "fragment"
+    var status = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMyProfile2Binding.inflate(layoutInflater)
         setContentView(binding.root)
         postEvent(Constants.PAGE_PROFILE, null)
+
+        from = intent.extras?.getString("from")!!
         userInfo = PreferencesManagement.getUserInfo(this)!!
         setUpProfile(userInfo)
         clickeEvents()
@@ -77,6 +87,46 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
         }.addOnFailureListener {
             Log.d("TAG::", "onCreate: $it")
         }
+
+        if (from == "activity"){
+            editMode(true)
+            userInfo.data?.socialLinkType
+            binding.socialProfileLayout.visibility = View.VISIBLE
+        }
+
+        val db = Firebase.firestore
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+
+        val docRef = db.collection("users")
+            .document(currentUserId!!).addSnapshotListener { value, error ->
+                status = value?.getString("status").toString()
+
+                setProfileStatus(status)
+            }
+    }
+
+    private fun setProfileStatus(status: String) {
+        with(binding){
+            if (status == "pending" || status == "not verified"){
+                profileStatus.setText(status!!.capitalize())
+                profileStatus.setTextColor(resources.getColor(R.color.status_pending))
+                profileStatusImage.setImageResource(R.drawable.status_pending)
+
+            }else if (status == "declined"){
+                profileStatus.setText(status.capitalize())
+                profileStatus.setTextColor(resources.getColor(R.color.status_declined))
+                profileStatusImage.setImageResource(R.drawable.status_declined)
+            }
+            else if (status == "suspended"){
+                profileStatus.setText(status.capitalize())
+                profileStatus.setTextColor(resources.getColor(R.color.status_declined))
+                profileStatusImage.setImageResource(R.drawable.status_declined)
+            }else{
+                profileStatus.setText(status.capitalize())
+                profileStatus.setTextColor(resources.getColor(R.color.status_accepted))
+                profileStatusImage.setImageResource(R.drawable.status_accepted)
+            }
+        }
     }
 
     private fun setUpProfile(userInfo: GetUserResponse) {
@@ -86,20 +136,11 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             phoneEdit.setText(userInfo.data?.phone)
             val userlocation = PreferencesManagement.getUserLocation(this@MyNewProfileActivity)
             locationEdit.setText(getAddress(userlocation?.lat!!.toDouble(), userlocation.long.toDouble()))
-            if (userInfo.data?.status == "pending"){
-                profileStatus.setText(userInfo.data?.status!!.capitalize())
-                profileStatus.setTextColor(resources.getColor(R.color.status_pending))
-                profileStatusImage.setImageResource(R.drawable.status_pending)
 
-            }else{
-                profileStatus.setText(userInfo.data?.status?.capitalize())
-                profileStatus.setTextColor(resources.getColor(R.color.status_accepted))
-                profileStatusImage.setImageResource(R.drawable.status_accepted)
-            }
-            instaEdit.setText(if(userInfo.data?.socialLink == null) "Update your profile here" else userInfo.data?.socialLink)
+            instaEdit.setText(if(userInfo.data?.socialLink == "") "No profile submitted" else userInfo.data?.socialLink)
             Glide.with(this@MyNewProfileActivity)
                 .load(userInfo.data?.userAvatar)
-                .placeholder(resources.getDrawable(R.drawable.ic_profile))
+                .placeholder(resources.getDrawable(R.drawable.user))
                 .into(profilePic)
             list.clear()
             when (userInfo.data?.socialLinkType) {
@@ -142,19 +183,6 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
         }
     }
 
-    private fun getUserNameFromSocialLink(socialLink: String?, socialLinkType: String?): String? {
-        var result = ""
-        if (!socialLink.equals("")){
-            when(socialLinkType){
-                facebook -> result = socialLink?.split("https://www.facebook.com/")?.get(1).toString()
-                linkedin -> result = socialLink?.split("https://www.instagram.com/")?.get(1).toString()
-                twitter -> result = socialLink?.split("https://www.linkedin.com/in/")?.get(1).toString()
-                instagram -> result = socialLink?.split("https://twitter.com/")?.get(1).toString()
-            }
-        }
-        return result
-    }
-
     private fun setUpObserver() {
         authViewModel.isLoading.observe(this) { loader(it) }
 
@@ -168,13 +196,14 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             if (it.code == 500){
                 showToast(it.responseMessage.toString())
             }else {
-                PreferencesManagement.saveUserInfo(this, it)
                 editMode(false)
                 setUpProfile(it)
+                PreferencesManagement.saveUserInfo(this, it)
             }
         }
         authViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
         authViewModel.userProfilePicSuccess.observe(this) {
+
             if (it.code == 200){
                 showToast(it.responseMessage.toString())
 
@@ -197,7 +226,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                     data = userData
                 )
                 PreferencesManagement.saveUserInfo(this,newUserInfo)
-                binding.instaEdit.setText(profileLink)
+
 
 //                setUpProfile(it)
 //            getUserProfileApi()
@@ -205,6 +234,8 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
 
         }
         authViewModel.postSocialProfileSuccess.observe(this) {
+
+            binding.instaEdit.setText(profileLink)
 
             val userInfo = PreferencesManagement.getUserInfo(this)!!
             val userData = UsersData(phone = userInfo.data?.phone,
@@ -215,7 +246,8 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                 email = userInfo.data?.email,
                 uid = userInfo.data?.uid,
                 location = userInfo.data?.location,
-                fcmToken = userInfo.data?.fcmToken
+                fcmToken = userInfo.data?.fcmToken,
+                status = userInfo.data?.status
             )
             val newUserInfo = GetUserResponse(
                 code = userInfo.code,
@@ -228,9 +260,9 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             Log.d(API_TAG, "postSocialProfileSuccess: ${Gson().toJson(newUserInfo)}")
             binding.socialProfileLayout.visibility = View.GONE
             binding.successLayout.visibility = View.VISIBLE
-            binding.instaEdit.setText(if(userInfo.data?.socialLink == null) "Update your profile here" else userInfo.data?.socialLink)
             binding.socialProfilePopUPLayout.visibility = View.GONE
             editMode(false)
+            setProfileStatus(userInfo.data?.status.toString())
         }
     }
 
@@ -251,8 +283,17 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
         }
         binding.instaEdit.setOnClickListener {
             postClick(BUTTON_SOCIAL_PROFILE_CHANGE)
-            userInfo.data?.socialLinkType
-            binding.socialProfileLayout.visibility = View.VISIBLE
+            if (status == "declined" || status == "not verified"){
+                userInfo.data?.socialLinkType
+                binding.socialProfileLayout.visibility = View.VISIBLE
+            }else{
+                when(status){
+                    "active" -> showToast("Profile already verified.")
+                    "pending" -> showToast("Profile verification is pending.")
+                    "suspended" -> showToast("Your profile is suspended.")
+                }
+            }
+
         }
         binding.socialProfileLayout.setOnClickListener {
             binding.socialProfileLayout.visibility = View.GONE
@@ -273,17 +314,21 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
         binding.successLayout.setOnClickListener {
             binding.successLayout.visibility = View.GONE
         }
+
         binding.successDialog.setOnClickListener {
             binding.successLayout.visibility = View.VISIBLE
         }
+
         binding.uploadImage.setOnClickListener {
             postClick(BUTTON_UPLOAD_PROFILE_PIC)
             selectImage()
         }
+
         binding.socialProfilePopUPLayout.setOnClickListener {
             binding.socialProfilePopUPLayout.visibility = View.GONE
             binding.socialProfileLayout.visibility = View.VISIBLE
         }
+
         binding.successDialog1.setOnClickListener {
             binding.socialProfilePopUPLayout.visibility = View.VISIBLE
         }
@@ -291,6 +336,10 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             postClick(Constants.BUTTON_LETS_START_SOCIAL_PROFILE)
             postUserProfile()
         }
+        binding.imageView11.setOnClickListener {
+            binding.socialProfilePopUPLayout.visibility = View.GONE
+        }
+
     }
 
     private fun editMode(isEditMode: Boolean) {
@@ -302,12 +351,12 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
 //        binding.locationEdit.isEnabled = isEditMode
         binding.instaEdit.isEnabled = isEditMode
         if (isEditMode) {
-            binding.nameEdit.requestFocus()
+//            binding.nameEdit.requestFocus()
             binding.nameEdit.setSelection(binding.nameEdit.text.toString().length)
             binding.saveBtn.visibility = View.VISIBLE
             binding.editProfile.visibility = View.INVISIBLE
-            binding.instaEdit.setText(if(userInfo.data?.socialLink == null)
-                "Update your profile here" else userInfo.data?.socialLink)
+//            binding.instaEdit.setText(if(userInfo.data?.socialLink == "")
+//                "Update your profile here" else userInfo.data?.socialLink)
 
         } else {
             binding.saveBtn.visibility = View.GONE
@@ -317,6 +366,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
     }
 
     private fun postUserProfile() {
+
         if (isUserProfileValidate()) {
             if (isNetworkAvailable()) {
                 generateAuthToken()
@@ -339,10 +389,10 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                         binding.profileLink.text.toString().trim()
 
 
-
                 authViewModel.postUserSocialProfile(mapAuth, map)
             }
         }
+
     }
 
     private fun isUserProfileValidate(): Boolean {
@@ -384,14 +434,18 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
     }
 
     private fun isValidate(): Boolean {
-        return if (binding.nameEdit.text.toString().isNotBlank() &&
-            binding.emailEdit.text.toString().isNotBlank()
-        ) {
-            true
-        } else {
-            showToast("Enter Name and Email ID")
-            false
+        val emailPattern: Pattern = Pattern.compile("^[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+$")
+        val emailMs: Matcher = emailPattern.matcher(binding.emailEdit.text.toString().trim())
+
+        if (!emailMs.matches()) {
+            showToast("Please Enter Valid Email Address")
+            return false
         }
+        if (binding.nameEdit.text.toString().isEmpty()){
+            showToast("Enter Name")
+            return false
+        }
+        return true
     }
 
     private fun setUpRecyclerView() {
@@ -409,7 +463,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                 socialLinkType = "facebook"
             }
 
-            1 -> {
+            3 -> {
                 binding.socialProfileHeader.text = Constants.LINKED_IN_URL
                 socialLinkType = "linkedin"
             }
@@ -417,7 +471,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                 binding.socialProfileHeader.text = Constants.TWITTER_URL
                 socialLinkType = "twitter"
             }
-            3 -> {
+            1 -> {
                 binding.socialProfileHeader.text = Constants.INSTA_URL
                 socialLinkType = "instagram"
             }

@@ -1,10 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="akd" translatable="false"
-        tools:ignore="Typos">AIzaSyD7Svot1Qs4Qv_GczkyfdIZ0LNH-yYCPZg</string>
+    <string name="akd" translatable="false" tools:ignore="Typos">AIzaSyD7Svot1Qs4Qv_GczkyfdIZ0LNH-yYCPZg</string>
 
-   <string name="maps_api" translatable="false"
-        tools:ignore="Typos">AIzaSyD7Svot1Qs4Qv_GczkyfdIZ0LNH-yYCPZg</string>
-<!--    <string name="akd" translatable="false" tools:ignore="Typos">AIzaSyADspGzwPXvG6IKP7-1i74kZRxHS45_urE</string>-->
+    <string name="maps_api" translatable="false" tools:ignore="Typos">AIzaSyD7Svot1Qs4Qv_GczkyfdIZ0LNH-yYCPZg</string>
+    <!--    <string name="akd" translatable="false" tools:ignore="Typos">AIzaSyADspGzwPXvG6IKP7-1i74kZRxHS45_urE</string>-->
 
     <string name="not_now">Not now</string>
     <string name="settings">Settings</string>
@@ -204,6 +202,7 @@
     <string name="pay_as_you_go_content">Dear User, \n\n\nAbra Ka Dabra is started with a noble aim of creating a community for sharing with keeping the environment cleaner and saving our personal funds. \n\nWhile growing this community, we would appreciate your support by giving a small one-time or monthly amount which will help us in sustaining the application. \n\nThank you for trusting and supporting us.</string>
     <string name="report_this"><u>Report this</u></string>
     <string name="u_pay_as_you_wish_u"><u>Pay As You Wish</u></string>
-   <string name="skip_pay"><u>Skip</u></string>
+    <string name="skip_pay"><u>Skip</u></string>
+    <string name="default_notification_channel_id">com.oss.abraakadabraaapp</string>
 
 </resources>

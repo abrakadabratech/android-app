@@ -184,8 +184,8 @@ object Constants {
     const val productAge = "productAge"
     const val productCondition = "productCondition"
     const val productGender = "productGender"
-    const val fullAddress = "fullAddress"
-    const val latitude= "latitude"
+    var fullAddress = "fullAddress"
+    var latitude= "latitude"
     const val longitude= "longitude"
 
     const val notificationCount = "notificationCount"
@@ -201,6 +201,8 @@ object Constants {
 
     const val pendingIntentRequest = "request"
     const val productDetail = "product_detail"
+    const val productRequestDetails = "request_details_screen"
+    const val chatDetails = "chat_details"
 
     const val hasNotificationData = "hasNotificationData"
     const val productStatus = "productStatus"

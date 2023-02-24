@@ -153,11 +153,13 @@
                 app:layout_constraintStart_toStartOf="@+id/postedBy"
                 app:layout_constraintTop_toBottomOf="@+id/postedBy" />
 
-            <ImageView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/imageView23"
-                android:layout_width="97.75dp"
-                android:layout_height="17dp"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
                 android:layout_marginTop="6dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/memberSince"
                 app:layout_constraintTop_toBottomOf="@+id/memberSince"
                 app:srcCompat="@drawable/dummy_stars" />
@@ -414,10 +416,11 @@
                     android:id="@+id/skipTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
                     android:layout_marginBottom="16dp"
                     android:fontFamily="@font/montserrat_bold"
                     android:text="@string/skip_pay"
-                    android:layout_marginTop="4dp"
+                    android:visibility="gone"
                     android:textColor="@color/title_color"
                     android:textSize="12sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -436,7 +439,7 @@
                     android:fontFamily="@font/montserrat_semi_bold"
                     android:gravity="center"
                     android:padding="8dp"
-                    android:text="Pay as you wish"
+                    android:text="Ok,Got it"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:textSize="12sp"

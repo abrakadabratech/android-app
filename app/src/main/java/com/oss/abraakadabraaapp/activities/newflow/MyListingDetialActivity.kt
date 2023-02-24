@@ -11,11 +11,18 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
@@ -44,6 +51,7 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
     private val mainViewModel: AuthViewModel by viewModel()
     var productDetails : ListingResponse? = null
     private lateinit var binding:ActivityMyListingDetailsBinding
+    private lateinit var productId: String
 
     lateinit var alertDialog: AlertDialog
     lateinit var alertAdaper: CategoryDialogAdapter
@@ -57,6 +65,7 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
     private var PROD_USED_FOR: String = ""
 
     private var selectedProdCategory:String = ""
+    private lateinit var placesClient: PlacesClient
 
     lateinit var userCatData: AllCategoryResponse
 
@@ -69,17 +78,32 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         product =
             Gson().fromJson(intent.extras?.getString(Constants.PRODUCT, ""), RequestData::class.java)
 
+        if (intent.hasExtra(Constants.productId)) {
+            productId = intent.getStringExtra(Constants.productId)!!
+        }
+
         application = this
         application.postEvent(Constants.PAGE_MY_LISTING_DETAIL,null)
 
         loadUsedForData()
         loadConditionData()
 
+        val apiKey = getString(R.string.akd)
+
+        if (!Places.isInitialized()) {
+            Places.initialize(this, apiKey)
+        }
+
+        placesClient = Places.createClient(this)
+
         userCatData = PreferencesManagement.getCategories(this)!!
 
         if (userCatData.data.size > 0){
             mainAdapterList = userCatData.data
             mainAdapterList[0].isSelect = true
+        }
+        binding.locationName.setOnClickListener {
+            locationPicker()
         }
 
         //Cat adpater
@@ -105,26 +129,17 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
 
         binding.editProduct.setOnClickListener {
             postClick(Constants.BUTTON_EDIT_PRODUCT)
-            binding.productName.isEnabled = true
-            binding.descriptionTxt.isEnabled = true
-            binding.conditionTxt.isEnabled = true
-            binding.usedForTxt.isEnabled = true
-            binding.categoryTxt.isEnabled = true
-            binding.productName.requestFocus()
-            binding.productName.setSelection(binding.productName.text.toString().length)
-
-            val imm: InputMethodManager =
-                getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.showSoftInput(binding.productName, InputMethodManager.SHOW_IMPLICIT)
-
-//            binding.productName.isFocusable = true
-            binding.updateBtn.visibility = View.VISIBLE
-            binding.editMenuDialog.visibility = View.GONE
-
+            if (productDetails?.product?.status == "active"){
+                val intent = Intent(this,EditProductActivity::class.java)
+                intent.putExtra("data_from_listing",Gson().toJson(productDetails))
+                startActivity(intent)
+            }else{
+                showToast("Your product is not active")
+            }
         }
 
         binding.conditionTxt.setOnClickListener {
-            //conditon popup
+            //condition popup
             for(i in listConditon){
                 i.isSelect = i.name?.capitalize() == productDetails?.product?.condition.toString().capitalize()
             }
@@ -167,7 +182,7 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
                 postClick(Constants.BUTTON_UPDATE_PRODUCT)
                 if (isNetworkAvailable()){
                     generateAuthToken()
-                    mainViewModel.updateProduct(Utility.getAuthentication(this),product.id.toString(),map)
+//                    mainViewModel.updateProduct(Utility.getAuthentication(this),product.id.toString(),map)
                 }
             }else{
                 showToast("Please enter Product Name and description")
@@ -181,6 +196,15 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
 
         binding.deleteProduct.setOnClickListener {
             postClick(Constants.BUTTON_DELETE_PRODUCT)
+
+            /*if (productDetails?.product?.status == "acive"){
+                val intent = Intent(this,EditProductActivity::class.java)
+                intent.putExtra("data_from_listing",Gson().toJson(productDetails))
+                startActivity(intent)
+            }else{
+                showToast("Your product is not active")
+            }*/
+
             var alertDialog = AlertDialog.Builder(this)
             alertDialog.setTitle("Alert!")
             alertDialog.setMessage("Are you sure you want to delete your listing?")
@@ -203,9 +227,48 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         }
         setUpObserver()
 
-        loaddata()
+
 
     }
+
+    override fun onResume() {
+        super.onResume()
+        binding.editMenuDialog.visibility = View.GONE
+        loaddata()
+    }
+
+    private fun locationPicker() {
+        val fields: List<Place.Field> =
+            listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS)
+        val intent = Autocomplete.IntentBuilder(
+            AutocompleteActivityMode.OVERLAY, fields
+        ).setCountry("IN")
+            .build(this)
+        locationLauncher.launch(intent)
+    }
+
+    private var locationLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == AppCompatActivity.RESULT_OK)
+                if (result != null) {
+                    val data: Intent? = result.data
+                    if (data != null) {
+
+                        val place = Autocomplete.getPlaceFromIntent(data)
+
+//                        latitude = place.latLng!!.latitude.toString()
+//                        longitude = place.latLng!!.longitude.toString()
+                        Constants.fullAddress = if (place.address != null) {
+                            place.address!!
+                        } else {
+                            "TODO geo api required"
+                        }
+
+                        binding.locationName.setText(Constants.fullAddress)
+                    }
+                }
+        }
+
     private fun loadConditionData(): ArrayList<CatData> {
         listConditon.clear()
         listConditon.add(CatData("Almost New", true))
@@ -238,8 +301,8 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
                 showToast(it.responseMessage.toString())
                 binding.productName.setText( it.data?.name)
                 binding.descriptionTxt.setText(it.data?.description)
-                binding.productName.isEnabled = false
-                binding.descriptionTxt.isEnabled = false
+//                binding.productName.isEnabled = false
+//                binding.descriptionTxt.isEnabled = false
                 binding.updateBtn.visibility = View.GONE
             }
         }
@@ -289,12 +352,19 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         binding.usedForTxt.text = data.usedFor
         binding.costSavingTxt.text = "Rs ${data.costSaving}"
         binding.textView23.text = "Rs ${data.energySaving}"
+        if (data.brand == null || data.brand == "No Brand" || data.brand == ""){
+            binding.brandTxt.visibility = View.GONE
+            binding.some111.visibility = View.GONE
+        }else{
+            binding.brandTxt.text = (data.brand.toString())
+        }
 //        binding.responsesOne.text = (data.postedBy.toString())
 //        binding.dateOfPostTxt.text = (it.data.createdAt.toString())
         binding.descriptionTxt.setText(data.description?.capitalize().toString())
         binding.locationName.setText(data.locationName.toString())
-        binding.responsesOne.text = "${it.requests.size} Responses"
-        binding.responsesTwo.text = "${it.requests.size} Responses"
+
+        binding.responsesOne.text = if(it.requests.size == 1) "${it.requests.size} Response" else "${it.requests.size} Responses"
+        binding.responsesTwo.text = if(it.requests.size == 1) "${it.requests.size} Response" else "${it.requests.size} Responses"
 
         val adapter = MyRequestedUsersAdapter(this,it.requests,this)
         binding.rvRequestedUsers.layoutManager = LinearLayoutManager(this)
@@ -305,8 +375,8 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
 
         val i = Intent(Intent.ACTION_SEND)
         i.type = "text/plain"
-        i.putExtra(Intent.EXTRA_SUBJECT, "Subject test")
-        i.putExtra(Intent.EXTRA_TEXT, "Try this great app Abra Ka Dabra to share second hand products with others for free. App is available at the below link: https://play.google.com/store/apps/details?id=com.oss.abraakadabraaapp")
+        i.putExtra(Intent.EXTRA_SUBJECT, "Share Product")
+        i.putExtra(Intent.EXTRA_TEXT, "Check out the product I have listed on this great app Abra Ka Dabra where we can share second hand products with others for free: https://play.google.com/store/apps/details?id=com.oss.abraakadabraaapp")
         startActivity(Intent.createChooser(i, "Share"))
     }
 

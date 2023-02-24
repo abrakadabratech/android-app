@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
@@ -55,8 +56,15 @@ class NewMyRequestActivity : BaseActivity() , MyRequestAdapter.OnResponseClick{
             Log.d("TAG - Product deails", "is it rue : ${it}")
 
             if (it.code == 200) {
-                adapterList.setData(it.data)
-                adapterList.notifyDataSetChanged()
+                if(it.data.isEmpty()){
+                    binding.rvMyrequest.visibility= View.GONE
+                    binding.noRequestSent.visibility= View.VISIBLE
+                }else {
+                    binding.rvMyrequest.visibility= View.VISIBLE
+                    binding.noRequestSent.visibility= View.GONE
+                    adapterList.setData(it.data)
+                    adapterList.notifyDataSetChanged()
+                }
             } else {
                 Log.d("TAG -", "setUpObserver: fail")
             }
@@ -88,7 +96,7 @@ class NewMyRequestActivity : BaseActivity() , MyRequestAdapter.OnResponseClick{
     override fun onResponseClicked(item: Data) {
         postClick(Constants.BUTTON_MY_REQUEST_CARD)
         val intent = Intent(this,MyRequestDetailsActivity::class.java)
-        intent.putExtra(Constants.PRODUCT, Gson().toJson(item))
+        intent.putExtra(Constants.productId, item.id)
         Log.d("ok", "onCreate in linsting activity: $${Gson().toJson(item)}")
         startActivity(intent)
     }

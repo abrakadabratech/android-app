@@ -94,6 +94,9 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
             finish()
         }
 
+        binding.imageView11.setOnClickListener {
+            binding.socialProfilePopUPLayout.visibility = View.GONE
+        }
 
     }
 
@@ -102,7 +105,7 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
         if (shouldAllowBack()) {
             super.onBackPressed();
         } else {
-            showToast("Do not press back. Please complete your profile")
+//            showToast("Do not press back. Please complete your profile")
         }
     }
 
@@ -274,7 +277,7 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
             val emailMs: Matcher = emailPattern.matcher(etEmail.text.toString().trim())
 
             if (etName.text!!.length <= 3) {
-                etName.error = "Name should be minimum 4 characters"
+//                etName.error = "Name should be minimum 4 characters"
                 showToast("Please Enter Valid Full Name")
                 return false
             }
@@ -300,20 +303,20 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
 
     override fun onSocialIconClick(position: Int, status: Boolean) {
         when(position){
-            0 ->{
+            0 -> {
                 binding.socialProfileHeader.text = Constants.FB_URL
                 socialLinkType = "facebook"
             }
 
-            1 ->{
+            3 -> {
                 binding.socialProfileHeader.text = Constants.LINKED_IN_URL
                 socialLinkType = "linkedin"
             }
-            2 ->{
+            2 -> {
                 binding.socialProfileHeader.text = Constants.TWITTER_URL
                 socialLinkType = "twitter"
             }
-            3 ->{
+            1 -> {
                 binding.socialProfileHeader.text = Constants.INSTA_URL
                 socialLinkType = "instagram"
             }

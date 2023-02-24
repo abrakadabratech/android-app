@@ -1,15 +1,22 @@
 package com.oss.abraakadabraaapp.activities.newflow
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.oss.abraakadabraaapp.R
+import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.viewModel.AuthViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class TermsAndConditionsActivity : AppCompatActivity() {
+
+class TermsAndConditionsActivity : BaseActivity() {
     var from = ""
+    private val mainViewModel: AuthViewModel by viewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_terms_and_conditions)
@@ -31,14 +38,13 @@ class TermsAndConditionsActivity : AppCompatActivity() {
             Constants.privacyPolicy -> {
                 title.setText("Privacy Policy")
                 webView.loadUrl("https://abra-ka-dabra.com/privacy-policy/")
-
             }
             Constants.termsConditions -> {
                 title.setText("Terms & Conditions")
                 webView.loadUrl("https://abra-ka-dabra.com/terms-and-conditions/")
-
             }
         }
+
 
 //        webView.loadUrl("https://merchant.razorpay.com/policy/KtgAylsnB0Q4uc")
     }

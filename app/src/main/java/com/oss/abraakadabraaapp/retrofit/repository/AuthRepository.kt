@@ -72,8 +72,10 @@ class AuthRepository(private val apiHelper: APIs) {
     suspend fun updateProduct(
         map: HashMap<String, String>,
         id: String,
-        body: Map<String,String>
-    ) = apiHelper.updateProduct(map,id,body)
+        images:ArrayList<String>,
+        body: Map<String, RequestBody>,
+        file: Array<MultipartBody.Part>
+    ) = apiHelper.updateProduct(map,id,body,file)
 
     suspend fun getSupportData(
         map: HashMap<String, String>)

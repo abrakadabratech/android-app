@@ -1,18 +1,27 @@
 package com.oss.abraakadabraaapp.activities.newflow.ui.home
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
-import android.location.Geocoder
+import android.content.pm.PackageManager
+import android.location.*
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.analytics.Tracker
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
+import com.oss.abraakadabraaapp.activities.newflow.MyNewProfileActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewNotificationActivity
 import com.oss.abraakadabraaapp.databinding.FragmentHomeBinding
 import com.oss.abraakadabraaapp.location.livedata.LocationViewModel
@@ -29,11 +38,12 @@ import java.io.IOException
 import java.util.*
 
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), LocationListener {
 
     private var _binding: FragmentHomeBinding? = null
     private val locationViewModel: LocationViewModel by viewModel()
     private var isGPSEnabled = false
+    private lateinit var placesClient: PlacesClient
 
     private var mTracker: Tracker? = null
     private lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -54,7 +64,6 @@ class HomeFragment : Fragment() {
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
         if (PreferencesManagement.getUserLocation(requireContext()) != null) {
             val userLocation = PreferencesManagement.getUserLocation(requireContext())!!
             /*latitude = userLocation.lat
@@ -62,7 +71,7 @@ class HomeFragment : Fragment() {
 
 //            Log.d("LOCCA", "onCreateView: ${Gson().toJson()}")
             var fullAddress = userLocation.address ?: ""
-            binding.locationOnActionbar.setText(getAddress(userLocation.lat.toDouble(),userLocation.long.toDouble()))
+            binding.locationOnActionbar.text = getAddress(userLocation.lat.toDouble(),userLocation.long.toDouble())
         }
         firebaseAnalytics = FirebaseAnalytics.getInstance(requireActivity())
         application = (activity as BaseActivity)
@@ -73,6 +82,42 @@ class HomeFragment : Fragment() {
             .setReorderingAllowed(true)
 //            .addToBackStack("name") // name can be null
             .commit()
+
+        binding.submitProfile.setOnClickListener {
+            val intent = Intent(requireContext(), MyNewProfileActivity::class.java)
+            intent.putExtra("from","activity")
+            startActivity(intent)
+            binding.profileLayout.visibility = View.GONE
+            binding.receiveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
+            binding.receiveBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
+            binding.giveBtn.setTextColor(resources.getColor(R.color.hyper_link_text_color))
+            binding.giveBtn.background = null
+            fragmentManager.beginTransaction()
+                .replace(R.id.container, NewReceiverFragment::class.java, null)
+                .setReorderingAllowed(true)
+//                .addToBackStack("name") // name can be null
+                .commit()
+            EventBus.getDefault().post(1)
+//            alertDialog.dismiss()
+            //showSubmitSuccessDialog()
+        }
+
+        binding.profileLayout.setOnClickListener {
+
+            binding.profileLayout.visibility = View.GONE
+
+            binding.receiveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
+            binding.receiveBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
+            binding.giveBtn.setTextColor(resources.getColor(R.color.hyper_link_text_color))
+            binding.giveBtn.background = null
+            fragmentManager.beginTransaction()
+                .replace(R.id.container, NewReceiverFragment::class.java, null)
+                .setReorderingAllowed(true)
+//                .addToBackStack("name") // name can be null
+                .commit()
+            EventBus.getDefault().post(1)
+        }
+
         binding.receiveBtn.setOnClickListener {
             // Load receiver fragment
 
@@ -118,6 +163,7 @@ class HomeFragment : Fragment() {
         return root
     }
 
+
     private fun getUserLocation() {
         val userLocation = PreferencesManagement.getUserLocation(requireContext())
         binding.locationOnActionbar.text = userLocation?.address
@@ -135,47 +181,22 @@ class HomeFragment : Fragment() {
         i.putExtra(Intent.EXTRA_TEXT, "Try this great app Abra Ka Dabra to share second hand products with others for free. App is available at the below link: https://play.google.com/store/apps/details?id=com.oss.abraakadabraaapp")
         startActivity(Intent.createChooser(i, "Share"))
     }
-
     fun getAddress(lat: Double, lng: Double) :String{
+
         val geocoder = Geocoder(requireContext(), Locale.getDefault())
         try {
-            val addresses = geocoder.getFromLocation(lat, lng, 1)
+            val addresses = geocoder.getFromLocation(lat, lng, 100)
             val obj = addresses[0]
             var add = obj.getAddressLine(0)
-            add = """
-            $add
-            ${obj.countryName}
-            """.trimIndent()
-            add = """
-            $add
-            ${obj.countryCode}
-            """.trimIndent()
-            add = """
-            $add
-            ${obj.adminArea}
-            """.trimIndent()
-            add = """
-            $add
-            ${obj.postalCode}
-            """.trimIndent()
-            add = """
-            $add
-            ${obj.subAdminArea}
-            """.trimIndent()
-            add = """
-            $add
-            ${obj.locality}
-            """.trimIndent()
-            add = """
-            $add
-            ${obj.subThoroughfare}
-            """.trimIndent()
-            Log.v("IGA", "Address$add")
-            return obj.locality+","+obj.adminArea
-            // Toast.makeText(this, "Address=>" + add,
-            // Toast.LENGTH_SHORT).show();
+            var string = ""
+            if(obj.subLocality != null){
+                string = "${obj.subLocality},${obj.locality},${obj.adminArea}"
+            }else{
+                string = obj.locality+","+obj.adminArea
+            }
+//            Toast.makeText(requireContext(),string,Toast.LENGTH_SHORT).show()
+            return string
 
-            // TennisAppActivity.showDialog(add);
         } catch (e: IOException) {
             // TODO Auto-generated catch block
             e.printStackTrace()
@@ -185,8 +206,8 @@ class HomeFragment : Fragment() {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: String?) {
-
         // Do something
+//        application.showToast("triggered.")
         if(event == "clear"){
             binding.receiveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
             binding.receiveBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
@@ -198,6 +219,8 @@ class HomeFragment : Fragment() {
 //                .addToBackStack("name") // name can be null
                 ?.commit()
             EventBus.getDefault().post(1)
+        }else{
+            binding.profileLayout.visibility = View.VISIBLE
         }
     }
     override fun onStart() {
@@ -208,5 +231,9 @@ class HomeFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         EventBus.getDefault().unregister(this)
+    }
+
+    override fun onLocationChanged(p0: Location) {
+
     }
 }

@@ -15,6 +15,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
@@ -55,7 +56,7 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
         val db = Firebase.firestore
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
-        val docRef = db.collection("chats").whereEqualTo("sender_id",currentUserId)
+        val docRef = db.collection("chats").whereEqualTo("product_receiver",currentUserId)
 
         docRef.get().addOnSuccessListener { snap ->
             if(snap.isEmpty){
@@ -87,7 +88,7 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
                     .placeholder(resources.getDrawable(R.drawable.ic_profile))
                     .into(holder.binding.profilePic)
                 holder.itemView.setOnClickListener {
-                    val chat_room = hashMapOf(
+                   /* val chat_room = hashMapOf(
                         "from" to model.from,
                         "sender_id" to model.sender_id,
                         "sender_name" to model.sender_name,
@@ -96,10 +97,10 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
                         "receiver_name" to model.receiver_name,
                         "receiver_avatar" to model.receiver_avatar,
                         "product_id" to model.product_id,
-                        "product" to model.product)
+                        "product" to model.product)*/
 
                     val intent = Intent(requireContext(),ChatDetailActivity::class.java)
-                    intent.putExtra(Constants.CHATS_DATA,chat_room)
+                    intent.putExtra(Constants.CHATS_DATA, Gson().toJson(model))
                     intent.putExtra("data_from","fragment")
                     startActivity(intent)
                 }
@@ -114,7 +115,7 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
     }
 
     override fun onChatClick(item: GiverChatModel) {
-        val chat_room = hashMapOf(
+      /*  val chat_room = hashMapOf(
             "receiver_id" to item.receiverId,
             "sender_id" to item.senderId,
             "product_id" to item.productId,
@@ -125,7 +126,7 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
         val intent = Intent(requireContext(),ChatDetailActivity::class.java)
         intent.putExtra("data_from","fragment")
         intent.putExtra(Constants.CHATS_DATA,chat_room)
-        startActivity(intent)
+        startActivity(intent)*/
     }
     class UsersViewholder(val binding: ChatRowBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(documentSnapshot: ChatListModel) {

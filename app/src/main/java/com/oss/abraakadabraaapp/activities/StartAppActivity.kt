@@ -343,7 +343,7 @@ class StartAppActivity : BaseActivity() {
         }, 2000)
     }
 
-    private fun getLocationAddress() {
+    /*private fun getLocationAddress() {
         if (BuildConfig.DEBUG) {
             showToast("lat $lat,long $lng")
         }
@@ -357,5 +357,5 @@ class StartAppActivity : BaseActivity() {
         val url =
             ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" + apiKey
         mainViewModel.getAddress(url)
-    }
+    }*/
 }

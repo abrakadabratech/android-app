@@ -5,6 +5,8 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.View
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
@@ -74,31 +76,45 @@ class FeedbackActivity : BaseActivity() {
         binding.updateBtn.setOnClickListener {
             val i = binding.seekbar1.progress
             Log.d("FEEDBACK - ", "onCreate: $i")
-
-            if (from == "listing"){
-                val map = HashMap<String,String>()
-                map["pickup_convenience"] = (binding.seekbar.progress).div(20).toString()
-                map["receiver_reliability"] = binding.seekbar1.progress.div(20).toString()
-                map["pick_up_timeliness"] = binding.seekbar2.progress.div(20).toString()
-                map["feedback_text"] = binding.descriptionTxt.text.toString()
-                map["submitted_for"] = user_id
-                map["feedback_type"] = "giver"
-
-                generateAuthToken()
-                mainViewModel.sendFeedback(Utility.getAuthentication(this),product_id,map)
+            if (binding.descriptionTxt.text.toString() == ""){
+                showToast("Please enter some text")
             }else{
-                val map = HashMap<String,String>()
-                map["delivery_convenience"] = (binding.seekbar.progress).div(20).toString()
-                map["giver_responsiveness"] = binding.seekbar1.progress.div(20).toString()
-                map["product_satisfaction"] = binding.seekbar2.progress.div(20).toString()
-                map["feedback_text"] = binding.descriptionTxt.text.toString()
-                map["submitted_for"] = user_id
-                map["feedback_type"] = "reciever"
+                if (from == "listing"){
+                    val map = HashMap<String,String>()
+                    map["pickup_convenience"] = (binding.seekbar.progress).div(20).toString()
+                    map["receiver_reliability"] = binding.seekbar1.progress.div(20).toString()
+                    map["pick_up_timeliness"] = binding.seekbar2.progress.div(20).toString()
+                    map["feedback_text"] = binding.descriptionTxt.text.toString()
+                    map["submitted_for"] = user_id
+                    map["feedback_type"] = "giver"
 
-                generateAuthToken()
-                mainViewModel.sendFeedback(Utility.getAuthentication(this),product_id,map)
+                    generateAuthToken()
+                    mainViewModel.sendFeedback(Utility.getAuthentication(this),product_id,map)
+                }else{
+                    val map = HashMap<String,String>()
+                    map["delivery_convenience"] = (binding.seekbar.progress).div(20).toString()
+                    map["giver_responsiveness"] = binding.seekbar1.progress.div(20).toString()
+                    map["product_satisfaction"] = binding.seekbar2.progress.div(20).toString()
+                    map["feedback_text"] = binding.descriptionTxt.text.toString()
+                    map["submitted_for"] = user_id
+                    map["feedback_type"] = "reciever"
+
+                    generateAuthToken()
+                    mainViewModel.sendFeedback(Utility.getAuthentication(this),product_id,map)
+                }
             }
 
+        }
+        binding.skipTxt.setOnClickListener {
+            finish()
+            val intent =
+                Intent(this@FeedbackActivity, NewHomeActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+//            intent.putExtra(Constants.phoneNumber,phoneNumber)
+            startActivity(intent)
+        }
+        binding.backButton.setOnClickListener {
+            onBackPressed()
         }
         setUpObserver()
     }
@@ -109,12 +125,7 @@ class FeedbackActivity : BaseActivity() {
         mainViewModel.sendFeedbackSuccess.observe(this){
             if (it.code == 201){
                 showToast(it.response.toString())
-                finish()
-                val intent =
-                    Intent(this@FeedbackActivity, NewHomeActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-//            intent.putExtra(Constants.phoneNumber,phoneNumber)
-                startActivity(intent)
+                binding.successAlertDialog.visibility = View.VISIBLE
             }
         }
 
@@ -122,4 +133,5 @@ class FeedbackActivity : BaseActivity() {
         mainViewModel.isLoading.observe(this) { loader(it) }
 
     }
+
 }

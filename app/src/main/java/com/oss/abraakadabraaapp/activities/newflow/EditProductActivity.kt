@@ -1,10 +1,8 @@
-package com.oss.abraakadabraaapp.activities.newflow.ui.home
+package com.oss.abraakadabraaapp.activities.newflow
 
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.ImageDecoder
@@ -15,33 +13,23 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.NonNull
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.Autocomplete
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.google.gson.Gson
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -49,41 +37,33 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
-import com.oss.abraakadabraaapp.activities.newflow.MyListingActivity
-import com.oss.abraakadabraaapp.activities.newflow.MyNewProfileActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.CatMainAdapter
 import com.oss.abraakadabraaapp.activities.newflow.adapters.CategoryDialogAdapter
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ConditionDialogAdapter
-import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
 import com.oss.abraakadabraaapp.activities.newflow.model.AllCategoryResponse
 import com.oss.abraakadabraaapp.activities.newflow.model.CatData
 import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.adapter.ImageAdapter
-import com.oss.abraakadabraaapp.databinding.NewGiverFlowFragmentBinding
+import com.oss.abraakadabraaapp.databinding.ActivityEditProductBinding
 import com.oss.abraakadabraaapp.model.ProductImage
 import com.oss.abraakadabraaapp.model.UserLocation
+import com.oss.abraakadabraaapp.response.productRequestResponse.ListingResponse
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
-import com.oss.abraakadabraaapp.utils.*
-import com.oss.abraakadabraaapp.utils.Constants.API_TAG
-import com.oss.abraakadabraaapp.utils.Constants.BUTTON_FROM_CAMERA
-import com.oss.abraakadabraaapp.utils.Constants.BUTTON_FROM_GALLERY
-import com.oss.abraakadabraaapp.utils.Constants.BUTTON_GOTO_SETTINGS
-import com.oss.abraakadabraaapp.utils.Constants.fullAddress
-import com.oss.abraakadabraaapp.utils.Constants.latitude
+import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.ImageUtils
+import com.oss.abraakadabraaapp.utils.JavaUtils
+import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.customView.ImagePickerActivity
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import id.zelory.compressor.Compressor
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
-import org.greenrobot.eventbus.EventBus
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.*
 
-
-class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
+class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
     CategoryDialogAdapter.CategoryDialogAdapterInterface,
-CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAdapterInterface{
+    CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAdapterInterface{
     private var PROD_CATEGORY: String = ""
     private var PROD_CONDITION: String = ""
     private var PROD_USED_FOR: String = ""
@@ -95,7 +75,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
     private var LOCATION_NAME: String = ""
     private var lattitude: Double = 0.0
     private var longitude: Double = 0.0
-    lateinit var application: BaseActivity
+
     private lateinit var placesClient: PlacesClient
 
     lateinit var userCatData: AllCategoryResponse
@@ -110,119 +90,129 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
     var listConditon = arrayListOf<CatData>()
 
     lateinit var userLocation: UserLocation
+    lateinit var productDetails: ListingResponse
+
 
 //    lateinit var catDialogAdapter: CategoryDialogAdapter
 
-    private var _binding: NewGiverFlowFragmentBinding? = null
+    private lateinit var binding: ActivityEditProductBinding
 
-    private val binding get() = _binding!!
 
     lateinit var alertDialog: AlertDialog
     lateinit var alertAdaper: CategoryDialogAdapter
     lateinit var condtionAdapter: ConditionDialogAdapter
     lateinit var mainCatAdapter: CatMainAdapter
-    lateinit var mainAdapterList:ArrayList<UserCatData>
-    lateinit var userInfo : GetUserResponse
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
+    lateinit var mainAdapterList: ArrayList<UserCatData>
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityEditProductBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        _binding = NewGiverFlowFragmentBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        postEvent(Constants.PAGE_GIVER, null)
 
-        application = (activity as BaseActivity)
+        imageAdapter = ImageAdapter(photoList, this, this)
 
-        if(PreferencesManagement.getUserLocation(requireContext()) != null){
-            userLocation = PreferencesManagement.getUserLocation(requireContext())!!
-        }else{
-            application.getLastLocation()
-        }
         val apiKey = getString(R.string.akd)
 
         if (!Places.isInitialized()) {
-            Places.initialize(requireContext(), apiKey)
+            Places.initialize(this, apiKey)
         }
-
-        placesClient = Places.createClient(requireContext())
-
-        userCatData = PreferencesManagement.getCategories(requireActivity())!!
+        if(PreferencesManagement.getUserLocation(this) != null){
+            userLocation = PreferencesManagement.getUserLocation(this)!!
+        }else{
+            getLastLocation()
+        }
+        placesClient = Places.createClient(this)
+        userCatData = PreferencesManagement.getCategories(this)!!
 
         if (userCatData.data.size > 0){
             mainAdapterList = userCatData.data
             mainAdapterList[0].isSelect = true
         }
-        application.postEvent(Constants.PAGE_GIVER, null)
-
-        imageAdapter = ImageAdapter(photoList, requireContext(), this)
-
+        clickEvents()
         initUI()
-        userInfo = PreferencesManagement.getUserInfo(requireContext())!!
-        if (userInfo.data?.status != "active"){
-            //Show a pop up that is not verified yet
-            showNotActivePopUp()
-        }
+
         loadUsedForData()
         loadConditionData()
         setUpObserver()
-        clickEvents()
 
         getUserLocation()
 
-        return root
+
+        productDetails = Gson().fromJson(intent.extras?.getString("data_from_listing"),ListingResponse::class.java)
+
+        prefillData(productDetails)
+
+    }
+
+    private fun prefillData(it: ListingResponse) {
+        with(binding){
+            etProductName.setText(it.product?.name)
+            categorySelectedTxt.setText(it.product?.category?.name.toString().capitalize())
+            PROD_CATEGORY = it.product?.category?.id.toString().capitalize()
+            categorySelectedTxt.visibility = View.VISIBLE
+            conditionSelectedTxt.setText(it.product?.condition.toString().capitalize())
+            PROD_CONDITION = it.product?.condition.toString().capitalize()
+            conditionSelectedTxt.visibility = View.VISIBLE
+            usedForSelectedTxt.setText(it.product?.usedFor.toString().capitalize())
+            PROD_USED_FOR = it.product?.usedFor.toString().capitalize()
+            usedForSelectedTxt.visibility = View.VISIBLE
+            etProductBrand.setText(it.product?.brand)
+            etProductBrand1.setText(it.product?.price.toString())
+            descEdt.setText(it.product?.description?.capitalize())
+            locationTxt.setText(it.product?.locationName)
+
+            //set images to the array
+            for(i in it.product?.images!!){
+                photoList.add(ProductImage(i.toString(),0,i.toString()))
+            }
+
+            imageAdapter.notifyDataSetChanged()
+        }
     }
 
     private fun getUserLocation() {
-        val userLocation = PreferencesManagement.getUserLocation(requireContext())
+        val userLocation = PreferencesManagement.getUserLocation(this)
         binding.locationTxt.text = userLocation?.address
     }
 
     private fun clickEvents() {
 
-
         //Cat adpater
-        mainCatAdapter = CatMainAdapter(requireContext(),mainAdapterList,this)
+        mainCatAdapter = CatMainAdapter(this,mainAdapterList,this)
 
         //Used for adapter
-        alertAdaper = CategoryDialogAdapter(requireContext(),list, this,"")
+        alertAdaper = CategoryDialogAdapter(this,list, this,"")
 
         //Condition adapter
-        condtionAdapter = ConditionDialogAdapter(requireContext(), listConditon, this)
+        condtionAdapter = ConditionDialogAdapter(this, listConditon, this)
 
         binding.catgoryLinearLayout.setOnClickListener {
-            application.postClick(Constants.BUTTON_CATEGORY_SELECT)
+            postClick(Constants.BUTTON_CATEGORY_SELECT)
             showCategoryFilterDialog()
         }
         binding.conditionLinearLayout.setOnClickListener {
-            application.postClick(Constants.BUTTON_CONDITION_OF_PRODUCT_SELECT)
+            postClick(Constants.BUTTON_CONDITION_OF_PRODUCT_SELECT)
             showConditionDialog()
         }
         binding.usedForLinearLayout.setOnClickListener {
-            application.postClick(Constants.BUTTON_USED_FOR_SELECT)
+            postClick(Constants.BUTTON_USED_FOR_SELECT)
             showUsedForDialog()
         }
         binding.button.setOnClickListener {
-            application.postClick(Constants.BUTTON_SUBMIT)
-            val userInfo = PreferencesManagement.getUserInfo(requireContext())
-            if (userInfo?.data?.status != "active"){
-                //Show a pop up that is not verified yet
-                showNotActivePopUp()
-            }else{
-                if (binding.iAgreeCheckbox.isChecked) {
-                    if (isValidate()) {
-                        //showSubmitCautionDialog()
-                        if (userInfo.data?.status == "active"){
-                            postNewProduct()
-                        }else{
-                            showToast("Your profile not verified yet.")
-                        }
+            postClick(Constants.BUTTON_SUBMIT)
+            val userInfo = PreferencesManagement.getUserInfo(this)
+            if (binding.iAgreeCheckbox.isChecked) {
+                if (isValidate()) {
+                    //showSubmitCautionDialog()
+                    if (userInfo?.data?.status == "active"){
+                        postNewProduct()
+                    }else{
+                        showToast("Your profile not verified yet.")
                     }
-                } else {
-                    showToast("Please select I Agree to continue")
                 }
+            } else {
+                showToast("Please select I Agree to continue")
             }
         }
 
@@ -237,7 +227,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         val intent = Autocomplete.IntentBuilder(
             AutocompleteActivityMode.OVERLAY, fields
         ).setCountry("IN")
-            .build(requireActivity())
+            .build(this)
         locationLauncher.launch(intent)
     }
 
@@ -251,20 +241,17 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
 
                         lattitude = place.latLng!!.latitude
                         longitude = place.latLng!!.longitude
-                        fullAddress = if (place.address != null) {
+                        Constants.fullAddress = if (place.address != null) {
                             place.address!!
                         } else {
                             "TODO geo api required"
                         }
 
-                        binding.locationTxt.setText(fullAddress)
+                        binding.locationTxt.setText(Constants.fullAddress)
                     }
                 }
         }
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initUI() {
@@ -279,13 +266,9 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                 recycledViewPool.setMaxRecycledViews(1, 0)
                 adapter = imageAdapter
             }
+
+
         }
-
-
-    }
-
-    private fun showNotActivePopUp() {
-        EventBus.getDefault().post("popup")
     }
 
     override fun onItemRemove(position: Int, data: ProductImage) {
@@ -298,7 +281,13 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
             Log.d("MYT", "id ${data.id}")
             Log.d("MYT", "deleteDataString $deleteDataString")
         }
+        if (data.uri == null){
+            if (productDetails.product?.images?.size!! > 0) {
+                productDetails.product?.images?.removeAt(position-1)
+            }
+        }
         photoList.removeAt(position)
+
         imageAdapter.notifyDataSetChanged()
     }
 
@@ -312,13 +301,10 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         }
     }
 
-    fun showToast(message: String) {
-        if (message.isNotBlank()) Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-    }
 
     private fun selectImage() {
-        application.postEvent(Constants.BUTTON_UPLOAD_IMAGE, null)
-        Dexter.withContext(context)
+        postEvent(Constants.BUTTON_UPLOAD_IMAGE, null)
+        Dexter.withContext(this)
             .withPermissions(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport) {
@@ -326,7 +312,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                         bannerOptions()
                     }
                     if (report.isAnyPermissionPermanentlyDenied) {
-                        showSettingsDialog()
+                        showSettingsDialog1()
                     }
                 }
 
@@ -341,26 +327,26 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
 
     private fun bannerOptions() {
         ImagePickerActivity.showImagePickerOptions(
-            requireContext(),
+            this,
             object : ImagePickerActivity.PickerOptionListener {
                 override fun onTakeCameraSelected() {
-                    application.postClick(BUTTON_FROM_CAMERA)
+                    postClick(Constants.BUTTON_FROM_CAMERA)
                     bannerCameraIntent()
                 }
 
                 override fun onChooseGallerySelected() {
-                    application.postClick(BUTTON_FROM_GALLERY)
+                    postClick(Constants.BUTTON_FROM_GALLERY)
                     openYourActivity()
                 }
             })
     }
 
-    fun showSettingsDialog() {
-        val builder = AlertDialog.Builder(requireContext())
+    fun showSettingsDialog1() {
+        val builder = AlertDialog.Builder(this)
         builder.setTitle(getString(R.string.dialog_permission_title))
         builder.setMessage(getString(R.string.dialog_permission_message))
         builder.setPositiveButton(getString(R.string.go_to_settings)) { dialog, _ ->
-            application.postClick(BUTTON_GOTO_SETTINGS)
+            postClick(Constants.BUTTON_GOTO_SETTINGS)
             dialog.cancel()
             openSettings()
         }
@@ -415,13 +401,13 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
 
     private fun openSettings() {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        val uri = Uri.fromParts("package", requireActivity().packageName, null)
+        val uri = Uri.fromParts("package", packageName, null)
         intent.data = uri
         resultLauncher.launch(intent)
     }
 
     private fun bannerCameraIntent() {
-        val intent = Intent(context, ImagePickerActivity::class.java)
+        val intent = Intent(this, ImagePickerActivity::class.java)
         intent.putExtra(
             ImagePickerActivity.INTENT_IMAGE_PICKER_OPTION,
             ImagePickerActivity.REQUEST_IMAGE_CAPTURE
@@ -436,7 +422,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
     }
 
     private fun openYourActivity() {
-        val intent = Intent(requireContext(), ImagePickerActivity::class.java)
+        val intent = Intent(this, ImagePickerActivity::class.java)
         intent.putExtra(
             ImagePickerActivity.INTENT_IMAGE_PICKER_OPTION,
             ImagePickerActivity.REQUEST_GALLERY_IMAGE
@@ -451,7 +437,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
 
     private fun showCategoryFilterDialog() {
 
-        val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
+        val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
         val inflater = this.layoutInflater
         val dialogView: View = inflater.inflate(R.layout.alert_catgory_dialog, null)
         dialogBuilder.setView(dialogView)
@@ -461,7 +447,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         alertName.text = "Categories"
         val catRecycler = dialogView.findViewById<RecyclerView>(R.id.catRecycler)
 
-        catRecycler.layoutManager = LinearLayoutManager(context)
+        catRecycler.layoutManager = LinearLayoutManager(this)
 //        alertAdaper.i = loadData()
 //        alertAdaper.alerttype = "category"
 //        alertAdaper = alertAdaper
@@ -471,18 +457,18 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
-//        if (selectedProdCategory == "") selectedProdCategory = mainAdapterList[0].title?.capitalize().toString()
-//        if (PROD_CATEGORY == "") PROD_CATEGORY = mainAdapterList[0].id.toString()
+        if (selectedProdCategory == "") selectedProdCategory = mainAdapterList[0].title?.capitalize().toString()
+        if (PROD_CATEGORY == "") PROD_CATEGORY = mainAdapterList[0].id.toString()
 
-//        binding.categorySelectedTxt.text = selectedProdCategory
+        binding.categorySelectedTxt.text = selectedProdCategory
 //        PROD_CATEGORY = mainAdapterList[0].id.toString()
         binding.cateogoryTxt.error = null
         alertDialog.show()
-//        binding.categorySelectedTxt.visibility = View.VISIBLE
+        binding.categorySelectedTxt.visibility = View.VISIBLE
     }
 
     private fun showConditionDialog() {
-        val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
+        val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
         val inflater = this.layoutInflater
         val dialogView: View = inflater.inflate(R.layout.alert_catgory_dialog, null)
         dialogBuilder.setView(dialogView)
@@ -490,7 +476,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         val closeBtn = dialogView.findViewById<ImageView>(R.id.closeBtn)
         alertName.text = "Condition"
         val catRecycler = dialogView.findViewById<RecyclerView>(R.id.catRecycler)
-        catRecycler.layoutManager = LinearLayoutManager(context)
+        catRecycler.layoutManager = LinearLayoutManager(this)
 
         // Condition adapter
         catRecycler.adapter = condtionAdapter
@@ -499,17 +485,17 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
-//        if(PROD_CONDITION == "") PROD_CONDITION = listConditon[0].name.toString()
-//        else PROD_CONDITION = PROD_CONDITION
-//
-//        binding.conditionSelectedTxt.text = PROD_CONDITION
-//        binding.conditionTxt.error = null
+        if(PROD_CONDITION == "") PROD_CONDITION = listConditon[0].name.toString()
+        else PROD_CONDITION = PROD_CONDITION
+
+        binding.conditionSelectedTxt.text = PROD_CONDITION
+        binding.conditionTxt.error = null
         alertDialog.show()
-//        binding.conditionSelectedTxt.visibility = View.VISIBLE
+        binding.conditionSelectedTxt.visibility = View.VISIBLE
     }
 
     private fun showUsedForDialog() {
-        val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
+        val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
         val inflater = this.layoutInflater
         val dialogView: View = inflater.inflate(R.layout.alert_catgory_dialog, null)
         dialogBuilder.setView(dialogView)
@@ -519,9 +505,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
 
         alertName.text = "Used For"
         val catRecycler = dialogView.findViewById<RecyclerView>(R.id.catRecycler)
-        catRecycler.layoutManager = LinearLayoutManager(context)
-//        alertAdaper.i = loadUsedForData()
-//        alertAdaper.alerttype = "used_for"
+        catRecycler.layoutManager = LinearLayoutManager(this)
 
         catRecycler.adapter = alertAdaper
         alertAdaper.notifyDataSetChanged()
@@ -529,18 +513,18 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
-//        if(PROD_USED_FOR == "") PROD_USED_FOR = list[0].name.toString()
-//
-//        binding.usedForSelectedTxt.text = PROD_USED_FOR
-//        binding.usedForSelectedTxt.visibility = View.VISIBLE
-//
-//        binding.usedForTxt.error = null
+        if(PROD_USED_FOR == "") PROD_USED_FOR = list[0].name.toString()
+
+        binding.usedForSelectedTxt.text = PROD_USED_FOR
+        binding.usedForSelectedTxt.visibility = View.VISIBLE
+
+        binding.usedForTxt.error = null
 
         alertDialog.show()
     }
 
     private fun showSubmitCautionDialog() {
-        val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
+        val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
         val inflater = this.layoutInflater
         val dialogView: View = inflater.inflate(R.layout.alert_submit_caution_dialog, null)
         dialogBuilder.setView(dialogView)
@@ -554,31 +538,39 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         success_ok_btn.setOnClickListener {
-            application.postClick(Constants.BUTTON_I_ACCEPT)
+            postClick(Constants.BUTTON_I_ACCEPT)
 
             postNewProduct()
-
         }
         success_ok_btn1.setOnClickListener {
-            application.postClick(Constants.BUTTON_OK_GOT_IT)
+            postClick(Constants.BUTTON_OK_GOT_IT)
             showToast("Under Development")
             alertDialog.dismiss()
             //showSubmitSuccessDialog()
         }
         closeBtn.setOnClickListener { alertDialog.dismiss() }
 
-
         alertDialog.show()
     }
 
+    fun arrayToCSV(`as`: ArrayList<String>?): String? {
+        val stringbuilder = StringBuilder()
+        val i = `as`?.size
+        for (j in 0 until i!!) {
+            stringbuilder.append(`as`!![j])
+            stringbuilder.append(",")
+        } /*from w  w  w.  j  av a 2s  .c  o m*/
+        return if (stringbuilder.length > 0) {
+            stringbuilder.substring(0, -1 + stringbuilder.length)
+        } else {
+            ""
+        }
+    }
     private fun postNewProduct() {
         if (isValidate()) {
             addImage()
-            if (application.isNetworkAvailable()) {
-                application.generateAuthToken()
-
-                Log.d("ok", "postNewProduct: $lattitude")
-                Log.d("ok", "postNewProduct: $longitude")
+            if (isNetworkAvailable()) {
+                generateAuthToken()
                 if (userLocation != null){
                     val map = HashMap<String, RequestBody>()
                     map["name"] = JavaUtils.toRequestBody(binding.etProductName.text.toString().trim())
@@ -587,10 +579,14 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                     map["condition"] = JavaUtils.toRequestBody(PROD_CONDITION)
                     map["used_for"] = JavaUtils.toRequestBody(PROD_USED_FOR)
                     map["location_name"] = JavaUtils.toRequestBody(binding.locationTxt.text.toString())
-                    map["latitude"] = JavaUtils.toRequestBody(if(lattitude == 0.0) userLocation.lat else lattitude.toString())
-                    map["longitude"] = JavaUtils.toRequestBody(if(longitude == 0.0) userLocation.long else longitude.toString())
+                    map["latitude"] = JavaUtils.toRequestBody(if(lattitude == 0.0) userLocation.lat.toString() else lattitude.toString())
+                    map["longitude"] = JavaUtils.toRequestBody(if(longitude == 0.0) userLocation.long.toString() else longitude.toString())
                     map["price"] = JavaUtils.toRequestBody(binding.etProductBrand1.text.toString().trim())
                     map["brand"] = JavaUtils.toRequestBody(binding.etProductBrand.text.toString().trim())
+
+                    var csv = arrayToCSV(productDetails.product?.images)
+
+                    map["images"] = JavaUtils.toRequestBody(csv)
 
                     manageProduct(map)
                 }else{
@@ -612,27 +608,17 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
     }
 
     private fun setUpObserver() {
-        val activity: Activity? = activity
-        if (activity != null) {
-            mainViewModel.postProductSuccess.observe(requireActivity()) {
-                it.responseMessage?.let { it1 ->
-                    showToast(it1)
-                    alertDialog.dismiss()
-                    clearAll()
-                    EventBus.getDefault().post("clear")
-//                requireActivity().finish()
-                    val intent = Intent(context, MyListingActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    startActivity(intent)
-                }
-
+        mainViewModel.updateProductSuccess.observe(this){
+            if (it.code == 201){
+                showToast(it.responseMessage.toString())
+                finish()
             }
-            mainViewModel.isLoading.observe(requireActivity(), { application.loader(it) })
-
-            mainViewModel.errorMessage.observe(
-                requireActivity(),
-                { if (it.isNotBlank()) showToast(it) })
         }
+        mainViewModel.isLoading.observe(this, { loader(it) })
+
+        mainViewModel.errorMessage.observe(
+            this,
+            { if (it.isNotBlank()) showToast(it) })
 
     }
 
@@ -650,37 +636,37 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         lifecycleScope.launch {
 
             val imagePathList = ArrayList<String>()
-
+            Log.d("ok", "manageProduct: the size is:${serverPhotoList.size}")
             serverPhotoList.forEachIndexed { index, it ->
                 val bitmap = if (Build.VERSION.SDK_INT < 28) {
                     MediaStore.Images.Media.getBitmap(
-                        requireContext().contentResolver,
+                        contentResolver,
                         Uri.parse(it)
                     )
                 } else {
                     val source =
-                        ImageDecoder.createSource(requireContext().contentResolver, Uri.parse(it))
+                        ImageDecoder.createSource(contentResolver, Uri.parse(it))
                     ImageDecoder.decodeBitmap(source)
                 }
 
                 val imageFile = ImageUtils.bitmapToFile(
                     bitmap,
-                    requireContext(),
+                    this@EditProductActivity,
                     "product_name$index.jpg"
                 )
                 val compressedImage = async {
-                    Compressor.compress(requireContext(), imageFile)
+                    Compressor.compress(this@EditProductActivity, imageFile)
                 }
 
                 imagePathList.add(compressedImage.await().path)
             }
 
             val map = HashMap<String, String>()
-            val token = PreferencesManagement.getAuthToken(requireContext())!!
+            val token = PreferencesManagement.getAuthToken(this@EditProductActivity)!!
             map[RequestKeys.authorization] = token
 
             Log.d(
-                API_TAG,
+                Constants.API_TAG,
                 "manageProduct: ${
                     JavaUtils.prepareFilePart(
                         imagePathList,
@@ -688,8 +674,12 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                     )
                 }"
             )
-            mainViewModel.postProduct(
+            var imageMap = HashMap<String,ArrayList<String>>()
+            imageMap["images"] = productDetails.product?.images!!
+            mainViewModel.updateProduct(
                 map,
+                productDetails.product?.id!!.toString(),
+                productDetails.product?.images!!,
                 body,
                 JavaUtils.prepareFilePart(imagePathList, RequestKeys.productImages)
             )
@@ -715,8 +705,6 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
 
         return list
     }
-
-
 
     private fun isValidate(): Boolean {
         with(binding) {
@@ -802,6 +790,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         }
     }
 
+
     override fun onMainItemClick(position: Int, isSelect: Boolean) {
         PROD_CATEGORY = mainAdapterList[position].id.toString()
         selectedProdCategory = mainAdapterList[position].title?.capitalize().toString()
@@ -836,5 +825,6 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         alertAdaper.notifyDataSetChanged()
         alertDialog.dismiss()
     }
+
 
 }

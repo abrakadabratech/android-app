@@ -8,14 +8,21 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationManagerCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
+import com.oss.abraakadabraaapp.notifications.Notifications
+import com.oss.abraakadabraaapp.utils.Constants
 
 
 class MessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        super.onMessageReceived(remoteMessage)
+
+        Log.d("Notification - AKD", "onMessageReceived: ${Gson().toJson(remoteMessage)}")
+        Log.d("Notification - AKD", "onMessageReceived: ${Gson().toJson(remoteMessage.data)}")
 
         /*val title = remoteMessage.notification?.title
         val text = remoteMessage.notification?.body
@@ -43,13 +50,16 @@ class MessagingService : FirebaseMessagingService() {
         }
 
         NotificationManagerCompat.from(this).notify(1, notification.build())
-        super.onMessageReceived(remoteMessage)
 
-        Log.d("Notification - AKD", "onMessageReceived: ${Gson().toJson(remoteMessage)}")
+*/
 
-        val map = remoteMessage.data*/
+        val map = remoteMessage.data
 
-        /*if (map != null) {
+        val map2 = remoteMessage.notification
+
+        map2?.clickAction
+
+        if (map != null) {
 
             Log.d("FCM", map.toString())
 
@@ -59,6 +69,7 @@ class MessagingService : FirebaseMessagingService() {
 
             val intent = Intent(Constants.notificationReceived)
             intent.putExtra(Constants.notificationReceived, Constants.notificationReceived)
+
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
 
             Notifications.notifyMessage(
@@ -69,7 +80,7 @@ class MessagingService : FirebaseMessagingService() {
                 map
             )
 
-        }*/
+        }
 
     }
 

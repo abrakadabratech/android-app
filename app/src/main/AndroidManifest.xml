@@ -49,24 +49,34 @@
         android:theme="@style/Theme.AbraaKaDabraa.App"
         android:usesCleartextTraffic="true"
         tools:ignore="HardcodedDebugMode,LockedOrientationActivity">
-        <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="@string/maps_api"/>
+        <activity
+            android:name=".activities.newflow.EditProductActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/maps_api" />
 
         <activity
             android:name=".activities.newflow.chat.ChatDetailActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar"/>
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
         <activity
             android:name=".activities.newflow.TermsAndConditionsActivity"
-            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar"
-            android:exported="false" />
-
+            android:exported="false"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
         <activity
             android:name=".activities.newflow.RequesterActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar"></activity>
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
         <activity
             android:name=".activities.SuccessActivity"
             android:exported="false" />
@@ -89,7 +99,6 @@
             android:name=".activities.newflow.ui.FeedbackActivity"
             android:exported="false"
             android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
-
         <activity
             android:name=".activities.newflow.CategorySelectActivity"
             android:exported="false"
@@ -99,7 +108,9 @@
             android:name=".activities.newflow.ui.MyRequestDetailsActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar">
+
+        </activity>
         <activity
             android:name=".activities.newflow.MyListingDetialActivity"
             android:exported="false"
@@ -149,8 +160,8 @@
             android:name=".activities.newflow.NewHomeActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AbraaKaDabraa"
             android:windowSoftInputMode="adjustPan">
 
@@ -167,7 +178,7 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AbraaKaDabraa.NoActionBar"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activities.auth.OtpVerificationActivity"
             android:exported="false"
@@ -179,8 +190,8 @@
             android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
         <activity
             android:name=".activities.OnBoardingActivity"
-            android:screenOrientation="portrait"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
         <activity
             android:name=".activities.RequestProductDetailActivity"
@@ -226,7 +237,6 @@
             android:name=".activities.ContentManagementActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
-
         <activity
             android:name=".activities.ResetPasswordActivity"
             android:screenOrientation="portrait"
@@ -269,6 +279,7 @@
             android:name=".service.MessagingService"
             android:exported="false">
             <intent-filter>
+
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
@@ -282,7 +293,9 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

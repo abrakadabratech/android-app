@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.MyRequestActivity
+import com.oss.abraakadabraaapp.adapter.RatingAdapter
 import com.oss.abraakadabraaapp.databinding.ActivityPostedUserBinding
 import com.oss.abraakadabraaapp.datasource.products.Product
 import com.oss.abraakadabraaapp.response.productdetails.ProductDetailsData
@@ -84,12 +86,19 @@ class PostedUserActivity : BaseActivity() {
             finish()
         }
         binding.successOkBtn.setOnClickListener {
-            postClick(Constants.BUTTON_PAY_AS_YOU_WISH)
+            binding.successAlertDialog.visibility = View.GONE
+//            EventBus.getDefault().post("clear")
+
+            val intent = Intent(this, NewMyRequestActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            startActivity(intent)
+            finish()
+           /* postClick(Constants.BUTTON_PAY_AS_YOU_WISH)
             val i = Intent(this, MyPayAsYouGoActivity::class.java)
             i.putExtra("productId",productDetails?.data?.id)
             i.putExtra("product_data",Gson().toJson(productDetails))
 //            i.putExtra("receiver_data", Gson().toJson(productDetailData))
-            startActivity(i)
+            startActivity(i)*/
 
 //            startActivity(Intent(this,NewMyRequestActivity::class.java))
         }
@@ -139,6 +148,19 @@ class PostedUserActivity : BaseActivity() {
                 Glide.with(this@PostedUserActivity).load(resources.getDrawable(R.drawable.ic_profile)).into(imageView22)
             }
 
+         val count = productDetails?.data?.postedBy?.userStats?.rating
+            var list:ArrayList<Boolean> = ArrayList()
+            for (i in 0..4){
+                if (i < count!!) list.add(true)
+                else list.add(false)
+//                if (i< count!!){
+//
+//                }else list.add(false)
+            }
+            Log.d("Rating", "setupProfile: ${Gson().toJson(list)}")
+            binding.imageView23.layoutManager = LinearLayoutManager(this@PostedUserActivity,
+                LinearLayoutManager.HORIZONTAL,false)
+            binding.imageView23.adapter = RatingAdapter(this@PostedUserActivity,list)
 
         }
     }

@@ -39,7 +39,8 @@ class App : Application() {
         val channelDescription = "Channel For General Notifications"
         val playSound = Settings.System.DEFAULT_NOTIFICATION_URI
         val importance = NotificationManagerCompat.IMPORTANCE_HIGH
-        val channel = NotificationChannelCompat.Builder(CHANNEL_ID, importance).apply {
+        val channel = NotificationChannelCompat.Builder(CHANNEL_ID, importance)
+            .apply {
             setName(channelName)
             setDescription(channelDescription)
             setLightColor(Color.RED)
