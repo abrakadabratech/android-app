@@ -45,9 +45,6 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
     private var longitude = ""
     private var address = ""
     private var socialLinkType = "facebook"
-    private var name = ""
-    private var email = ""
-    private var phone = ""
 
     var list = arrayListOf<SocialData>()
     lateinit var adapter:SocialShareAdapter
@@ -61,8 +58,13 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
             binding.userDetailsLayout.visibility = View.GONE
             binding.socialProfileLayout.visibility = View.VISIBLE
         }else{
-            binding.userDetailsLayout.visibility = View.VISIBLE
-            binding.socialProfileLayout.visibility = View.GONE
+            if(PreferencesManagement.saveUserSocialFlag(this,true)){
+                startActivity(Intent(applicationContext,NewHomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK))
+                finish()
+            }else {
+                binding.userDetailsLayout.visibility = View.VISIBLE
+                binding.socialProfileLayout.visibility = View.GONE
+            }
         }
 
         postEvent(Constants.PAGE_ADD_USER_PROFILE_ONBOARDING,null)
@@ -94,6 +96,11 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
         binding.okGotItBtn.setOnClickListener {
             postEvent(BUTTON_LETS_START_SOCIAL_PROFILE,null)
             postUserProfile()
+        }
+
+        binding.okGotItBtnSuccess.setOnClickListener {
+            startActivity(Intent(applicationContext,NewHomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK))
+            finish()
         }
 
         setUpRecyclerView()
@@ -198,12 +205,9 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
                 mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
 
                 val map = HashMap<String, String>()
-                name=binding.etName.text.toString().trim()
-                email=binding.etEmail.text.toString().trim()
-                phone=phoneNumber.trim()
-                map[RequestKeys.name] = name
-                map[RequestKeys.email] = email
-                map[RequestKeys.phoneNumber] = phone
+                map[RequestKeys.name] = binding.etName.text.toString().trim()
+                map[RequestKeys.email] = binding.etEmail.text.toString().trim()
+                map[RequestKeys.phoneNumber] = phoneNumber.trim()
 
                 /*if (PreferencesManagement.getUserLocation(this@AuthUserDetailActivity) != null) {
                     val userLocation =
@@ -265,26 +269,14 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
 
             showToast(it.responseMessage.toString())
             if (it.code == 200){
-                successDialog()
+                binding.socialProfilePopUPLayout.visibility = View.GONE
+                binding.socialProfilePopUPLayoutSuccess.visibility = View.VISIBLE
+                PreferencesManagement.saveUserSocialFlag(this,true)
             }
 //            if (it.responseMessage == "")
         }
 
         authViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
-    }
-
-    private fun successDialog(){
-        val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
-        val inflater = this.layoutInflater
-        val dialogView: View = inflater.inflate(R.layout.alert_submit_success_dialog, null)
-        dialogBuilder.setView(dialogView)
-
-        val alertName = dialogView.findViewById<TextView>(R.id.success_ok_btn)
-        alertName.setOnClickListener {
-            startActivity(Intent(applicationContext,NewHomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK))
-            finish()
-        }
-        dialogBuilder.show()
     }
 
     private fun getFCMToken(map: HashMap<String, String>) {

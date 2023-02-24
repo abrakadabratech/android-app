@@ -123,6 +123,24 @@ object PreferencesManagement {
 
     }
 
+    fun saveUserSocialFlag(context: Context, flag: Boolean): Boolean {
+
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        val prefsEditor = pref.edit()
+        prefsEditor.putBoolean("userSocialflag", flag)
+        return prefsEditor.commit()
+    }
+
+    fun getUserSocialFlag(context: Context): Boolean? {
+
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        val json = pref.getBoolean("userSocialflag", false)
+
+        return json
+
+    }
+
     fun getUserInfo(context: Context): GetUserResponse? {
 
         val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
