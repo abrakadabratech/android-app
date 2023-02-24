@@ -267,11 +267,13 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
         authViewModel.postSocialProfileSuccess.observe(this){
             Log.d(API_TAG, "postSocialProfileSuccess: ${Gson().toJson(it)}")
 
-            showToast(it.responseMessage.toString())
             if (it.code == 200){
+                showToast("Social link submitted")
                 binding.socialProfilePopUPLayout.visibility = View.GONE
                 binding.socialProfilePopUPLayoutSuccess.visibility = View.VISIBLE
                 PreferencesManagement.saveUserSocialFlag(this,true)
+            }else{
+                showToast(it.responseMessage.toString())
             }
 //            if (it.responseMessage == "")
         }

@@ -161,7 +161,7 @@ class AccountsFragment : Fragment(), View.OnClickListener {
 //                receiverCount.text = it.data?.userStats?.received.toString()
                 Glide.with(this@AccountsFragment)
                     .load(it.data?.userAvatar)
-                    .placeholder(resources.getDrawable(R.drawable.ic_profile))
+                    .placeholder(resources.getDrawable(R.drawable.user))
                     .into(profilePic)
             }
         }
