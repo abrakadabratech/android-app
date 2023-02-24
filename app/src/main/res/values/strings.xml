@@ -204,5 +204,6 @@
     <string name="u_pay_as_you_wish_u"><u>Pay As You Wish</u></string>
     <string name="skip_pay"><u>Skip</u></string>
     <string name="default_notification_channel_id">com.oss.abraakadabraaapp</string>
+    <string name="social_link_alert">Your profile is successfully submitted for verification. We will take 2 business days to verify till when you will have read-only access. You will receive a notification.</string>
 
 </resources>
