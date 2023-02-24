@@ -284,6 +284,7 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
             startActivity(Intent(applicationContext,NewHomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK))
             finish()
         }
+        dialogBuilder.show()
     }
 
     private fun getFCMToken(map: HashMap<String, String>) {
