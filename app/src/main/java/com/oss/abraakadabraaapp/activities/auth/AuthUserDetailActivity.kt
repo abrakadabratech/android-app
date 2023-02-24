@@ -58,7 +58,7 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
             binding.userDetailsLayout.visibility = View.GONE
             binding.socialProfileLayout.visibility = View.VISIBLE
         }else{
-            if(PreferencesManagement.saveUserSocialFlag(this,true)){
+            if(PreferencesManagement.getUserSocialFlag(this)!!){
                 startActivity(Intent(applicationContext,NewHomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK))
                 finish()
             }else {
