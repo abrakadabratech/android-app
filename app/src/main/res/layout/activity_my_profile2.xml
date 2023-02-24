@@ -383,7 +383,7 @@
         android:maxLines="1"
         android:textColor="#1D2126"
         android:textColorHint="#1D2126"
-        android:textSize="24sp"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/textView120"
