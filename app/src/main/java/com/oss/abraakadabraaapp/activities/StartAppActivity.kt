@@ -325,8 +325,8 @@ class StartAppActivity : BaseActivity() {
                     startActivity(Intent(this@StartAppActivity, OnBoardingActivity::class.java))
 
                 }else{
-                    startActivity(Intent(this@StartAppActivity, LoginActivity::class.java))
 
+                    startActivity(Intent(this@StartAppActivity, LoginActivity::class.java))
                 }
             }
             /*if (PreferencesManagement.getUserInfo(this)?.data?.phone != null){
