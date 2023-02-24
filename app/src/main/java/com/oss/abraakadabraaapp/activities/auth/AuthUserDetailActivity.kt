@@ -15,6 +15,9 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.SocialShareAdapter
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.UserStats
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.activities.newflow.model.SocialData
 import com.oss.abraakadabraaapp.databinding.ActivityAuthUserDetailBinding
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
@@ -54,16 +57,13 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
         binding = ActivityAuthUserDetailBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        if(PreferencesManagement.getUserInfo(this@AuthUserDetailActivity)!!.data?.name!=null) {
+        if(PreferencesManagement.getUserInfoFlag(this)!!) {
             binding.userDetailsLayout.visibility = View.GONE
             binding.socialProfileLayout.visibility = View.VISIBLE
         }else{
             binding.userDetailsLayout.visibility = View.VISIBLE
             binding.socialProfileLayout.visibility = View.GONE
         }
-
-        val getUserResponse = PreferencesManagement.getUserInfo(this)
-        Log.d("TAG-", "onCreate: ${Gson().toJson(getUserResponse)}")
 
         postEvent(Constants.PAGE_ADD_USER_PROFILE_ONBOARDING,null)
 
@@ -240,12 +240,7 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
                 binding.userDetailsLayout.visibility = View.GONE
                 binding.socialProfileLayout.visibility = View.VISIBLE
 
-                val getUserResponse = PreferencesManagement.getUserInfo(this)
-                getUserResponse?.data?.email = email
-                getUserResponse?.data?.name = name
-                getUserResponse?.data?.phone = phone
-                PreferencesManagement.saveUserInfo(this,getUserResponse)
-
+                PreferencesManagement.saveUserFlag(this,true)
 
                 val mapAuth = HashMap<String,String>()
                 /*if (PreferencesManagement.getAuthToken(this@AuthUserDetailActivity) != null){
