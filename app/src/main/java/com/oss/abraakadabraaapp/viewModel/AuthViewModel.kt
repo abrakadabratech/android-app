@@ -22,6 +22,7 @@ import com.oss.abraakadabraaapp.response.commonResponse.HttpErrorResponse
 import com.oss.abraakadabraaapp.response.productRequestResponse.ListingResponse
 import com.oss.abraakadabraaapp.response.productRequestResponse.MyListingResponse
 import com.oss.abraakadabraaapp.response.productRequestResponse.MyRequestResponse
+import com.oss.abraakadabraaapp.response.productRequestResponse.RequestorResponse
 import com.oss.abraakadabraaapp.response.productdetails.ProductDetailsData
 import com.oss.abraakadabraaapp.retrofit.api.CallHelper
 import com.oss.abraakadabraaapp.retrofit.api.callApi
@@ -58,9 +59,11 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
     var requstProductSuccess = MutableLiveData<ProductDeleteResponse>()
     var updateProductRequest = MutableLiveData<ProductDeleteResponse>()
     var cancelRequestSuccess = MutableLiveData<CancelRequestReponse>()
+    var getRequestorSuccess = MutableLiveData<RequestorResponse>()
     var getProductListingsSuccess = MutableLiveData<MyListingResponse>()
     var getMyRequestsSuccess = MutableLiveData<MyRequestResponse>()
     var initPaymentSuccess = MutableLiveData<InitPaymentModel>()
+    var razorpaySuccess = MutableLiveData<RazorPayModel>()
     var updatePaymentSuccess = MutableLiveData<UpdatePaymentModel>()
     var sendFeedbackSuccess = MutableLiveData<FeedbackModel>()
     var searchSuccess = MutableLiveData<SearchModel>()
@@ -463,6 +466,28 @@ fun getRequestDetails(
         }
     }
 
+    fun getRequestor(
+        headerMap: HashMap<String, String>,
+        id: String
+    ) {
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.getRequestor(headerMap,id)
+            callApi(::call, object : CallHelper<RequestorResponse>{
+                override fun onSuccessful(data: RequestorResponse) {
+                    getRequestorSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+
+            })
+            isLoading.value = false
+        }
+    }
+
 
     fun getProductListings(
         headerMap: HashMap<String, String>
@@ -495,6 +520,26 @@ fun getRequestDetails(
             callApi(::call, object : CallHelper<MyRequestResponse>{
                 override fun onSuccessful(data: MyRequestResponse) {
                     getMyRequestsSuccess .value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+            isLoading.value = false
+        }
+    }
+
+    fun getRazorPay(
+        headerMap: HashMap<String, String>
+    ) {
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.getRazorPay(headerMap)
+            callApi(::call, object : CallHelper<RazorPayModel>{
+                override fun onSuccessful(data: RazorPayModel) {
+                    razorpaySuccess .value = data
                 }
 
                 override fun onError(errorResponse: HttpErrorResponse) {

@@ -106,7 +106,6 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
             searchCategories(csvString)
         }else{
             binding.searchEdit.requestFocus()
-            searchProductAdapter = SearchProductAdapter(searchProductList, this, this)
             setUpRecyclerView()
 
         }
@@ -203,7 +202,7 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
     }
 
     fun searchProducts(query : String){
-        searchProductAdapter = SearchProductAdapter(searchProductList, this, this)
+//        searchProductAdapter = SearchProductAdapter(searchProductList, this, this)
         setUpRecyclerView()
         searchQuery = query
         currentPage = 1
@@ -226,7 +225,7 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
             val lastPosition = searchProductList.size - it.data.size
 
             if (latestProductList.size == it.data.size) {
-                binding.rvLatestProduct.smoothScrollToPosition(latestProductList.size)
+                binding.rvLatestProduct.smoothScrollToPosition(searchProductList.size)
             } else {
                 binding.rvLatestProduct.smoothScrollToPosition(lastPosition + 1)
             }
@@ -301,6 +300,7 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
 
 
     private fun setUpRecyclerView() {
+        searchProductAdapter = SearchProductAdapter(searchProductList, this, this)
 
         val lm = GridLayoutManager(this, 2)
 //        binding.rvHomeCategory.isNestedScrollingEnabled = false
@@ -317,34 +317,33 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
         //when search the products
         binding.rvLatestProduct.apply {
             layoutManager = lm
-            addItemDecoration(
+           /* addItemDecoration(
                 MarginItemDecoration(18)
-            )
+            )*/
             adapter = searchProductAdapter
 //            isNestedScrollingEnabled = false
-            recycledViewPool.setMaxRecycledViews(1, 0)
-            setHasFixedSize(false)
+//            recycledViewPool.setMaxRecycledViews(1, 0)
+//            setHasFixedSize(false)
         }
 
         binding.rvLatestProduct.addOnScrollListener(object :
             RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, oldScrollY: Int) {
                 super.onScrolled(recyclerView, dx, oldScrollY)
-                if (from == "category"){
-                    Log.d("scroll", "scrolling")
-                    val total: Int = lm.itemCount
-                    val lastVisibleItemCount: Int = lm.findLastVisibleItemPosition()
-                    if (!isLoading) {
-                        if (total > 0) if (total - 1 == lastVisibleItemCount) {
-                            if (!noMoreData) {
-                                isLoading = true
-                                isLastPage = true
-                                getProductFromServer()
-                            }
+               /* if (from == "category"){
+
+                }*/
+                Log.d("scroll", "scrolling")
+                val total: Int = lm.itemCount
+                val lastVisibleItemCount: Int = lm.findLastVisibleItemPosition()
+                if (!isLoading) {
+                    if (total > 0) if (total - 1 == lastVisibleItemCount) {
+                        if (!noMoreData) {
+                            isLoading = true
+                            isLastPage = true
+                            getProductFromServer()
                         }
                     }
-                }else{
-
                 }
 
             }

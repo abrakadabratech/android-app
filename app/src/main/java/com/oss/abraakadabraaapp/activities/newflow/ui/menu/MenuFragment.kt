@@ -105,7 +105,7 @@ class MenuFragment : Fragment() {
 
                 val mUser = FirebaseAuth.getInstance().currentUser
                 if (mUser != null){
-                    mUser!!.getIdToken(true)
+                    mUser.getIdToken(true)
                         .addOnCompleteListener {
                             if (it.isSuccessful) {
                                 val idToken = it.result.token
@@ -159,6 +159,11 @@ class MenuFragment : Fragment() {
         if (activity != null) {
             authViewModel.logoutNewSuccess.observe(requireActivity()) {
                 if (it.code == 200) {
+
+                    PreferencesManagement.saveUserProfileFlag(requireContext(),false)
+                    PreferencesManagement.saveUserFlag(requireContext(),false)
+                    PreferencesManagement.saveUserInfo(requireContext(),null)
+
                     Firebase.auth.signOut()
                     application.showToast(it.responseMessage.toString())
                     activity.startActivity(

@@ -133,8 +133,10 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
                 val intent = Intent(this,EditProductActivity::class.java)
                 intent.putExtra("data_from_listing",Gson().toJson(productDetails))
                 startActivity(intent)
-            }else{
-                showToast("Your product is not active")
+                binding.editMenuDialog.visibility = View.GONE
+            }else if(productDetails?.product?.status == "given"){
+                binding.editMenuDialog.visibility = View.GONE
+                showToast("Your product is given")
             }
         }
 
@@ -192,39 +194,36 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
 
         binding.shareProduct.setOnClickListener {
             postClick(Constants.BUTTON_SHARE_PRODUCT)
+            binding.editMenuDialog.visibility = View.GONE
+            loadShareData()
         }
 
         binding.deleteProduct.setOnClickListener {
             postClick(Constants.BUTTON_DELETE_PRODUCT)
 
-            /*if (productDetails?.product?.status == "acive"){
-                val intent = Intent(this,EditProductActivity::class.java)
-                intent.putExtra("data_from_listing",Gson().toJson(productDetails))
-                startActivity(intent)
+            if (productDetails?.product?.status == "given"){
+                binding.editMenuDialog.visibility = View.GONE
+                showToast("Your product is given")
             }else{
-                showToast("Your product is not active")
-            }*/
+                var alertDialog = AlertDialog.Builder(this)
+                alertDialog.setTitle("Alert!")
+                alertDialog.setMessage("Are you sure you want to delete your listing?")
 
-            var alertDialog = AlertDialog.Builder(this)
-            alertDialog.setTitle("Alert!")
-            alertDialog.setMessage("Are you sure you want to delete your listing?")
+                alertDialog.setPositiveButton("Yes", DialogInterface.OnClickListener{ dialog, id ->
+                    //cancel the request
+                    if (isNetworkAvailable()){
+                        generateAuthToken()
+                        mainViewModel.deleteProduct(Utility.getAuthentication(this), product.id.toString())
+                    }
+                    dialog.dismiss()
+                })
+                alertDialog.setNegativeButton("No", DialogInterface.OnClickListener{ dialog, id ->
+                    dialog.dismiss()
+                })
+                alertDialog.show()
+            }
+        }
 
-            alertDialog.setPositiveButton("Yes", DialogInterface.OnClickListener{ dialog, id ->
-                //cancel the request
-                if (isNetworkAvailable()){
-                    generateAuthToken()
-                    mainViewModel.deleteProduct(Utility.getAuthentication(this), product.id.toString())
-                }
-                dialog.dismiss()
-            })
-            alertDialog.setNegativeButton("No", DialogInterface.OnClickListener{ dialog, id ->
-                dialog.dismiss()
-            })
-            alertDialog.show()
-        }
-        binding.shareProduct.setOnClickListener {
-            loadShareData()
-        }
         setUpObserver()
 
 
@@ -383,7 +382,7 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
     override fun onClick(position:Int) {
         if (productDetails!=null){
             val intent = Intent(this,RequesterActivity::class.java)
-            intent.putExtra(Constants.PRODUCT,Gson().toJson(productDetails))
+            intent.putExtra(Constants.productId, productDetails!!.requests[position].requestId)
             intent.putExtra("POSTION",position)
             startActivity(intent)
 

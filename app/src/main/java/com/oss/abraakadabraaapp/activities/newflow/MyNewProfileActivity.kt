@@ -106,6 +106,9 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
     }
 
     private fun setProfileStatus(status: String) {
+        var userInfo = PreferencesManagement.getUserInfo(this)
+        userInfo?.data?.status = status
+        PreferencesManagement.saveUserInfo(this,userInfo)
         with(binding){
             if (status == "pending" || status == "not verified"){
                 profileStatus.setText(status!!.capitalize())
@@ -137,7 +140,8 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             val userlocation = PreferencesManagement.getUserLocation(this@MyNewProfileActivity)
             locationEdit.setText(getAddress(userlocation?.lat!!.toDouble(), userlocation.long.toDouble()))
 
-            instaEdit.setText(if(userInfo.data?.socialLink == "") "No profile submitted" else userInfo.data?.socialLink)
+            instaEdit.setText(if(userInfo.data?.socialLink == "" ||userInfo.data?.socialLink == null) "No profile submitted"
+            else userInfo.data?.socialLink)
             Glide.with(this@MyNewProfileActivity)
                 .load(userInfo.data?.userAvatar)
                 .placeholder(resources.getDrawable(R.drawable.user))
@@ -209,8 +213,8 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
 
                 val userInfo = PreferencesManagement.getUserInfo(this)!!
                 val userData = UsersData(phone = userInfo.data?.phone,
-                    socialLinkType = userInfo.data?.socialLinkType,
-                    socialLink = userInfo.data?.socialLink,
+                    socialLinkType = socialLinkType,
+                    socialLink = profileLink,
                     name = userInfo.data?.name,
                     userAvatar = it.data,
                     email = userInfo.data?.email,
@@ -426,7 +430,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             val token = PreferencesManagement.getAuthToken(this)!!
             map[RequestKeys.authorization] = token
             Log.d(
-                NewHomeActivity.TAG,
+                "TAG",
                 "Token in Accounts fragment: ${JSONObject(Gson().toJson(dataClass))}"
             )
             authViewModel.updateUser(map, dataClass)
@@ -434,7 +438,8 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
     }
 
     private fun isValidate(): Boolean {
-        val emailPattern: Pattern = Pattern.compile("^[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+$")
+//        val emailPattern: Pattern = Pattern.compile("^[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+$")
+        val emailPattern: Pattern = Pattern.compile("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}\$")
         val emailMs: Matcher = emailPattern.matcher(binding.emailEdit.text.toString().trim())
 
         if (!emailMs.matches()) {
@@ -585,7 +590,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
     private fun updatePhoto(path: File) {
         Log.d(API_TAG, "updatePhoto: file path internally:${path.path}")
         val authToken = PreferencesManagement.getAuthToken(this)!!
-
+        binding.profilePic.setImageURI(Uri.fromFile(path))
         val authMap = HashMap<String, String>()
         authMap[RequestKeys.authorization] = authToken
 

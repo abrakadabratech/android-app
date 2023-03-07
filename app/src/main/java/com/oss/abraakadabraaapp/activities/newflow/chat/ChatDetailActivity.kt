@@ -1,16 +1,19 @@
 package com.oss.abraakadabraaapp.activities.newflow.chat
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
-import com.google.android.gms.wallet.IsReadyToPayRequest.fromJson
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -19,9 +22,9 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
+import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ChatMessageAdapter
 import com.oss.abraakadabraaapp.activities.newflow.customeview.WrapContentLinearLayoutManager
-import com.oss.abraakadabraaapp.activities.newflow.ui.FeedbackActivity
 import com.oss.abraakadabraaapp.databinding.ActivityChatDetailBinding
 import com.oss.abraakadabraaapp.databinding.ChatMessageRowBinding
 import com.oss.abraakadabraaapp.utils.Constants
@@ -39,7 +42,6 @@ import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashMap
 
 
 class ChatDetailActivity : BaseActivity() {
@@ -50,7 +52,7 @@ class ChatDetailActivity : BaseActivity() {
     var data_from = ""
     var chatNode = ""
 
-    lateinit var firestoreUserAdapter: FirestoreRecyclerAdapter<ChatModel, UsersViewholder>
+    var firestoreUserAdapter: FirestoreRecyclerAdapter<ChatModel, UsersViewholder>? = null
     private val mainViewModel: AuthViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,19 +61,26 @@ class ChatDetailActivity : BaseActivity() {
         setContentView(binding.root)
         postEvent(PAGE_CHATS_DETAILS, null)
 
+        if (intent.hasExtra(Constants.productId)){
+            chatNode = intent.getStringExtra(Constants.productId).toString()
+            loaddata()
+        }
         if (intent.hasExtra(CHATS_DATA)) {
             chatData = Gson().fromJson(intent.extras?.getString(CHATS_DATA,""),ChatListModel::class.java)
+            chatNode = chatData!!.product_id + setOneToOneChat(
+                chatData!!.sender_id.toString(),
+                chatData!!.receiver_id.toString())
+            setUpRecycler(chatNode)
         }
         if (intent.hasExtra("data_from")) {
             data_from = intent.getStringExtra("data_from")!!
         }
-        if (intent.hasExtra(Constants.productId)){
-            chatData
-        }
+
+        LocalBroadcastManager.getInstance(this@ChatDetailActivity)
+            .registerReceiver(mReceiver, IntentFilter(Constants.notificationReceived))
 
         Log.d("ok", "onCreate: $chatData")
         setUpObserver()
-        setUpRecycler()
 
         if (chatData != null) {
             if (data_from == "activity") {
@@ -81,7 +90,7 @@ class ChatDetailActivity : BaseActivity() {
                     .into(binding.profilePic)
             } else if(data_from == "fragment"){
                 binding.chatName.text = chatData!!.sender_name
-                Glide.with(this).load(chatData!!.sender_avatar)
+                Glide.with(applicationContext).load(chatData!!.sender_avatar)
                     .placeholder(resources.getDrawable(R.drawable.ic_profile))
                     .into(binding.profilePic)
             }
@@ -89,6 +98,46 @@ class ChatDetailActivity : BaseActivity() {
         }
 
         clickEvents()
+
+    }
+
+    override fun onBackPressed() {
+        if (intent.hasExtra(Constants.hasNotificationData)) {
+                startActivity(NewHomeActivity.createIntent(this@ChatDetailActivity))
+        }else{
+            super.onBackPressed()
+        }
+    }
+
+    private var mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action.equals(Constants.notificationReceived, ignoreCase = true)) {
+                if (intent.extras != null && intent.getStringExtra(Constants.notificationReceived) != null) {
+
+                }
+            }
+        }
+    }
+
+    private fun loaddata() {
+        val db = Firebase.firestore
+//            val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+
+        Log.d("Notification TAG", "onCreate: $chatNode")
+        setUpRecycler(chatNode)
+        val docRef = db.collection("chats")
+            .document(chatNode).addSnapshotListener { value, error ->
+                Log.d("Notification TAG", "onCreate: $value")
+
+                chatData = value?.toObject(ChatListModel::class.java)
+                binding.chatName.text = chatData!!.receiver_name.toString()
+                Glide.with(applicationContext).load(chatData!!.receiver_avatar)
+                    .placeholder(resources.getDrawable(R.drawable.ic_profile))
+                    .into(binding.profilePic)
+                binding.productName.text = chatData!!.product
+
+//                    application.showToast(info.toString())
+            }
 
     }
 
@@ -212,6 +261,7 @@ class ChatDetailActivity : BaseActivity() {
                     map["receiverId"] = notification_user //chatData["receiver_id"].toString()
                     map["message"] = message
                     map["chatNode"] = chatNode
+                    map["productId"] = chatData?.product_id.toString()
                     mainViewModel.sendNotification(Utility.getAuthentication(this), map)
                     Log.d("TAG - ", "sendToChat: chat posted")
                     /*val intent = Intent(this,ChatDetailActivity::class.java)
@@ -235,7 +285,8 @@ class ChatDetailActivity : BaseActivity() {
         }
     }
 
-    private fun setUpRecycler() {
+    private fun setUpRecycler(chatNode: String) {
+
         var chatList = ArrayList<ChatModel>()
 
         val db = Firebase.firestore
@@ -243,10 +294,8 @@ class ChatDetailActivity : BaseActivity() {
 
         val query = db.collection("chats")
             .document(
-                chatData!!.product_id + setOneToOneChat(
-                    chatData!!.sender_id.toString(),
-                    chatData!!.receiver_id.toString()
-                )
+
+                chatNode
             )
             .collection("Messages")
             .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -290,11 +339,12 @@ class ChatDetailActivity : BaseActivity() {
             }
 
         val layoutManager = WrapContentLinearLayoutManager(this)
-        layoutManager.stackFromEnd = true
         layoutManager.reverseLayout = true
+        layoutManager.stackFromEnd = true
 
         binding.rvChats.layoutManager = layoutManager
         binding.rvChats.adapter = firestoreUserAdapter
+
 //        val adapter = ChatMessageAdapter
     }
 
@@ -307,13 +357,13 @@ class ChatDetailActivity : BaseActivity() {
 
     override fun onStart() {
         super.onStart()
-        firestoreUserAdapter.startListening()
+        firestoreUserAdapter?.startListening()
 //        EventBus.getDefault().register(this)
     }
 
     override fun onStop() {
         super.onStop()
-        firestoreUserAdapter.stopListening()
+        firestoreUserAdapter?.stopListening()
         //      EventBus.getDefault().unregister(this)
     }
 

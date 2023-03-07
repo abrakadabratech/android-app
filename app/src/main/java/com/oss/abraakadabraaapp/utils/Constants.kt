@@ -203,6 +203,7 @@ object Constants {
     const val productDetail = "product_detail"
     const val productRequestDetails = "request_details_screen"
     const val chatDetails = "chat_details"
+    const val productListing = "listing_details_screen"
 
     const val hasNotificationData = "hasNotificationData"
     const val productStatus = "productStatus"

@@ -57,14 +57,18 @@ class MyRequestedUsersAdapter(val context: MyListingDetialActivity, val data: Ar
     }
 
     fun getTime(unix:Int):String{
-        val oldTime: Long = unix.toLong()
-        val currentTime: Long = System.currentTimeMillis() / 1000;
-        val result = convertFromDuration(currentTime - oldTime)
-        Log.i("TAG", result.toString())
 
-        return result.toString()
+        try {
+            val sdf = SimpleDateFormat("MMM dd,yyyy HH:MM")
+            val netDate = Date(unix.toLong() * 1000)
+            return sdf.format(netDate)
+        } catch (e: Exception) {
+            return e.toString()
+        }
     }
+
     fun convertFromDuration(timeInSeconds: Long): TimeInHours {
+
         var time = timeInSeconds
         val hours = time / 3600
         time %= 3600
@@ -73,6 +77,7 @@ class MyRequestedUsersAdapter(val context: MyListingDetialActivity, val data: Ar
         val seconds = time
         return TimeInHours(hours.toInt(), minutes.toInt(), seconds.toInt())
     }
+
     class TimeInHours(val hours: Int, val minutes: Int, val seconds: Int) {
         override fun toString(): String {
 

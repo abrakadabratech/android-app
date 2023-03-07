@@ -19,6 +19,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.analytics.Tracker
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.MyNewProfileActivity
@@ -104,7 +107,7 @@ class HomeFragment : Fragment(), LocationListener {
 
         binding.profileLayout.setOnClickListener {
 
-            binding.profileLayout.visibility = View.GONE
+           /* binding.profileLayout.visibility = View.GONE
 
             binding.receiveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
             binding.receiveBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
@@ -115,7 +118,7 @@ class HomeFragment : Fragment(), LocationListener {
                 .setReorderingAllowed(true)
 //                .addToBackStack("name") // name can be null
                 .commit()
-            EventBus.getDefault().post(1)
+            EventBus.getDefault().post(1)*/
         }
 
         binding.receiveBtn.setOnClickListener {
@@ -158,9 +161,29 @@ class HomeFragment : Fragment(), LocationListener {
             startActivity(Intent(requireActivity(), NewNotificationActivity::class.java))
         }
 
+        getNotificationData()
+
         getUserLocation()
 
         return root
+    }
+
+    private fun getNotificationData() {
+
+        val db = Firebase.firestore
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+
+        val docRef = db.collection("notifications").whereEqualTo("userId",currentUserId)
+            .whereEqualTo("deleted",false)
+
+        docRef.get().addOnSuccessListener { snap ->
+            if(snap.isEmpty){
+                binding.notifications.setImageResource(R.drawable.ic_bell)
+            }else{
+                binding.notifications.setImageResource(R.drawable.ic_bell_fille)
+            }
+        }
+
     }
 
 
@@ -186,7 +209,7 @@ class HomeFragment : Fragment(), LocationListener {
         val geocoder = Geocoder(requireContext(), Locale.getDefault())
         try {
             val addresses = geocoder.getFromLocation(lat, lng, 100)
-            val obj = addresses[0]
+            val obj = addresses!![0]
             var add = obj.getAddressLine(0)
             var string = ""
             if(obj.subLocality != null){

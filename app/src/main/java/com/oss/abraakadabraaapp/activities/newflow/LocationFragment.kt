@@ -27,7 +27,7 @@ class LocationFragment : Fragment() {
         mMapView!!.onCreate(savedInstanceState)
         mMapView!!.onResume() // needed to get the map to display immediately
         try {
-            MapsInitializer.initialize(getActivity()?.getApplicationContext())
+            MapsInitializer.initialize(activity?.applicationContext)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -44,11 +44,10 @@ class LocationFragment : Fragment() {
 //        mMapView!!.getMapAsync(this)
 
         try {
-            MapsInitializer.initialize(requireActivity()!!.applicationContext)
+            MapsInitializer.initialize(requireActivity().applicationContext)
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
-
         mMapView!!.getMapAsync { mMap ->
             googleMap = mMap
 
@@ -56,6 +55,7 @@ class LocationFragment : Fragment() {
 //            googleMap!!.isMyLocationEnabled = true
 
             // For dropping a marker at a point on the Map
+            googleMap?.uiSettings?.isScrollGesturesEnabled = false
             val sydney = LatLng(lattitude,longitude)
             googleMap!!.addMarker(
                 MarkerOptions().position(sydney).title(title)

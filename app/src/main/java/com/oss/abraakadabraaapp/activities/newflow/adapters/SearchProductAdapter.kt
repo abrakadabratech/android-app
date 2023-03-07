@@ -10,6 +10,7 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.databinding.ItemProductBinding
 import Data
+import com.oss.abraakadabraaapp.databinding.ItemProduct2Binding
 
 class SearchProductAdapter(
     private var data: ArrayList<Data>,
@@ -19,7 +20,7 @@ class SearchProductAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LatestProductAdapterVH {
         return LatestProductAdapterVH(
-            LayoutInflater.from(context).inflate(R.layout.item_product, parent, false)
+            LayoutInflater.from(context).inflate(R.layout.item_product2, parent, false)
         )
     }
 
@@ -57,7 +58,7 @@ class SearchProductAdapter(
     }
 
     class LatestProductAdapterVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val binding = ItemProductBinding.bind(itemView)
+        val binding = ItemProduct2Binding.bind(itemView)
     }
 
     interface LatestProductAdapterInterface {

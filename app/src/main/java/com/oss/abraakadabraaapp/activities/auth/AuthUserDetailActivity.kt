@@ -45,18 +45,30 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
     private var longitude = ""
     private var address = ""
     private var socialLinkType = "facebook"
+    private var socialLink = "facebook"
     private var name = ""
     private var email = ""
     private var phone = ""
 
     var list = arrayListOf<SocialData>()
     lateinit var adapter:SocialShareAdapter
-
+    var from = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAuthUserDetailBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        if (PreferencesManagement.getUserInfoFlag(this)!! &&
+            PreferencesManagement.getUserProfileFlag(this)!!){
+            val intent =
+                Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+//            intent.putExtra(Constants.phoneNumber,phoneNumber)
+            startActivity(intent)
+            finish()
+        }
+
         if(PreferencesManagement.getUserInfoFlag(this)!!) {
             binding.userDetailsLayout.visibility = View.GONE
             binding.socialProfileLayout.visibility = View.VISIBLE
@@ -99,6 +111,8 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
         setUpRecyclerView()
 
         binding.skipTxt.setOnClickListener {
+            PreferencesManagement.saveUserProfileFlag(this,true)
+
             val intent =
                 Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -141,6 +155,8 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
                 val map = HashMap<String, String>()
 
                 map[RequestKeys.social_link_type] = socialLinkType
+                socialLink = binding.socialProfileHeader.text.toString().trim()+
+                        binding.profileLink.text.toString().trim()
                 map[RequestKeys.social_link] = binding.socialProfileHeader.text.toString().trim()+
                         binding.profileLink.text.toString().trim()
 
@@ -239,16 +255,16 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
             if (it.responseMessage == USER_CREATED){
                 binding.userDetailsLayout.visibility = View.GONE
                 binding.socialProfileLayout.visibility = View.VISIBLE
-
                 PreferencesManagement.saveUserFlag(this,true)
 
-                val mapAuth = HashMap<String,String>()
                 /*if (PreferencesManagement.getAuthToken(this@AuthUserDetailActivity) != null){
                     mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
                 }else{
                     generateAuthToken()
                     mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
                 }*/
+
+                val mapAuth = HashMap<String,String>()
                 mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
 
                 authViewModel.getUserSocialProfile(mapAuth)
@@ -263,9 +279,12 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
         authViewModel.postSocialProfileSuccess.observe(this){
             Log.d(API_TAG, "postSocialProfileSuccess: ${Gson().toJson(it)}")
 
-            showToast("")
+            showToast("Social link submitted.")
             if (it.code == 200){
-                successDialog()
+                PreferencesManagement.saveUserProfileFlag(this,true)
+                startActivity(Intent(applicationContext,NewHomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK))
+                finish()
+//                successDialog()
             }
 //            if (it.responseMessage == "")
         }
@@ -281,8 +300,7 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
 
         val alertName = dialogView.findViewById<TextView>(R.id.success_ok_btn)
         alertName.setOnClickListener {
-            startActivity(Intent(applicationContext,NewHomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK))
-            finish()
+
         }
 
     }
@@ -305,7 +323,7 @@ class AuthUserDetailActivity : BaseActivity(),SocialShareAdapter.OnSocialProfile
             val ps: Pattern = Pattern.compile("^[a-zA-Z ]+$")
             val ms: Matcher = ps.matcher(etName.text.toString().trim())
 
-            val emailPattern: Pattern = Pattern.compile("^[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+$")
+            val emailPattern: Pattern = Pattern.compile("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}\$")
             val emailMs: Matcher = emailPattern.matcher(etEmail.text.toString().trim())
 
             if (etName.text!!.length <= 3) {

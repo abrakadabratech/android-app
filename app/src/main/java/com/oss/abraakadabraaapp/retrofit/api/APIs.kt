@@ -21,6 +21,7 @@ import com.oss.abraakadabraaapp.response.notificationResponse.NotificationRespon
 import com.oss.abraakadabraaapp.response.productRequestResponse.ListingResponse
 import com.oss.abraakadabraaapp.response.productRequestResponse.MyListingResponse
 import com.oss.abraakadabraaapp.response.productRequestResponse.MyRequestResponse
+import com.oss.abraakadabraaapp.response.productRequestResponse.RequestorResponse
 import com.oss.abraakadabraaapp.response.productdetails.ProductDetailsData
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -193,6 +194,13 @@ interface APIs {
         @Path("id") id: String
     ): Response<CancelRequestReponse>
 
+    //Cancel product request
+    @GET("product/request/{id}")
+    suspend fun getRequestor(
+        @HeaderMap header: Map<String, String>,
+        @Path("id") id: String
+    ): Response<RequestorResponse>
+
     //Request details
     @GET("product/myrequest/{id}")
     suspend fun getRequestDetails(
@@ -201,6 +209,12 @@ interface APIs {
     ): Response<RequestDetails>
 
     //=============Payment related
+    @GET("razorpay-key")
+    suspend fun getRazorPay(
+        @HeaderMap header: Map<String, String>
+    ): Response<RazorPayModel>
+
+
     @POST("init_payment")
     suspend fun initPayment(
         @HeaderMap header: Map<String, String>,

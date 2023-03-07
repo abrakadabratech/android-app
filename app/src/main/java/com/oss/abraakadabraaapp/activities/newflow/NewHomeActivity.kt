@@ -1,9 +1,6 @@
 package com.oss.abraakadabraaapp.activities.newflow
 
-import android.R.attr.label
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
+import android.content.*
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
@@ -14,13 +11,15 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.analytics.Tracker
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.play.core.tasks.OnCompleteListener
-import com.google.android.play.core.tasks.Task
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GetTokenResult
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
+import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.databinding.ActivityNewHomeBinding
+import com.oss.abraakadabraaapp.localdb.NotificationEntity
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -33,7 +32,8 @@ class NewHomeActivity : BaseActivity() {
     private lateinit var binding: ActivityNewHomeBinding
     lateinit var navView: BottomNavigationView
     private var mTracker: Tracker? = null
-
+    private lateinit var mAppUpdateManager: AppUpdateManager
+    private val RC_APP_UPDATE: Int = 1000
 
     //    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
@@ -43,6 +43,7 @@ class NewHomeActivity : BaseActivity() {
         setContentView(binding.root)
 
         actionBar?.hide()
+        mAppUpdateManager = AppUpdateManagerFactory.create(this)
 
         val host: NavHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment_activity_new_home) as NavHostFragment?
@@ -72,12 +73,36 @@ class NewHomeActivity : BaseActivity() {
                         "signInWithCredential:success tokeId is:${PreferencesManagement.getAuthToken(this)!!}"
                     )
     }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+        when (requestCode) {
+            RC_APP_UPDATE -> if (resultCode != RESULT_OK) { //RESULT_OK / RESULT_CANCELED / RESULT_IN_APP_UPDATE_FAILED
+                Log.d("MYT", "$resultCode")
+                checkForUpdate()
+            }
+        }
+    }
+    private fun checkForUpdate() {
+        mAppUpdateManager.appUpdateInfo.addOnSuccessListener {
+            if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
+                it.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
+            ) {
+                try {
+                    mAppUpdateManager.startUpdateFlowForResult(
+                        it,
+                        AppUpdateType.FLEXIBLE,
+                        this,
+                        RC_APP_UPDATE
+                    )
+                } catch (e: IntentSender.SendIntentException) {
+                    Log.d("MYT", e.localizedMessage!!)
+                }
+            }
+        }
+    }
 
     override fun onBackPressed() {
         super.onBackPressed()
-    }
-    companion object {
-        const val TAG = "ModalBottomSheet"
     }
 
     override fun onStart() {
@@ -86,18 +111,54 @@ class NewHomeActivity : BaseActivity() {
     }
 
     override fun onStop() {
-        super.onStop()
         EventBus.getDefault().unregister(this)
+        super.onStop()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: Int?) {
 
         // Do something
-        Log.d(TAG, "onMessageEvent: $event")
+        Log.d("TAG", "onMessageEvent: $event")
         if (event == 0) {
             navView.visibility = View.GONE
         } else navView.visibility = View.VISIBLE
+    }
+
+    @Subscribe
+    fun onMessageEvent(event: NotificationEntity) {
+        // Do something
+        Log.d("Notification ", "onMessageEvent: ${Gson().toJson(event)}")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mAppUpdateManager.appUpdateInfo.addOnSuccessListener {
+            if (it.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+                try {
+                    mAppUpdateManager.startUpdateFlowForResult(
+                        it,
+                        AppUpdateType.FLEXIBLE,
+                        this,
+                        RC_APP_UPDATE
+                    )
+                } catch (e: IntentSender.SendIntentException) {
+                    Log.d("IntentSenderError", e.localizedMessage!!)
+                }
+            }
+        }
+
+    }
+    companion object {
+        fun createIntent(context: Context): Intent {
+            val intent = Intent(context, NewHomeActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent.putExtra("EXIT", true)
+            return intent
+        }
     }
 
 }

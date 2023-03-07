@@ -24,7 +24,10 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.gms.location.*
+import com.google.android.play.core.tasks.OnCompleteListener
+import com.google.android.play.core.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GetTokenResult
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
@@ -80,11 +83,51 @@ class StartAppActivity : BaseActivity() {
 
 
         setUpObserver() // Old Code
-       // startApp() //New Code
+        // startApp() //New Code
     }
 
     private fun setUpObserver() {
 
+        authViewModel.getUserSuccess.observe(this) {
+            PreferencesManagement.saveUserInfo(this, it)
+
+            if (it.responseMessage != null) {
+                if (it.responseMessage == Constants.USER_NOT_FOUND) {
+//                    postFCMtoken()
+                    FirebaseAuth.getInstance().currentUser?.phoneNumber
+                    val intent =
+                        Intent(this, AuthUserDetailActivity::class.java)
+                    intent.putExtra(Constants.phoneNumber, FirebaseAuth.getInstance().currentUser?.phoneNumber)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
+                    finish()
+
+                }
+            } else {
+                if (mAuth.currentUser != null) {
+                    generateAuthToken()
+                    FirebaseMessaging.getInstance().token.addOnSuccessListener {
+                        PreferencesManagement.saveFCMToken(this, it)
+                        val data = UsersUpdateData(
+                            fcmToken = PreferencesManagement.getFCMToken(this)!!
+                        )
+                        val dataClass = DataClass(data)
+
+                        val map = java.util.HashMap<String, String>()
+                        val token = PreferencesManagement.getAuthToken(this)!!
+                        map[RequestKeys.authorization] = token
+
+                        authViewModel.updateUser(map, dataClass)
+
+                    }.addOnFailureListener {
+                        loader(false)
+                        if (BuildConfig.DEBUG) showToast("Error Please try again ! ${it.localizedMessage}") else showToast(
+                            "Error Please try again !"
+                        )
+                    }
+                }
+            }
+        }
         authViewModel.updateUserSuccess.observe(this){
 
         }
@@ -294,6 +337,46 @@ class StartAppActivity : BaseActivity() {
 //            if (PreferencesManagement.getUserData(this) != null) {
 
             if (mAuth.currentUser != null) {
+                //get user
+                val mUser = FirebaseAuth.getInstance().currentUser
+                mUser!!.getIdToken(true)
+                    .addOnCompleteListener(object : OnCompleteListener<GetTokenResult?>,
+                        com.google.android.gms.tasks.OnCompleteListener<GetTokenResult> {
+                        override fun onComplete(task: Task<GetTokenResult?>) {
+                            loader(false)
+                            if (task.isSuccessful()) {
+                                val idToken: String = task.getResult().getToken()!!
+                            } else {
+                                // Handle error -> task.getException();
+                            }
+                        }
+
+                        override fun onComplete(task: com.google.android.gms.tasks.Task<GetTokenResult>) {
+                            if (task.isSuccessful()) {
+                                loader(false)
+                                val idToken: String = task.getResult().getToken()!!
+                                val auth = "Bearer "+idToken
+                                val map = HashMap<String,String>()
+
+                                map[RequestKeys.authorization] = auth
+
+                                authViewModel.getUser(map)
+
+                                /*val clipboard =
+                                    getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                val clip = ClipData.newPlainText(android.R.attr.label.toString(), idToken)
+                                clipboard.setPrimaryClip(clip)*/
+
+                                Log.d("TAG", "onComplete11: " +
+                                        "${PreferencesManagement.saveAuthToken(this@StartAppActivity,auth)}")
+                                // Send token to your backend via HTTPS
+                                // ...
+                            } else {
+                                // Handle error -> task.getException();
+                            }
+                        }
+
+                    })
                 generateAuthToken()
                 FirebaseMessaging.getInstance().token.addOnSuccessListener {
                     PreferencesManagement.saveFCMToken(this,it)
@@ -305,8 +388,9 @@ class StartAppActivity : BaseActivity() {
                     val map = HashMap<String, String>()
                     val token = PreferencesManagement.getAuthToken(this)!!
                     map[RequestKeys.authorization] = token
-                    Log.d(
-                        NewHomeActivity.TAG,
+                    Log.
+                    d(
+                        "TAG",
                         "Token in Accounts fragment: ${JSONObject(Gson().toJson(dataClass))}"
                     )
                     authViewModel.updateUser(map, dataClass)
@@ -322,24 +406,26 @@ class StartAppActivity : BaseActivity() {
                         startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
                     }else{
                         val intent = Intent(this@StartAppActivity, AuthUserDetailActivity::class.java)
-                        intent.putExtra(Constants.phoneNumber, PreferencesManagement.getUserInfo(this@StartAppActivity)!!.data?.phone)
+                        intent.putExtra(Constants.phoneNumber, FirebaseAuth.getInstance().currentUser?.phoneNumber)
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                         startActivity(intent)
                     }
                 }else{
                     val intent = Intent(this@StartAppActivity, AuthUserDetailActivity::class.java)
-                    intent.putExtra(Constants.phoneNumber, PreferencesManagement.getUserInfo(this@StartAppActivity)!!.data?.phone)
+                    intent.putExtra(Constants.phoneNumber, FirebaseAuth.getInstance().currentUser?.phoneNumber)
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     startActivity(intent)
                 }
+
+//                startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
             } else {
 
                 if (PreferencesManagement.isFistOpen(this)){
                     startActivity(Intent(this@StartAppActivity, OnBoardingActivity::class.java))
 
                 }else{
-
                     startActivity(Intent(this@StartAppActivity, LoginActivity::class.java))
+
                 }
             }
             /*if (PreferencesManagement.getUserInfo(this)?.data?.phone != null){

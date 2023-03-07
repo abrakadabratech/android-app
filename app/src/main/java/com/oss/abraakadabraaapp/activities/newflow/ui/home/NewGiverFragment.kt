@@ -42,6 +42,7 @@ import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.google.gson.Gson
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -51,6 +52,7 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.MyListingActivity
 import com.oss.abraakadabraaapp.activities.newflow.MyNewProfileActivity
+import com.oss.abraakadabraaapp.activities.newflow.PostedUserActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.CatMainAdapter
 import com.oss.abraakadabraaapp.activities.newflow.adapters.CategoryDialogAdapter
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ConditionDialogAdapter
@@ -160,10 +162,12 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         imageAdapter = ImageAdapter(photoList, requireContext(), this)
 
         initUI()
-        userInfo = PreferencesManagement.getUserInfo(requireContext())!!
-        if (userInfo.data?.status != "active"){
+        val userInfo = PreferencesManagement.getUserInfo(requireContext())
+        if (userInfo?.data?.status == "not verified"){
             //Show a pop up that is not verified yet
             showNotActivePopUp()
+        }else if (userInfo?.data?.status == "pending"){
+            showPendingPopUp()
         }
         loadUsedForData()
         loadConditionData()
@@ -226,7 +230,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
             }
         }
 
-        binding.locationTxt.setOnClickListener {
+        binding.linearLayout1.setOnClickListener {
             locationPicker()
         }
     }
@@ -286,6 +290,19 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
 
     private fun showNotActivePopUp() {
         EventBus.getDefault().post("popup")
+    }
+
+    private fun showPendingPopUp() {
+        var alertDialog = AlertDialog.Builder(requireContext())
+        alertDialog.setTitle("Alert!")
+        alertDialog.setMessage("Your profile is pending for verification please wait till it's get verified, thank you.")
+        alertDialog.setCancelable(false)
+        alertDialog.setPositiveButton("Ok") { dialog, id ->
+            //cancel the request
+            EventBus.getDefault().post("clear")
+            dialog.dismiss()
+        }
+        alertDialog.show()
     }
 
     override fun onItemRemove(position: Int, data: ProductImage) {
@@ -721,37 +738,42 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
     private fun isValidate(): Boolean {
         with(binding) {
 
-            if (etProductName.text!!.toString().trim().isNotBlank()) {
+          /*  if (etProductName.text!!.toString().trim().isNotBlank()) {
                 textView6.isErrorEnabled = false
-            }
-            if (PROD_CONDITION == ""){
+            }*/
+           /* if (PROD_CONDITION == ""){
                 showToast("Please select a condition of product")
                 conditionTxt.error = "Please select a condition of product"
             }
-
+*/
             return when {
                 etProductName.text!!.toString().trim().isBlank() -> {
-                    textView6.error = "Please Enter Product Name"
+                    application.showToast("Please Enter Product Name")
                     false
                 }
                 PROD_CATEGORY == "" -> {
-                    cateogoryTxt.error = "Please select category of product"
+//                    cateogoryTxt.error = "Please select category of product"
                     showToast("Please select category of product!")
                     false
                 }
                 PROD_CONDITION == "" -> {
-                    conditionTxt.error = "Please Select condition of product"
+//                    conditionTxt.error = "Please Select condition of product"
                     showToast("Please select condition of product!")
                     false
                 }
                 PROD_USED_FOR == "" -> {
-                    usedForTxt.error = "Please select used for"
+//                    usedForTxt.error = "Please select used for"
                     showToast("Please select used for!")
                     false
                 }
                 etProductBrand1.text.toString() == "" -> {
-                    etProductBrand1.error = "Please select used for"
+//                    etProductBrand1.error = "Please select used for"
                     showToast("Please price of the product!")
+                    false
+                }
+                descEdt.text.toString() == "" -> {
+//                    etProductBrand1.error = "Please select used for"
+                    showToast("Please enter decription!")
                     false
                 }
 
@@ -785,8 +807,8 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                 }*/
 
                 descEdt.text!!.toString().trim().length > 300 -> {
-                    descEdt.error =
-                        "Please Enter Product Description less than 300 characters"
+//                    descEdt.error =
+                        application.showToast("Please Enter Product Description less than 300 characters")
                     false
                 }
                 photoList.size <= 2 -> {

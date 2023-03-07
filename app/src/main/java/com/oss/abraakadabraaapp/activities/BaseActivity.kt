@@ -98,7 +98,7 @@ abstract class BaseActivity : AppCompatActivity() {
     public fun postClick(event_tag: String){
         val bundle = Bundle()
         bundle.putString(event_tag, "1")
-//        firebaseAnalytics.logEvent(event_tag, bundle)
+        firebaseAnalytics.logEvent(event_tag, bundle)
         debugLog(event_tag)
 
     }
@@ -109,7 +109,7 @@ abstract class BaseActivity : AppCompatActivity() {
 //        val bundle = Bundle()
 //        bundle.putString(FirebaseAnalytics.Param.METHOD, "Test method")
 
-//        firebaseAnalytics.logEvent(event_tag, bundle)
+        firebaseAnalytics.logEvent(event_tag, bundle)
 
         //init analytics
         /*  mTracker = application.defaultTracker
@@ -191,7 +191,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
         try {
             val addresses = geocoder.getFromLocation(lat, lng, 1)
-            val obj = addresses[0]
+            val obj = addresses!![0]
             var add = obj.getAddressLine(0)
             var string = ""
             if(obj.subLocality != null){
@@ -612,9 +612,7 @@ abstract class BaseActivity : AppCompatActivity() {
                             getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                         val clip = ClipData.newPlainText(android.R.attr.label.toString(), idToken)
                         clipboard.setPrimaryClip(clip)
-                        Log.d(NewHomeActivity.TAG, "onComplete11: ${PreferencesManagement.saveAuthToken(this@BaseActivity,auth)}")
 
-                        Log.d(NewHomeActivity.TAG, "onComplete11:new Token generated")
                     } else {
 
                     }

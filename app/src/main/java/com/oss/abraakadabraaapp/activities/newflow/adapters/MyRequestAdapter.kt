@@ -61,6 +61,9 @@ class MyRequestAdapter(
             "delivered" -> {
                 holder.status.setTextColor(newMyRequestActivity.getColor(R.color.status_accepted))
                 holder.status.setText(data[position].status?.capitalize())
+            }else ->{
+                holder.status.setTextColor(newMyRequestActivity.getColor(R.color.status_declined))
+                holder.status.setText(data[position].status?.capitalize())
             }
         }
 

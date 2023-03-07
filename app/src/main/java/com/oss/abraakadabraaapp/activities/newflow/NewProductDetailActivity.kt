@@ -81,9 +81,11 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
         binding.requestBtn.setOnClickListener {
             postClick(Constants.BUTTON_REQUEST_IN_DETAILS_PAGE)
             val userInfo = PreferencesManagement.getUserInfo(this)
-            if (userInfo?.data?.status != "active"){
+            if (userInfo?.data?.status == "not verified"){
                 //Show a pop up that is not verified yet
                 showNotActivePopUp()
+            }else if (userInfo?.data?.status == "pending"){
+                showPendingPopUp()
             }else{
                 val intent = Intent(this,PostedUserActivity::class.java)
                 intent.putExtra(Constants.PRODUCT,Gson().toJson(productDetails))
@@ -161,6 +163,17 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
             val intent = Intent(this,MyNewProfileActivity::class.java)
             intent.putExtra("from","activity")
             startActivity(intent)
+        }
+        alertDialog.show()
+    }
+    private fun showPendingPopUp() {
+        var alertDialog = AlertDialog.Builder(this)
+        alertDialog.setTitle("Alert!")
+        alertDialog.setMessage("Your profile is pending for verification please wait till it's get verified, thank you.")
+
+        alertDialog.setPositiveButton("Ok") { dialog, id ->
+            //cancel the request
+           dialog.dismiss()
         }
         alertDialog.show()
     }

@@ -91,6 +91,7 @@ class PostedUserActivity : BaseActivity() {
 
             val intent = Intent(this, NewMyRequestActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
             finish()
            /* postClick(Constants.BUTTON_PAY_AS_YOU_WISH)
@@ -139,9 +140,11 @@ class PostedUserActivity : BaseActivity() {
             givenItems.setText("Given ${productDetails?.data?.postedBy?.given} Items")
             postedBy.setText("Posted By " + productDetails?.data?.postedBy?.name?.capitalize())
             Glide.with(this@PostedUserActivity).load(productDetails.data.images[0])
-                .placeholder(resources.getDrawable(R.drawable.ic_profile)).into(imageView20)
+                .placeholder(resources.getDrawable(R.drawable.user))
+                .into(imageView20)
             if (productDetails.data.postedBy?.userAvatar != null){
                 Glide.with(this@PostedUserActivity).load(productDetails.data.postedBy!!.userAvatar)
+                    .placeholder(resources.getDrawable(R.drawable.user))
                     .into(imageView22)
 
             }else{

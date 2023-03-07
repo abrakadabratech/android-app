@@ -117,6 +117,13 @@ class AuthRepository(private val apiHelper: APIs) {
     )
             = apiHelper.cancelProductRequest(map,id)
 
+    suspend fun getRequestor(
+        map: HashMap<String, String>,
+        id: String
+    )
+            = apiHelper.getRequestor(map,id)
+
+
     suspend fun getRequestDetails(
         map: HashMap<String, String>,
         id: String)
@@ -132,10 +139,14 @@ class AuthRepository(private val apiHelper: APIs) {
     )
       = apiHelper.getMyRequests(map)
 
+    suspend fun getRazorPay(
+        map: HashMap<String, String>)
+            = apiHelper.getRazorPay(map)
+
     suspend fun initPayment(
-        map: HashMap<String, String>,
-        id: HashMap<String, String>)
-            = apiHelper.initPayment(map,id)
+            map: HashMap<String, String>,
+            id: HashMap<String, String>)
+                = apiHelper.initPayment(map,id)
 
     suspend fun updatePayment(
         map: HashMap<String, String>,

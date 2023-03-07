@@ -18,6 +18,7 @@ import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.MyPayAsYouGoActivity
+import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatListModel
@@ -212,6 +213,13 @@ class MyRequestDetailsActivity : BaseActivity() {
             }
         }
     }
+    override fun onBackPressed() {
+        if (intent.hasExtra(Constants.hasNotificationData)) {
+            startActivity(NewHomeActivity.createIntent(this@MyRequestDetailsActivity))
+        }else{
+            super.onBackPressed()
+        }
+    }
 
     private fun loaddata() {
         val mUser = FirebaseAuth.getInstance().currentUser
@@ -236,11 +244,22 @@ class MyRequestDetailsActivity : BaseActivity() {
             if (it.code == 200) {
 
                 if (it.data.request_status == "received"){
-                    val intent = Intent(this,FeedbackActivity::class.java)
+
+                    val i = Intent(this, MyPayAsYouGoActivity::class.java)
+                    i.putExtra("from","requesting")
+                    i.putExtra("productId",productDetial?.data?.productId)
+                    i.putExtra("phone", productDetial?.data?.postedBy?.phone)
+                    i.putExtra("email", productDetial?.data?.postedBy?.email)
+                    i.putExtra("name", productDetial?.data?.postedBy?.name)
+                    i.putExtra("product_data",Gson().toJson(productDetial))
+                    i.putExtra("receiver_id",productDetial?.data?.postedBy?.id)
+                    startActivity(i)
+
+                  /*  val intent = Intent(this,FeedbackActivity::class.java)
                     intent.putExtra("from","requesting")
                     intent.putExtra("PRODUCT_ID", productDetial?.data?.productId)
                     intent.putExtra("USER_ID",productDetial?.data?.postedBy?.id)
-                    startActivity(intent)
+                    startActivity(intent)*/
                 }
 
 //                productDetails = it!!
@@ -330,18 +349,18 @@ class MyRequestDetailsActivity : BaseActivity() {
                 //hiding the accept and chat button
                 binding.constraintLayout3.visibility = View.GONE
             }
-          /*  "delivered" -> {
+            "delivered" -> {
                 binding.status.setText("Delivered")
                 binding.status.setTextColor(resources.getColor(R.color.status_accepted))
                 binding.statusIcon.setImageResource(R.drawable.status_accepted)
 //                binding.payAsYouWish.visibility = View.VISIBLE
                 binding.chatBtn.isEnabled = true
                 binding.chatBtn.background = (resources.getDrawable(R.drawable.btn_bg_rounded_rect))
-                binding.markAsDelivered.setText("Mark As\nReceived")
+               // binding.markAsDelivered.setText("Pay\nAs you wish")
 //                binding.payAsYouWish.visibility = View.VISIBLE
                 binding.chatBtn.background = (resources.getDrawable(R.drawable.btn_bg_rounded_rect))
 //                binding.constraintLayout3.visibility = View.GONE
-            }*/
+            }
             "received" -> {
                 binding.status.setText("Received")
                 binding.status.setTextColor(resources.getColor(R.color.status_accepted))
@@ -353,9 +372,35 @@ class MyRequestDetailsActivity : BaseActivity() {
                 binding.chatBtn.isEnabled = true
                 binding.chatBtn.background = (resources.getDrawable(R.drawable.btn_bg_rounded_rect))
 //                binding.constraintLayout3.visibility = View.GONE
-            }
+            }else ->{
+
+            binding.status.setText("Product Deleted")
+            binding.status.setTextColor(resources.getColor(R.color.status_declined))
+            binding.statusIcon.setImageResource(R.drawable.status_declined)
+            binding.markAsDelivered.visibility = View.GONE
+//                binding.payAsYouWish.visibility = View.GONE
+//                binding.markAsDelivered.setText("Rejected")
+            binding.chatBtn.isEnabled = false
+            binding.chatBtn.background = (resources.getDrawable(R.drawable.chat_disabled_bg))
+            //hiding the accept and chat button
+            binding.constraintLayout3.visibility = View.GONE
 
         }
+
+        }
+
+        if(it.data?.isReceived!!){
+            binding.status.setText("Received")
+            binding.status.setTextColor(resources.getColor(R.color.status_accepted))
+            binding.statusIcon.setImageResource(R.drawable.status_accepted)
+//                binding.chatBtn.isEnabled = true
+            binding.chatBtn.background = (resources.getDrawable(R.drawable.btn_bg_rounded_rect))
+//                binding.payAsYouWish.visibility = View.VISIBLE
+            binding.markAsDelivered.setText("Pay\nAs you wish")
+            binding.chatBtn.isEnabled = true
+            binding.chatBtn.background = (resources.getDrawable(R.drawable.btn_bg_rounded_rect))
+        }
+
 
         val imageList = ArrayList<SlideModel>()
         for (i in it.data?.images!!) {
@@ -364,7 +409,7 @@ class MyRequestDetailsActivity : BaseActivity() {
         binding.imageSlider.setImageList(imageList)
 
         Glide.with(this).load(it.data!!.postedBy?.userAvatar)
-            .placeholder(resources.getDrawable(R.drawable.ic_profile))
+            .placeholder(resources.getDrawable(R.drawable.user))
             .into(binding.imageView20)
 
         binding.categoryTxt.setText(it.data?.category?.name?.capitalize())

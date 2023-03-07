@@ -2,12 +2,14 @@ package com.oss.abraakadabraaapp.activities.newflow
 
 import RequestDetails
 import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
+import com.oss.abraakadabraaapp.activities.newflow.ui.FeedbackActivity
 import com.oss.abraakadabraaapp.databinding.ActivityMyPayAsYouGoBinding
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_100
@@ -25,7 +27,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
     var productId = ""
     var orderId = ""
-
+    var receiverId = ""
+    var razorPayId = ""
     var name = ""
     var email = ""
     var phone = ""
@@ -46,13 +49,25 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
         name = intent.extras?.getString("name","")!!
         email = intent.extras?.getString("email","")!!
         phone = intent.extras?.getString("phone","")!!
+        receiverId = intent.extras?.getString("receiver_id","")!!
+
+        getRazorPay()
 
         binding.ivBack.setOnClickListener {
             postClick(BUTTON_BACK_IN_PAYASWISH)
             onBackPressed()
         }
         binding.skipPay.setOnClickListener {
-            finish()
+            if (from == "listing" || from == "requesting"){
+                val intent = Intent(this, FeedbackActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                intent.putExtra("from",from)
+                intent.putExtra("PRODUCT_ID", productId)
+                intent.putExtra("USER_ID",receiverId)
+                startActivity(intent)
+                finish()
+            }else{
+                finish()
+            }
         }
         binding.button3.setOnClickListener {
             postClick(BUTTON_100)
@@ -76,18 +91,36 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
 
     }
 
-    private fun takeToPayment(s: String) {
+    private fun getRazorPay() {
         generateAuthToken()
         val map = HashMap<String,String>()
-        map["amount"] = (s).toString()
-        map["productId"] = productId
         val authMap = Utility.getAuthentication(this)
-        authMap["logging"] = "true"
-        mainViewModel.initPayment(authMap,map)
+        mainViewModel.getRazorPay(authMap)
+    }
+
+    private fun takeToPayment(s: String) {
+        if (s == ""){
+            showToast("Please enter some amount")
+        }else{
+            generateAuthToken()
+            val map = HashMap<String,String>()
+            map["amount"] = (s).toString()
+            map["productId"] = productId
+            val authMap = Utility.getAuthentication(this)
+            authMap["logging"] = "true"
+            mainViewModel.initPayment(authMap,map)
+        }
+
     }
 
     private fun setUpObserver()
     {
+        mainViewModel.razorpaySuccess.observe(this){
+            if (it.code == 200){
+                razorPayId = it.data?.RAZORPAYKEYID.toString()
+            }
+        }
+
         mainViewModel.initPaymentSuccess.observe(this){
             if (it.code == 200){
                 orderId = it.data?.orderId.toString()
@@ -98,6 +131,16 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
         mainViewModel.updatePaymentSuccess.observe(this){
             if (it.code == 200){
                 showToast("Payment Success")
+                if (from == "listing" || from == "requesting"){
+                    val intent = Intent(this, FeedbackActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    intent.putExtra("from",from)
+                    intent.putExtra("PRODUCT_ID", productId)
+                    intent.putExtra("USER_ID",receiverId)
+                    startActivity(intent)
+                    finish()
+                }else{
+                    finish()
+                }
 //                sendToRazorPay(it.data?.orderId,it.data?.amount)
             }
         }
@@ -108,17 +151,20 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
     private fun sendToRazorPay(order: String?, amount: Int) {
         val activity: Activity = this
 //        var amount = (amount?.times(100))
-        Log.d("Razorpay - ", "onPaymentSuccess: $amount")
-
-        val checkout = Checkout()
-        checkout.setKeyID("rzp_test_dtfqkGM0oeWPnY")
+//        Log.d("Razorpay - ", "onPaymentSuccess: $amount")
+        if (razorPayId != ""){
+            val checkout = Checkout()
+            checkout.setKeyID(razorPayId)
 //        checkout.setKeyID(Constants.razor_pay_id)
 
-        val payloadHelper = PayloadHelper("INR", amount, order!!)
-        payloadHelper.description = "$amount Rupees from ${name}"
-        payloadHelper.prefillEmail = email
-        payloadHelper.prefillContact = phone
-        checkout.open(activity, payloadHelper.getJson())
+            val payloadHelper = PayloadHelper("INR", amount, order!!)
+            payloadHelper.description = "$amount Rupees from ${name}"
+            payloadHelper.prefillEmail = email
+            payloadHelper.prefillContact = phone
+            checkout.open(activity, payloadHelper.getJson())
+        }else{
+            showToast("Razor pay id is missing")
+        }
     }
 
     override fun onPaymentSuccess(p0: String?) {

@@ -63,7 +63,12 @@
                     android:text="HSR Layout,Bangaluru India"
                     android:textColor="@color/title_color"
                     android:textSize="14sp" />
-
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="14dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_edit_product" />
 
             </LinearLayout>
 
@@ -326,6 +331,7 @@
                         android:imeOptions="actionNext"
                         android:inputType="textCapSentences"
                         android:maxLines="1"
+                        android:maxLength="50"
                         android:paddingStart="4dp"
                         android:paddingEnd="16dp"
                         android:textColor="@color/title_color"
@@ -386,6 +392,7 @@
                         android:imeOptions="actionNext"
                         android:inputType="number"
                         android:maxLines="1"
+                        android:maxLength="5"
                         android:paddingStart="4dp"
                         android:paddingEnd="16dp"
                         android:textColor="@color/title_color"

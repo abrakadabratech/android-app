@@ -58,6 +58,8 @@ data class Requests (
     @SerializedName("userId"       ) var userId      : String?      = null,
     @SerializedName("username"     ) var username    : String?      = null,
     @SerializedName("user_avatar" ) var user_avatar : String? = null,
+    @SerializedName("isReceived" ) var isReceived : Boolean?           = false,
+    @SerializedName("isDelivered" ) var isDelivered : Boolean?           = false,
     @SerializedName("email"        ) var email       : String?      = null,
     @SerializedName("phone"        ) var phone       : String?      = null,
     @SerializedName("requested_at" ) var requestedAt : String?      = null

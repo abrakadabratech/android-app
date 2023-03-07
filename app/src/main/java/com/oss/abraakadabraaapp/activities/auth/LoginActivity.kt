@@ -79,6 +79,9 @@ class LoginActivity : BaseActivity() {
 
         with(binding) {
             generateOtpBtn.setOnClickListener {
+                editMode = false
+
+                startTimer()
                 loginUser()
 
                 /*if (isValidate()) {
@@ -88,12 +91,13 @@ class LoginActivity : BaseActivity() {
         }
         initEditText()
         //setUpObserver()
-        startTimer()
 
 
         with(binding) {
             editPhoneNumber.setOnClickListener {
                 editMode = true
+                cancelTimer()
+                clearEditText()
                 binding.otpLayout.visibility = View.GONE
                 binding.loginLayout.visibility = View.VISIBLE
             }
@@ -105,6 +109,7 @@ class LoginActivity : BaseActivity() {
             }
 
             otpVerifyBtn.setOnClickListener {
+                editPhoneNumber.isEnabled = false
                 val otpString = binding.firstEdit.text.toString() +
                         binding.secondEdit.text.toString() +
                         binding.thirdEdit.text.toString() +
@@ -117,6 +122,17 @@ class LoginActivity : BaseActivity() {
 
         }
 
+    }
+    fun clearEditText(){
+        with(binding){
+            firstEdit.requestFocus()
+            firstEdit.setText("")
+            secondEdit.setText("")
+            thirdEdit.setText("")
+            fourthEdit.setText("")
+            fifthEdit.setText("")
+            sixthEdit.setText("")
+        }
     }
 
     override fun onBackPressed() {
@@ -146,7 +162,7 @@ class LoginActivity : BaseActivity() {
     }
 
     private fun verifyOtp(code: String) {
-        if (isValidate()) {
+        if (code != "") {
             if (isNetworkAvailable()) {
                 loader(true)
                 editMode = false
@@ -166,8 +182,9 @@ class LoginActivity : BaseActivity() {
                     applicationContext.resources.getString(R.string.no_internet_connection_found)
                 )
             }
+        }else{
+            showToast("Please enter OTP")
         }
-
     }
     private fun cancelTimer() {
         with(binding){
@@ -183,16 +200,16 @@ class LoginActivity : BaseActivity() {
         mAuth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
+                    clearEditText()
                     generateAuthToken()
                     val mUser = FirebaseAuth.getInstance().currentUser
                     mUser!!.getIdToken(true)
                         .addOnCompleteListener(object : OnCompleteListener<GetTokenResult?>,
                             com.google.android.gms.tasks.OnCompleteListener<GetTokenResult> {
                             override fun onComplete(task: Task<GetTokenResult?>) {
-                                loader(false)
+                               // loader(false)
                                 if (task.isSuccessful()) {
                                     val idToken: String = task.getResult().getToken()!!
-                                    Log.d(NewHomeActivity.TAG, "onComplete: $idToken")
                                 } else {
                                     // Handle error -> task.getException();
                                 }
@@ -200,7 +217,7 @@ class LoginActivity : BaseActivity() {
 
                             override fun onComplete(task: com.google.android.gms.tasks.Task<GetTokenResult>) {
                                 if (task.isSuccessful()) {
-                                    loader(false)
+                                    //loader(false)
                                     val idToken: String = task.getResult().getToken()!!
                                     val auth = "Bearer "+idToken
                                     val map = HashMap<String,String>()
@@ -214,7 +231,6 @@ class LoginActivity : BaseActivity() {
                                     val clip = ClipData.newPlainText(android.R.attr.label.toString(), idToken)
                                     clipboard.setPrimaryClip(clip)*/
 
-                                    Log.d(NewHomeActivity.TAG, "onComplete11: ${PreferencesManagement.saveAuthToken(this@LoginActivity,auth)}")
                                     // Send token to your backend via HTTPS
                                     // ...
                                 } else {
@@ -232,6 +248,7 @@ class LoginActivity : BaseActivity() {
 //                    )
 
                 } else {
+                    binding.editPhoneNumber.isEnabled = true
                     loader(false)
                     showToast("Wrong OTP Entered.Please try again")
                     // Sign in failed, display a message and update the UI
@@ -261,7 +278,7 @@ class LoginActivity : BaseActivity() {
             val token = PreferencesManagement.getAuthToken(this)!!
             map[RequestKeys.authorization] = token
             Log.d(
-                NewHomeActivity.TAG,
+                "TAG",
                 "Token in Accounts fragment: ${JSONObject(Gson().toJson(dataClass))}"
             )
             authViewModel.updateUser(map, dataClass)
@@ -274,8 +291,7 @@ class LoginActivity : BaseActivity() {
         }
     }
     // callback method is called on Phone auth provider.
-    private val   // initializing our callbacks for on
-    // verification callback method.
+    private val
             mCallBack: OnVerificationStateChangedCallbacks =
         object : OnVerificationStateChangedCallbacks() {
             // below method is used when
@@ -305,6 +321,7 @@ class LoginActivity : BaseActivity() {
                 val otp = phoneAuthCredential.smsCode
                 Log.d("FIREBASE", "onVerificationCompleted: OTP from firebase:$otp")
 
+                clearEditText()
                 // checking if the code
                 // is null or not.
                 if (otp != null && !editMode) {
@@ -409,6 +426,8 @@ class LoginActivity : BaseActivity() {
     private fun setUpObserver() {
 
         authViewModel.updateUserSuccess.observe(this) {
+            loader(false)
+            clearEditText()
             val intent =
                 Intent(this@LoginActivity, NewHomeActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -419,15 +438,18 @@ class LoginActivity : BaseActivity() {
 
         authViewModel.getUserSuccess.observe(this) {
             PreferencesManagement.saveUserInfo(this, it)
+
             if (it.responseMessage != null) {
                 if (it.responseMessage == USER_NOT_FOUND) {
-
+//                    postFCMtoken()
+                    loader(false)
                     val intent =
                         Intent(this@LoginActivity, AuthUserDetailActivity::class.java)
                     intent.putExtra(Constants.phoneNumber, phoneNumber)
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     startActivity(intent)
                     finish()
+
                 }
             } else {
                 if (mAuth.currentUser != null) {
@@ -443,7 +465,7 @@ class LoginActivity : BaseActivity() {
                         val token = PreferencesManagement.getAuthToken(this)!!
                         map[RequestKeys.authorization] = token
                         Log.d(
-                            NewHomeActivity.TAG,
+                            "TAG",
                             "Token in Accounts fragment: ${JSONObject(Gson().toJson(dataClass))}"
                         )
                         authViewModel.updateUser(map, dataClass)

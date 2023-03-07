@@ -92,7 +92,7 @@
                     android:layout_height="350dp"
                     android:scaleType="centerCrop"
                     app:iss_auto_cycle="false"
-                    app:iss_placeholder="@mipmap/ic_launcher"
+                    app:iss_placeholder="@mipmap/ic_launcher_one"
                     app:iss_selected_dot="@drawable/gradient_rect_with_stroke"
                     app:iss_title_background="@color/transparent"
                     app:iss_unselected_dot="@drawable/white_solid_circle"
@@ -353,7 +353,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:scaleType="fitXY"
-                            android:src="@drawable/new_bg_theme" />
+                            android:src="@drawable/user" />
                     </androidx.cardview.widget.CardView>
 
                     <TextView

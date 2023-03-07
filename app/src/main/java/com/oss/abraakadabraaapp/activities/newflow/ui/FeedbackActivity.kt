@@ -32,9 +32,16 @@ class FeedbackActivity : BaseActivity() {
         application = (this as BaseActivity)
         application.postEvent(Constants.PAGE_FEEDBACK,null)
 
-        product_id = intent.extras?.getString("PRODUCT_ID","")!!
-        user_id = intent.extras?.getString("USER_ID","")!!
-        from = intent.extras?.getString("from","listing")!!
+        if (intent.hasExtra("PRODUCT_ID")) {
+            product_id = intent.extras?.getString("PRODUCT_ID", "")!!
+        }
+        if (intent.hasExtra("USER_ID")) {
+                user_id = intent.extras?.getString("USER_ID","")!!
+
+        }
+        if (intent.hasExtra("from")) {
+            from = intent.extras?.getString("from", "listing")!!
+        }
 
         if (from == "listing"){
             binding.headingOne.text = "Was the product taken from you in a timely manner?"
@@ -106,17 +113,21 @@ class FeedbackActivity : BaseActivity() {
 
         }
         binding.skipTxt.setOnClickListener {
-            finish()
-            val intent =
-                Intent(this@FeedbackActivity, NewHomeActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-//            intent.putExtra(Constants.phoneNumber,phoneNumber)
-            startActivity(intent)
+            gotoMain()
         }
         binding.backButton.setOnClickListener {
             onBackPressed()
         }
         setUpObserver()
+    }
+
+    private fun gotoMain() {
+        val intent =
+            Intent(this@FeedbackActivity, NewHomeActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+//            intent.putExtra(Constants.phoneNumber,phoneNumber)
+        startActivity(intent)
+        finish()
     }
 
     private fun setUpObserver()

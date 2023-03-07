@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
 
 class WrapContentLinearLayoutManager(context: Context) : LinearLayoutManager(context) {
     //... constructor
@@ -14,5 +13,8 @@ class WrapContentLinearLayoutManager(context: Context) : LinearLayoutManager(con
         } catch (e: IndexOutOfBoundsException) {
             Log.e("TAG", "meet a IOOBE in RecyclerView")
         }
+    }
+    override fun supportsPredictiveItemAnimations(): Boolean {
+        return false
     }
 }

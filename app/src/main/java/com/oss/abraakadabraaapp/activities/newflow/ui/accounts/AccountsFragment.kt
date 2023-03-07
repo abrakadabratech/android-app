@@ -144,7 +144,7 @@ class AccountsFragment : Fragment(), View.OnClickListener {
                 getUserResponse.data?.userStats?.received.toString()+" Items" else "0 Items"*/
             Glide.with(this@AccountsFragment)
                 .load(getUserResponse?.data?.userAvatar)
-                .placeholder(resources.getDrawable(R.drawable.ic_profile))
+                .placeholder(resources.getDrawable(R.drawable.user))
                 .into(profilePic)
         }
         PreferencesManagement.saveUserInfo(requireActivity(),getUserResponse)

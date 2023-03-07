@@ -39,12 +39,12 @@
         android:name=".App"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_launcher_one"
         android:killAfterRestore="false"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_one"
         android:supportsRtl="true"
         android:theme="@style/Theme.AbraaKaDabraa.App"
         android:usesCleartextTraffic="true"
@@ -193,7 +193,7 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
-        <activity
+        <!--<activity
             android:name=".activities.RequestProductDetailActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -252,7 +252,7 @@
         <activity
             android:name=".activities.SignInActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustPan" />-->
         <activity
             android:name=".activities.StartAppActivity"
             android:exported="true"
@@ -261,9 +261,8 @@
             android:theme="@style/Theme.AbraaKaDabraa.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+                </intent-filter>
         </activity>
         <activity
             android:name=".utils.customView.ImagePickerActivity"
@@ -279,8 +278,8 @@
             android:name=".service.MessagingService"
             android:exported="false">
             <intent-filter>
-
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 

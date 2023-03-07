@@ -181,7 +181,7 @@
                         android:layout_height="350dp"
                         android:scaleType="centerCrop"
                         app:iss_auto_cycle="false"
-                        app:iss_placeholder="@mipmap/ic_launcher"
+                        app:iss_placeholder="@mipmap/ic_launcher_"
                         app:iss_selected_dot="@drawable/gradient_rect_with_stroke"
                         app:iss_title_background="@color/transparent"
                         app:iss_unselected_dot="@drawable/white_solid_circle"
