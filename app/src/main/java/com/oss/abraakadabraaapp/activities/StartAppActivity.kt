@@ -3,11 +3,8 @@ package com.oss.abraakadabraaapp.activities
 import DataClass
 import UsersUpdateData
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
@@ -16,20 +13,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import com.google.android.gms.location.*
 import com.google.android.play.core.tasks.OnCompleteListener
 import com.google.android.play.core.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GetTokenResult
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import com.karumi.dexter.Dexter
@@ -45,11 +35,9 @@ import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.databinding.ActivityStartAppBinding
 import com.oss.abraakadabraaapp.databinding.SplashContentBinding
 import com.oss.abraakadabraaapp.model.UserLocation
-import com.oss.abraakadabraaapp.module.GlideApp
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.retrofit.utils.ApiConstants
 import com.oss.abraakadabraaapp.utils.Constants
-import com.oss.abraakadabraaapp.utils.ImageUtils
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import com.oss.abraakadabraaapp.viewModel.MainViewModel
@@ -57,6 +45,7 @@ import org.json.JSONObject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.IOException
 import java.util.*
+import java.util.regex.Pattern
 
 class StartAppActivity : BaseActivity() {
 
@@ -87,6 +76,77 @@ class StartAppActivity : BaseActivity() {
     }
 
     private fun setUpObserver() {
+        mainViewModel.addressSuccess.observe(this) {
+            Log.d("LocationCall", "setUpObserver: ${Gson().toJson(it)}")
+            val data = it.results[0]
+            val fullAddress = data.formattedAddress
+            var area = ""
+            var short_name = ""
+            var state = ""
+            var city = ""
+            var locality = ""
+
+//            val addressComponents = it.results[0].addressComponents
+
+            /*for (item in addressComponents) {
+                for (i in item.types) {
+                    when (i) {
+                        "long_name" -> area = item.longName
+                        "short_name" -> short_name = item.shortName
+                        "administrative_area_level_1" -> state = item.longName
+                        "administrative_area_level_2" -> city = item.longName
+                        "sublocality" -> locality = item.longName
+                    }
+                }
+            }
+
+            val address = "$area,$short_name,$locality"
+*/
+
+            val geocoder = Geocoder(this, Locale.getDefault())
+            try {
+                val addresses = geocoder.getFromLocation(lat.toDouble(), lng.toDouble(), 100)
+                val obj = addresses!![0]
+                var add = obj.getAddressLine(0)
+                locality = obj.adminArea
+                var string = ""
+                if(obj.subLocality != null){
+                    string = "${obj.subLocality},${obj.locality},${obj.adminArea}"
+                }else{
+                    string = obj.locality+","+obj.adminArea
+                }
+//            Toast.makeText(requireContext(),string,Toast.LENGTH_SHORT).show()
+
+            } catch (e: IOException) {
+                // TODO Auto-generated catch block
+                e.printStackTrace()
+            }
+            val p = Pattern.compile("[^a-zA-Z ]", Pattern.CASE_INSENSITIVE)
+
+
+            Log.d("Addresses", "address $fullAddress")
+            var arr = fullAddress.split("$locality")
+            var comArr = arr[0].split(",")
+            var finalStr = ""
+             if (comArr.size > 2) {
+                 for (i in 0..comArr.size - 2) {
+                     if (!p.matcher(comArr[i]).find()){
+                         finalStr = finalStr + comArr[i] + ","
+                     }
+                 }
+             }
+            Log.d("Addresses", "address ${arr[0]}")
+
+            PreferencesManagement.saveUserLocation(
+                this,
+                UserLocation(
+                    lat = lat,
+                    long = lng,
+                    finalStr.dropLast(1) ,
+                )
+            )
+
+        }
 
         authViewModel.getUserSuccess.observe(this) {
             PreferencesManagement.saveUserInfo(this, it)
@@ -301,7 +361,14 @@ class StartAppActivity : BaseActivity() {
 
         if (addresses != null && addresses.isNotEmpty()) {
 
-            val locality = addresses[0].subLocality ?: ""
+            val tag = "$lat,$lng"
+            val url =
+                ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" + resources.getString(
+                    R.string.akd
+                )
+            mainViewModel.getAddress(url)
+
+            /*val locality = addresses[0].subLocality ?: ""
             val city = addresses[0].locality ?: ""
             val state = addresses[0].adminArea ?: ""
             val country = addresses[0].countryName ?: ""
@@ -321,7 +388,7 @@ class StartAppActivity : BaseActivity() {
                     long = lng,
                     address,
                 )
-            )
+            )*/
 
             startApp()
 

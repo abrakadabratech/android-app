@@ -194,4 +194,7 @@ dependencies {
 // Annotation processor
     kapt "androidx.lifecycle:lifecycle-compiler:2.2.0"
 
+    //Read more
+    implementation 'com.github.devendroid:ReadMoreOption:1.0.2'
+
 }

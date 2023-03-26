@@ -1,21 +1,15 @@
 package com.oss.abraakadabraaapp.activities.newflow.ui.home
 
-import android.Manifest
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.*
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
+import com.devs.readmoreoption.ReadMoreOption
 import com.google.android.gms.analytics.Tracker
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -67,6 +61,8 @@ class HomeFragment : Fragment(), LocationListener {
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+        application = (activity as BaseActivity)
+
         if (PreferencesManagement.getUserLocation(requireContext()) != null) {
             val userLocation = PreferencesManagement.getUserLocation(requireContext())!!
             /*latitude = userLocation.lat
@@ -74,10 +70,24 @@ class HomeFragment : Fragment(), LocationListener {
 
 //            Log.d("LOCCA", "onCreateView: ${Gson().toJson()}")
             var fullAddress = userLocation.address ?: ""
-            binding.locationOnActionbar.text = getAddress(userLocation.lat.toDouble(),userLocation.long.toDouble())
+
+            val readMoreOption: ReadMoreOption = ReadMoreOption.Builder(application)
+                .textLength(3, ReadMoreOption.TYPE_LINE) // OR
+                //.textLength(300, ReadMoreOption.TYPE_CHARACTER)
+                .moreLabel("MORE")
+                .lessLabel("LESS")
+                .moreLabelColor(Color.RED)
+                .lessLabelColor(Color.BLUE)
+                .labelUnderLine(true)
+                .expandAnimation(true)
+                .build()
+
+//            readMoreOption.addReadMoreTo(binding.locationOnActionbar, fullAddress)
+
+//            binding.locationOnActionbar.text = fullAddress
+//            binding.locationOnActionbar.text = getAddress(userLocation.lat.toDouble(),userLocation.long.toDouble())
         }
         firebaseAnalytics = FirebaseAnalytics.getInstance(requireActivity())
-        application = (activity as BaseActivity)
         application.postEvent(Constants.PAGE_HOME,null)
         val fragmentManager: FragmentManager = requireFragmentManager()
         fragmentManager.beginTransaction()

@@ -138,7 +138,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             emailEdit.setText(userInfo.data?.email)
             phoneEdit.setText(userInfo.data?.phone)
             val userlocation = PreferencesManagement.getUserLocation(this@MyNewProfileActivity)
-            locationEdit.setText(getAddress(userlocation?.lat!!.toDouble(), userlocation.long.toDouble()))
+            locationEdit.setText(userlocation?.address)
 
             instaEdit.setText(if(userInfo.data?.socialLink == "" ||userInfo.data?.socialLink == null) "No profile submitted"
             else userInfo.data?.socialLink)

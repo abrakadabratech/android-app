@@ -6,7 +6,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
@@ -30,6 +29,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.gson.Gson
 import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.auth.LoginActivity
@@ -45,9 +45,13 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.IOException
 import java.util.*
+import java.util.regex.Pattern
 
 
-abstract class BaseActivity : AppCompatActivity() {
+abstract class BaseActivity : AppCompatActivity(),LocationListener {
+    override fun onLocationChanged(p0: Location) {
+        TODO("Not yet implemented")
+    }
 
     private lateinit var progressDialog: ProgressDialog
 
@@ -121,7 +125,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        startLocationUpdates()
+        //startLocationUpdates()
     }
 
     private fun startLocationUpdates() {
@@ -137,10 +141,18 @@ abstract class BaseActivity : AppCompatActivity() {
             val latitude = it.latitude.toString()
             val longitude = it.longitude.toString()
 
-//            Log.d("getLocationData", "latitude $latitude")
+            Log.d("getLocationData", "latitude $latitude")
 //            Log.d("getLocationData", "longitude $longitude")
+//            saveLocation()
 
-            if (PreferencesManagement.getUserLocation(this@BaseActivity) != null) {
+           /* val tag = "$latitude,$longitude"
+            val url =
+                ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" + resources.getString(
+                    R.string.akd
+                )
+            mainViewModel.getAddress(url)*/
+
+            /*if (PreferencesManagement.getUserLocation(this@BaseActivity) != null) {
                 val userLocation = PreferencesManagement.getUserLocation(this@BaseActivity)
 
                 PreferencesManagement.saveUserLocation(
@@ -156,7 +168,7 @@ abstract class BaseActivity : AppCompatActivity() {
                         latitude, longitude, getAddress(latitude.toDouble(),longitude.toDouble()),
                     )
                 )
-            }
+            }*/
 
         }
     }
@@ -210,7 +222,7 @@ abstract class BaseActivity : AppCompatActivity() {
 //            Log.d("TAG--->", "locale: ${obj.locale}")
 //            Log.d("TAG--->", "featureName: ${obj.featureName}")
 //            Log.d("TAG--->", "complete address: ${obj.getAddressLine(0)}")
-            return string
+            return add
 
         } catch (e: IOException) {
             // TODO Auto-generated catch block
@@ -222,22 +234,23 @@ abstract class BaseActivity : AppCompatActivity() {
 
     private fun setUpObserver() {
 
-        mainViewModel.addressSuccess.observe(this, {
+        mainViewModel.addressSuccess.observe(this) {
+            Log.d("LocationCall", "setUpObserver: ${Gson().toJson(it)}")
             val data = it.results[0]
             val fullAddress = data.formattedAddress
-            var pinCode = ""
-            var country = ""
+            var area = ""
+            var short_name = ""
             var state = ""
             var city = ""
             var locality = ""
 
-            val addressComponents = it.results[0].addressComponents
+//            val addressComponents = it.results[0].addressComponents
 
-            for (item in addressComponents) {
+            /*for (item in addressComponents) {
                 for (i in item.types) {
                     when (i) {
-                        "postal_code" -> pinCode = item.longName
-                        "country" -> country = item.longName
+                        "long_name" -> area = item.longName
+                        "short_name" -> short_name = item.shortName
                         "administrative_area_level_1" -> state = item.longName
                         "administrative_area_level_2" -> city = item.longName
                         "sublocality" -> locality = item.longName
@@ -245,20 +258,53 @@ abstract class BaseActivity : AppCompatActivity() {
                 }
             }
 
-            val address = "$locality, $city, $state"
+            val address = "$area,$short_name,$locality"
+*/
 
-            Log.d("Addresses", "address $address")
+            val geocoder = Geocoder(this, Locale.getDefault())
+            try {
+                val addresses = geocoder.getFromLocation(lat.toDouble(), lng.toDouble(), 100)
+                val obj = addresses!![0]
+                var add = obj.getAddressLine(0)
+                locality = obj.adminArea
+                var string = ""
+                if(obj.subLocality != null){
+                    string = "${obj.subLocality},${obj.locality},${obj.adminArea}"
+                }else{
+                    string = obj.locality+","+obj.adminArea
+                }
+//            Toast.makeText(requireContext(),string,Toast.LENGTH_SHORT).show()
+
+            } catch (e: IOException) {
+                // TODO Auto-generated catch block
+                e.printStackTrace()
+            }
+            val p = Pattern.compile("[^a-zA-Z ]", Pattern.CASE_INSENSITIVE)
+
+
+            Log.d("Addresses", "address $fullAddress")
+            var arr = fullAddress.split("$locality")
+            var comArr = arr[0].split(",")
+            var finalStr = ""
+            if (comArr.size > 2) {
+                for (i in 0..comArr.size - 2) {
+                    if (!p.matcher(comArr[i]).find()){
+                        finalStr = finalStr + comArr[i] + ","
+                    }
+                }
+            }
+            Log.d("Addresses", "address ${arr[0]}")
 
             PreferencesManagement.saveUserLocation(
                 this,
                 UserLocation(
                     lat = lat,
                     long = lng,
-                    address,
+                    finalStr.dropLast(1),
                 )
             )
 
-        })
+        }
     }
 
 
@@ -275,11 +321,13 @@ abstract class BaseActivity : AppCompatActivity() {
         }
         mFusedLocationClient.lastLocation.addOnCompleteListener(this) { task ->
             val location: Location? = task.result
+            Log.d("LocationCall", "getLastLocation: $location ")
             if (location == null) {
                 requestNewLocationData()
             } else {
                 lat = location.latitude.toString()
                 lng = location.longitude.toString()
+
                 saveLocation()
             }
         }
@@ -288,7 +336,16 @@ abstract class BaseActivity : AppCompatActivity() {
 
     fun saveLocation() {
 
-        val gcd = Geocoder(this, Locale.ENGLISH)
+        val tag = "$lat,$lng"
+        val url =
+            ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" + resources.getString(
+                R.string.akd
+            )
+        mainViewModel.getAddress(url)
+
+        Log.d("LocationCall", "getLastLocation: Called")
+
+        /*val gcd = Geocoder(this, Locale.ENGLISH)
 
         var addresses: List<Address>? = null
         try {
@@ -306,11 +363,9 @@ abstract class BaseActivity : AppCompatActivity() {
             val pinCode = addresses[0].postalCode ?: ""
             val fullAddress = addresses[0].getAddressLine(0) ?: ""
 
-            Log.d("Addresses", "$locality\n $city\n $state\n $country\n $pinCode\n $fullAddress")
 
             val address = "$locality, $city, $state"
 
-            Log.d("Addresses", "address $address")
 
             PreferencesManagement.saveUserLocation(
                 this,
@@ -322,10 +377,11 @@ abstract class BaseActivity : AppCompatActivity() {
             )
         } else {
             getLocationAddress()
-        }
+        }*/
     }
 
     public fun getLocationAddress() {
+
         if (BuildConfig.DEBUG) {
             showToast("lat $lat,long $lng")
         }
@@ -367,6 +423,7 @@ abstract class BaseActivity : AppCompatActivity() {
     private val mLocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             val location = locationResult.lastLocation
+            Log.d("LocationCall", "onLocationResult: $location")
             if (location != null) {
                 lat = location.latitude.toString()
                 lng = location.longitude.toString()
@@ -635,3 +692,5 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 }
+
+

@@ -51,11 +51,12 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:textSize="14sp"
-                    android:textColor="@color/new_action_bar_title_color"
+                    android:layout_marginEnd="4dp"
                     android:fontFamily="@font/montserrat_medium"
-                    android:text="HSR Layout, Bengaluru , Karnataka adf d af adsfad adsf af a"
+                    android:maxLines="2"
+                    android:text="HSR Layout, Bengaluru , Karnataka adfa fasdf dfafads fasd  fds f d af adsfad adsf af a"
+                    android:textColor="@color/new_action_bar_title_color"
+                    android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="@+id/imageView14"
                     app:layout_constraintEnd_toStartOf="@+id/shareAKD"
                     app:layout_constraintStart_toEndOf="@+id/imageView14"
@@ -67,9 +68,9 @@
                     android:layout_height="22dp"
                     android:layout_marginEnd="16dp"
                     android:src="@drawable/ic_bell"
-                    app:layout_constraintBottom_toBottomOf="@+id/locationOnActionbar"
+                    app:layout_constraintBottom_toBottomOf="@+id/shareAKD"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/locationOnActionbar"
+                    app:layout_constraintTop_toTopOf="@+id/shareAKD"
                     app:layout_constraintVertical_bias="1.0" />
 
                 <ImageView
@@ -78,9 +79,9 @@
                     android:layout_height="19dp"
                     android:layout_marginEnd="16dp"
                     android:src="@drawable/ic_share_icon"
-                    app:layout_constraintBottom_toBottomOf="@+id/notifications"
+                    app:layout_constraintBottom_toBottomOf="@+id/locationOnActionbar"
                     app:layout_constraintEnd_toStartOf="@+id/notifications"
-                    app:layout_constraintTop_toTopOf="@+id/notifications" />
+                    app:layout_constraintTop_toTopOf="@+id/locationOnActionbar" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
