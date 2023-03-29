@@ -36,8 +36,8 @@ class MessagingService : FirebaseMessagingService() {
 
             Notifications.notifyMessage(
                 this,
-                title!!,
-                body!!,
+                title.toString(),
+                body.toString(),
                 notificationId,
                 map
             )
