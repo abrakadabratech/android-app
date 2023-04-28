@@ -123,8 +123,9 @@ class LoginActivity : BaseActivity() {
         }
 
     }
-    fun clearEditText(){
-        with(binding){
+
+    fun clearEditText() {
+        with(binding) {
             firstEdit.requestFocus()
             firstEdit.setText("")
             secondEdit.setText("")
@@ -143,7 +144,7 @@ class LoginActivity : BaseActivity() {
             binding.loginLayout.visibility = View.VISIBLE
 //            showToast("Do not press back button")
 //            onBack = true
-        }else{
+        } else {
             super.onBackPressed()
         }
 
@@ -154,9 +155,10 @@ class LoginActivity : BaseActivity() {
         }*/
     }
 
-        private fun shouldAllowBack(): Boolean {
-            return onBack
-        }
+    private fun shouldAllowBack(): Boolean {
+        return onBack
+    }
+
     private fun resendOtp() {
         loginUser()
     }
@@ -182,18 +184,20 @@ class LoginActivity : BaseActivity() {
                     applicationContext.resources.getString(R.string.no_internet_connection_found)
                 )
             }
-        }else{
+        } else {
             showToast("Please enter OTP")
         }
     }
+
     private fun cancelTimer() {
-        with(binding){
+        with(binding) {
             isOtpSend = true
             tvResendOtp.visibility = View.VISIBLE
             tvReceiveOtp.text = resources.getString(R.string.did_receive_otp)
         }
         countDownTimer.cancel()
     }
+
     private fun signInWithCredential(credential: PhoneAuthCredential) {
         // inside this method we are checking if
         // the code entered is correct or not.
@@ -207,7 +211,7 @@ class LoginActivity : BaseActivity() {
                         .addOnCompleteListener(object : OnCompleteListener<GetTokenResult?>,
                             com.google.android.gms.tasks.OnCompleteListener<GetTokenResult> {
                             override fun onComplete(task: Task<GetTokenResult?>) {
-                               // loader(false)
+                                // loader(false)
                                 if (task.isSuccessful()) {
                                     val idToken: String = task.getResult().getToken()!!
                                 } else {
@@ -219,8 +223,8 @@ class LoginActivity : BaseActivity() {
                                 if (task.isSuccessful()) {
                                     //loader(false)
                                     val idToken: String = task.getResult().getToken()!!
-                                    val auth = "Bearer "+idToken
-                                    val map = HashMap<String,String>()
+                                    val auth = "Bearer " + idToken
+                                    val map = HashMap<String, String>()
 
                                     map[RequestKeys.authorization] = auth
 
@@ -265,10 +269,11 @@ class LoginActivity : BaseActivity() {
         "zzg":"2","zzh":false,"zzi":{"zza":1673599438274,"zzb":1673598888449},"zzj":false},"zzb":{"zzd":false}}
         * */
     }
-    fun postFCMtoken(){
+
+    fun postFCMtoken() {
         generateAuthToken()
         FirebaseMessaging.getInstance().token.addOnSuccessListener {
-            PreferencesManagement.saveFCMToken(this,it)
+            PreferencesManagement.saveFCMToken(this, it)
             val data = UsersUpdateData(
                 fcmToken = PreferencesManagement.getFCMToken(this)!!
             )
@@ -290,6 +295,7 @@ class LoginActivity : BaseActivity() {
             )
         }
     }
+
     // callback method is called on Phone auth provider.
     private val
             mCallBack: OnVerificationStateChangedCallbacks =
@@ -376,10 +382,10 @@ class LoginActivity : BaseActivity() {
         }
     }
 
-     fun getFCMToken1() {
+    fun getFCMToken1() {
 
         FirebaseMessaging.getInstance().token.addOnSuccessListener {
-            PreferencesManagement.saveFCMToken(this,it)
+            PreferencesManagement.saveFCMToken(this, it)
         }.addOnFailureListener {
             loader(false)
             if (BuildConfig.DEBUG) showToast("Error Please try again ! ${it.localizedMessage}") else showToast(
@@ -414,10 +420,10 @@ class LoginActivity : BaseActivity() {
                 val intent = Intent(this, TermsAndConditionsActivity::class.java)
                 intent.putExtra("FROM_KEY", Constants.privacyPolicy)
                 startActivity(intent)
-               /* LaunchUtility.launchUrl(
-                    "https://abra-ka-dabra.com/privacy-policy/",
-                    this@LoginActivity
-                )*/
+                /* LaunchUtility.launchUrl(
+                     "https://abra-ka-dabra.com/privacy-policy/",
+                     this@LoginActivity
+                 )*/
             })
         )
 
@@ -428,6 +434,9 @@ class LoginActivity : BaseActivity() {
         authViewModel.updateUserSuccess.observe(this) {
             loader(false)
             clearEditText()
+            PreferencesManagement.saveUserName(this,it.data?.name)
+            PreferencesManagement.saveUserEmail(this,it.data?.email)
+
             val intent =
                 Intent(this@LoginActivity, NewHomeActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -438,9 +447,11 @@ class LoginActivity : BaseActivity() {
 
         authViewModel.getUserSuccess.observe(this) {
             PreferencesManagement.saveUserInfo(this, it)
+            Log.d("LOGIN>>>", "setUpObserver: ${Gson().toJson(it)}")
 
             if (it.responseMessage != null) {
                 if (it.responseMessage == USER_NOT_FOUND) {
+                    Log.d("LOGIN>>>", "setUpObserver: User not found")
 //                    postFCMtoken()
                     loader(false)
                     val intent =
@@ -449,9 +460,37 @@ class LoginActivity : BaseActivity() {
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     startActivity(intent)
                     finish()
-
                 }
-            } else {
+            }else if((it.data?.email == null || it.data?.email == "") ||
+                (it.data?.name == null || it.data?.name == "")){
+                Log.d("LOGIN>>>", "setUpObserver: EMail not found")
+
+                PreferencesManagement.saveUserName(this,it.data?.name)
+                PreferencesManagement.saveUserEmail(this,it.data?.email)
+
+                loader(false)
+                val intent =
+                    Intent(this@LoginActivity, AuthUserDetailActivity::class.java)
+                intent.putExtra(Constants.phoneNumber, phoneNumber)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                startActivity(intent)
+                finish()
+            }
+            /*else if((it.data?.name != null || it.data?.name != "" ) &&
+                (it.data?.email != null || it.data?.email != "") &&
+                (it.data?.socialLink == null) || it.data?.socialLink == ""){
+                Log.d("LOGIN>>>", "setUpObserver: Social link not found")
+
+                PreferencesManagement.saveUserFlag(this,true)
+                loader(false)
+                val intent =
+                    Intent(this@LoginActivity, AuthUserDetailActivity::class.java)
+                intent.putExtra(Constants.phoneNumber, phoneNumber)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                startActivity(intent)
+                finish()
+            }*/
+            else {
                 if (mAuth.currentUser != null) {
                     generateAuthToken()
                     FirebaseMessaging.getInstance().token.addOnSuccessListener {
@@ -583,6 +622,7 @@ class LoginActivity : BaseActivity() {
             }.start()
         }
     }
+
     override fun onDestroy() {
         cancelTimer()
         super.onDestroy()

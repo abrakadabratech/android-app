@@ -7,6 +7,7 @@ plugins {
     id 'com.google.firebase.crashlytics'
 //    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id 'com.google.gms.google-services'
+
 }
 
 android {
@@ -16,8 +17,8 @@ android {
         applicationId "com.oss.abraakadabraaapp"
         minSdk 23
         targetSdk 32
-        versionCode 13
-        versionName "2.0"
+        versionCode 14
+        versionName "1.11"
 //        versionName "test_refresh_product"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

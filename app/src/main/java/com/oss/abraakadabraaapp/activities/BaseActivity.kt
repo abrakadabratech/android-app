@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
@@ -235,18 +236,20 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
     private fun setUpObserver() {
 
         mainViewModel.addressSuccess.observe(this) {
-            Log.d("LocationCall", "setUpObserver: ${Gson().toJson(it)}")
             val data = it.results[0]
             val fullAddress = data.formattedAddress
+
+            Log.e("location_debug", "Location from maps sdk : $fullAddress" )
+
             var area = ""
             var short_name = ""
             var state = ""
             var city = ""
             var locality = ""
 
-//            val addressComponents = it.results[0].addressComponents
+            val addressComponents = it.results[0].addressComponents
 
-            /*for (item in addressComponents) {
+            for (item in addressComponents) {
                 for (i in item.types) {
                     when (i) {
                         "long_name" -> area = item.longName
@@ -258,51 +261,35 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
                 }
             }
 
-            val address = "$area,$short_name,$locality"
-*/
-
-            val geocoder = Geocoder(this, Locale.getDefault())
-            try {
-                val addresses = geocoder.getFromLocation(lat.toDouble(), lng.toDouble(), 100)
-                val obj = addresses!![0]
-                var add = obj.getAddressLine(0)
-                locality = obj.adminArea
-                var string = ""
-                if(obj.subLocality != null){
-                    string = "${obj.subLocality},${obj.locality},${obj.adminArea}"
-                }else{
-                    string = obj.locality+","+obj.adminArea
-                }
-//            Toast.makeText(requireContext(),string,Toast.LENGTH_SHORT).show()
-
-            } catch (e: IOException) {
-                // TODO Auto-generated catch block
-                e.printStackTrace()
-            }
             val p = Pattern.compile("[^a-zA-Z ]", Pattern.CASE_INSENSITIVE)
-
-
-            Log.d("Addresses", "address $fullAddress")
-            var arr = fullAddress.split("$locality")
-            var comArr = arr[0].split(",")
-            var finalStr = ""
-            if (comArr.size > 2) {
-                for (i in 0..comArr.size - 2) {
-                    if (!p.matcher(comArr[i]).find()){
-                        finalStr = finalStr + comArr[i] + ","
+            var final_str = ""
+            Log.e("location_debug", "address $fullAddress")
+            val arr = fullAddress.split(",")
+            for(i in 0..arr.size-2){
+                var s_str_arr = arr[i].trim().split(" ")
+                var s_str = ""
+                for(element in s_str_arr){
+                    if(!p.matcher(element).find()){
+                        s_str = "$s_str$element "
                     }
                 }
+                if(s_str.trim() != ""){
+                    final_str = "$final_str$s_str,"
+                }
             }
-            Log.d("Addresses", "address ${arr[0]}")
-
+            Log.e("location_debug",final_str.dropLast(1))
             PreferencesManagement.saveUserLocation(
                 this,
                 UserLocation(
                     lat = lat,
                     long = lng,
-                    finalStr.dropLast(1),
+                    final_str.dropLast(1) ,
                 )
             )
+
+
+            Log.e("location_debug", "Base Activity Final String from prefe ${PreferencesManagement.getUserLocation(this)?.address}")
+
 
         }
     }
@@ -321,7 +308,7 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
         }
         mFusedLocationClient.lastLocation.addOnCompleteListener(this) { task ->
             val location: Location? = task.result
-            Log.d("LocationCall", "getLastLocation: $location ")
+//            Log.d("LocationCall", "getLastLocation: $location ")
             if (location == null) {
                 requestNewLocationData()
             } else {
@@ -336,23 +323,26 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
 
     fun saveLocation() {
 
-        val tag = "$lat,$lng"
+        val latD = String.format("%.2f", lat.toDouble())
+        val lngD = String.format("%.2f", lng.toDouble())
+        val tag = "$latD,$lngD"
+
+        Log.d("LocationCall", "getLastLocation: Called")
+        val gcd = Geocoder(this, Locale.ENGLISH)
+        var addresses: List<Address>? = null
+        try {
+            addresses = gcd.getFromLocation(latD.toDouble(), lngD.toDouble(), 1)
+        } catch (e: IOException) {
+            Log.d("MYT", "e ${e.localizedMessage}")
+        }
+
         val url =
             ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" + resources.getString(
                 R.string.akd
             )
-        mainViewModel.getAddress(url)
+       // mainViewModel.getAddress(url)
 
-        Log.d("LocationCall", "getLastLocation: Called")
 
-        /*val gcd = Geocoder(this, Locale.ENGLISH)
-
-        var addresses: List<Address>? = null
-        try {
-            addresses = gcd.getFromLocation(lat.toDouble(), lng.toDouble(), 1)
-        } catch (e: IOException) {
-            Log.d("MYT", "e ${e.localizedMessage}")
-        }
 
         if (addresses != null && addresses.isNotEmpty()) {
 
@@ -365,19 +355,51 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
 
 
             val address = "$locality, $city, $state"
+            val p = Pattern.compile("[^a-zA-Z]", Pattern.CASE_INSENSITIVE)
 
 
-            PreferencesManagement.saveUserLocation(
-                this,
-                UserLocation(
-                    lat = lat,
-                    long = lng,
-                    address,
+            Log.e("location_debug", "Base activity Location $locality without net: $fullAddress")
+            var arr = fullAddress.split(state)
+            var comArr = arr[0].split(",")
+            var finalStr = ""
+            if (comArr.size > 2) {
+                for(i in 0..comArr.size-2){
+                    var s_str_arr = comArr[i].trim().split(" ")
+                    var s_str = ""
+                    for(element in s_str_arr){
+                        if(!p.matcher(element).find()){
+                            s_str = "$s_str$element "
+                        }
+                    }
+                    if(s_str.trim() != ""){
+                        finalStr = "$finalStr$s_str,"
+                    }
+                }
+            }
+            Log.d("location_debug", "Final String ${finalStr.dropLast(1)}")
+
+            if (finalStr.dropLast(1).trim() != ""){
+                PreferencesManagement.saveUserLocation(
+                    this,
+                    UserLocation(
+                        lat = lat,
+                        long = lng,
+                        finalStr.dropLast(1) ,
+                    )
                 )
-            )
+            }else{
+                PreferencesManagement.saveUserLocation(
+                    this,
+                    UserLocation(
+                        lat = lat,
+                        long = lng,
+                        address,
+                    )
+                )
+            }
         } else {
             getLocationAddress()
-        }*/
+        }
     }
 
     public fun getLocationAddress() {

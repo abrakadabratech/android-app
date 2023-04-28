@@ -393,7 +393,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                         binding.profileLink.text.toString().trim()
 
 
-                authViewModel.postUserSocialProfile(mapAuth, map)
+//                authViewModel.postUserSocialProfile(mapAuth, map)
             }
         }
 

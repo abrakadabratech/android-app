@@ -29,7 +29,7 @@ data class UsersData (
     @SerializedName("social_link"      ) var socialLink     : String? = null,
     @SerializedName("user_avatar"      ) var userAvatar     : String? = null,
     @SerializedName("email"            ) var email          : String? = null,
-    @SerializedName("name"             ) var name           : String? = null,
+    @SerializedName("name"             ) var name           : String? = "",
     @SerializedName("user_stats"       ) var userStats      : UserStats? = UserStats(),
     @SerializedName("uid"              ) var uid            : String? = null,
     @SerializedName("location"              ) var location            : String? = null,

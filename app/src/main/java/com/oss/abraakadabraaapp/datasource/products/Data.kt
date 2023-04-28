@@ -11,6 +11,8 @@ data class Data(
     val count: Int,
     @SerializedName("page")
     val page: String,
+    @SerializedName("search_string")
+    val search_string: String,
     @SerializedName("category" ) var category : ArrayList<String>   = arrayListOf(),
     @SerializedName("products")
     val products: ArrayList<Product>

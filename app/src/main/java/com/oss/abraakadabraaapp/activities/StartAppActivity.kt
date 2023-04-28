@@ -54,7 +54,7 @@ class StartAppActivity : BaseActivity() {
     private val authViewModel: AuthViewModel by viewModel()
 
     private val mainViewModel: MainViewModel by viewModel()
-    lateinit var mAuth : FirebaseAuth
+    lateinit var mAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,18 +77,20 @@ class StartAppActivity : BaseActivity() {
 
     private fun setUpObserver() {
         mainViewModel.addressSuccess.observe(this) {
-            Log.d("LocationCall", "setUpObserver: ${Gson().toJson(it)}")
             val data = it.results[0]
             val fullAddress = data.formattedAddress
+
+            Log.e("location_debug", "Location from maps sdk : $fullAddress")
+
             var area = ""
             var short_name = ""
             var state = ""
             var city = ""
             var locality = ""
 
-//            val addressComponents = it.results[0].addressComponents
+            val addressComponents = it.results[0].addressComponents
 
-            /*for (item in addressComponents) {
+            for (item in addressComponents) {
                 for (i in item.types) {
                     when (i) {
                         "long_name" -> area = item.longName
@@ -100,55 +102,42 @@ class StartAppActivity : BaseActivity() {
                 }
             }
 
-            val address = "$area,$short_name,$locality"
-*/
-
-            val geocoder = Geocoder(this, Locale.getDefault())
-            try {
-                val addresses = geocoder.getFromLocation(lat.toDouble(), lng.toDouble(), 100)
-                val obj = addresses!![0]
-                var add = obj.getAddressLine(0)
-                locality = obj.adminArea
-                var string = ""
-                if(obj.subLocality != null){
-                    string = "${obj.subLocality},${obj.locality},${obj.adminArea}"
-                }else{
-                    string = obj.locality+","+obj.adminArea
-                }
-//            Toast.makeText(requireContext(),string,Toast.LENGTH_SHORT).show()
-
-            } catch (e: IOException) {
-                // TODO Auto-generated catch block
-                e.printStackTrace()
-            }
             val p = Pattern.compile("[^a-zA-Z ]", Pattern.CASE_INSENSITIVE)
-
-
-            Log.d("Addresses", "address $fullAddress")
-            var arr = fullAddress.split("$locality")
-            var comArr = arr[0].split(",")
-            var finalStr = ""
-             if (comArr.size > 2) {
-                 for (i in 0..comArr.size - 2) {
-                     if (!p.matcher(comArr[i]).find()){
-                         finalStr = finalStr + comArr[i] + ","
-                     }
-                 }
-             }
-            Log.d("Addresses", "address ${arr[0]}")
-
+            var final_str = ""
+            Log.e("location_debug", "address $fullAddress")
+            val arr = fullAddress.split(",")
+            for(i in 0..arr.size-2){
+                var s_str_arr = arr[i].trim().split(" ")
+                var s_str = ""
+                for(element in s_str_arr){
+                    if(!p.matcher(element).find()){
+                        s_str = "$s_str$element "
+                    }
+                }
+                if(s_str.trim() != ""){
+                    final_str = "$final_str$s_str,"
+                }
+            }
+            Log.e("location_debug",final_str.dropLast(1))
             PreferencesManagement.saveUserLocation(
                 this,
                 UserLocation(
                     lat = lat,
                     long = lng,
-                    finalStr.dropLast(1) ,
+                    final_str.dropLast(1) ,
                 )
+            )
+
+            Log.e(
+                "Addresses",
+                "Final String from prefe ${PreferencesManagement.getUserLocation(this)?.address}"
             )
 
         }
 
         authViewModel.getUserSuccess.observe(this) {
+            Log.d("LOGIN>>>", "Getuser: ${Gson().toJson(it)}")
+
             PreferencesManagement.saveUserInfo(this, it)
 
             if (it.responseMessage != null) {
@@ -157,7 +146,10 @@ class StartAppActivity : BaseActivity() {
                     FirebaseAuth.getInstance().currentUser?.phoneNumber
                     val intent =
                         Intent(this, AuthUserDetailActivity::class.java)
-                    intent.putExtra(Constants.phoneNumber, FirebaseAuth.getInstance().currentUser?.phoneNumber)
+                    intent.putExtra(
+                        Constants.phoneNumber,
+                        FirebaseAuth.getInstance().currentUser?.phoneNumber
+                    )
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     startActivity(intent)
                     finish()
@@ -188,7 +180,7 @@ class StartAppActivity : BaseActivity() {
                 }
             }
         }
-        authViewModel.updateUserSuccess.observe(this){
+        authViewModel.updateUserSuccess.observe(this) {
 
         }
 
@@ -259,14 +251,16 @@ class StartAppActivity : BaseActivity() {
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.CAMERA,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.READ_SMS
                 )
             } else {
                 arrayListOf(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.CAMERA,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.READ_SMS
                 )
             }
 
@@ -306,6 +300,7 @@ class StartAppActivity : BaseActivity() {
             } else {
                 lat = location.latitude.toString()
                 lng = location.longitude.toString()
+                Log.e("location_debug", "Latitude and longitude values :$lat , $lng")
                 startAppSaveLocation()
             }
         }
@@ -344,6 +339,7 @@ class StartAppActivity : BaseActivity() {
             if (location != null) {
                 lat = location.latitude.toString()
                 lng = location.longitude.toString()
+                Log.e("location_debug", "Latitude and longitude values :$lat , $lng")
                 startAppSaveLocation()
             }
         }
@@ -352,23 +348,26 @@ class StartAppActivity : BaseActivity() {
     private fun startAppSaveLocation() {
 
         val gcd = Geocoder(this, Locale.ENGLISH)
+        val latD = String.format("%.2f", lat.toDouble())
+        val lngD = String.format("%.2f", lng.toDouble())
         var addresses: List<Address>? = null
         try {
-            addresses = gcd.getFromLocation(lat.toDouble(), lng.toDouble(), 1)
+            addresses = gcd.getFromLocation(latD.toDouble(), lngD.toDouble(), 1)
         } catch (e: IOException) {
             Log.d("MYT", "e ${e.localizedMessage}")
         }
 
         if (addresses != null && addresses.isNotEmpty()) {
 
-            val tag = "$lat,$lng"
+            val tag = "$latD,$lngD"
+            Log.e("location_debug", "startAppSaveLocation: $tag")
             val url =
                 ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" + resources.getString(
                     R.string.akd
                 )
-            mainViewModel.getAddress(url)
+//            mainViewModel.getAddress(url)
 
-            /*val locality = addresses[0].subLocality ?: ""
+            val locality = addresses[0].subLocality ?: ""
             val city = addresses[0].locality ?: ""
             val state = addresses[0].adminArea ?: ""
             val country = addresses[0].countryName ?: ""
@@ -381,14 +380,50 @@ class StartAppActivity : BaseActivity() {
 
             Log.d("Addresses", "address $address")
 
-            PreferencesManagement.saveUserLocation(
-                this,
-                UserLocation(
-                    lat = lat,
-                    long = lng,
-                    address,
+            val p = Pattern.compile("[^a-zA-Z]", Pattern.CASE_INSENSITIVE)
+
+
+            Log.d("Addresses", "address $fullAddress")
+
+            Log.e("location_debug", "Start activity Location $locality without net: $fullAddress")
+            var arr = fullAddress.split(state)
+            var comArr = arr[0].split(",")
+            var finalStr = ""
+            if (comArr.size > 2) {
+                for(i in 0..comArr.size-2){
+                    var s_str_arr = comArr[i].trim().split(" ")
+                    var s_str = ""
+                    for(element in s_str_arr){
+                        if(!p.matcher(element).find()){
+                            s_str = "$s_str$element "
+                        }
+                    }
+                    if(s_str.trim() != ""){
+                        finalStr = "$finalStr$s_str,"
+                    }
+                }
+            }
+            Log.d("location_debug", "Final String ${finalStr.dropLast(1)}")
+            if (finalStr.dropLast(1).trim() != ""){
+                PreferencesManagement.saveUserLocation(
+                    this,
+                    UserLocation(
+                        lat = lat,
+                        long = lng,
+                        finalStr.dropLast(1) ,
+                    )
                 )
-            )*/
+            }else{
+                PreferencesManagement.saveUserLocation(
+                    this,
+                    UserLocation(
+                        lat = lat,
+                        long = lng,
+                        address,
+                    )
+                )
+            }
+
 
             startApp()
 
@@ -422,20 +457,27 @@ class StartAppActivity : BaseActivity() {
                             if (task.isSuccessful()) {
                                 loader(false)
                                 val idToken: String = task.getResult().getToken()!!
-                                val auth = "Bearer "+idToken
-                                val map = HashMap<String,String>()
+                                val auth = "Bearer " + idToken
+                                val map = HashMap<String, String>()
 
                                 map[RequestKeys.authorization] = auth
 
-                                authViewModel.getUser(map)
+                                // authViewModel.getUser(map)
 
                                 /*val clipboard =
                                     getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                                 val clip = ClipData.newPlainText(android.R.attr.label.toString(), idToken)
                                 clipboard.setPrimaryClip(clip)*/
 
-                                Log.d("TAG", "onComplete11: " +
-                                        "${PreferencesManagement.saveAuthToken(this@StartAppActivity,auth)}")
+                                Log.d(
+                                    "TAG", "onComplete11: " +
+                                            "${
+                                                PreferencesManagement.saveAuthToken(
+                                                    this@StartAppActivity,
+                                                    auth
+                                                )
+                                            }"
+                                )
                                 // Send token to your backend via HTTPS
                                 // ...
                             } else {
@@ -446,7 +488,7 @@ class StartAppActivity : BaseActivity() {
                     })
                 generateAuthToken()
                 FirebaseMessaging.getInstance().token.addOnSuccessListener {
-                    PreferencesManagement.saveFCMToken(this,it)
+                    PreferencesManagement.saveFCMToken(this, it)
                     val data = UsersUpdateData(
                         fcmToken = PreferencesManagement.getFCMToken(this)!!
                     )
@@ -455,8 +497,7 @@ class StartAppActivity : BaseActivity() {
                     val map = HashMap<String, String>()
                     val token = PreferencesManagement.getAuthToken(this)!!
                     map[RequestKeys.authorization] = token
-                    Log.
-                    d(
+                    Log.d(
                         "TAG",
                         "Token in Accounts fragment: ${JSONObject(Gson().toJson(dataClass))}"
                     )
@@ -468,31 +509,49 @@ class StartAppActivity : BaseActivity() {
                         "Error Please try again !"
                     )
                 }
-                if(PreferencesManagement.getUserInfo(this@StartAppActivity)!!.data?.name!=null) {
-                    if(PreferencesManagement.getUserInfo(this@StartAppActivity)!!.data?.socialLink!=null) {
-                        startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
-                    }else{
-                        val intent = Intent(this@StartAppActivity, AuthUserDetailActivity::class.java)
-                        intent.putExtra(Constants.phoneNumber, FirebaseAuth.getInstance().currentUser?.phoneNumber)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                        startActivity(intent)
-                    }
-                }else{
+                val u_info = PreferencesManagement.getUserInfo(this@StartAppActivity)!!
+
+                Log.d("LOGIN>>>", "setUpObserver: ${Gson().toJson(u_info)}")
+
+                if ((u_info.data?.name == null || u_info.data?.name == "") ||
+                    (u_info.data?.email == "" || u_info.data?.email == null)
+                /*(u_info.data?.socialLink == null || u_info.data?.socialLink == "")*/
+                ) {
                     val intent = Intent(this@StartAppActivity, AuthUserDetailActivity::class.java)
-                    intent.putExtra(Constants.phoneNumber, FirebaseAuth.getInstance().currentUser?.phoneNumber)
+                    intent.putExtra(
+                        Constants.phoneNumber,
+                        FirebaseAuth.getInstance().currentUser?.phoneNumber
+                    )
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     startActivity(intent)
+
+                } /*else if (PreferencesManagement.getUserInfo(this@StartAppActivity)!!.data?.socialLink != null) {
+                    startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
+                }*/
+                else {
+                    startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
+                    /*if (u_info.data?.socialLink != null || u_info.data?.socialLink != "") {
+                        startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
+                    } else {
+                        val intent =
+                            Intent(this@StartAppActivity, AuthUserDetailActivity::class.java)
+                        intent.putExtra(
+                            Constants.phoneNumber,
+                            FirebaseAuth.getInstance().currentUser?.phoneNumber
+                        )
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        startActivity(intent)
+                    }*/
                 }
 
 //                startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
             } else {
 
-                if (PreferencesManagement.isFistOpen(this)){
+                if (PreferencesManagement.isFistOpen(this)) {
                     startActivity(Intent(this@StartAppActivity, OnBoardingActivity::class.java))
 
-                }else{
+                } else {
                     startActivity(Intent(this@StartAppActivity, LoginActivity::class.java))
-
                 }
             }
             /*if (PreferencesManagement.getUserInfo(this)?.data?.phone != null){

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.oss.abraakadabraaapp">
 
+    <uses-permission android:name="android.permission.READ_SMS"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -61,7 +62,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/maps_api" />
+            android:value="@string/akd" />
 
         <activity
             android:name=".activities.newflow.chat.ChatDetailActivity"
@@ -233,10 +234,7 @@
         <activity
             android:name=".activities.AllCategoryActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".activities.ContentManagementActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+
         <activity
             android:name=".activities.ResetPasswordActivity"
             android:screenOrientation="portrait"
@@ -253,6 +251,11 @@
             android:name=".activities.SignInActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />-->
+
+        <activity
+            android:name=".activities.ContentManagementActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
         <activity
             android:name=".activities.StartAppActivity"
             android:exported="true"

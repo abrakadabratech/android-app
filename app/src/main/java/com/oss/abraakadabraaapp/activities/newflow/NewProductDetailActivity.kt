@@ -263,17 +263,23 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
 
     private fun setUpProductDetails(it: ProductDetailsData) {
         val imageList = ArrayList<SlideModel>()
-        for (i in it.data.images) {
-            imageList.add(SlideModel(i, "", ScaleTypes.FIT))
+
+        if(it.data.images.size > 0){
+            for (i in it.data.images) {
+                imageList.add(SlideModel(i, "", ScaleTypes.FIT))
+            }
+        }else{
+            imageList.add(SlideModel(R.drawable.no_image,"",ScaleTypes.FIT))
         }
+
         binding.imageSlider.setImageList(imageList)
 
         binding.categoryTxt.setText(it.data.category?.name?.capitalize())
         binding.productName.setText(it.data.name?.capitalize())
-        binding.energySaving.setText(it.data.energySaving.toString())
+        binding.energySaving.setText("${if(it.data.energySaving != null) it.data.energySaving else 0}")
         binding.conditionTxt.setText(it.data.condition)
         binding.usedForTxt.setText(it.data.usedFor)
-        binding.costSavingTxt.setText("Rs ${it.data.costSaving}")
+        binding.costSavingTxt.setText("Rs ${if(it.data.costSaving != null) it.data.costSaving else 0}")
         binding.postedByTxt.text = (it.data.postedBy?.name.toString())
         binding.dateOfPostTxt.text = (it.data.createdAt.toString())
         binding.descriptionTxt.text = (it.data.description.toString()?.capitalize())

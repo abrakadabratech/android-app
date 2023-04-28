@@ -11,9 +11,10 @@ import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.databinding.ItemProductBinding
 import Data
 import com.oss.abraakadabraaapp.databinding.ItemProduct2Binding
+import com.oss.abraakadabraaapp.datasource.products.Product
 
 class SearchProductAdapter(
-    private var data: ArrayList<Data>,
+    private var data: ArrayList<Product>,
     var context: Context,
     private var callback: LatestProductAdapterInterface
 ) : RecyclerView.Adapter<SearchProductAdapter.LatestProductAdapterVH>() {
@@ -53,7 +54,7 @@ class SearchProductAdapter(
         return 1
     }
 
-    fun setData(d: ArrayList<Data>) {
+    fun setData(d: ArrayList<Product>) {
         data = d
     }
 
@@ -62,7 +63,7 @@ class SearchProductAdapter(
     }
 
     interface LatestProductAdapterInterface {
-        fun onSearchItemDetail(data: Data, position: Int)
+        fun onSearchItemDetail(data: Product, position: Int)
     }
 
 }

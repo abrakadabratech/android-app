@@ -92,6 +92,41 @@ object PreferencesManagement {
 
     }
 
+    fun saveUserName(context: Context, userData: String?): Boolean {
+
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        val prefsEditor = pref.edit()
+        prefsEditor.putString("userName", userData)
+
+        return prefsEditor.commit()
+    }
+
+    fun getUserName(context: Context): String? {
+
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        return pref.getString("userName", "")
+
+    }
+    fun saveUserEmail(context: Context, userData: String?): Boolean {
+
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        val prefsEditor = pref.edit()
+        prefsEditor.putString("userEmail", userData)
+
+        return prefsEditor.commit()
+    }
+
+    fun getUserEmail(context: Context): String? {
+
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        return pref.getString("userEmail", "")
+
+    }
+
     fun saveUserInfo(context: Context, userData: GetUserResponse?): Boolean {
 
         val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)

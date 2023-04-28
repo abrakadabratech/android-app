@@ -614,14 +614,15 @@ fun getRequestDetails(
     fun searchQuery(
         headerMap: HashMap<String, String>,
         page:String,
-        lat:Double,long:Double,maxDistance:Int,pageNumber:Int
+        lat:Double,long:Double,maxDistance:Int,pageNumber:Int,sortBy: String
     ) {
         viewModelScope.launch {
 //            isLoading.value = true
 
-            suspend fun call() = repository.searchQuery(headerMap,page,lat,long,maxDistance,pageNumber)
+            suspend fun call() = repository.searchQuery(headerMap,page,lat,long,maxDistance,pageNumber,sortBy)
             callApi(::call, object : CallHelper<SearchModel>{
                 override fun onSuccessful(data: SearchModel) {
+                    Log.e("okk", "onSuccessful: $data", )
                     searchSuccess .value = data
                 }
 
@@ -675,13 +676,13 @@ fun getRequestDetails(
     }
 
     fun getProductsData(
-        headerMap: HashMap<String, String>,page:Int,maxDistance:Int,lat:Double,lang:Double,category:String
+        headerMap: HashMap<String, String>,page:Int,maxDistance:Int,lat:Double,lang:Double,category:String,sortBy:String
     ) {
         viewModelScope.launch {
             isLoading.value = true
 
             suspend fun call() =
-                repository.getProductsData(headerMap, page, maxDistance, lat, lang, category)
+                repository.getProductsData(headerMap, page, maxDistance, lat, lang, category,sortBy)
             callApi(::call, object : CallHelper<GetProducts> {
                 override fun onSuccessful(data: GetProducts) {
                     allproductsSuccess.value = data

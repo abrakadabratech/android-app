@@ -16,10 +16,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -43,7 +45,7 @@ import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.adapter.CategoryAdapter
 import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.databinding.NewReceiverFlowBinding
-import com.oss.abraakadabraaapp.datasource.ProductAdapter
+import com.oss.abraakadabraaapp.datasource.*
 import com.oss.abraakadabraaapp.datasource.products.Data
 import com.oss.abraakadabraaapp.datasource.products.Product
 import com.oss.abraakadabraaapp.location.livedata.LocationViewModel
@@ -57,13 +59,10 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 
 class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface,
-   LatestProductAdapter.LatestProductAdapterInterface{
+    LatestProductAdapter.LatestProductAdapterInterface, ProductAdapter.OnProductClicked {
     private val MY_PERMISSIONS_REQUEST_FINE_LOCATION: Int = 1001
     lateinit var application: BaseActivity
 
@@ -118,22 +117,23 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         }
 
 
-        binding.searchEdit.setOnClickListener{
+        binding.searchEdit.setOnClickListener {
             startActivity(Intent(requireContext(), NewSearchActivity::class.java))
         }
 
-        binding.cardView4.setOnClickListener{
+        binding.cardView4.setOnClickListener {
             startActivity(Intent(requireContext(), NewSearchActivity::class.java))
         }
-        setUpObserver()
-
         setupList()
+
+        setUpObserver()
 
         clickEvents()
 
         return root
     }
-    private fun setupList() {
+
+    /*private fun setupList() {
         latestProductAdapter = LatestProductAdapter(latestProductList, requireContext(), this)
         val lm = GridLayoutManager(requireContext(), 2)
         binding.rvLatestProduct.apply {
@@ -144,25 +144,86 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             )
             adapter = latestProductAdapter
         }
-        binding.rvLatestProduct.addOnScrollListener(object :
+        binding.rvLatestProduct.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val layoutManager = binding.rvLatestProduct.layoutManager as GridLayoutManager
+                val firstVisiblePosition = layoutManager.findFirstVisibleItemPosition()
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val firstVisibleItemPosition = lm.findFirstVisibleItemPosition()
+
+                Log.d("PGINATION", "onScrolled: ${layoutManager.findLastVisibleItemPosition()}")
+                Log.d(
+                    "PGINATION",
+                    "onScrolled: ${layoutManager.findFirstCompletelyVisibleItemPosition()}"
+                )
+                Log.d("PGINATION", "onScrolled: ${layoutManager.findLastVisibleItemPosition()}")
+                Log.d(
+                    "PGINATION",
+                    "onScrolled: ${layoutManager.findLastCompletelyVisibleItemPosition()}"
+                )
+
+                // Load more if we have reach the end to the recyclerView
+                if (visibleItemCount + firstVisibleItemPosition >= totalItemCount && firstVisibleItemPosition >= 0) {
+//                    loadMoreItems()
+                    val total: Int = lm.itemCount
+                    val lastVisibleItemCount: Int = lm.findLastCompletelyVisibleItemPosition()
+                    Log.d(
+                        "scroll",
+                        "scrolling total $total last visibile item $lastVisibleItemCount"
+                    )
+
+                    getProductFromServer()
+
+                    *//*if (!isLoading) {
+                        if (total > 0) if (total - 1 == lastVisibleItemCount) {
+                            if (!noMoreData) {
+                                isLoading = true
+                                isLastPage = true
+
+                                application.showToast("get products called end of the rec")
+                            }
+                        }
+                    }*//*
+                }
+            }
+        })
+        *//*binding.rvLatestProduct.addOnScrollListener(object :
             RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, oldScrollY: Int) {
                 super.onScrolled(recyclerView, dx, oldScrollY)
-                Log.d("scroll", "scrolling")
-                val total: Int = lm.itemCount
+
+                val layoutManager = LinearLayoutManager::class.java.cast(recyclerView.layoutManager)
+                val totalItemCount = layoutManager.itemCount
+                val lastVisible = layoutManager.findLastVisibleItemPosition()
+
+                val endHasBeenReached = lastVisible + 5 >= totalItemCount
+                if (totalItemCount > 0 && endHasBeenReached) {
+                    //you have reached to the bottom of your recycler view
+                    application.showToast("last position")
+                }
+                *//**//*val total: Int = lm.itemCount
                 val lastVisibleItemCount: Int = lm.findLastVisibleItemPosition()
+                Log.d("scroll", "scrolling total $total last visibile item $lastVisibleItemCount")
                 if (!isLoading) {
                     if (total > 0) if (total - 1 == lastVisibleItemCount) {
                         if (!noMoreData) {
                             isLoading = true
                             isLastPage = true
                             getProductFromServer()
+                            application.showToast("get products called end of the rec")
                         }
                     }
-                }
+                }*//**//*
             }
-        })
-    }
+        })*//*
+    }*/
+
     override fun onStart() {
         super.onStart()
         EventBus.getDefault().register(this)
@@ -185,6 +246,8 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                     "Cancel"
                 ) { dialog, which -> dialog.dismiss() }.create().show()
         }*/
+
+
         checkPermissions()
     }
 
@@ -221,12 +284,12 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             .check()
     }
 
-    fun startApp(){
+    fun startApp() {
         if (application.checkPermission()) {
             if (application.isLocationEnabled()) {
-                if (PreferencesManagement.getUserLocation(requireContext()) != null){
+                if (PreferencesManagement.getUserLocation(requireContext()) != null) {
                     setupViewModel()
-                }else{
+                } else {
                     application.showToast("Please restart your app to get products")
                     application.getLastLocation()
                 }
@@ -236,15 +299,18 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                 alertDialog.setTitle("Alert")
                 alertDialog.setMessage("Please enable location permission to view the products nearer to you.")
 
-                alertDialog.setPositiveButton("Enable", DialogInterface.OnClickListener { dialog, id ->
+                alertDialog.setPositiveButton(
+                    "Enable",
+                    DialogInterface.OnClickListener { dialog, id ->
 
 //                    checkPermissions()
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                    val uri: Uri = Uri.fromParts("package", requireActivity().getPackageName(), null)
-                    intent.data = uri
-                    startActivity(intent)
-                    dialog.dismiss()
-                })
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        val uri: Uri =
+                            Uri.fromParts("package", requireActivity().getPackageName(), null)
+                        intent.data = uri
+                        startActivity(intent)
+                        dialog.dismiss()
+                    })
                 alertDialog.setCancelable(true)
                 alertDialog.show()
 //                startApp()
@@ -268,12 +334,13 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             alertDialog.show()
         }
     }
+
     private fun setUpObserver() {
         authViewModel.getAllcategoriesSuccess.observe(requireActivity()) {
-            if (it.code == 200){
+            if (it.code == 200) {
                 setUpCategories()
 
-                PreferencesManagement.saveCategories(requireActivity(),it)
+                PreferencesManagement.saveCategories(requireActivity(), it)
                 categoryList = it.data
                 categoryList.add(UserCatData("", "More", ""))
                 categoryAdapter.setData(categoryList)
@@ -303,7 +370,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
             currentPage += 1
 
-            if (latestProductList.size == 0){
+            if (latestProductList.size == 0) {
                 binding.nodata.visibility = View.VISIBLE
             }
             if (it.data.products.isNotEmpty()) {
@@ -315,7 +382,11 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
         }
 
-        authViewModel.errorMessage.observe(requireActivity()) { if (it.isNotBlank()) application.showToast(it) }
+        authViewModel.errorMessage.observe(requireActivity()) {
+            if (it.isNotBlank()) application.showToast(
+                it
+            )
+        }
         authViewModel.isLoading.observe(requireActivity()) { application.loader(it) }
 
     }
@@ -334,33 +405,37 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         }
     }
 
-   /* private fun setupView() {
-        lifecycleScope.launch {
-            viewModel.listData.collect {
-                mainListAdapter.submitData(it)
-            }
-        }
-    }
-*/
-   /* private fun setupList() {
+    /* private fun setupView() {
+         lifecycleScope.launch {
+             viewModel.listData.collect {
+                 mainListAdapter.submitData(it)
+             }
+         }
+     }
+ */
+
+
+    private fun setupList() {
         mainListAdapter = ProductAdapter(this)
         val lm = GridLayoutManager(requireContext(), 2)
         binding.rvLatestProduct.apply {
-//            layoutManager = LinearLayoutManager(requireContext())
+            //            layoutManager = LinearLayoutManager(requireContext())
             layoutManager = lm
             addItemDecoration(
                 MarginItemDecoration(18)
             )
             adapter = mainListAdapter
         }
-    }*/
+    }
 
     private fun setupViewModel() {
         if (application.isNetworkAvailable()) {
             application.generateAuthToken()
+
 //            lateinit var viewModel: MainViewModel
 
             val mUser = FirebaseAuth.getInstance().currentUser
+
             mUser!!.getIdToken(true)
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
@@ -369,38 +444,21 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
                         val activity: Activity? = activity
                         if (activity != null) {
-                            if(PreferencesManagement.saveAuthToken(requireActivity(),auth))
-                            {
-                                val userLocation = PreferencesManagement.getUserLocation(requireContext())
+                            if (PreferencesManagement.saveAuthToken(requireActivity(), auth)) {
+                                val userLocation =
+                                    PreferencesManagement.getUserLocation(requireContext())
 
                                 val map = HashMap<String, String>()
                                 val token = PreferencesManagement.getAuthToken(requireContext())!!
                                 map["Authorization"] = token
 
                                 authViewModel.getAllCategoriesData(map)
+                                if (PreferencesManagement.getFilters(requireContext())!!.nearest)
+                                    getProductFromServer("nearest")
+                                else
+                                    getProductFromServer("latest")
 
-                                getProductFromServer()
-
-                                /*val viewModel =
-                                    ViewModelProvider(
-                                        this,
-                                        MainViewModelFactory(
-                                            APIService.getApiService(),
-                                            map,
-                                            50,
-                                            userLocation!!.lat.toDouble(),
-                                            userLocation.long.toDouble(),""
-                                        )
-                                    )[MainViewModel::class.java]
-
-                                lifecycleScope.launch {
-                                    viewModel.listData.collect {
-                                        mainListAdapter?.submitData(it)
-//                                    categoryAdapter.setData()
-                                    }
-                                }*/
-
-                            }else{
+                            } else {
                                 application.showToast("Error generating the token!")
                             }
                         }
@@ -412,20 +470,59 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
     }
 
-    private fun getProductFromServer() {
+    private fun getProductFromServer(sortBy: String) {
 
         val userLocation = PreferencesManagement.getUserLocation(requireContext())
 
         val map = HashMap<String, String>()
         val token = PreferencesManagement.getAuthToken(requireContext())!!
         map["Authorization"] = token
-//                                map["logging"] = "true"
 
-        authViewModel.getProductsData(map,currentPage,
-            50,
-            userLocation!!.lat.toDouble(),
-            userLocation.long.toDouble(),"")
+        // Pagination Library
+        if (sortBy == "latest"){
+            val viewModel =
+                ViewModelProvider(
+                    this,
+                    MainViewModelFactory(
+                        APIService.getApiService(),
+                        map,
+                        50,
+                        userLocation!!.lat.toDouble(),
+                        userLocation.long.toDouble(), "", sortBy
+                    )
+                )[MainViewModel::class.java]
+            lifecycleScope.launch {
+                viewModel.listData.collect {
+                    mainListAdapter?.submitData(PagingData.empty())
+                    mainListAdapter?.submitData(it)
+                }
+
+            }
+        }else{
+
+            val viewModel =
+                ViewModelProvider(
+                    this,
+                    MainViewModelFactory(
+                        APIService.getApiService(),
+                        map,
+                        50,
+                        userLocation!!.lat.toDouble(),
+                        userLocation.long.toDouble(), "", sortBy
+                    )
+                )[MainFilterViewModel::class.java]
+
+            lifecycleScope.launch {
+                viewModel.listData.collect {
+                    mainListAdapter?.submitData(PagingData.empty())
+                    mainListAdapter?.submitData(it)
+                }
+
+            }
+        }
+
     }
+
 
     private fun clickEvents() {
         binding.catFilter.setOnClickListener {
@@ -448,18 +545,18 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         _binding = null
     }
 
-    override fun onCategoryClick(data: UserCatData,position: Int) {
-        if (position == 0){
+    override fun onCategoryClick(data: UserCatData, position: Int) {
+        if (position == 0) {
 
             val intent = Intent(context, CategorySelectActivity::class.java)
 //            intent.putExtra("CATEGORIES",PreferencesManagement.getCategories())
             startActivity(intent)
-        }else{
+        } else {
             var cats = ArrayList<UserCatData>()
             cats.add(data)
             val intent = Intent(context, NewSearchActivity::class.java)
-            intent.putExtra("CATEGORIES",Gson().toJson(cats))
-            intent.putExtra("from","category")
+            intent.putExtra("CATEGORIES", Gson().toJson(cats))
+            intent.putExtra("from", "category")
 
             startActivity(intent)
         }
@@ -488,12 +585,12 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         val applyBtn = dialogView.findViewById<TextView>(R.id.applyBtn)
         val closeBtn = dialogView.findViewById<ImageView>(R.id.closeBtn)
 
-        if (filters?.nearest!!){
+        if (filters?.nearest!!) {
             nearToMeTxt.setTextColor(resources.getColor(R.color.cat_select_color))
             newestFirstTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
             newestFirstSwitch.isChecked = false
             nearToMeSwitch.isChecked = true
-        }else{
+        } else {
             nearToMeTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
             newestFirstTxt.setTextColor(resources.getColor(R.color.cat_select_color))
             newestFirstSwitch.isChecked = true
@@ -501,17 +598,17 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         }
 
         nearToMeSwitch.addOnStatusChangedListener(OnStatusChangedListener {
-            if (it){
+            if (it) {
                 filters?.newest = false
                 filters?.nearest = true
+
 
                 nearToMeTxt.setTextColor(resources.getColor(R.color.cat_select_color))
 //                nearToMeSwitch.isChecked = true
                 newestFirstSwitch.isChecked = false
                 newestFirstTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
 
-            }
-            else{
+            } else {
                 filters?.newest = true
                 filters?.nearest = false
 
@@ -522,15 +619,14 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         })
 
         newestFirstSwitch.addOnStatusChangedListener(OnStatusChangedListener {
-            if (it){
+            if (it) {
                 filters?.newest = true
                 filters?.nearest = false
 
                 newestFirstTxt.setTextColor(resources.getColor(R.color.cat_select_color))
                 nearToMeTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
                 nearToMeSwitch.isChecked = false
-            }
-            else{
+            } else {
                 filters?.newest = false
                 filters?.nearest = true
 
@@ -539,7 +635,6 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                 nearToMeSwitch.isChecked = true
             }
         })
-
 
 
         val alertDialog: AlertDialog = dialogBuilder.create()
@@ -552,12 +647,13 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         applyBtn.setOnClickListener {
             application.postClick(Constants.BUTTON_FILTER_APPLY)
 //            Toast.makeText(context, "Under Development ${newestFirstSwitch.isChecked}", Toast.LENGTH_SHORT).show()
-            if (filters.newest){
-                sort()
-            }else{
-                getProductFromServer()
+            if (filters.newest) {
+//                sort()
+                getProductFromServer("latest")
+            } else {
+                getProductFromServer("nearest")
             }
-            PreferencesManagement.setFilters(requireContext(),filters)
+            PreferencesManagement.setFilters(requireContext(), filters)
             alertDialog.dismiss()
         }
         alertDialog.window?.setLayout(800, 700)
@@ -567,14 +663,14 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(data: Data?) {
         Log.d("TAG - ", "onMessageEvent: ${Gson().toJson(data)}")
-        if (data?.products?.size == 0){
+        if (data?.products?.size == 0) {
             binding.nodata.visibility = View.VISIBLE
-        }else binding.nodata.visibility = View.GONE
+        } else binding.nodata.visibility = View.GONE
 
 //        application.showToast(data?.data?.products?.size.toString())
     }
 
-    fun sort(){
+    private fun sort() {
         latestProductList.sortByDescending { list -> list.timestamp }
         latestProductAdapter.notifyDataSetChanged()
     }
@@ -585,8 +681,14 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     }
 
     override fun onItemDetail(data: Product, position: Int) {
-        val intent = Intent(requireContext(),NewProductDetailActivity::class.java)
-        intent.putExtra(Constants.PRODUCT,Gson().toJson(data))
+        val intent = Intent(requireContext(), NewProductDetailActivity::class.java)
+        intent.putExtra(Constants.PRODUCT, Gson().toJson(data))
+        startActivity(intent)
+    }
+
+    override fun onProductClicked(product: Product, position: Int) {
+        val intent = Intent(requireContext(), NewProductDetailActivity::class.java)
+        intent.putExtra(Constants.PRODUCT, Gson().toJson(product))
         startActivity(intent)
     }
 }

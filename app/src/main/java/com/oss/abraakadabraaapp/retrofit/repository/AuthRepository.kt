@@ -83,8 +83,8 @@ class AuthRepository(private val apiHelper: APIs) {
 
     suspend fun getProductsData(
         map: HashMap<String, String>,
-        page:Int,maxDistance:Int,lat:Double,lang:Double,category:String)
-            = apiHelper.getProductsData(map,page, maxDistance,lat,lang,category)
+        page:Int,maxDistance:Int,lat:Double,lang:Double,category:String,sortBy:String)
+            = apiHelper.getProductsData(map,page, maxDistance,lat,lang,category,"30",sortBy)
 
 
     suspend fun getAllCategories(
@@ -162,9 +162,9 @@ class AuthRepository(private val apiHelper: APIs) {
     suspend fun searchQuery(
         map: HashMap<String, String>,
         page:String,
-        lat:Double,long:Double,maxDistance:Int,pageNumber:Int
+        lat:Double,long:Double,maxDistance:Int,pageNumber:Int,sortBy: String
     )
-            = apiHelper.searchQuery(map,page,lat,long,maxDistance,pageNumber)
+            = apiHelper.searchQuery(map,page,lat,long,maxDistance,pageNumber,"30",sortBy)
 
     suspend fun sendNotification(
         map: HashMap<String, String>,

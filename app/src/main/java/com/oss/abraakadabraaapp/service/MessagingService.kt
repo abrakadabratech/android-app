@@ -34,13 +34,15 @@ class MessagingService : FirebaseMessagingService() {
 
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
 
-            Notifications.notifyMessage(
-                this,
-                title.toString(),
-                body.toString(),
-                notificationId,
-                map
-            )
+            if(title != null && body != null){
+                Notifications.notifyMessage(
+                    this,
+                    title.toString(),
+                    body.toString(),
+                    notificationId,
+                    map
+                )
+            }
 
 //            message = bundle["gcm.notification.body"] as String?
 //            title = bundle["gcm.notification.title"] as String?

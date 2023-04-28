@@ -87,7 +87,10 @@ interface APIs {
         @Query("maxDistance") maxDistance:Int,
         @Query("lat") lat:Double,
         @Query("long") long:Double,
-        @Query("category") category:String
+        @Query("category") category:String,
+        @Query("pageSize") size:String,
+        @Query("sortBy") sortBy:String
+
 
         ): Response<GetProducts>
 
@@ -241,7 +244,9 @@ interface APIs {
         @Query("lat") lat:Double,
         @Query("long") long:Double,
         @Query("maxDistance") maxDistance:Int,
-        @Query("page") pageNumber:Int
+        @Query("page") pageNumber:Int,
+        @Query("pageSize") size:String,
+        @Query("sortBy") sortBy:String
     ): Response<SearchModel>
 
     @POST("product/chats/send-notification")

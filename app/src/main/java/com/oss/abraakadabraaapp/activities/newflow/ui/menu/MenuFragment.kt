@@ -163,6 +163,9 @@ class MenuFragment : Fragment() {
                     PreferencesManagement.saveUserProfileFlag(requireContext(),false)
                     PreferencesManagement.saveUserFlag(requireContext(),false)
                     PreferencesManagement.saveUserInfo(requireContext(),null)
+                    PreferencesManagement.saveUserName(requireContext(),"")
+                    PreferencesManagement.saveUserEmail(requireContext(),"")
+
 
                     Firebase.auth.signOut()
                     application.showToast(it.responseMessage.toString())

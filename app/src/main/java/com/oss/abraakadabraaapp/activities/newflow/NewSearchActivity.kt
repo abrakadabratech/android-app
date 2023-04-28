@@ -72,7 +72,7 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
 
 
     private var latestProductList: ArrayList<Product> = ArrayList()
-    private var searchProductList: ArrayList<Data> = ArrayList()
+    private var searchProductList: ArrayList<Product> = ArrayList()
     private lateinit var latestProductAdapter: LatestProductAdapter
     private lateinit var searchProductAdapter: SearchProductAdapter
 
@@ -89,6 +89,10 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
         val type: Type = object : TypeToken<List<UserCatData?>?>() {}.getType()
 
         from = intent.extras?.getString("from").toString()
+
+        setUpObserver()
+        searchProductAdapter = SearchProductAdapter(searchProductList, this, this)
+
         if (from == "category"){
             categoryList =  Gson().fromJson(intent.extras?.getString("CATEGORIES"), type)
             categoryAdapter = CategoryAdapter(categoryList, this, this,"search")
@@ -110,15 +114,12 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
 
         }
 
-        binding.searchEdit.debounce(500L) { text -> searchProducts(text.toString()) }
+        binding.searchEdit.debounce(500L) { text -> searchProducts(text.toString(),"latest") }
 
 
 //        setupList()
 
 //        searchProducts()
-
-
-        setUpObserver()
 
 
         clickEvents()
@@ -142,7 +143,7 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
                         if(PreferencesManagement.saveAuthToken(this,auth))
                         {
 
-                            getProductFromServer()
+                            getProductFromServer("latest")
 
                         }else{
                             showToast("Error generating the token!")
@@ -175,7 +176,7 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
                         if (!noMoreData) {
                             isLoading = true
                             isLastPage = true
-                            getProductFromServer()
+                            //getProductFromServer()
                         }
                     }
                 }
@@ -183,7 +184,7 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
         })
     }
 
-    private fun getProductFromServer() {
+    private fun getProductFromServer(sortBy:String) {
         if (from == "category"){
             val userLocation = PreferencesManagement.getUserLocation(this)
 
@@ -195,46 +196,44 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
             authViewModel.getProductsData(map,currentPage,
                 50,
                 userLocation!!.lat.toDouble(),
-                userLocation.long.toDouble(),searchQuery)
+                userLocation.long.toDouble(),searchQuery,"nearest")
         }else{
-            searchProducts(query = searchQuery)
+            searchProducts(query = searchQuery,sortBy)
         }
     }
 
-    fun searchProducts(query : String){
-//        searchProductAdapter = SearchProductAdapter(searchProductList, this, this)
+    fun searchProducts(query : String,sortBy:String){
         setUpRecyclerView()
         searchQuery = query
         currentPage = 1
         generateAuthToken()
         val userLocation = PreferencesManagement.getUserLocation(this)
         authViewModel.searchQuery(Utility.getAuthentication(this),query,userLocation?.lat?.toDouble()!!
-        , userLocation?.long?.toDouble()!!,50,currentPage
+            , userLocation?.long?.toDouble()!!,50,currentPage,sortBy
         )
     }
     private fun setUpObserver() {
         authViewModel.searchSuccess.observe(this) {
-
             if (currentPage == pageStart) searchProductList.clear()
             searchProductList.clear()
             latestProductList.clear()
-            searchProductList.addAll(it.data)
+            searchProductList.addAll(it.data?.products!!)
             searchProductAdapter.notifyDataSetChanged()
 //            binding.nodata2.visibility = View.GONE
 
-            val lastPosition = searchProductList.size - it.data.size
+            val lastPosition = searchProductList.size - it.data!!.products.size
 
-            if (latestProductList.size == it.data.size) {
-                binding.rvLatestProduct.smoothScrollToPosition(searchProductList.size)
+            if (latestProductList.size == it.data!!.products.size) {
+                binding.rvLatestProduct.smoothScrollToPosition(latestProductList.size)
             } else {
                 binding.rvLatestProduct.smoothScrollToPosition(lastPosition + 1)
             }
-            binding.textView75.text = "${it.data.size} Items"
+            binding.textView75.text = "${it.data!!.products.size} Items"
 
 //            currentPage += 1
 
 
-            if (it.data.size == 0) {
+            if (it.data!!.products.size == 0) {
 //                binding.nodata2.visibility = View.VISIBLE
                 showToast("No Data Found")
             }
@@ -245,6 +244,7 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
 
         }
         authViewModel.allproductsSuccess.observe(this) {
+
             if (it.data.products.isNotEmpty()) {
                 if (currentPage == pageStart) latestProductList.clear()
                 latestProductList.addAll(it.data.products)
@@ -275,7 +275,7 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
 
         authViewModel.errorMessage.observe(this) {
 //            if (it.isNotBlank())//showToast(it)
-            }
+        }
         authViewModel.isLoading.observe(this) { loader(it) }
 
     }
@@ -300,7 +300,6 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
 
 
     private fun setUpRecyclerView() {
-        searchProductAdapter = SearchProductAdapter(searchProductList, this, this)
 
         val lm = GridLayoutManager(this, 2)
 //        binding.rvHomeCategory.isNestedScrollingEnabled = false
@@ -330,20 +329,21 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
             RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, oldScrollY: Int) {
                 super.onScrolled(recyclerView, dx, oldScrollY)
-               /* if (from == "category"){
-
-                }*/
-                Log.d("scroll", "scrolling")
-                val total: Int = lm.itemCount
-                val lastVisibleItemCount: Int = lm.findLastVisibleItemPosition()
-                if (!isLoading) {
-                    if (total > 0) if (total - 1 == lastVisibleItemCount) {
-                        if (!noMoreData) {
-                            isLoading = true
-                            isLastPage = true
-                            getProductFromServer()
+                if (from == "category"){
+                    Log.d("scroll", "scrolling")
+                    val total: Int = lm.itemCount
+                    val lastVisibleItemCount: Int = lm.findLastVisibleItemPosition()
+                    if (!isLoading) {
+                        if (total > 0) if (total - 1 == lastVisibleItemCount) {
+                            if (!noMoreData) {
+                                isLoading = true
+                                isLastPage = true
+//                                getProductFromServer()
+                            }
                         }
                     }
+                }else{
+
                 }
 
             }
@@ -429,11 +429,21 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
         applyBtn.setOnClickListener {
             postClick(Constants.BUTTON_FILTER_APPLY)
 //            Toast.makeText(this, "Under Development ${newestFirstSwitch.isChecked}", Toast.LENGTH_SHORT).show()
-            if (filters.newest){
-                sort()
+            if (from == "category"){
+                if (filters.newest){
+                    getProductFromServer("latest")
+
+                }else{
+                    getProductFromServer("nearest")
+                }
             }else{
-                getProductFromServer()
+                if (filters.newest){
+                    searchProducts(searchQuery,"latest")
+                }else{
+                    searchProducts(searchQuery,"nearest")
+                }
             }
+
             PreferencesManagement.setFilters(this,filters)
             alertDialog.dismiss()
         }
@@ -445,7 +455,7 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
         latestProductAdapter.notifyDataSetChanged()
     }
 
-    override fun onSearchItemDetail(data: Data, position: Int) {
+    override fun onSearchItemDetail(data: Product, position: Int) {
         val intent = Intent(this,NewProductDetailActivity::class.java)
         //need some parsing the json data
 //        val product = Product(data.condition,data.tim)
