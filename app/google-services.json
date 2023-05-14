@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "323424345844",
-    "project_id": "abrakadabra-dev",
-    "storage_bucket": "abrakadabra-dev.appspot.com"
+    "project_number": "139908621299",
+    "project_id": "akd-prod",
+    "storage_bucket": "akd-prod.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:323424345844:android:4ad9ec09704fd68c4908a1",
+        "mobilesdk_app_id": "1:139908621299:android:b392f45854de2e51eaa886",
         "android_client_info": {
           "package_name": "com.oss.abraakadabraaapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "323424345844-736i1k5jpgknaf978gr3dtpm0qqjld34.apps.googleusercontent.com",
+          "client_id": "139908621299-vk8b3dj4i3j4eanlcff43ivmh1v3jl4l.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCYb7ZGBiCo-WtEqL0TFSFGwBsJM9pL46k"
+          "current_key": "AIzaSyB3k0J06tNqysl4bpy-UflboPO9kMTenNU"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "323424345844-736i1k5jpgknaf978gr3dtpm0qqjld34.apps.googleusercontent.com",
+              "client_id": "139908621299-vk8b3dj4i3j4eanlcff43ivmh1v3jl4l.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

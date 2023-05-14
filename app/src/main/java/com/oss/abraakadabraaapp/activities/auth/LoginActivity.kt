@@ -13,7 +13,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.play.core.tasks.OnCompleteListener
 import com.google.android.play.core.tasks.Task
+import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseException
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.auth.*
 import com.google.firebase.auth.PhoneAuthProvider.ForceResendingToken
 import com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks
@@ -73,6 +76,12 @@ class LoginActivity : BaseActivity() {
                 this@LoginActivity,
                 R.color.blue_status_bar_color
             )
+
+//        FirebaseApp.initializeApp(/*context=*/this)
+//        val firebaseAppCheck = FirebaseAppCheck.getInstance()
+//        firebaseAppCheck.installAppCheckProviderFactory(
+//            PlayIntegrityAppCheckProviderFactory.getInstance()
+//        )
 
         setMessage()
         setUpObserver()

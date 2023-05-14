@@ -18,6 +18,9 @@ import androidx.core.content.ContextCompat
 import com.google.android.gms.location.*
 import com.google.android.play.core.tasks.OnCompleteListener
 import com.google.android.play.core.tasks.Task
+import com.google.firebase.FirebaseApp
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GetTokenResult
 import com.google.firebase.messaging.FirebaseMessaging
@@ -47,7 +50,7 @@ import java.io.IOException
 import java.util.*
 import java.util.regex.Pattern
 
-class StartAppActivity : BaseActivity() {
+class StartAppActivity : BaseActivity(),LocationListener  {
 
     private lateinit var binding: ActivityStartAppBinding
     private lateinit var contentBinding: SplashContentBinding
@@ -69,7 +72,6 @@ class StartAppActivity : BaseActivity() {
                 this@StartAppActivity,
                 R.color.blue_status_bar_color
             )
-
 
         setUpObserver() // Old Code
         // startApp() //New Code
@@ -224,7 +226,6 @@ class StartAppActivity : BaseActivity() {
         }*/
     }
 
-
     override fun onStart() {
         super.onStart()
         checkPermissions()
@@ -251,17 +252,13 @@ class StartAppActivity : BaseActivity() {
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.CAMERA,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.READ_SMS
-                )
+                    Manifest.permission.ACCESS_FINE_LOCATION)
             } else {
                 arrayListOf(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.CAMERA,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.READ_SMS
-                )
+                    Manifest.permission.ACCESS_FINE_LOCATION)
             }
 
         Dexter.withContext(this)
@@ -348,8 +345,8 @@ class StartAppActivity : BaseActivity() {
     private fun startAppSaveLocation() {
 
         val gcd = Geocoder(this, Locale.ENGLISH)
-        val latD = String.format("%.2f", lat.toDouble())
-        val lngD = String.format("%.2f", lng.toDouble())
+        val latD = lat //String.format("%.6f", lat.toDouble())
+        val lngD = lng //String.format("%.6f", lng.toDouble())
         var addresses: List<Address>? = null
         try {
             addresses = gcd.getFromLocation(latD.toDouble(), lngD.toDouble(), 1)
@@ -374,7 +371,24 @@ class StartAppActivity : BaseActivity() {
             val pinCode = addresses[0].postalCode ?: ""
             val fullAddress = addresses[0].getAddressLine(0) ?: ""
 
-            Log.d("Addresses", "$locality\n $city\n $state\n $country\n $pinCode\n $fullAddress")
+            val featurename = addresses[0].featureName ?: ""
+            val subloc = addresses[0].subLocality ?: ""
+            val loca = addresses[0].locality ?: ""
+
+            var f_address = ""
+            if(featurename != ""){
+                f_address = "$f_address$featurename,"
+            }
+            if(subloc != ""){
+                f_address = "$f_address$subloc,"
+            }
+            if (loca != ""){
+                f_address = "$f_address$loca,"
+            }
+            Log.e("location_update", "${f_address}", )
+            Log.e("location_update", "${Gson().toJson(addresses)}", )
+
+            Log.d("location_update", "$locality\n $city\n $state\n $country\n $pinCode\n $fullAddress")
 
             val address = "$locality, $city, $state"
 
@@ -404,13 +418,13 @@ class StartAppActivity : BaseActivity() {
                 }
             }
             Log.d("location_debug", "Final String ${finalStr.dropLast(1)}")
-            if (finalStr.dropLast(1).trim() != ""){
+            if (f_address.dropLast(1).trim() != ""){
                 PreferencesManagement.saveUserLocation(
                     this,
                     UserLocation(
                         lat = lat,
                         long = lng,
-                        finalStr.dropLast(1) ,
+                        f_address.dropLast(1) ,
                     )
                 )
             }else{

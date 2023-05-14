@@ -323,8 +323,8 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
 
     fun saveLocation() {
 
-        val latD = String.format("%.2f", lat.toDouble())
-        val lngD = String.format("%.2f", lng.toDouble())
+        val latD = lat //String.format("%.6f", lat.toDouble())
+        val lngD = lng //String.format("%.6f", lng.toDouble())
         val tag = "$latD,$lngD"
 
         Log.d("LocationCall", "getLastLocation: Called")
@@ -351,7 +351,27 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
             val state = addresses[0].adminArea ?: ""
             val country = addresses[0].countryName ?: ""
             val pinCode = addresses[0].postalCode ?: ""
+
             val fullAddress = addresses[0].getAddressLine(0) ?: ""
+            Log.e("location_update", "${Gson().toJson(addresses)}", )
+
+            val featurename = addresses[0].featureName ?: ""
+            val subloc = addresses[0].subLocality ?: ""
+            val loca = addresses[0].locality ?: ""
+
+            var f_address = ""
+            if(featurename != ""){
+                f_address = "$f_address$featurename,"
+            }
+            if(subloc != ""){
+                f_address = "$f_address$subloc,"
+            }
+            if (loca != ""){
+                f_address = "$f_address$loca,"
+            }
+            Log.e("location_update", "${f_address}", )
+
+            Log.d("location_update", "$locality\n $city\n $state\n $country\n $pinCode\n $fullAddress")
 
 
             val address = "$locality, $city, $state"
@@ -378,13 +398,13 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
             }
             Log.d("location_debug", "Final String ${finalStr.dropLast(1)}")
 
-            if (finalStr.dropLast(1).trim() != ""){
+            if (f_address.dropLast(1).trim() != ""){
                 PreferencesManagement.saveUserLocation(
                     this,
                     UserLocation(
                         lat = lat,
                         long = lng,
-                        finalStr.dropLast(1) ,
+                        f_address.dropLast(1) ,
                     )
                 )
             }else{

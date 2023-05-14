@@ -17,8 +17,8 @@ android {
         applicationId "com.oss.abraakadabraaapp"
         minSdk 23
         targetSdk 32
-        versionCode 14
-        versionName "1.11"
+        versionCode 16
+        versionName "1.13"
 //        versionName "test_refresh_product"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -45,15 +45,28 @@ android {
             debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField("String", "BASE_URL", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
-            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
+            //DEV
+//            buildConfigField("String", "BASE_URL", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
+//            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
+
+            //PROD
+            buildConfigField("String", "BASE_URL", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
+            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
+
         }
         debug {
             debuggable true
             minifyEnabled false
 //            buildConfigField("String", "BASE_URL", "\"https://abrakadabraapp.app/app/api/v1/\"")
-            buildConfigField("String", "BASE_URL", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
-            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
+            //DEV
+//            buildConfigField("String", "BASE_URL", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
+//            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
+
+            //PROD
+            buildConfigField("String", "BASE_URL", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
+            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
+
+
         }
     }
     compileOptions {
@@ -197,5 +210,13 @@ dependencies {
 
     //Read more
     implementation 'com.github.devendroid:ReadMoreOption:1.0.2'
+
+    // App check for safetyNet
+    // Import the BoM for the Firebase platform
+    implementation platform('com.google.firebase:firebase-bom:32.0.0')
+
+    // Add the dependency for the App Check library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-appcheck-playintegrity'
 
 }
