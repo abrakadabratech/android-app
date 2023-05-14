@@ -16,6 +16,7 @@ Abra Ka Dabra user android app
     5.Firebase Cloud Messaging
     6.Lottie 
     7.Coroutines ..
+    8.Event Bus
 
 #### Code Architecture
 
