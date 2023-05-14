@@ -6,6 +6,39 @@ Abra Ka Dabra user android app
 - Code Architecture
 - Api's used in the app (Screen wise)
 
+#### Developer Documentation
+
+    - Introduction    
+       
+       View Binding for bind the UI elements
+       Followed MVVM architecture pattern for api calls and populating the UI
+       Used FCM for notification and chat functionalities
+       Retrofit for API calls
+       
+    - Pre-requisites
+        - Android Studio 3.0 or later
+        - Jdk 1.8 or later
+        - Postman for api testing
+        - Github access
+        - Firebase access
+        - Play console access
+        - Cloud console access
+        
+    - Setup Local Dev Environment
+        
+        - Install latest version of [Android studio](https://developer.android.com/studio?gclid=CjwKCAjwjYKjBhB5EiwAiFdSfkrUGT9BuNQduTvhHuC40tkc26Lc37sGWMIDSp6ZoVcNb4YZW8bZjxoCdf4QAvD_BwE&gclsrc=aw.ds) 
+        - Set up android studio
+        
+    - How to build
+    
+        - jks file available on key forlder
+        - password details available on the same folder
+        
+    - How to test
+    
+        - build an apk and install it on emulator or physical device to start testing.
+    
+
 
 #### Android Concepts Used in the app
 
