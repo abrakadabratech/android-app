@@ -103,7 +103,7 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
                 csvString = csvString + i.id.toString() + ","
 //                showToast(categoryList.size.toString())
             }
-            searchQuery = csvString
+            searchQuery = csvString.dropLast(1)
 
 //            showToast(categoryList.size.toString())
             setupList()

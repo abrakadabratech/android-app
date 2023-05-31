@@ -43,13 +43,15 @@ Abra Ka Dabra user android app
 #### Android Concepts Used in the app
 
     1.Kotlin programming
-    2.Dagger Dependecy Injection
+    2.Dagger Dependecy Injection , koin
     3.MVVM Architecture pattern
     4.View Binding
     5.Firebase Cloud Messaging
     6.Lottie 
     7.Coroutines ..
     8.Event Bus
+    9.Google Ananlytics 
+    10.Deep linking
 
 #### Code Architecture
 
