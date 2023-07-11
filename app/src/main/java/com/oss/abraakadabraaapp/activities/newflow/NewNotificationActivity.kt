@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
@@ -38,12 +39,12 @@ import java.util.*
 
 class NewNotificationActivity : BaseActivity() {
     lateinit var firestoreUserAdapter: FirestoreRecyclerAdapter<NotificationEntity, UsersViewholder>
-    private lateinit var binding:ActivityNewNotificationBinding
+    private lateinit var binding: ActivityNewNotificationBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNewNotificationBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        postEvent(Constants.PAGE_NOTIFICATIONS,null)
+        postEvent(Constants.PAGE_NOTIFICATIONS, null)
 
         setUpRecyclerview()
 
@@ -62,35 +63,38 @@ class NewNotificationActivity : BaseActivity() {
         val db = Firebase.firestore
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
-        val docRef = db.collection("notifications").whereEqualTo("userId",currentUserId)
+        val docRef = db.collection("notifications").whereEqualTo("userId", currentUserId)
+            .orderBy("timestamp", Query.Direction.DESCENDING)
 
         docRef.get().addOnSuccessListener { snap ->
-            if(snap.isEmpty){
+            if (snap.isEmpty) {
                 binding.nodata5.visibility = View.VISIBLE
-            }else{
+            } else {
                 binding.nodata5.visibility = View.GONE
             }
         }
         val options: FirestoreRecyclerOptions<NotificationEntity> =
             FirestoreRecyclerOptions.Builder<NotificationEntity>()
-            .setQuery(docRef,NotificationEntity::class.java)
-            .build()
+                .setQuery(docRef, NotificationEntity::class.java)
+                .build()
 
-        firestoreUserAdapter=object :FirestoreRecyclerAdapter<NotificationEntity,
-                UsersViewholder>(options){
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):UsersViewholder {
+        firestoreUserAdapter = object : FirestoreRecyclerAdapter<NotificationEntity,
+                UsersViewholder>(options) {
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UsersViewholder {
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val listItemBinding = NotificationRowBinding.inflate(layoutInflater, parent, false)
                 return UsersViewholder(listItemBinding)
             }
 
-            override fun onBindViewHolder(holder: UsersViewholder,
-                                          position: Int, model: NotificationEntity) {
+            override fun onBindViewHolder(
+                holder: UsersViewholder,
+                position: Int, model: NotificationEntity
+            ) {
 
-                val user=model
-                if (!model.deleted){
+                val user = model
+                if (!model.deleted) {
                     holder.binding.rootlayout.setBackgroundColor(resources.getColor(R.color.bg_color))
-                }else{
+                } else {
                     holder.binding.rootlayout.setBackgroundColor(resources.getColor(R.color.white))
                 }
                 holder.bind(model)
@@ -107,28 +111,35 @@ class NewNotificationActivity : BaseActivity() {
 //                    db.collection("notifications").("documentId",model.docId)
 //                        .update()
 
-                    db.collection("notifications").document(model.docId).update("deleted",true)
+                    db.collection("notifications").document(model.docId).update("deleted", true)
 
-                    when(model.module){
+                    when (model.module) {
                         Constants.productListing -> {
-                            val intent = Intent(this@NewNotificationActivity, RequesterActivity::class.java)
+                            val intent =
+                                Intent(this@NewNotificationActivity, RequesterActivity::class.java)
                             intent.putExtra(Constants.productId, model.data)
                             startActivity(intent)
                         }
+
                         Constants.productRequestDetails -> {
-                            val intent = Intent(this@NewNotificationActivity, MyRequestDetailsActivity::class.java)
+                            val intent = Intent(
+                                this@NewNotificationActivity,
+                                MyRequestDetailsActivity::class.java
+                            )
                             intent.putExtra(Constants.productId, model.data)
                             startActivity(intent)
                         }
+
                         Constants.chatDetails -> {
-                            val intent = Intent(this@NewNotificationActivity, ChatDetailActivity::class.java)
+                            val intent =
+                                Intent(this@NewNotificationActivity, ChatDetailActivity::class.java)
                             intent.putExtra(Constants.productId, model.data)
                             startActivity(intent)
                         }
                     }
                 }
-                var a= GsonBuilder().create().toJson(model)
-                Log.d("TAG", "onBindViewHolder: "+a)
+                var a = GsonBuilder().create().toJson(model)
+                Log.d("TAG", "onBindViewHolder: " + a)
             }
         }
         val layoutManager = WrapContentLinearLayoutManager(this)
@@ -143,13 +154,15 @@ class NewNotificationActivity : BaseActivity() {
         super.onStart()
         firestoreUserAdapter.startListening()
     }
-    class UsersViewholder(val binding: NotificationRowBinding) : RecyclerView.ViewHolder(binding.root) {
+
+    class UsersViewholder(val binding: NotificationRowBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(documentSnapshot: NotificationEntity) {
 
         }
     }
 
-    fun getTime(unix:String):String{
+    fun getTime(unix: String): String {
 
         try {
             val sdf = SimpleDateFormat("MMM dd,yyyy HH:MM")

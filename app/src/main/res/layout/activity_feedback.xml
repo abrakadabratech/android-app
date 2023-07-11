@@ -332,15 +332,14 @@
             <EditText
                 android:id="@+id/descriptionTxt"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="150dp"
                 android:layout_margin="5dp"
                 android:background="@color/transparent"
-                android:fontFamily="@font/montserrat_regular"
                 android:gravity="top"
-                android:hint="Eg - Ladies Bag , bought it on my first foreign trip , in running condition.. \n\nGive close description of the item as possible to increase response"
+                android:hint=""
                 android:maxLength="500"
                 android:textColor="@color/edit_text_color"
-                android:textSize="14sp" />
+                android:textSize="16sp" />
         </androidx.cardview.widget.CardView>
 
         <TextView
