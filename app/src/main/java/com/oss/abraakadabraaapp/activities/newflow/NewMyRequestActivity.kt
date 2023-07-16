@@ -22,12 +22,15 @@ import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.Collections
 
 class NewMyRequestActivity : BaseActivity() , MyRequestAdapter.OnResponseClick{
     private lateinit var binding: ActivityNewMyRequestBinding
     private val mainViewModel: AuthViewModel by viewModel()
     private lateinit var adapterList : MyRequestAdapter
     private var categoryList: ArrayList<Data> = ArrayList()
+    private var isFromRequestPage: Boolean = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,12 +41,36 @@ class NewMyRequestActivity : BaseActivity() , MyRequestAdapter.OnResponseClick{
 
         adapterList = MyRequestAdapter(this,categoryList,this)
 
+        isFromRequestPage = intent.extras!!.getBoolean("isFromRequestPage",false)
+
         setUpRecyclerView()
         setUpObserver()
 
         binding.ivBack.setOnClickListener {
             postClick(BUTTON_BACK_IN_MY_REQUEST)
-            onBackPressed()
+            if (isFromRequestPage) {
+                val intent = Intent(this, NewHomeActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                startActivity(intent)
+                finish()
+            } else {
+                onBackPressed();
+//            showToast("Do not press back. Please complete your profile")
+            }
+        }
+    }
+    override fun onBackPressed() {
+//        super.onBackPressed()
+        if (isFromRequestPage) {
+            val intent = Intent(this, NewHomeActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
+            finish()
+        } else {
+            super.onBackPressed();
+//            showToast("Do not press back. Please complete your profile")
         }
     }
 
@@ -62,6 +89,7 @@ class NewMyRequestActivity : BaseActivity() , MyRequestAdapter.OnResponseClick{
                 }else {
                     binding.rvMyrequest.visibility= View.VISIBLE
                     binding.noRequestSent.visibility= View.GONE
+//                    Collections.sort(it.data, Collections.reverseOrder());
                     adapterList.setData(it.data)
                     adapterList.notifyDataSetChanged()
                 }

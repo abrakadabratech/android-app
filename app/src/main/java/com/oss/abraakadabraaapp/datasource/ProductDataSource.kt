@@ -25,14 +25,13 @@ private val sortBy:String) : PagingSource<Int, Product>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Product> {
         try {
             val currentLoadingPageKey = params.key ?: 1
-            val response = apiService.getProductsData(headers,currentLoadingPageKey,maxDistance,lat,long,categories,
-                sortBy)
+            val response = apiService.getProductsData(headers, currentLoadingPageKey,maxDistance,lat,long,sortBy)
             Log.d("TAG - ", "load:response data $response")
             val responseData = mutableListOf<Product>()
-            EventBus.getDefault().post(response.data.products)
+            EventBus.getDefault().post(response.data.products.size.toFloat())
             val data = response.data.products ?: emptyList()
             responseData.addAll(data)
-            Log.d("TAG - ", "load:response data ${Gson().toJson(responseData)}")
+            Log.d("TAG - ", "load:response data ${responseData.size} ${Gson().toJson(responseData)}")
             val prevKey = if (currentLoadingPageKey == 1) null else currentLoadingPageKey - 1
 
             return LoadResult.Page(

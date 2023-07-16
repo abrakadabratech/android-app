@@ -129,6 +129,7 @@ class HomeFragment : Fragment(), LocationListener {
 //                .addToBackStack("name") // name can be null
                 .commit()
             EventBus.getDefault().post(1)*/
+
         }
 
         binding.receiveBtn.setOnClickListener {

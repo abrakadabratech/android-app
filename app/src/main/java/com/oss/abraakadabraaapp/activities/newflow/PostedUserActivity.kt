@@ -81,7 +81,8 @@ class PostedUserActivity : BaseActivity() {
 //            EventBus.getDefault().post("clear")
 
             val intent = Intent(this, NewMyRequestActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent.putExtra("isFromRequestPage",true)
             startActivity(intent)
             finish()
         }
@@ -91,7 +92,8 @@ class PostedUserActivity : BaseActivity() {
 
             val intent = Intent(this, NewMyRequestActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent.putExtra("isFromRequestPage",true)
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
             finish()
            /* postClick(Constants.BUTTON_PAY_AS_YOU_WISH)

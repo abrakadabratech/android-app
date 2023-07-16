@@ -1,6 +1,7 @@
 package com.oss.abraakadabraaapp.datasource
 
 import SearchModel
+import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.datasource.products.GetProducts
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -17,7 +18,7 @@ interface APIService {
         @Query("maxDistance") maxDistance:Int,
         @Query("lat") lat:Double,
         @Query("long") long:Double,
-        @Query("category") categories:String,
+        //@Query("category") categories:String,
         @Query("sortBy") sortBy:String
 
         ): GetProducts
@@ -36,7 +37,7 @@ interface APIService {
     companion object {
 
         fun getApiService() = Retrofit.Builder()
-            .baseUrl("https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/")
+            .baseUrl(if (BuildConfig.DEBUG) BuildConfig.BASE_URL else BuildConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(APIService::class.java)

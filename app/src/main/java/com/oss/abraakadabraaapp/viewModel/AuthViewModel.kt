@@ -682,7 +682,7 @@ fun getRequestDetails(
             isLoading.value = true
 
             suspend fun call() =
-                repository.getProductsData(headerMap, page, maxDistance, lat, lang, category,sortBy)
+                repository.getProductsData(headerMap, page, maxDistance, lat, lang, category.dropLast(1),sortBy)
             callApi(::call, object : CallHelper<GetProducts> {
                 override fun onSuccessful(data: GetProducts) {
                     allproductsSuccess.value = data

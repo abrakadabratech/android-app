@@ -54,6 +54,9 @@ import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SWIPE_REFRESH
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.customView.MarginItemDecoration
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -491,10 +494,25 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                         userLocation.long.toDouble(), "", sortBy
                     )
                 )[MainViewModel::class.java]
-            lifecycleScope.launch {
-                viewModel.listData.collect {
-                    mainListAdapter?.submitData(PagingData.empty())
-                    mainListAdapter?.submitData(it)
+            lifecycleScope.launchWhenCreated {
+
+                viewModel.listData.collectLatest{
+                    launch(Dispatchers.Main){
+                        mainListAdapter!!.loadStateFlow.collectLatest { loadStates ->
+                            if (loadStates.refresh is LoadState.Loading ){
+                                application.loader(true)
+                            }
+                            else{
+                                if ( mainListAdapter!!.itemCount < 1){
+                                    binding.nodata.visibility = View.VISIBLE
+                                }else{
+                                    binding.nodata.visibility = View.GONE
+                                }
+                                application.loader(false)
+                            }
+                        }
+                    }
+                    mainListAdapter!!.submitData(it)
                 }
 
             }
@@ -512,13 +530,55 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                     )
                 )[MainFilterViewModel::class.java]
 
-            lifecycleScope.launch {
-                viewModel.listData.collect {
-                    mainListAdapter?.submitData(PagingData.empty())
-                    mainListAdapter?.submitData(it)
+            lifecycleScope.launchWhenCreated {
+
+                viewModel.listData.collectLatest{
+                    launch(Dispatchers.Main){
+                        mainListAdapter!!.loadStateFlow.collectLatest { loadStates ->
+                            if (loadStates.refresh is LoadState.Loading ){
+                                application.loader(true)
+                            }
+                            else{
+                                if ( mainListAdapter!!.itemCount < 1){
+                                    binding.nodata.visibility = View.VISIBLE
+                                }else{
+                                    binding.nodata.visibility = View.GONE
+                                }
+                                application.loader(false)
+                            }
+                        }
+                    }
+                    mainListAdapter!!.submitData(it)
                 }
 
             }
+
+           /* lifecycleScope.launch {
+
+               *//* mainListAdapter?.loadStateFlow?.collect{ loadState ->
+                    val isListEmpty =  mainListAdapter!!.itemCount == 0
+                    if ( loadState.append.endOfPaginationReached )
+                    {
+                        if ( mainListAdapter!!.itemCount < 1)
+                        /// show empty view
+                            binding.nodata.visibility = View.VISIBLE
+
+                        else binding.nodata.visibility = View.GONE
+                        ///  hide empty view
+                    }
+                }*//*
+                viewModel.listData.collect {
+
+                    mainListAdapter?.submitData(it)
+//                    mainListAdapter?.submitData(PagingData.empty())
+                    if (mainListAdapter?.itemCount == 1){
+
+                        application.showToast(mainListAdapter?.itemCount.toString())
+                    }
+                }
+
+            }*/
+
         }
 
     }
@@ -661,11 +721,11 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(data: Data?) {
+    fun onMessageEvent(data: Boolean) {
         Log.d("TAG - ", "onMessageEvent: ${Gson().toJson(data)}")
-        if (data?.products?.size == 0) {
-            binding.nodata.visibility = View.VISIBLE
-        } else binding.nodata.visibility = View.GONE
+//        if (data?.toInt() == 0) {
+//            binding.nodata.visibility = View.VISIBLE
+//        } else binding.nodata.visibility = View.GONE
 
 //        application.showToast(data?.data?.products?.size.toString())
     }

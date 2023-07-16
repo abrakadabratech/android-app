@@ -88,6 +88,7 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
                 showPendingPopUp()
             }else{
                 val intent = Intent(this,PostedUserActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 intent.putExtra(Constants.PRODUCT,Gson().toJson(productDetails))
                 startActivity(intent)
             }

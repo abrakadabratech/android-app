@@ -116,13 +116,15 @@
 
                 <TextView
                     android:id="@+id/productName"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:fontFamily="@font/montserrat_bold"
                     android:text=""
                     android:textColor="@color/new_action_bar_title_color"
                     android:textSize="24sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/categoryTxt"
                     app:layout_constraintTop_toBottomOf="@+id/categoryTxt" />
 

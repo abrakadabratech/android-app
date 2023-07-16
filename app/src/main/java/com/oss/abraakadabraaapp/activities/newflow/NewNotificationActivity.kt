@@ -67,6 +67,7 @@ class NewNotificationActivity : BaseActivity() {
             .orderBy("timestamp", Query.Direction.DESCENDING)
 
         docRef.get().addOnSuccessListener { snap ->
+            Log.d("Notification Size", "setUpRecyclerview: "+snap.size())
             if (snap.isEmpty) {
                 binding.nodata5.visibility = View.VISIBLE
             } else {

@@ -176,7 +176,8 @@ class AccountsFragment : Fragment(), View.OnClickListener {
             }
             binding.myRequestLayout -> {
                 application.postClick(Constants.BUTTON_MY_REQUEST)
-                startActivity(Intent(context, NewMyRequestActivity::class.java))
+                startActivity(Intent(context, NewMyRequestActivity::class.java).putExtra("isFromRequestPage",false)
+                )
             }
             binding.myChatsLayout -> {
                 application.postClick(Constants.BUTTON_MY_CHATS)

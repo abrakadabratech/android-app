@@ -54,8 +54,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.lang.reflect.Type
 import java.util.concurrent.TimeUnit
 
-class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterface,
-    LatestProductAdapter.LatestProductAdapterInterface,SearchProductAdapter.LatestProductAdapterInterface {
+class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterface,
+    LatestProductAdapter.LatestProductAdapterInterface,
+    SearchProductAdapter.LatestProductAdapterInterface {
 
 
     private lateinit var binding: ActivityNewSearchBinding
@@ -84,7 +85,7 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
         binding = ActivityNewSearchBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        postEvent(Constants.PAGE_SEARCH,null)
+        postEvent(Constants.PAGE_SEARCH, null)
 
         val type: Type = object : TypeToken<List<UserCatData?>?>() {}.getType()
 
@@ -93,28 +94,29 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
         setUpObserver()
         searchProductAdapter = SearchProductAdapter(searchProductList, this, this)
 
-        if (from == "category"){
-            categoryList =  Gson().fromJson(intent.extras?.getString("CATEGORIES"), type)
-            categoryAdapter = CategoryAdapter(categoryList, this, this,"search")
-            binding.rvHomeCategory.layoutManager = LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false)
+        if (from == "category") {
+            categoryList = Gson().fromJson(intent.extras?.getString("CATEGORIES"), type)
+            categoryAdapter = CategoryAdapter(categoryList, this, this, "search")
+            binding.rvHomeCategory.layoutManager =
+                LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
             binding.rvHomeCategory.adapter = categoryAdapter
             var csvString = ""
-            for (i in categoryList){
+            for (i in categoryList) {
                 csvString = csvString + i.id.toString() + ","
 //                showToast(categoryList.size.toString())
             }
-            searchQuery = csvString
+            searchQuery = csvString.dropLast(1)
 
 //            showToast(categoryList.size.toString())
             setupList()
             searchCategories(csvString)
-        }else{
+        } else {
             binding.searchEdit.requestFocus()
             setUpRecyclerView()
 
         }
 
-        binding.searchEdit.debounce(500L) { text -> searchProducts(text.toString(),"latest") }
+        binding.searchEdit.debounce(500L) { text -> searchProducts(text.toString(), "latest") }
 
 
 //        setupList()
@@ -126,7 +128,7 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
 
     }
 
-    private fun searchCategories(string:String) {
+    private fun searchCategories(string: String) {
         searchQuery = string
         Log.d("TAG - ", "searchCategories: $string")
         if (isNetworkAvailable()) {
@@ -140,12 +142,11 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
                         val idToken = it.result.token
                         val auth = "Bearer $idToken"
 
-                        if(PreferencesManagement.saveAuthToken(this,auth))
-                        {
+                        if (PreferencesManagement.saveAuthToken(this, auth)) {
 
                             getProductFromServer("latest")
 
-                        }else{
+                        } else {
                             showToast("Error generating the token!")
                         }
                     }
@@ -153,6 +154,7 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
 
         }
     }
+
     private fun setupList() {
         latestProductAdapter = LatestProductAdapter(latestProductList, this, this)
         val lm = GridLayoutManager(this, 2)
@@ -184,8 +186,8 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
         })
     }
 
-    private fun getProductFromServer(sortBy:String) {
-        if (from == "category"){
+    private fun getProductFromServer(sortBy: String) {
+        if (from == "category") {
             val userLocation = PreferencesManagement.getUserLocation(this)
 
             val map = HashMap<String, String>()
@@ -193,25 +195,34 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
             map["Authorization"] = token
 //                            map["logging"] = "true"
 
-            authViewModel.getProductsData(map,currentPage,
+            authViewModel.getProductsData(
+                map, currentPage,
                 50,
                 userLocation!!.lat.toDouble(),
-                userLocation.long.toDouble(),searchQuery,"nearest")
-        }else{
-            searchProducts(query = searchQuery,sortBy)
+                userLocation.long.toDouble(), searchQuery, "nearest"
+            )
+        } else {
+            searchProducts(query = searchQuery, sortBy)
         }
     }
 
-    fun searchProducts(query : String,sortBy:String){
+    fun searchProducts(query: String, sortBy: String) {
         setUpRecyclerView()
         searchQuery = query
         currentPage = 1
         generateAuthToken()
         val userLocation = PreferencesManagement.getUserLocation(this)
-        authViewModel.searchQuery(Utility.getAuthentication(this),query,userLocation?.lat?.toDouble()!!
-            , userLocation?.long?.toDouble()!!,50,currentPage,sortBy
+        authViewModel.searchQuery(
+            Utility.getAuthentication(this),
+            query,
+            userLocation?.lat?.toDouble()!!,
+            userLocation?.long?.toDouble()!!,
+            50,
+            currentPage,
+            sortBy
         )
     }
+
     private fun setUpObserver() {
         authViewModel.searchSuccess.observe(this) {
             if (currentPage == pageStart) searchProductList.clear()
@@ -234,8 +245,10 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
 
 
             if (it.data!!.products.size == 0) {
-//                binding.nodata2.visibility = View.VISIBLE
+                binding.nodata2.visibility = View.VISIBLE
                 showToast("No Data Found")
+            } else {
+                binding.nodata2.visibility = View.GONE
             }
 //
 //            searchProductAdapter.setData(it.data)
@@ -244,6 +257,10 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
 
         }
         authViewModel.allproductsSuccess.observe(this) {
+            Log.d("NewSearchActivity", "setUpObserver: ${it.data.products.size}")
+            if (it.data.products.size == 0) {
+                binding.nodata2.visibility = View.VISIBLE
+            } else binding.nodata2.visibility = View.GONE
 
             if (it.data.products.isNotEmpty()) {
                 if (currentPage == pageStart) latestProductList.clear()
@@ -261,11 +278,6 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
                 binding.textView75.text = "${it.data.products.size} Items"
 
                 currentPage += 1
-            } else {
-                //noDataFound()
-                if (it.data.products.size == 0 && currentPage == 1) {
-                    binding.nodata2.visibility = View.VISIBLE
-                }
             }
 //            latestProductAdapter.setData(it.data.products)
 //            latestProductAdapter.notifyDataSetChanged()
@@ -282,7 +294,7 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
 
     private fun clickEvents() {
         binding.catFilter.setOnClickListener {
-            postEvent(Constants.BUTTON_FILTER_SEARCH,null)
+            postEvent(Constants.BUTTON_FILTER_SEARCH, null)
             showNearByFilterDialog()
 //            startActivity(Intent(requireContext(),CategorySelectActivity::class.java))
         }
@@ -293,10 +305,9 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
     }
 
 
-    override fun onCategoryClick(data: UserCatData,position: Int) {
+    override fun onCategoryClick(data: UserCatData, position: Int) {
 
     }
-
 
 
     private fun setUpRecyclerView() {
@@ -316,9 +327,9 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
         //when search the products
         binding.rvLatestProduct.apply {
             layoutManager = lm
-           /* addItemDecoration(
-                MarginItemDecoration(18)
-            )*/
+            /* addItemDecoration(
+                 MarginItemDecoration(18)
+             )*/
             adapter = searchProductAdapter
 //            isNestedScrollingEnabled = false
 //            recycledViewPool.setMaxRecycledViews(1, 0)
@@ -329,7 +340,7 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
             RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, oldScrollY: Int) {
                 super.onScrolled(recyclerView, dx, oldScrollY)
-                if (from == "category"){
+                if (from == "category") {
                     Log.d("scroll", "scrolling")
                     val total: Int = lm.itemCount
                     val lastVisibleItemCount: Int = lm.findLastVisibleItemPosition()
@@ -342,13 +353,14 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
                             }
                         }
                     }
-                }else{
+                } else {
 
                 }
 
             }
         })
     }
+
     //Alert Dialog for show nearby filter
     private fun showNearByFilterDialog() {
 
@@ -368,12 +380,12 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
         val applyBtn = dialogView.findViewById<TextView>(R.id.applyBtn)
         val closeBtn = dialogView.findViewById<ImageView>(R.id.closeBtn)
 
-        if (filters?.nearest!!){
+        if (filters?.nearest!!) {
             nearToMeTxt.setTextColor(resources.getColor(R.color.cat_select_color))
             newestFirstTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
             newestFirstSwitch.isChecked = false
             nearToMeSwitch.isChecked = true
-        }else{
+        } else {
             nearToMeTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
             newestFirstTxt.setTextColor(resources.getColor(R.color.cat_select_color))
             newestFirstSwitch.isChecked = true
@@ -429,42 +441,43 @@ class NewSearchActivity : BaseActivity() ,CategoryAdapter.CategoryAdapterInterfa
         applyBtn.setOnClickListener {
             postClick(Constants.BUTTON_FILTER_APPLY)
 //            Toast.makeText(this, "Under Development ${newestFirstSwitch.isChecked}", Toast.LENGTH_SHORT).show()
-            if (from == "category"){
-                if (filters.newest){
+            if (from == "category") {
+                if (filters.newest) {
                     getProductFromServer("latest")
 
-                }else{
+                } else {
                     getProductFromServer("nearest")
                 }
-            }else{
-                if (filters.newest){
-                    searchProducts(searchQuery,"latest")
-                }else{
-                    searchProducts(searchQuery,"nearest")
+            } else {
+                if (filters.newest) {
+                    searchProducts(searchQuery, "latest")
+                } else {
+                    searchProducts(searchQuery, "nearest")
                 }
             }
 
-            PreferencesManagement.setFilters(this,filters)
+            PreferencesManagement.setFilters(this, filters)
             alertDialog.dismiss()
         }
         alertDialog.window?.setLayout(800, 700)
 
     }
-    fun sort(){
+
+    fun sort() {
         latestProductList.sortByDescending { list -> list.timestamp }
         latestProductAdapter.notifyDataSetChanged()
     }
 
     override fun onSearchItemDetail(data: Product, position: Int) {
-        val intent = Intent(this,NewProductDetailActivity::class.java)
+        val intent = Intent(this, NewProductDetailActivity::class.java)
         //need some parsing the json data
 //        val product = Product(data.condition,data.tim)
-        intent.putExtra(Constants.PRODUCT,Gson().toJson(data))
+        intent.putExtra(Constants.PRODUCT, Gson().toJson(data))
         startActivity(intent)
     }
 
     override fun onItemDetail(data: Product, position: Int) {
-        val intent = Intent(this,NewProductDetailActivity::class.java)
+        val intent = Intent(this, NewProductDetailActivity::class.java)
         intent.putExtra(Constants.PRODUCT, Gson().toJson(data))
         startActivity(intent)
     }

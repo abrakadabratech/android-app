@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 import com.oss.abraakadabraaapp.datasource.products.Product
 
 @Keep
-data class Data(
+    data class Data(
     @SerializedName("count")
     val count: Int,
     @SerializedName("page")

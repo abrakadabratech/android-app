@@ -101,6 +101,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             .document(currentUserId!!).addSnapshotListener { value, error ->
                 status = value?.getString("status").toString()
 
+                Log.d("Log-error", "onCreate: error"+error)
                 setProfileStatus(status)
             }
     }

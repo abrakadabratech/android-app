@@ -17,20 +17,22 @@ android {
         applicationId "com.oss.abraakadabraaapp"
         minSdk 23
         targetSdk 32
-        versionCode 16
-        versionName "1.13"
+        versionCode 17
+        versionName "1.14"
 //        versionName "test_refresh_product"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
         debug {
             storeFile file('D:\\Android\\AndroidProjects\\MY_WORK_PROJECTS\\newJksFiles\\key.jks')
+//            storeFile file('/Users/hari/Desktop/Freelancing/Code/AKD/akd-app-v2/key/key.jks')
             storePassword 'akd@123'
             keyAlias 'key0'
             keyPassword 'akd@123'
         }
         release {
             storeFile file("D:\\Android\\AndroidProjects\\MY_WORK_PROJECTS\\newJksFiles\\key.jks")
+//            storeFile file('/Users/hari/Desktop/Freelancing/Code/AKD/akd-app-v2/key/key.jks')
             storePassword "akd@123"
             keyAlias "key0"
             keyPassword "akd@123"

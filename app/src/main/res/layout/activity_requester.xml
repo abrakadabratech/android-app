@@ -529,11 +529,11 @@
                         android:layout_height="90dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="4dp"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginBottom="4dp"
                         app:cardCornerRadius="10dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/userName">
+                        app:layout_constraintTop_toTopOf="parent">
 
                         <ImageView
                             android:id="@+id/imageView20"
@@ -548,20 +548,21 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
                         android:fontFamily="@font/montserrat_bold"
                         android:textSize="@dimen/sp_16"
+                        app:layout_constraintBottom_toBottomOf="@+id/cardView6"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintStart_toEndOf="@+id/cardView6"
+                        app:layout_constraintTop_toTopOf="@+id/cardView6" />
 
                     <ImageView
                         android:id="@+id/imageView17"
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:layout_marginStart="16dp"
+                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="@+id/userLocation"
                         app:layout_constraintStart_toEndOf="@+id/cardView6"
                         app:layout_constraintTop_toTopOf="@+id/userLocation"
@@ -574,6 +575,7 @@
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
                         android:fontFamily="@font/montserrat_regular"
+                        android:visibility="gone"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/imageView17"
                         app:layout_constraintTop_toTopOf="@+id/cardView6" />
@@ -583,6 +585,7 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:layout_marginTop="8dp"
+                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="@+id/cardView6"
                         app:layout_constraintStart_toStartOf="@+id/imageView17"
                         app:layout_constraintTop_toBottomOf="@+id/userLocation"
@@ -596,6 +599,7 @@
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
                         android:fontFamily="@font/montserrat_regular"
+                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="@+id/imageView36"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -608,6 +612,7 @@
                         android:layout_height="18dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp"
+                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/imageView36"
                         app:layout_constraintTop_toBottomOf="@+id/imageView36"
@@ -619,6 +624,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:fontFamily="@font/montserrat_regular"
+                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="@+id/imageView37"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/imageView37"
