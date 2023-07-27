@@ -633,7 +633,11 @@ class LoginActivity : BaseActivity() {
     }
 
     override fun onDestroy() {
-        cancelTimer()
+        try{
+            cancelTimer()
+        }catch (e:Exception){
+            Log.d("TAG", "onDestroy: ${e.message}")
+        }
         super.onDestroy()
     }
 

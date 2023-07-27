@@ -17,8 +17,8 @@ android {
         applicationId "com.oss.abraakadabraaapp"
         minSdk 23
         targetSdk 32
-        versionCode 17
-        versionName "1.14"
+        versionCode 1
+        versionName "1.10"
 //        versionName "test_refresh_product"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -207,7 +207,7 @@ dependencies {
 
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
-// Annotation processor
+    // Annotation processor
     kapt "androidx.lifecycle:lifecycle-compiler:2.2.0"
 
     //Read more
@@ -220,5 +220,8 @@ dependencies {
     // Add the dependency for the App Check library
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-appcheck-playintegrity'
+
+    implementation("com.google.firebase:firebase-config-ktx")
+
 
 }

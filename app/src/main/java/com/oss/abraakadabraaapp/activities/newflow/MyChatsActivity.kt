@@ -11,7 +11,8 @@ import com.oss.abraakadabraaapp.adapter.RequestTabAdapter
 import com.oss.abraakadabraaapp.databinding.ActivityMyChatsBinding
 import com.oss.abraakadabraaapp.utils.Constants
 
-class MyChatsActivity : BaseActivity() {
+class
+MyChatsActivity : BaseActivity() {
     lateinit var application: BaseActivity
 
     private lateinit var binding:ActivityMyChatsBinding

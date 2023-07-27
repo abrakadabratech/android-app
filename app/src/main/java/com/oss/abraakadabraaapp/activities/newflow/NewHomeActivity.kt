@@ -1,6 +1,8 @@
 package com.oss.abraakadabraaapp.activities.newflow
 
+import android.app.Activity
 import android.content.*
+import android.content.ContentValues.TAG
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +15,7 @@ import com.google.android.gms.analytics.Tracker
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.ActivityResult
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.gson.Gson
@@ -44,6 +47,7 @@ class NewHomeActivity : BaseActivity() {
 
         actionBar?.hide()
         mAppUpdateManager = AppUpdateManagerFactory.create(this)
+        checkForUpdate()
 
         val host: NavHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment_activity_new_home) as NavHostFragment?
@@ -68,8 +72,7 @@ class NewHomeActivity : BaseActivity() {
             Log.d("NavigationActivity", "Navigated to $dest")
         }
         //        showToast("Test Analytics sent to the console")
-        Log.d(
-                        "FIREBASE",
+        Log.d("FIREBASE",
                         "signInWithCredential:success tokeId is:${PreferencesManagement.getAuthToken(this)!!}"
                     )
     }
@@ -78,7 +81,18 @@ class NewHomeActivity : BaseActivity() {
         when (requestCode) {
             RC_APP_UPDATE -> if (resultCode != RESULT_OK) { //RESULT_OK / RESULT_CANCELED / RESULT_IN_APP_UPDATE_FAILED
                 Log.d("MYT", "$resultCode")
+                //checkForUpdate()
+            }
+            Activity.RESULT_CANCELED -> {
                 checkForUpdate()
+                Log.d(TAG, "" + "Result Cancelled")
+                //  handle user's rejection  }
+            }
+            ActivityResult.RESULT_IN_APP_UPDATE_FAILED -> {
+                checkForUpdate()
+                //if you want to request the update again just call checkUpdate()
+                Log.d(TAG, "" + "Update Failure")
+                //  handle update failure
             }
         }
     }
@@ -133,7 +147,7 @@ class NewHomeActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        mAppUpdateManager.appUpdateInfo.addOnSuccessListener {
+       /* mAppUpdateManager.appUpdateInfo.addOnSuccessListener {
             if (it.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
                 try {
                     mAppUpdateManager.startUpdateFlowForResult(
@@ -146,7 +160,7 @@ class NewHomeActivity : BaseActivity() {
                     Log.d("IntentSenderError", e.localizedMessage!!)
                 }
             }
-        }
+        }*/
 
     }
     companion object {

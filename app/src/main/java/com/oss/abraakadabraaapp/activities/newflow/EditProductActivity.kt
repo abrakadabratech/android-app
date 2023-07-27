@@ -149,7 +149,7 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
         with(binding){
             etProductName.setText(it.product?.name)
             categorySelectedTxt.setText(it.product?.category?.name.toString().capitalize())
-            PROD_CATEGORY = it.product?.category?.id.toString().capitalize()
+            PROD_CATEGORY = it.product?.category?.id.toString()
             categorySelectedTxt.visibility = View.VISIBLE
             conditionSelectedTxt.setText(it.product?.condition.toString().capitalize())
             PROD_CONDITION = it.product?.condition.toString().capitalize()
