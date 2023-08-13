@@ -1,5 +1,6 @@
 package com.oss.abraakadabraaapp.datasource
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +22,7 @@ class ProductAdapter(val onClick: OnProductClicked) :
         var iv=itemView.rootView.findViewById<ImageView>(R.id.iv_product)
         fun bind(item: Product?) {
             tv.text=item?.name?.capitalize()
-            Glide.with(itemView.context).load(item?.image).placeholder(R.drawable.image_placeholder).into(iv)
+            Glide.with(itemView.context).load(item?.display_image).placeholder(R.drawable.image_placeholder).into(iv)
             tv_product_distance.setText("${(item?.distance?.div(1000))} KM")
             tv_product_location.setText("${item?.condition}")
 
@@ -31,7 +32,8 @@ class ProductAdapter(val onClick: OnProductClicked) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
         holder.itemView.setOnClickListener {
-            onClick.onProductClicked(getItem(position)!!,position)
+            Log.d("NewReceiverFragment", "bind: ${getItem(position)?.name}")
+            onClick.onProductClicked(getItem(position),position)
         }
     }
 
@@ -54,6 +56,6 @@ class ProductAdapter(val onClick: OnProductClicked) :
         }
     }
     interface OnProductClicked{
-        fun onProductClicked(product: Product,position: Int)
+        fun onProductClicked(product: Product?,position: Int)
     }
 }

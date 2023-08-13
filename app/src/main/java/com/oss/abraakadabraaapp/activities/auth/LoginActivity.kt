@@ -485,20 +485,6 @@ class LoginActivity : BaseActivity() {
                 startActivity(intent)
                 finish()
             }
-            /*else if((it.data?.name != null || it.data?.name != "" ) &&
-                (it.data?.email != null || it.data?.email != "") &&
-                (it.data?.socialLink == null) || it.data?.socialLink == ""){
-                Log.d("LOGIN>>>", "setUpObserver: Social link not found")
-
-                PreferencesManagement.saveUserFlag(this,true)
-                loader(false)
-                val intent =
-                    Intent(this@LoginActivity, AuthUserDetailActivity::class.java)
-                intent.putExtra(Constants.phoneNumber, phoneNumber)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                startActivity(intent)
-                finish()
-            }*/
             else {
                 if (mAuth.currentUser != null) {
                     generateAuthToken()

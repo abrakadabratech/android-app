@@ -81,6 +81,7 @@ import okhttp3.RequestBody
 import org.greenrobot.eventbus.EventBus
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
@@ -255,12 +256,15 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
 
                         lattitude = place.latLng!!.latitude
                         longitude = place.latLng!!.longitude
+
                         fullAddress = if (place.address != null) {
                             place.address!!
                         } else {
                             "TODO geo api required"
                         }
-
+                        Log.d("MYT", "${place.latLng!!.latitude} : latitude $lattitude")
+                        Log.d("MYT", "longitude $longitude")
+                        Log.d("MYT", "fullAddress $fullAddress")
                         binding.locationTxt.setText(fullAddress)
                     }
                 }
@@ -327,6 +331,10 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                 "Select only 4 Images",
             )
         }
+    }
+
+    override fun sorted(list: ArrayList<ProductImage>) {
+
     }
 
     fun showToast(message: String) {
@@ -606,6 +614,9 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                     map["location_name"] = JavaUtils.toRequestBody(binding.locationTxt.text.toString())
                     map["latitude"] = JavaUtils.toRequestBody(if(lattitude == 0.0) userLocation.lat else lattitude.toString())
                     map["longitude"] = JavaUtils.toRequestBody(if(longitude == 0.0) userLocation.long else longitude.toString())
+                    Log.d("MYT", "latitude $latitude")
+                    Log.d("MYT", "longitude $longitude")
+                    Log.d("MYT", "fullAddress $fullAddress")
                     map["price"] = JavaUtils.toRequestBody(binding.etProductBrand1.text.toString().trim())
                     map["brand"] = JavaUtils.toRequestBody(binding.etProductBrand.text.toString().trim())
 

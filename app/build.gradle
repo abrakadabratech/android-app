@@ -17,8 +17,8 @@ android {
         applicationId "com.oss.abraakadabraaapp"
         minSdk 23
         targetSdk 32
-        versionCode 1
-        versionName "1.10"
+        versionCode 22
+        versionName "1.17.1"
 //        versionName "test_refresh_product"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -52,8 +52,14 @@ android {
 //            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
 
             //PROD
-            buildConfigField("String", "BASE_URL", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
-            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
+//            buildConfigField("String", "BASE_URL", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
+//            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
+
+            //NEW_PROD_URL
+            buildConfigField("String", "BASE_URL", "\"https://api.abrakadabraapp.app/\"")
+            buildConfigField("String", "BASE_DEMO", "\"https://api.abrakadabraapp.app/\"")
+//            buildConfigField("String", "BASE_URL", "\"https://asia-south1-akd-testing.cloudfunctions.net/api/\"")
+//            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-akd-testing.cloudfunctions.net/api/\"")
 
         }
         debug {
@@ -62,11 +68,16 @@ android {
 //            buildConfigField("String", "BASE_URL", "\"https://abrakadabraapp.app/app/api/v1/\"")
             //DEV
 //            buildConfigField("String", "BASE_URL", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
-//            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
+//            buildConfigField("String", "BASE_URL", "\"https://asia-south1-akd-testing.cloudfunctions.net/api/\"")
+//            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-akd-testing.cloudfunctions.net/api/\"")
 
-            //PROD
-            buildConfigField("String", "BASE_URL", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
-            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
+//            //PROD
+//            buildConfigField("String", "BASE_URL", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
+//            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
+
+            //NEW_PROD_URL
+            buildConfigField("String", "BASE_URL", "\"https://api.abrakadabraapp.app/\"")
+            buildConfigField("String", "BASE_DEMO", "\"https://api.abrakadabraapp.app/\"")
 
 
         }
@@ -174,7 +185,7 @@ dependencies {
     implementation 'com.github.codersrouteandroid:flexible-switch:1.0'
 
     //Google Analytics
-    implementation 'com.google.android.gms:play-services-analytics:18.0.2'
+    implementation 'com.google.android.gms:play-services-analytics:18.0.3'
 
     // Import the BoM for the Firebase platform
     implementation platform('com.google.firebase:firebase-bom:31.1.1')
@@ -223,5 +234,7 @@ dependencies {
 
     implementation("com.google.firebase:firebase-config-ktx")
 
+    //Install-Referrer
+    implementation 'com.android.installreferrer:installreferrer:2.2'
 
 }

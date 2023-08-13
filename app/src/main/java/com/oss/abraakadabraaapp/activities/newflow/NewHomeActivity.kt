@@ -13,10 +13,13 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.analytics.Tracker
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.ActivityResult
 import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
@@ -30,7 +33,6 @@ import org.greenrobot.eventbus.ThreadMode
 
 
 class NewHomeActivity : BaseActivity() {
-    lateinit var application: BaseActivity
 
     private lateinit var binding: ActivityNewHomeBinding
     lateinit var navView: BottomNavigationView
@@ -84,19 +86,36 @@ class NewHomeActivity : BaseActivity() {
                 //checkForUpdate()
             }
             Activity.RESULT_CANCELED -> {
-                checkForUpdate()
+                //checkForUpdate()
                 Log.d(TAG, "" + "Result Cancelled")
                 //  handle user's rejection  }
             }
             ActivityResult.RESULT_IN_APP_UPDATE_FAILED -> {
-                checkForUpdate()
+                //checkForUpdate()
                 //if you want to request the update again just call checkUpdate()
                 Log.d(TAG, "" + "Update Failure")
                 //  handle update failure
             }
         }
     }
+    private val listener: InstallStateUpdatedListener = InstallStateUpdatedListener { installState ->
+        if (installState.installStatus() == InstallStatus.DOWNLOADED) {
+            // After the update is downloaded, show a notification
+            // and request user confirmation to restart the app.
+            Log.d(TAG, "An update has been downloaded")
+            popupSnackbarForCompleteUpdate()
+           // mAppUpdateManager.completeUpdate()
+        }
+        if (installState.installStatus() == InstallStatus.DOWNLOADING) {
+            val bytesDownloaded = installState.bytesDownloaded()
+            val totalBytesToDownload = installState.totalBytesToDownload()
+            Log.e(TAG, "Downloading: $bytesDownloaded/$totalBytesToDownload", )
+            //showSnackBar(binding.container,"Downloading...$bytesDownloaded/$totalBytesToDownload")
+        }
+    }
     private fun checkForUpdate() {
+        mAppUpdateManager.registerListener(listener)
+
         mAppUpdateManager.appUpdateInfo.addOnSuccessListener {
             if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
                 it.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
@@ -108,9 +127,12 @@ class NewHomeActivity : BaseActivity() {
                         this,
                         RC_APP_UPDATE
                     )
+//                    showToast("Downloading...")
                 } catch (e: IntentSender.SendIntentException) {
                     Log.d("MYT", e.localizedMessage!!)
                 }
+            }else{
+                mAppUpdateManager.unregisterListener(listener)
             }
         }
     }
@@ -172,6 +194,18 @@ class NewHomeActivity : BaseActivity() {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             intent.putExtra("EXIT", true)
             return intent
+        }
+    }
+
+    fun popupSnackbarForCompleteUpdate() {
+        Snackbar.make(
+            findViewById(R.id.container),
+            "An update has just been downloaded.",
+            Snackbar.LENGTH_INDEFINITE
+        ).apply {
+            setAction("RESTART") { mAppUpdateManager.completeUpdate() }
+            setActionTextColor(resources.getColor(R.color.btn_color))
+            show()
         }
     }
 

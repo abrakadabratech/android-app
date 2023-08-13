@@ -9,13 +9,15 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.databinding.ItemImageBinding
 import com.oss.abraakadabraaapp.model.ProductImage
 import com.oss.abraakadabraaapp.module.GlideApp
+import com.oss.abraakadabraaapp.utils.ItemMoveCallback
+import java.util.Collections
 
 class ImageAdapter(
     private val data: ArrayList<ProductImage>,
     var context: Context,
     private var callback: ImageAdapterInterface
 ) :
-    RecyclerView.Adapter<ImageAdapter.PostImageVH>() {
+    RecyclerView.Adapter<ImageAdapter.PostImageVH>(), ItemMoveCallback.ItemTouchHelperContract {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostImageVH {
         val v = LayoutInflater.from(context).inflate(R.layout.item_image, parent, false)
@@ -24,10 +26,20 @@ class ImageAdapter(
 
     override fun onBindViewHolder(holder: PostImageVH, position: Int) {
 
+        if (position == 0){
+            holder.itemView.tag = "-1"
+        }
+
+
+
         val item = data[position]
 
         with(holder.binding){
-
+            if (position == 1){
+                holder.binding.llAddProductImage.background = context.resources.getDrawable(R.drawable.filled_dotted_border)
+            }else{
+                holder.binding.llAddProductImage.background = context.resources.getDrawable(R.drawable.ic_add_image_frame)
+            }
             if (position == data.size){
                 clMainImage.visibility = View.GONE
                 llDeleteBtn.visibility = View.GONE
@@ -92,6 +104,24 @@ class ImageAdapter(
     interface ImageAdapterInterface {
         fun onItemRemove(position: Int, data: ProductImage)
         fun addProductImage()
+
+        fun sorted(list: ArrayList<ProductImage>)
+    }
+
+    override fun onRowMoved(fromPosition: Int, toPosition: Int) {
+        if (fromPosition < toPosition) {
+            for (i in fromPosition until toPosition) {
+                Collections.swap(data, i, i + 1)
+                callback.sorted(data)
+            }
+        } else {
+            for (i in fromPosition downTo toPosition + 1) {
+                Collections.swap(data, i, i - 1)
+                callback.sorted(data)
+            }
+        }
+
+        notifyItemMoved(fromPosition, toPosition)
     }
 
 

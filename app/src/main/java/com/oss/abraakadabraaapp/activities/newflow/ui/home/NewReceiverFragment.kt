@@ -88,7 +88,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
     //    private lateinit var latestProductAdapter: LatestProductAdapter
     private var mainListAdapter: ProductAdapter? = null
-
+    private val TAG = "NewReceiverFragment"
     private val authViewModel: AuthViewModel by viewModel()
 
     override fun onCreateView(
@@ -468,9 +468,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
                     }
                 }
-
         }
-
     }
 
     private fun getProductFromServer(sortBy: String) {
@@ -482,7 +480,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         map["Authorization"] = token
 
         // Pagination Library
-        if (sortBy == "latest"){
+        if (sortBy == "latest") {
             val viewModel =
                 ViewModelProvider(
                     this,
@@ -494,29 +492,30 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                         userLocation.long.toDouble(), "", sortBy
                     )
                 )[MainViewModel::class.java]
+            mainListAdapter!!.submitData(lifecycle,PagingData.empty())
             lifecycleScope.launchWhenCreated {
 
-                viewModel.listData.collectLatest{
-                    launch(Dispatchers.Main){
+                viewModel.listData.collectLatest {
+                    launch(Dispatchers.Main) {
                         mainListAdapter!!.loadStateFlow.collectLatest { loadStates ->
-                            if (loadStates.refresh is LoadState.Loading ){
+                            if (loadStates.refresh is LoadState.Loading) {
                                 application.loader(true)
-                            }
-                            else{
-                                if ( mainListAdapter!!.itemCount < 1){
+                            } else {
+                                if (mainListAdapter!!.itemCount < 1) {
                                     binding.nodata.visibility = View.VISIBLE
-                                }else{
+                                } else {
                                     binding.nodata.visibility = View.GONE
                                 }
                                 application.loader(false)
                             }
                         }
                     }
+                    mainListAdapter!!.submitData(lifecycle,PagingData.empty())
                     mainListAdapter!!.submitData(it)
                 }
 
             }
-        }else{
+        } else {
 
             val viewModel =
                 ViewModelProvider(
@@ -530,18 +529,18 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                     )
                 )[MainFilterViewModel::class.java]
 
+            mainListAdapter!!.submitData(lifecycle,PagingData.empty())
             lifecycleScope.launchWhenCreated {
 
-                viewModel.listData.collectLatest{
-                    launch(Dispatchers.Main){
+                viewModel.listData2.collectLatest {
+                    launch(Dispatchers.Main) {
                         mainListAdapter!!.loadStateFlow.collectLatest { loadStates ->
-                            if (loadStates.refresh is LoadState.Loading ){
+                            if (loadStates.refresh is LoadState.Loading) {
                                 application.loader(true)
-                            }
-                            else{
-                                if ( mainListAdapter!!.itemCount < 1){
+                            } else {
+                                if (mainListAdapter!!.itemCount < 1) {
                                     binding.nodata.visibility = View.VISIBLE
-                                }else{
+                                } else {
                                     binding.nodata.visibility = View.GONE
                                 }
                                 application.loader(false)
@@ -553,31 +552,33 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
             }
 
-           /* lifecycleScope.launch {
+            /* lifecycleScope.launch {
 
-               *//* mainListAdapter?.loadStateFlow?.collect{ loadState ->
-                    val isListEmpty =  mainListAdapter!!.itemCount == 0
-                    if ( loadState.append.endOfPaginationReached )
-                    {
-                        if ( mainListAdapter!!.itemCount < 1)
-                        /// show empty view
-                            binding.nodata.visibility = View.VISIBLE
+                */
+            /* mainListAdapter?.loadStateFlow?.collect{ loadState ->
+                        val isListEmpty =  mainListAdapter!!.itemCount == 0
+                        if ( loadState.append.endOfPaginationReached )
+                        {
+                            if ( mainListAdapter!!.itemCount < 1)
+                            /// show empty view
+                                binding.nodata.visibility = View.VISIBLE
 
-                        else binding.nodata.visibility = View.GONE
-                        ///  hide empty view
+                            else binding.nodata.visibility = View.GONE
+                            ///  hide empty view
+                        }
+                    }*/
+            /*
+                    viewModel.listData.collect {
+
+                        mainListAdapter?.submitData(it)
+    //                    mainListAdapter?.submitData(PagingData.empty())
+                        if (mainListAdapter?.itemCount == 1){
+
+                            application.showToast(mainListAdapter?.itemCount.toString())
+                        }
                     }
-                }*//*
-                viewModel.listData.collect {
 
-                    mainListAdapter?.submitData(it)
-//                    mainListAdapter?.submitData(PagingData.empty())
-                    if (mainListAdapter?.itemCount == 1){
-
-                        application.showToast(mainListAdapter?.itemCount.toString())
-                    }
-                }
-
-            }*/
+                }*/
 
         }
 
@@ -617,7 +618,6 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             val intent = Intent(context, NewSearchActivity::class.java)
             intent.putExtra("CATEGORIES", Gson().toJson(cats))
             intent.putExtra("from", "category")
-
             startActivity(intent)
         }
 
@@ -746,7 +746,8 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         startActivity(intent)
     }
 
-    override fun onProductClicked(product: Product, position: Int) {
+    override fun onProductClicked(product: Product?, position: Int) {
+        Log.d(TAG, "onProductClicked: ${product?.name}")
         val intent = Intent(requireContext(), NewProductDetailActivity::class.java)
         intent.putExtra(Constants.PRODUCT, Gson().toJson(product))
         startActivity(intent)

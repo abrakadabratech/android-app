@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.libraries.places.api.Places
@@ -51,6 +52,7 @@ import com.oss.abraakadabraaapp.response.productRequestResponse.ListingResponse
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.ImageUtils
+import com.oss.abraakadabraaapp.utils.ItemMoveCallback
 import com.oss.abraakadabraaapp.utils.JavaUtils
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.customView.ImagePickerActivity
@@ -60,17 +62,20 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.Collections
 
-class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
+
+class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
     CategoryDialogAdapter.CategoryDialogAdapterInterface,
-    CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAdapterInterface{
+    CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAdapterInterface {
     private var PROD_CATEGORY: String = ""
     private var PROD_CONDITION: String = ""
     private var PROD_USED_FOR: String = ""
+    private val TAG = "EditProductActivity"
 
-    private var selectedProdCategory:String = ""
-    private var selectedCondition:String = ""
-    private var selectedUsedFor:String = ""
+    private var selectedProdCategory: String = ""
+    private var selectedCondition: String = ""
+    private var selectedUsedFor: String = ""
 
     private var LOCATION_NAME: String = ""
     private var lattitude: Double = 0.0
@@ -103,6 +108,8 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
     lateinit var condtionAdapter: ConditionDialogAdapter
     lateinit var mainCatAdapter: CatMainAdapter
     lateinit var mainAdapterList: ArrayList<UserCatData>
+
+    var touchHelper: ItemTouchHelper? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEditProductBinding.inflate(layoutInflater)
@@ -117,15 +124,15 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
         if (!Places.isInitialized()) {
             Places.initialize(this, apiKey)
         }
-        if(PreferencesManagement.getUserLocation(this) != null){
+        if (PreferencesManagement.getUserLocation(this) != null) {
             userLocation = PreferencesManagement.getUserLocation(this)!!
-        }else{
+        } else {
             getLastLocation()
         }
         placesClient = Places.createClient(this)
         userCatData = PreferencesManagement.getCategories(this)!!
 
-        if (userCatData.data.size > 0){
+        if (userCatData.data.size > 0) {
             mainAdapterList = userCatData.data
             mainAdapterList[0].isSelect = true
         }
@@ -139,14 +146,21 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
         getUserLocation()
 
 
-        productDetails = Gson().fromJson(intent.extras?.getString("data_from_listing"),ListingResponse::class.java)
+        productDetails = Gson().fromJson(
+            intent.extras?.getString("data_from_listing"),
+            ListingResponse::class.java
+        )
 
         prefillData(productDetails)
+        val callback: ItemTouchHelper.Callback = ItemMoveCallback(imageAdapter)
+        touchHelper = ItemTouchHelper(callback)
+        touchHelper!!.attachToRecyclerView(binding.rvImages)
+
 
     }
 
     private fun prefillData(it: ListingResponse) {
-        with(binding){
+        with(binding) {
             etProductName.setText(it.product?.name)
             categorySelectedTxt.setText(it.product?.category?.name.toString().capitalize())
             PROD_CATEGORY = it.product?.category?.id.toString()
@@ -163,8 +177,8 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
             locationTxt.setText(it.product?.locationName)
 
             //set images to the array
-            for(i in it.product?.images!!){
-                photoList.add(ProductImage(i.toString(),0,i.toString()))
+            for (i in it.product?.images!!) {
+                photoList.add(ProductImage(i.toString(), 0, i.toString()))
             }
 
             imageAdapter.notifyDataSetChanged()
@@ -179,10 +193,10 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
     private fun clickEvents() {
 
         //Cat adpater
-        mainCatAdapter = CatMainAdapter(this,mainAdapterList,this)
+        mainCatAdapter = CatMainAdapter(this, mainAdapterList, this)
 
         //Used for adapter
-        alertAdaper = CategoryDialogAdapter(this,list, this,"")
+        alertAdaper = CategoryDialogAdapter(this, list, this, "")
 
         //Condition adapter
         condtionAdapter = ConditionDialogAdapter(this, listConditon, this)
@@ -205,9 +219,9 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
             if (binding.iAgreeCheckbox.isChecked) {
                 if (isValidate()) {
                     //showSubmitCautionDialog()
-                    if (userInfo?.data?.status == "active"){
+                    if (userInfo?.data?.status == "active") {
                         postNewProduct()
-                    }else{
+                    } else {
                         showToast("Your profile not verified yet.")
                     }
                 }
@@ -281,9 +295,9 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
             Log.d("MYT", "id ${data.id}")
             Log.d("MYT", "deleteDataString $deleteDataString")
         }
-        if (data.uri == null){
+        if (data.uri == null) {
             if (productDetails.product?.images?.size!! > 0) {
-                productDetails.product?.images?.removeAt(position-1)
+                productDetails.product?.images?.removeAt(position - 1)
             }
         }
         photoList.removeAt(position)
@@ -299,6 +313,12 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
                 "Select only 4 Images",
             )
         }
+    }
+
+    override fun sorted(list: ArrayList<ProductImage>) {
+        Log.e(TAG, "Before sorted: ${Gson().toJson(photoList)}", )
+        Log.e(TAG, "After sorted: ${Gson().toJson(list)}", )
+        photoList = list
     }
 
 
@@ -423,6 +443,7 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
 
     private fun openYourActivity() {
         val intent = Intent(this, ImagePickerActivity::class.java)
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         intent.putExtra(
             ImagePickerActivity.INTENT_IMAGE_PICKER_OPTION,
             ImagePickerActivity.REQUEST_GALLERY_IMAGE
@@ -457,7 +478,8 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
-        if (selectedProdCategory == "") selectedProdCategory = mainAdapterList[0].title?.capitalize().toString()
+        if (selectedProdCategory == "") selectedProdCategory =
+            mainAdapterList[0].title?.capitalize().toString()
         if (PROD_CATEGORY == "") PROD_CATEGORY = mainAdapterList[0].id.toString()
 
         binding.categorySelectedTxt.text = selectedProdCategory
@@ -485,7 +507,7 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
-        if(PROD_CONDITION == "") PROD_CONDITION = listConditon[0].name.toString()
+        if (PROD_CONDITION == "") PROD_CONDITION = listConditon[0].name.toString()
         else PROD_CONDITION = PROD_CONDITION
 
         binding.conditionSelectedTxt.text = PROD_CONDITION
@@ -513,7 +535,7 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
-        if(PROD_USED_FOR == "") PROD_USED_FOR = list[0].name.toString()
+        if (PROD_USED_FOR == "") PROD_USED_FOR = list[0].name.toString()
 
         binding.usedForSelectedTxt.text = PROD_USED_FOR
         binding.usedForSelectedTxt.visibility = View.VISIBLE
@@ -566,30 +588,38 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
             ""
         }
     }
+
     private fun postNewProduct() {
         if (isValidate()) {
             addImage()
             if (isNetworkAvailable()) {
                 generateAuthToken()
-                if (userLocation != null){
+                if (userLocation != null) {
                     val map = HashMap<String, RequestBody>()
-                    map["name"] = JavaUtils.toRequestBody(binding.etProductName.text.toString().trim())
+                    map["name"] =
+                        JavaUtils.toRequestBody(binding.etProductName.text.toString().trim())
                     map["category"] = JavaUtils.toRequestBody(PROD_CATEGORY)
-                    map["description"] = JavaUtils.toRequestBody(binding.descEdt.text.toString().trim())
+                    map["description"] =
+                        JavaUtils.toRequestBody(binding.descEdt.text.toString().trim())
                     map["condition"] = JavaUtils.toRequestBody(PROD_CONDITION)
                     map["used_for"] = JavaUtils.toRequestBody(PROD_USED_FOR)
-                    map["location_name"] = JavaUtils.toRequestBody(binding.locationTxt.text.toString())
-                    map["latitude"] = JavaUtils.toRequestBody(if(lattitude == 0.0) userLocation.lat.toString() else lattitude.toString())
-                    map["longitude"] = JavaUtils.toRequestBody(if(longitude == 0.0) userLocation.long.toString() else longitude.toString())
-                    map["price"] = JavaUtils.toRequestBody(binding.etProductBrand1.text.toString().trim())
-                    map["brand"] = JavaUtils.toRequestBody(binding.etProductBrand.text.toString().trim())
+                    map["location_name"] =
+                        JavaUtils.toRequestBody(binding.locationTxt.text.toString())
+                    map["latitude"] =
+                        JavaUtils.toRequestBody(if (lattitude == 0.0) userLocation.lat.toString() else lattitude.toString())
+                    map["longitude"] =
+                        JavaUtils.toRequestBody(if (longitude == 0.0) userLocation.long.toString() else longitude.toString())
+                    map["price"] =
+                        JavaUtils.toRequestBody(binding.etProductBrand1.text.toString().trim())
+                    map["brand"] =
+                        JavaUtils.toRequestBody(binding.etProductBrand.text.toString().trim())
 
                     var csv = arrayToCSV(productDetails.product?.images)
 
                     map["images"] = JavaUtils.toRequestBody(csv)
 
                     manageProduct(map)
-                }else{
+                } else {
                     showToast("Please turn on your location")
                 }
             }
@@ -605,11 +635,12 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
                 }
             }
         }
+
     }
 
     private fun setUpObserver() {
-        mainViewModel.updateProductSuccess.observe(this){
-            if (it.code == 201){
+        mainViewModel.updateProductSuccess.observe(this) {
+            if (it.code == 201) {
                 showToast(it.responseMessage.toString())
                 finish()
             }
@@ -623,7 +654,7 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
     }
 
     private fun clearAll() {
-        with(binding){
+        with(binding) {
             etProductName.setText("")
             descEdt.setText("")
             etProductBrand.setText("")
@@ -667,14 +698,14 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
 
             Log.d(
                 Constants.API_TAG,
-                "manageProduct: ${
+                "manageProduct reordered: ${JavaUtils.prepareFilePart(imagePathList, RequestKeys.productImages)} ${
                     JavaUtils.prepareFilePart(
                         imagePathList,
                         RequestKeys.productImages
                     )
                 }"
             )
-            var imageMap = HashMap<String,ArrayList<String>>()
+            var imageMap = HashMap<String, ArrayList<String>>()
             imageMap["images"] = productDetails.product?.images!!
             mainViewModel.updateProduct(
                 map,
@@ -712,7 +743,7 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
             if (etProductName.text!!.toString().trim().isNotBlank()) {
                 textView6.isErrorEnabled = false
             }
-            if (PROD_CONDITION == ""){
+            if (PROD_CONDITION == "") {
                 showToast("Please select a condition of product")
                 conditionTxt.error = "Please select a condition of product"
             }
@@ -722,21 +753,25 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
                     textView6.error = "Please Enter Product Name"
                     false
                 }
+
                 PROD_CATEGORY == "" -> {
                     cateogoryTxt.error = "Please select category of product"
                     showToast("Please select category of product!")
                     false
                 }
+
                 PROD_CONDITION == "" -> {
                     conditionTxt.error = "Please Select condition of product"
                     showToast("Please select condition of product!")
                     false
                 }
+
                 PROD_USED_FOR == "" -> {
                     usedForTxt.error = "Please select used for"
                     showToast("Please select used for!")
                     false
                 }
+
                 etProductBrand1.text.toString() == "" -> {
                     etProductBrand1.error = "Please select used for"
                     showToast("Please price of the product!")
@@ -777,14 +812,17 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
                         "Please Enter Product Description less than 300 characters"
                     false
                 }
+
                 photoList.size <= 2 -> {
                     showToast("Please add at least 2 images")
                     false
                 }
+
                 photoList.size > 5 -> {
                     showToast("Maximum photo are 4.Please remove some")
                     false
                 }
+
                 else -> true
             }
         }
@@ -814,7 +852,8 @@ class EditProductActivity : BaseActivity() , ImageAdapter.ImageAdapterInterface,
         condtionAdapter.notifyDataSetChanged()
         alertDialog.dismiss()
     }
-    override fun onItemClick(position: Int, isSelect: Boolean,alerttype:String) {
+
+    override fun onItemClick(position: Int, isSelect: Boolean, alerttype: String) {
 //        list.get(position).isSelect = isSelect
         for (i in 0 until list.size) list[i].isSelect = i == position
         PROD_USED_FOR = list[position].name.toString()

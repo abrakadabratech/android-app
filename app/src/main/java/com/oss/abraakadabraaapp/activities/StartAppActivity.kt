@@ -15,6 +15,10 @@ import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.android.installreferrer.api.InstallReferrerClient
+import com.android.installreferrer.api.InstallReferrerStateListener
+import com.google.android.gms.analytics.HitBuilders
+import com.google.android.gms.analytics.Tracker
 import com.google.android.gms.location.*
 import com.google.android.play.core.tasks.OnCompleteListener
 import com.google.android.play.core.tasks.Task
@@ -30,6 +34,7 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.oss.abraakadabraaapp.App
 import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.auth.AuthUserDetailActivity
@@ -58,6 +63,10 @@ class StartAppActivity : BaseActivity(),LocationListener  {
 
     private val mainViewModel: MainViewModel by viewModel()
     lateinit var mAuth: FirebaseAuth
+    private lateinit var referrerClient: InstallReferrerClient
+    private lateinit var mTracker: Tracker
+    private val TAG = "StartAppActivity"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,8 +82,58 @@ class StartAppActivity : BaseActivity(),LocationListener  {
                 R.color.blue_status_bar_color
             )
 
+        if (PreferencesManagement.isFistOpen(this)){
+            installReferrer()
+        }
         setUpObserver() // Old Code
         // startApp() //New Code
+    }
+
+    private fun installReferrer() {
+        val application = application as App
+        mTracker = application.defaultTracker
+
+        referrerClient = InstallReferrerClient.newBuilder(this).build()
+        referrerClient.startConnection(object : InstallReferrerStateListener {
+            override fun onInstallReferrerSetupFinished(responseCode: Int) {
+                when (responseCode) {
+                    InstallReferrerClient.InstallReferrerResponse.OK -> {
+                        try {
+                            val response = referrerClient.installReferrer
+                            val referrerUrl = response.installReferrer
+                            showToast(referrerUrl)
+
+                            Log.e(TAG, "onInstallReferrerSetupFinished: $referrerUrl", )
+
+                            // Pass the referrer URL to Google Analytics
+                            mTracker.send(
+                                HitBuilders.EventBuilder()
+                                .setCampaignParamsFromUrl(referrerUrl)
+                                .setCategory("install")
+                                .setAction("app install")
+                                .build())
+
+                            referrerClient.endConnection()
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                    InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE -> {
+                        Log.e(TAG, "onInstallReferrerSetupFinished: SERVICE_UNAVAILABLE", )
+                        showToast("SERVICE_UNAVAILABLE")
+                    }
+                    InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED -> {
+                        showToast("FEATURE_NOT_SUPPORTED")
+                        Log.e(TAG, "onInstallReferrerSetupFinished: FEATURE_NOT_SUPPORTED", )
+                    }
+                    // Handle other response codes as needed
+                }
+            }
+
+            override fun onInstallReferrerServiceDisconnected() {
+                // Try to restart the connection if needed
+            }
+        })
     }
 
     private fun setUpObserver() {

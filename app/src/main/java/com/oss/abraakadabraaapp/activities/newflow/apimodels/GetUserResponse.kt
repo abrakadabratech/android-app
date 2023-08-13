@@ -24,7 +24,7 @@ data class UserStats (
 data class UsersData (
 
     @SerializedName("phone"            ) var phone          : String? = null,
-    @SerializedName("status"            ) var status          : String? = null,
+    @SerializedName("status"            ) var status          : String? = "active",
     @SerializedName("social_link_type" ) var socialLinkType : String? = null,
     @SerializedName("social_link"      ) var socialLink     : String? = null,
     @SerializedName("user_avatar"      ) var userAvatar     : String? = null,

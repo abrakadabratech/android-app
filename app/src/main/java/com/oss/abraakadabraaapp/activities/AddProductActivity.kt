@@ -743,6 +743,9 @@ class AddProductActivity : BaseActivity(),
         }
     }
 
+    override fun sorted(list: ArrayList<ProductImage>) {
+    }
+
     override fun onItemRemove(position: Int, data: ProductImage) {
         if (data.id != -1) {
             deleteDataString = if (deleteDataString.isEmpty()) {

@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.core.text.HtmlCompat
+import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.databinding.ActivityContentManagementBinding
 import com.oss.abraakadabraaapp.databinding.LoggedInUserToolbarBinding
@@ -19,6 +20,7 @@ import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import com.oss.abraakadabraaapp.viewModel.ContentManagementViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 class ContentManagementActivity : BaseActivity() {
 
@@ -48,6 +50,10 @@ class ContentManagementActivity : BaseActivity() {
         includeToolbar = binding.includeToolbar
         val view = binding.root
         setContentView(view)
+
+        val versionName: String = BuildConfig.VERSION_NAME
+
+        binding.version.setText(versionName)
 
         actionBar?.hide()
 
@@ -106,7 +112,7 @@ class ContentManagementActivity : BaseActivity() {
             if (it.code == 200) {
                 binding.mobileNum.text = it.data?.email
                 binding.emailTxt.text = it.data?.phone
-                binding.version.text = it.data?.version
+//                binding.version.text = it.data?.version
 
             } else {
                 Log.d("TAG -", "setUpObserver: fail")

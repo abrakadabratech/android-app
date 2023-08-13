@@ -13,7 +13,7 @@ class MainFilterViewModel(private val apiService: APIService,
                           private val long:Double,
                           private val categories:String,
                           private val sortBy:String) : ViewModel() {
-    val listData = Pager(PagingConfig(pageSize = 3, prefetchDistance = 2)) {
+    val listData2 = Pager(PagingConfig(pageSize = 3, prefetchDistance = 2)) {
         ProductDataSource(apiService,headers,maxDistance,lat,long,categories,sortBy)
     }.flow.cachedIn(viewModelScope)
 }

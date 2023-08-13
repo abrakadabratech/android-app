@@ -7,6 +7,8 @@ import android.os.Build
 import android.provider.Settings
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationManagerCompat
+import com.google.android.gms.analytics.GoogleAnalytics
+import com.google.android.gms.analytics.Tracker
 import com.google.firebase.FirebaseApp
 import com.oss.abraakadabraaapp.di.module.appModule
 import com.oss.abraakadabraaapp.di.module.repoModule
@@ -19,6 +21,9 @@ class App : Application() {
 
     companion object {
         const val CHANNEL_ID: String = "general_channel"
+    }
+    val defaultTracker: Tracker by lazy {
+        GoogleAnalytics.getInstance(this).newTracker(R.xml.global_tracker)
     }
 
     override fun onCreate() {

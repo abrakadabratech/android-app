@@ -29,7 +29,7 @@ class SearchProductAdapter(
 
         val item = data[position]
 
-        Glide.with(context).load(item.image).into(holder.binding.ivProduct)
+        Glide.with(context).load(item.display_image).into(holder.binding.ivProduct)
         holder.binding.tvProductDistance.text = "${item.distance?.div(1000)} KM"
         holder.binding.tvProductName.text = item.name?.capitalize()
         holder.binding.tvProductLocation.text = item.condition

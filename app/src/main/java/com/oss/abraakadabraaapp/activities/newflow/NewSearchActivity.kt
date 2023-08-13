@@ -196,10 +196,10 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
 //                            map["logging"] = "true"
 
             authViewModel.getProductsData(
-                map, currentPage,
+                map, 1,
                 50,
                 userLocation!!.lat.toDouble(),
-                userLocation.long.toDouble(), searchQuery, "nearest"
+                userLocation.long.toDouble(), searchQuery, sortBy
             )
         } else {
             searchProducts(query = searchQuery, sortBy)
@@ -444,7 +444,6 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
             if (from == "category") {
                 if (filters.newest) {
                     getProductFromServer("latest")
-
                 } else {
                     getProductFromServer("nearest")
                 }
