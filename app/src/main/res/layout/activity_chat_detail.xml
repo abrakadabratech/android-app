@@ -259,7 +259,7 @@
             android:background="@color/transparent"
             android:ems="10"
             android:hint="Type here"
-            android:inputType="textPersonName" />
+            android:inputType="textCapSentences" />
 
         <ImageView
             android:id="@+id/sendMessage"

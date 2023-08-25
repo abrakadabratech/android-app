@@ -317,6 +317,10 @@ class StartAppActivity : BaseActivity(),LocationListener  {
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.CAMERA,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO,
+                    Manifest.permission.READ_MEDIA_AUDIO,
+
                     Manifest.permission.ACCESS_FINE_LOCATION)
             }
 
@@ -418,9 +422,7 @@ class StartAppActivity : BaseActivity(),LocationListener  {
             val tag = "$latD,$lngD"
             Log.e("location_debug", "startAppSaveLocation: $tag")
             val url =
-                ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" + resources.getString(
-                    R.string.akd
-                )
+                ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" + BuildConfig.API_KEY
 //            mainViewModel.getAddress(url)
 
             val locality = addresses[0].subLocality ?: ""

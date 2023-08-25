@@ -105,12 +105,12 @@ class MyRequestDetailsActivity : BaseActivity() {
 
                     val chat_room = ChatListModel()
                     chat_room.from = sender_id
-                    chat_room.sender_avatar = doc.data?.get("user_avatar").toString()
-                    chat_room.sender_id = sender_id
-                    chat_room.sender_name = doc.data?.get("name").toString()
-                    chat_room.receiver_id = productDetial?.data?.postedBy?.id
-                    chat_room.receiver_name = productDetial?.data?.postedBy?.name
-                    chat_room.receiver_avatar = productDetial?.data!!.postedBy?.userAvatar
+                    chat_room.sender_avatar = productDetial?.data!!.postedBy?.userAvatar
+                    chat_room.sender_id = productDetial?.data?.postedBy?.id
+                    chat_room.sender_name = productDetial?.data?.postedBy?.name
+                    chat_room.receiver_id = sender_id
+                    chat_room.receiver_name = doc.data?.get("name").toString()
+                    chat_room.receiver_avatar = doc.data?.get("user_avatar").toString()
                     chat_room.product_id = productDetial?.data!!.productId
                     chat_room.product = productDetial?.data?.name?.capitalize()
                     chat_room.product_giver = productDetial?.data?.postedBy?.id
@@ -119,6 +119,8 @@ class MyRequestDetailsActivity : BaseActivity() {
                     val intent = Intent(this, ChatDetailActivity::class.java)
                     intent.putExtra(Constants.CHATS_DATA,Gson().toJson(chat_room))
                     intent.putExtra("data_from","activity")
+                    intent.putExtra(Constants.DISPLAY_NAME,productDetial?.data?.postedBy?.name)
+                    intent.putExtra(Constants.DISPLAY_PIC,productDetial?.data?.postedBy?.userAvatar)
                     startActivity(intent)
                 }
 

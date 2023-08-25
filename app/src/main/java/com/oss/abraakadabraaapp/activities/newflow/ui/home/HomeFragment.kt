@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.location.*
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -240,9 +241,8 @@ class HomeFragment : Fragment(), LocationListener {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: String?) {
-        // Do something
-//        application.showToast("triggered.")
         if(event == "clear"){
+            // For selecting the Receiver Tab
             binding.receiveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
             binding.receiveBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
             binding.giveBtn.setTextColor(resources.getColor(R.color.hyper_link_text_color))
@@ -269,5 +269,10 @@ class HomeFragment : Fragment(), LocationListener {
 
     override fun onLocationChanged(p0: Location) {
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.e("Cycle-TAG", "onResume: HOMEFRAGMENT")
     }
 }

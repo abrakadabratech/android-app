@@ -3,8 +3,7 @@ package com.oss.abraakadabraaapp.activities.newflow.ui.home
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
-import android.content.DialogInterface
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.ImageDecoder
@@ -22,25 +21,21 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.NonNull
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.Autocomplete
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.gson.Gson
 import com.karumi.dexter.Dexter
@@ -48,11 +43,11 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
+import com.oss.abraakadabraaapp.activities.newflow.CropActivity
 import com.oss.abraakadabraaapp.activities.newflow.MyListingActivity
-import com.oss.abraakadabraaapp.activities.newflow.MyNewProfileActivity
-import com.oss.abraakadabraaapp.activities.newflow.PostedUserActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.CatMainAdapter
 import com.oss.abraakadabraaapp.activities.newflow.adapters.CategoryDialogAdapter
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ConditionDialogAdapter
@@ -81,7 +76,6 @@ import okhttp3.RequestBody
 import org.greenrobot.eventbus.EventBus
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class NewGiverFragment : Fragment(), ImageAdapter.ImageAdapterInterface,
@@ -126,6 +120,8 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
     lateinit var mainCatAdapter: CatMainAdapter
     lateinit var mainAdapterList:ArrayList<UserCatData>
     lateinit var userInfo : GetUserResponse
+    var touchHelper: ItemTouchHelper? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -144,7 +140,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         }else{
             application.getLastLocation()
         }
-        val apiKey = getString(R.string.akd)
+        val apiKey = BuildConfig.API_KEY
 
         if (!Places.isInitialized()) {
             Places.initialize(requireContext(), apiKey)
@@ -152,30 +148,39 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
 
         placesClient = Places.createClient(requireContext())
 
-        userCatData = PreferencesManagement.getCategories(requireActivity())!!
+        try{
+            userCatData = PreferencesManagement.getCategories(requireActivity())!!
 
-        if (userCatData.data.size > 0){
-            mainAdapterList = userCatData.data
-            mainAdapterList[0].isSelect = true
+            if (userCatData.data.size > 0){
+                mainAdapterList = userCatData.data
+                mainAdapterList[0].isSelect = true
+            }
+            application.postEvent(Constants.PAGE_GIVER, null)
+
+            imageAdapter = ImageAdapter(photoList, requireContext(), this)
+
+            initUI()
+            val userInfo = PreferencesManagement.getUserInfo(requireContext())
+            if (userInfo?.data?.status == "not verified"){
+                //Show a pop up that is not verified yet
+                showNotActivePopUp()
+            }else if (userInfo?.data?.status == "pending"){
+                showPendingPopUp()
+            }
+            loadUsedForData()
+            loadConditionData()
+            setUpObserver()
+            clickEvents()
+
+            getUserLocation()
+
+            val callback: ItemTouchHelper.Callback = ItemMoveCallback(imageAdapter)
+            touchHelper = ItemTouchHelper(callback)
+            touchHelper!!.attachToRecyclerView(binding.rvImages)
+        }catch (e:Exception){
+            e.printStackTrace()
         }
-        application.postEvent(Constants.PAGE_GIVER, null)
 
-        imageAdapter = ImageAdapter(photoList, requireContext(), this)
-
-        initUI()
-        val userInfo = PreferencesManagement.getUserInfo(requireContext())
-        if (userInfo?.data?.status == "not verified"){
-            //Show a pop up that is not verified yet
-            showNotActivePopUp()
-        }else if (userInfo?.data?.status == "pending"){
-            showPendingPopUp()
-        }
-        loadUsedForData()
-        loadConditionData()
-        setUpObserver()
-        clickEvents()
-
-        getUserLocation()
 
         return root
     }
@@ -234,6 +239,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         binding.linearLayout1.setOnClickListener {
             locationPicker()
         }
+        Utility.deleteRecursive(application.cacheDir)
     }
 
     private fun locationPicker() {
@@ -287,6 +293,10 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                 recycledViewPool.setMaxRecycledViews(1, 0)
                 adapter = imageAdapter
             }
+
+            mainImagePlaceholder2.visibility = View.GONE
+            arrowImage2.visibility = View.GONE
+
         }
 
 
@@ -320,6 +330,13 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
             Log.d("MYT", "deleteDataString $deleteDataString")
         }
         photoList.removeAt(position)
+        if (photoList.size == 1){
+            binding.mainImagePlaceholder2.visibility = View.GONE
+            binding.arrowImage2.visibility = View.GONE
+        }else{
+            binding.mainImagePlaceholder2.visibility = View.VISIBLE
+            binding.arrowImage2.visibility = View.VISIBLE
+        }
         imageAdapter.notifyDataSetChanged()
     }
 
@@ -334,7 +351,10 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
     }
 
     override fun sorted(list: ArrayList<ProductImage>) {
-
+        Log.e(TAG, "Before sorted: ${Gson().toJson(photoList)}")
+        Log.e(TAG, "After sorted: ${Gson().toJson(list)}")
+        photoList = list
+        imageAdapter.notifyDataSetChanged()
     }
 
     fun showToast(message: String) {
@@ -342,26 +362,53 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
     }
 
     private fun selectImage() {
-        application.postEvent(Constants.BUTTON_UPLOAD_IMAGE, null)
-        Dexter.withContext(context)
-            .withPermissions(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            .withListener(object : MultiplePermissionsListener {
-                override fun onPermissionsChecked(report: MultiplePermissionsReport) {
-                    if (report.areAllPermissionsGranted()) {
-                        bannerOptions()
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Dexter.withContext(context)
+                .withPermissions(Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.READ_MEDIA_AUDIO,
+                    Manifest.permission.READ_MEDIA_VIDEO)
+                .withListener(object : MultiplePermissionsListener {
+                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                        if (report.areAllPermissionsGranted()) {
+                            bannerOptions()
+                        }
+                        if (report.isAnyPermissionPermanentlyDenied) {
+                            showSettingsDialog()
+                        }
                     }
-                    if (report.isAnyPermissionPermanentlyDenied) {
-                        showSettingsDialog()
-                    }
-                }
 
-                override fun onPermissionRationaleShouldBeShown(
-                    permissions: List<PermissionRequest>,
-                    token: PermissionToken
-                ) {
-                    token.continuePermissionRequest()
-                }
-            }).check()
+                    override fun onPermissionRationaleShouldBeShown(
+                        permissions: List<PermissionRequest>,
+                        token: PermissionToken
+                    ) {
+                        token.continuePermissionRequest()
+                    }
+                }).check()
+        }else{
+            Dexter.withContext(context)
+                .withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.CAMERA)
+                .withListener(object : MultiplePermissionsListener {
+                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                        if (report.areAllPermissionsGranted()) {
+                            bannerOptions()
+                        }
+                        if (report.isAnyPermissionPermanentlyDenied) {
+                            showSettingsDialog()
+                        }
+                    }
+
+                    override fun onPermissionRationaleShouldBeShown(
+                        permissions: List<PermissionRequest>,
+                        token: PermissionToken
+                    ) {
+                        token.continuePermissionRequest()
+                    }
+                }).check()
+        }
+        application.postEvent(Constants.BUTTON_UPLOAD_IMAGE, null)
+
     }
 
     private fun bannerOptions() {
@@ -404,8 +451,17 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val data: Intent? = result.data
             if (result.resultCode == Activity.RESULT_OK) {
-                val uri = data!!.getParcelableExtra<Uri>("path")!!
-                photoList.add(ProductImage(uri, -1, ""))
+                var uriList = data!!.getParcelableArrayListExtra<Uri>("imagesList") as ArrayList<Uri>
+                for(uri in uriList){
+                    photoList.add(ProductImage(uri, -1, ""))
+                }
+                if (photoList.size == 1){
+                    binding.mainImagePlaceholder2.visibility = View.GONE
+                    binding.arrowImage2.visibility = View.GONE
+                }else{
+                    binding.mainImagePlaceholder2.visibility = View.VISIBLE
+                    binding.arrowImage2.visibility = View.VISIBLE
+                }
                 imageAdapter.notifyDataSetChanged()
             }
         }
@@ -461,6 +517,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
     }
 
     private fun openYourActivity() {
+/*
         val intent = Intent(requireContext(), ImagePickerActivity::class.java)
         intent.putExtra(
             ImagePickerActivity.INTENT_IMAGE_PICKER_OPTION,
@@ -471,7 +528,10 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
 //        intent.putExtra(ImagePickerActivity.INTENT_BITMAP_MAX_WIDTH, 1000)
 //        intent.putExtra(ImagePickerActivity.INTENT_BITMAP_MAX_HEIGHT, 1000)
         businessProofImageActivity.launch(intent)
-
+*/
+        val intent = Intent(requireContext(), CropActivity::class.java)
+        intent.putExtra("COUNT_IMAGES",photoList.size)
+        businessProofImageActivity.launch(intent)
     }
 
     private fun showCategoryFilterDialog() {

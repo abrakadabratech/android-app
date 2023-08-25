@@ -339,9 +339,9 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
         }
 
         val url =
-            ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" + resources.getString(
-                R.string.akd
-            )
+            ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" +
+                BuildConfig.API_KEY
+
        // mainViewModel.getAddress(url)
 
 
@@ -431,9 +431,9 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
         }
         val tag = "$lat,$lng"
         val url =
-            ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" + resources.getString(
-                R.string.akd
-            )
+            ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" +
+                BuildConfig.API_KEY
+
         mainViewModel.getAddress(url)
     }
 

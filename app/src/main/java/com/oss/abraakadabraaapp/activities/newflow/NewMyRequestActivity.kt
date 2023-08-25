@@ -80,7 +80,8 @@ class NewMyRequestActivity : BaseActivity() , MyRequestAdapter.OnResponseClick{
     }
     private fun setUpObserver() {
         mainViewModel.getMyRequestsSuccess.observe(this) {
-            Log.d("TAG - Product deails", "is it rue : ${it}")
+            Log.d("TAG - Produc" +
+                    "t deails", "is it rue : ${it}")
 
             if (it.code == 200) {
                 if(it.data.isEmpty()){

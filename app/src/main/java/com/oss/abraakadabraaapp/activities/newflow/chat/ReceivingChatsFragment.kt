@@ -23,6 +23,7 @@ import com.oss.abraakadabraaapp.activities.newflow.adapters.ChatAdapter
 import com.oss.abraakadabraaapp.activities.newflow.customeview.WrapContentLinearLayoutManager
 import com.oss.abraakadabraaapp.databinding.ChatRowBinding
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -52,6 +53,7 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
     }
     private fun setUpRecyclerview() {
         var chatList = ArrayList<GiverChatModel>()
+        var currentUserInfo = PreferencesManagement.getUserInfo(requireContext())
 
         val db = Firebase.firestore
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
@@ -79,12 +81,13 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
             override fun onBindViewHolder(holder: UsersViewholder, position: Int, model: ChatListModel) {
                 val user=model
                 holder.bind(model)
-                holder.binding.userName.text = model.receiver_name
+//                holder.binding.userName.text = model.receiver_name
                 holder.binding.productName.text = model.product
                 holder.binding.message.text = model.last_message
                 holder.binding.time.text = model.time_stamp
 //                holder.binding.message.text = model.messages?.get(model.messages?.size?.minus(1)!!).toString()
-                Glide.with(requireContext()).load(model.receiver_avatar)
+                holder.binding.userName.text = model.sender_name
+                Glide.with(requireContext()).load(model.sender_avatar)
                     .placeholder(resources.getDrawable(R.drawable.ic_profile))
                     .into(holder.binding.profilePic)
                 holder.itemView.setOnClickListener {
@@ -102,6 +105,8 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
                     val intent = Intent(requireContext(),ChatDetailActivity::class.java)
                     intent.putExtra(Constants.CHATS_DATA, Gson().toJson(model))
                     intent.putExtra("data_from","fragment")
+                    intent.putExtra(Constants.DISPLAY_NAME,model.sender_name)
+                    intent.putExtra(Constants.DISPLAY_PIC,model.sender_avatar)
                     startActivity(intent)
                 }
                 var a= GsonBuilder().create().toJson(model)

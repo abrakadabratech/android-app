@@ -206,5 +206,6 @@
     <string name="default_notification_channel_id">com.oss.abraakadabraaapp</string>
     <string name="edit_phone_number"><u>Edit phone number</u></string>
     <string name="social_link_alert">Your profile is successfully submitted for verification. We will take 2 business days to verify till when you will have read-only access. You will receive a notification.</string>
+    <string name="done">Done</string>
 
 </resources>

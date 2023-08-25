@@ -13,7 +13,7 @@ import com.oss.abraakadabraaapp.activities.newflow.model.CatData
 import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 
 class CatMainAdapter(
-    val context: Context, var i: ArrayList<UserCatData>,
+    val context: Context, var i: ArrayList<UserCatData>?,
     private var callback: MainCategoryAdapterInterface
 ) : RecyclerView.Adapter<CatMainAdapter.ViewHolder>() {
 
@@ -33,25 +33,25 @@ class CatMainAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        holder.cardName.text = i[position].title?.capitalize()
-        if (i[position].isSelect) {
+        holder.cardName.text = i!![position].title?.capitalize()
+        if (i!![position].isSelect) {
             holder.checkBox.setBackgroundResource(R.drawable.ic_radio_select)
             holder.cardName.setTextColor(context.resources.getColor(R.color.cat_select_color))
-            i.get(position).isSelect = true
+            i!!.get(position).isSelect = true
         } else {
             holder.checkBox.setBackgroundResource(R.drawable.ic_radio_unselect)
             holder.cardName.setTextColor(context.resources.getColor(R.color.cat_unselect_color))
-            i.get(position).isSelect = false
+            i!!.get(position).isSelect = false
         }
         holder.cardLayout.setOnClickListener {
-            callback.onMainItemClick(position,!i[position].isSelect)
+            callback.onMainItemClick(position,!i!![position].isSelect)
 //            notifyDataSetChanged()
         }
 
     }
 
     override fun getItemCount(): Int {
-        return i.size
+        return if(i !=null) i!!.size else 0
     }
 
     interface MainCategoryAdapterInterface {

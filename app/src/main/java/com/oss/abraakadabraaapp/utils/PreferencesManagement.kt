@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.appcompat.app.AlertDialog
 import com.google.android.datatransport.runtime.scheduling.jobscheduling.SchedulerConfig.Flag
 import com.google.gson.Gson
+import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.activities.StartAppActivity
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
 import com.oss.abraakadabraaapp.activities.newflow.model.AllCategoryResponse
@@ -11,6 +12,7 @@ import com.oss.abraakadabraaapp.activities.newflow.model.Filters
 import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.model.UserData
 import com.oss.abraakadabraaapp.model.UserLocation
+import com.oss.abraakadabraaapp.retrofit.api.RequestKeys.data
 import kotlin.collections.ArrayList
 
 
@@ -277,6 +279,47 @@ object PreferencesManagement {
             val json = Gson().toJson(data)
             prefsEditor.putString("Filters_key", json)
         }
+        return prefsEditor.commit()
+    }
+
+    fun saveTempBaseUrl(context: Context,toString: String): Boolean {
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        val prefsEditor = pref.edit()
+
+        if (toString == "") {
+            prefsEditor.putString("Base_url", BuildConfig.BASE_URL)
+        } else {
+//            val json = Gson().toJson(data)
+            prefsEditor.putString("Base_url", toString)
+        }
+        return prefsEditor.commit()
+    }
+    fun getTempBaseUrl(context: Context): String {
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        val json = pref.getString("Base_url", BuildConfig.BASE_URL)
+
+        return if (json == "")
+            BuildConfig.BASE_URL
+        else
+            json.toString()
+    }
+
+    fun isTooltipShown(context: Context): Boolean {
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        val json = pref.getBoolean("Tooltip_cropActivity", false)
+
+        return json
+    }
+    fun disableCropTooltip(context: Context,toString: Boolean): Boolean {
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        val prefsEditor = pref.edit()
+
+        prefsEditor.putBoolean("Tooltip_cropActivity",toString)
+
         return prefsEditor.commit()
     }
 

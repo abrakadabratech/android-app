@@ -43,6 +43,7 @@ import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import com.oss.abraakadabraaapp.BuildConfig
 import kotlinx.coroutines.*
 
 
@@ -117,7 +118,7 @@ class AddProductActivity : BaseActivity(),
         }
 
         if (!Places.isInitialized()) {
-            Places.initialize(this, resources.getString(R.string.akd))
+            Places.initialize(this, BuildConfig.API_KEY)
         }
 
         placesClient = Places.createClient(this)

@@ -89,7 +89,7 @@ class LoginActivity : BaseActivity() {
         with(binding) {
             generateOtpBtn.setOnClickListener {
                 editMode = false
-
+//                PreferencesManagement.saveTempBaseUrl(this@LoginActivity,editTextText.text.toString())
                 startTimer()
                 loginUser()
 
@@ -247,7 +247,7 @@ class LoginActivity : BaseActivity() {
                                     // Send token to your backend via HTTPS
                                     // ...
                                 } else {
-                                    // Handle error -> task.getException();
+                                    // Handle error -> task.getException()
                                 }
                             }
 

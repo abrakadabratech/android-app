@@ -24,6 +24,7 @@ import com.oss.abraakadabraaapp.activities.newflow.customeview.WrapContentLinear
 import com.oss.abraakadabraaapp.databinding.ChatRowBinding
 import com.oss.abraakadabraaapp.databinding.FragmentGivingChatsBinding
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -68,7 +69,7 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
         }
 
 //            .whereNotEqualTo("Messages",null)
-
+        var currentUserInfo = PreferencesManagement.getUserInfo(requireContext())
         val options: FirestoreRecyclerOptions<ChatListModel> =
             FirestoreRecyclerOptions.Builder<ChatListModel>()
                 .setQuery(docRef, ChatListModel::class.java)
@@ -89,7 +90,12 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
                 ) {
                     val user = model
                     holder.bind(model)
-                    holder.binding.userName.text = model.sender_name
+
+                    holder.binding.userName.text = model.receiver_name
+                    Glide.with(requireContext()).load(model.receiver_avatar)
+                        .placeholder(resources.getDrawable(R.drawable.ic_profile))
+                        .into(holder.binding.profilePic)
+
                     holder.binding.productName.text = model.product
                     holder.binding.message.text = model.last_message
                     holder.binding.time.text = model.time_stamp
@@ -102,9 +108,6 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
 
                     holder.binding.time.text = currentDate*/
 
-                    Glide.with(requireContext()).load(model.sender_avatar)
-                        .placeholder(resources.getDrawable(R.drawable.ic_profile))
-                        .into(holder.binding.profilePic)
                     holder.itemView.setOnClickListener {
 
                        /* val chat_room = hashMapOf(
@@ -122,6 +125,9 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
                         val intent = Intent(requireContext(), ChatDetailActivity::class.java)
                         intent.putExtra(Constants.CHATS_DATA, Gson().toJson(model))
                         intent.putExtra("data_from","fragment")
+                        intent.putExtra(Constants.DISPLAY_NAME,model.receiver_name)
+                        intent.putExtra(Constants.DISPLAY_PIC,model.receiver_avatar)
+
                         startActivity(intent)
                     }
                     var a = GsonBuilder().create().toJson(model)

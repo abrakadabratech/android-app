@@ -23,7 +23,7 @@
             android:layout_gravity="center"
             android:background="@drawable/sender_chat_bg"
             android:gravity="center"
-            android:inputType="textMultiLine"
+            android:inputType="textMultiLine|textNoSuggestions"
             android:paddingStart="20dp"
             android:paddingTop="20dp"
             android:paddingEnd="20dp"

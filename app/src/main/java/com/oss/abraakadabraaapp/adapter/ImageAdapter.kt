@@ -30,16 +30,10 @@ class ImageAdapter(
             holder.itemView.tag = "-1"
         }
 
-
-
         val item = data[position]
 
         with(holder.binding){
-            if (position == 1){
-                holder.binding.llAddProductImage.background = context.resources.getDrawable(R.drawable.filled_dotted_border)
-            }else{
-                holder.binding.llAddProductImage.background = context.resources.getDrawable(R.drawable.ic_add_image_frame)
-            }
+
             if (position == data.size){
                 clMainImage.visibility = View.GONE
                 llDeleteBtn.visibility = View.GONE
@@ -49,6 +43,11 @@ class ImageAdapter(
                 llDeleteBtn.visibility = View.VISIBLE
 
                 llAddProductImage.visibility = View.GONE
+                if (position == 1){
+                    clMainImage.background = context.resources.getDrawable(R.drawable.filled_dotted_border)
+                }else{
+                    clMainImage.background = context.resources.getDrawable(R.drawable.ic_add_image_frame)
+                }
                 if (item.uri != null) {
                     GlideApp.with(context)
                         .load(item.uri ?: item.image)

@@ -147,6 +147,7 @@
                         android:fontFamily="@font/montserrat_regular"
                         android:text="support@abra-ka-dabra.com"
                         android:textSize="14sp"
+                        android:autoLink="email"
                         app:layout_constraintBottom_toBottomOf="@+id/imageView10"
                         app:layout_constraintStart_toEndOf="@+id/imageView10"
                         app:layout_constraintStart_toStartOf="@+id/mobileNum"

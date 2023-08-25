@@ -10,6 +10,7 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.databinding.ActivityEditProfileBinding
 import com.oss.abraakadabraaapp.databinding.LoggedInUserToolbarBinding
@@ -57,7 +58,8 @@ class EditProfileActivity : BaseActivity() {
             onBackPressed()
         }
 
-        val apiKey = getString(R.string.akd)
+        val apiKey = BuildConfig.API_KEY
+
         if (apiKey.isEmpty()) {
             return
         }

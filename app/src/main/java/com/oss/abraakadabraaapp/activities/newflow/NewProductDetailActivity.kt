@@ -131,7 +131,7 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
             }
         }
         binding.chatBtn.setOnClickListener {
-            if (productDetails?.data?.requestedStatus!!){
+            if (productDetails?.data?.isRequested!!){
                 if (productDetails?.data?.requestedStatus!!){
                     sendToChat()
                 }else{
@@ -197,14 +197,15 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
 
             val chat_room = ChatListModel()
             chat_room.from = sender_id
-            chat_room.sender_avatar = sender_avatar.toString()
-            chat_room.sender_id = sender_id
-            chat_room.sender_name = userInfo.name
-            chat_room.receiver_id = receiver_id
-            chat_room.receiver_name = receiver_name
-            chat_room.receiver_avatar = productDetails?.data?.postedBy?.userAvatar
+            chat_room.sender_avatar = productDetails?.data?.postedBy?.userAvatar
+            chat_room.sender_id = receiver_id
+            chat_room.sender_name = receiver_name
+            chat_room.receiver_id = sender_id
+            chat_room.receiver_name = userInfo.name
+            chat_room.receiver_avatar = sender_avatar.toString()
             chat_room.product_id = product_id
             chat_room.product = product
+
             /*val chat_room = hashMapOf(
                 "from" to sender_id,
                 "sender_id" to sender_id,
@@ -220,6 +221,8 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
             val intent = Intent(this,ChatDetailActivity::class.java)
             intent.putExtra(Constants.CHATS_DATA,Gson().toJson(chat_room))
             intent.putExtra("data_from","activity")
+            intent.putExtra(Constants.DISPLAY_NAME,productDetails?.data?.postedBy?.name)
+            intent.putExtra(Constants.DISPLAY_PIC,productDetails?.data?.postedBy?.userAvatar)
             startActivity(intent)
         }
     }

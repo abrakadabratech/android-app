@@ -3,6 +3,8 @@ package com.oss.abraakadabraaapp.utils
 object Constants {
     //Page tags for GA-4
 
+    val DISPLAY_NAME: String? = "display_name"
+    val DISPLAY_PIC: String? = "display_pic"
     const val CHATS_DATA: String = "chats_data"
     const val PRODUCT: String = "product_detail"
     val facebook: String = "facebook"

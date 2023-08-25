@@ -8,3 +8,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Abra Ka Dabra"
 include ':app'
+include ':app', ':ucrop'
+

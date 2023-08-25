@@ -122,10 +122,11 @@ interface APIs {
     suspend fun postProduct(
         @HeaderMap header: Map<String, String>,
         @PartMap partMap: Map<String, RequestBody>,
-        @Part filePart: Array<MultipartBody.Part>
+        @Part filePart: Array<MultipartBody.Part>,
+//        @Part displayImage: MultipartBody.Part
     ): Response<PostProductResponse>
 
-    //update product
+    //update product if image-url sent
     @Multipart
     @PUT("product/{id}")
     suspend fun updateProduct(
@@ -133,9 +134,21 @@ interface APIs {
         @Path("id") id: String,
 //        @Query("images") body: ArrayList<String>,
         @PartMap partMap: Map<String, RequestBody>,
-        @Part filePart: Array<MultipartBody.Part>,
+        @Part filePart: Array<MultipartBody.Part>
 
     ): Response<UpdatedProductData>
+
+    //update product if image sent
+    @Multipart
+    @PUT("product/{id}")
+    suspend fun updateProductIfImage(
+        @HeaderMap header: Map<String, String>,
+        @Path("id") id: String,
+//        @Query("images") body: ArrayList<String>,
+        @PartMap partMap: Map<String, RequestBody>,
+        @Part filePart: Array<MultipartBody.Part>,
+        @Part displayImage : MultipartBody.Part
+        ): Response<UpdatedProductData>
 
     //Get all product categories
     @GET("product/categories")

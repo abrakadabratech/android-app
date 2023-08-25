@@ -14,6 +14,7 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.databinding.ActivityFilterBinding
 import com.oss.abraakadabraaapp.databinding.LoggedInUserToolbarBinding
@@ -112,8 +113,8 @@ class FilterActivity : BaseActivity() {
                 onBackPressed()
             }
         }
+        val apiKey = BuildConfig.API_KEY
 
-        val apiKey = getString(R.string.akd)
         if (apiKey.isEmpty()) {
             return
         }

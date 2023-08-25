@@ -398,6 +398,32 @@ fun getRequestDetails(
         }
     }
 
+    fun updateProductIfImage(
+        map: HashMap<String, String>,
+        id: String,
+        images:ArrayList<String>,
+        body: Map<String, RequestBody>,
+        file: Array<MultipartBody.Part>,
+        displayImage : MultipartBody.Part
+    ) {
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.updateProductIfImage(map,id,images,body,file,displayImage)
+            callApi(::call, object : CallHelper<UpdatedProductData>{
+                override fun onSuccessful(data: UpdatedProductData) {
+                    updateProductSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+
+            })
+            isLoading.value = false
+        }
+    }
+
     fun postProductRequest(
         headerMap: HashMap<String, String>,
         id: String,

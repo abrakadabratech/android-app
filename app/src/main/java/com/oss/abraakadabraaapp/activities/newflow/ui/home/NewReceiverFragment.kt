@@ -52,6 +52,7 @@ import com.oss.abraakadabraaapp.location.livedata.LocationViewModel
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SWIPE_REFRESH
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
+import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.utils.customView.MarginItemDecoration
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import kotlinx.coroutines.Dispatchers
@@ -119,7 +120,6 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             }
         }
 
-
         binding.searchEdit.setOnClickListener {
             startActivity(Intent(requireContext(), NewSearchActivity::class.java))
         }
@@ -136,121 +136,9 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         return root
     }
 
-    /*private fun setupList() {
-        latestProductAdapter = LatestProductAdapter(latestProductList, requireContext(), this)
-        val lm = GridLayoutManager(requireContext(), 2)
-        binding.rvLatestProduct.apply {
-//            layoutManager = LinearLayoutManager(requireContext())
-            layoutManager = lm
-            addItemDecoration(
-                MarginItemDecoration(18)
-            )
-            adapter = latestProductAdapter
-        }
-        binding.rvLatestProduct.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-            }
-
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val layoutManager = binding.rvLatestProduct.layoutManager as GridLayoutManager
-                val firstVisiblePosition = layoutManager.findFirstVisibleItemPosition()
-                val visibleItemCount = layoutManager.childCount
-                val totalItemCount = layoutManager.itemCount
-                val firstVisibleItemPosition = lm.findFirstVisibleItemPosition()
-
-                Log.d("PGINATION", "onScrolled: ${layoutManager.findLastVisibleItemPosition()}")
-                Log.d(
-                    "PGINATION",
-                    "onScrolled: ${layoutManager.findFirstCompletelyVisibleItemPosition()}"
-                )
-                Log.d("PGINATION", "onScrolled: ${layoutManager.findLastVisibleItemPosition()}")
-                Log.d(
-                    "PGINATION",
-                    "onScrolled: ${layoutManager.findLastCompletelyVisibleItemPosition()}"
-                )
-
-                // Load more if we have reach the end to the recyclerView
-                if (visibleItemCount + firstVisibleItemPosition >= totalItemCount && firstVisibleItemPosition >= 0) {
-//                    loadMoreItems()
-                    val total: Int = lm.itemCount
-                    val lastVisibleItemCount: Int = lm.findLastCompletelyVisibleItemPosition()
-                    Log.d(
-                        "scroll",
-                        "scrolling total $total last visibile item $lastVisibleItemCount"
-                    )
-
-                    getProductFromServer()
-
-                    *//*if (!isLoading) {
-                        if (total > 0) if (total - 1 == lastVisibleItemCount) {
-                            if (!noMoreData) {
-                                isLoading = true
-                                isLastPage = true
-
-                                application.showToast("get products called end of the rec")
-                            }
-                        }
-                    }*//*
-                }
-            }
-        })
-        *//*binding.rvLatestProduct.addOnScrollListener(object :
-            RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, oldScrollY: Int) {
-                super.onScrolled(recyclerView, dx, oldScrollY)
-
-                val layoutManager = LinearLayoutManager::class.java.cast(recyclerView.layoutManager)
-                val totalItemCount = layoutManager.itemCount
-                val lastVisible = layoutManager.findLastVisibleItemPosition()
-
-                val endHasBeenReached = lastVisible + 5 >= totalItemCount
-                if (totalItemCount > 0 && endHasBeenReached) {
-                    //you have reached to the bottom of your recycler view
-                    application.showToast("last position")
-                }
-                *//**//*val total: Int = lm.itemCount
-                val lastVisibleItemCount: Int = lm.findLastVisibleItemPosition()
-                Log.d("scroll", "scrolling total $total last visibile item $lastVisibleItemCount")
-                if (!isLoading) {
-                    if (total > 0) if (total - 1 == lastVisibleItemCount) {
-                        if (!noMoreData) {
-                            isLoading = true
-                            isLastPage = true
-                            getProductFromServer()
-                            application.showToast("get products called end of the rec")
-                        }
-                    }
-                }*//**//*
-            }
-        })*//*
-    }*/
-
     override fun onStart() {
         super.onStart()
         EventBus.getDefault().register(this)
-
-//        startApp()
-        /*if (ActivityCompat.shouldShowRequestPermissionRationale(
-                requireActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-        ) {
-            AlertDialog.Builder(requireActivity())
-                .setTitle("Permission Needed")
-                .setMessage("Permission is needed to access files from your device...")
-                .setPositiveButton(
-                    "OK"
-                ) { dialog, which ->
-                    checkPermissions()
-                }
-                .setNegativeButton(
-                    "Cancel"
-                ) { dialog, which -> dialog.dismiss() }.create().show()
-        }*/
-
-
         checkPermissions()
     }
 
@@ -376,12 +264,6 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             if (latestProductList.size == 0) {
                 binding.nodata.visibility = View.VISIBLE
             }
-            if (it.data.products.isNotEmpty()) {
-
-            } else {
-//                binding.nodata.visibility = View.VISIBLE
-            }
-            //            binding.sRLHome.isRefreshing = false
 
         }
 
@@ -593,6 +475,8 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
 //            startActivity(Intent(requireContext(),CategorySelectActivity::class.java))
         }
+
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -751,5 +635,10 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         val intent = Intent(requireContext(), NewProductDetailActivity::class.java)
         intent.putExtra(Constants.PRODUCT, Gson().toJson(product))
         startActivity(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.e("Cycle-TAG", "onResume: RECEIVERFRAGMENT")
     }
 }

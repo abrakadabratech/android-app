@@ -22,6 +22,7 @@ import com.oss.abraakadabraaapp.R;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class ImagePickerActivity extends AppCompatActivity {
     private static final String TAG = ImagePickerActivity.class.getSimpleName();
@@ -181,8 +182,10 @@ public class ImagePickerActivity extends AppCompatActivity {
     }
 
     private void setResultOk(Uri imagePath) {
+        ArrayList<Uri> list = new ArrayList<>();
+        list.add(imagePath);
         Intent intent = new Intent();
-        intent.putExtra("path", imagePath);
+        intent.putParcelableArrayListExtra("imagesList", list);
         setResult(Activity.RESULT_OK, intent);
         finish();
     }

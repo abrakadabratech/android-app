@@ -4,12 +4,15 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.ImageDecoder
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
@@ -20,11 +23,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.PlacesClient
@@ -55,13 +64,20 @@ import com.oss.abraakadabraaapp.utils.ImageUtils
 import com.oss.abraakadabraaapp.utils.ItemMoveCallback
 import com.oss.abraakadabraaapp.utils.JavaUtils
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
+import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.utils.customView.ImagePickerActivity
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import id.zelory.compressor.Compressor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.net.URL
 import java.util.Collections
 
 
@@ -177,12 +193,53 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
             locationTxt.setText(it.product?.locationName)
 
             //set images to the array
+//            downloadImages(it.product?.images)
             for (i in it.product?.images!!) {
+                Log.d(TAG, "prefillData: ${i.toString()}")
                 photoList.add(ProductImage(i.toString(), 0, i.toString()))
             }
 
+        }
+    }
+
+    private fun downloadImages(images: ArrayList<String>?) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                1101
+            )
+        } else {
+            for(i in 0.. images!!.size-1){
+                saveImageFromUrl(images[i],"product"+i)
+            }
             imageAdapter.notifyDataSetChanged()
         }
+    }
+
+    private fun saveImageFromUrl(url: String, filename: String) {
+        Glide.with(this)
+            .asFile()
+            .load(url)
+            .into(object : CustomTarget<File>() {
+                override fun onResourceReady(resource: File, transition: Transition<in File>?) {
+                    // Handle downloaded image file
+                    // Pass the 'resource' file to the next step
+                    // (e.g., attaching it to a multipart request)
+                    Log.d(TAG, "onResourceReady: ${resource.absolutePath}")
+                    val fileUri = FileProvider.getUriForFile(this@EditProductActivity,
+                        "${this@EditProductActivity.packageName}.provider", resource)
+                    photoList.add(ProductImage(fileUri, 0, ""))
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    // Handle image load cleared
+                }
+            })
     }
 
     private fun getUserLocation() {
@@ -233,6 +290,7 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
         binding.locationTxt.setOnClickListener {
             locationPicker()
         }
+        Utility.deleteRecursive(application.cacheDir)
     }
 
     private fun locationPicker() {
@@ -280,8 +338,8 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
                 recycledViewPool.setMaxRecycledViews(1, 0)
                 adapter = imageAdapter
             }
-
-
+            mainImagePlaceholder.visibility = View.GONE
+            arrowImage.visibility = View.GONE
         }
     }
 
@@ -301,7 +359,13 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
             }
         }
         photoList.removeAt(position)
-
+        if (photoList.size == 1){
+            binding.mainImagePlaceholder.visibility = View.GONE
+            binding.arrowImage.visibility = View.GONE
+        }else{
+            binding.mainImagePlaceholder.visibility = View.VISIBLE
+            binding.arrowImage.visibility = View.VISIBLE
+        }
         imageAdapter.notifyDataSetChanged()
     }
 
@@ -319,13 +383,14 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
         Log.e(TAG, "Before sorted: ${Gson().toJson(photoList)}", )
         Log.e(TAG, "After sorted: ${Gson().toJson(list)}", )
         photoList = list
+        imageAdapter.notifyDataSetChanged()
     }
 
 
     private fun selectImage() {
         postEvent(Constants.BUTTON_UPLOAD_IMAGE, null)
         Dexter.withContext(this)
-            .withPermissions(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .withPermissions(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_MEDIA_IMAGES,Manifest.permission.READ_EXTERNAL_STORAGE)
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport) {
                     if (report.areAllPermissionsGranted()) {
@@ -385,8 +450,18 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val data: Intent? = result.data
             if (result.resultCode == Activity.RESULT_OK) {
-                val uri = data!!.getParcelableExtra<Uri>("path")!!
-                photoList.add(ProductImage(uri, -1, ""))
+//                val uri = data!!.getParcelableExtra<Uri>("path")!!
+                var uriList = data!!.getParcelableArrayListExtra<Uri>("imagesList") as ArrayList<Uri>
+                for(uri in uriList){
+                    photoList.add(ProductImage(uri, -1, ""))
+                }
+                if (photoList.size == 1){
+                    binding.mainImagePlaceholder.visibility = View.GONE
+                    binding.arrowImage.visibility = View.GONE
+                }else{
+                    binding.mainImagePlaceholder.visibility = View.VISIBLE
+                    binding.arrowImage.visibility = View.VISIBLE
+                }
                 imageAdapter.notifyDataSetChanged()
             }
         }
@@ -442,16 +517,18 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
     }
 
     private fun openYourActivity() {
-        val intent = Intent(this, ImagePickerActivity::class.java)
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        intent.putExtra(
-            ImagePickerActivity.INTENT_IMAGE_PICKER_OPTION,
-            ImagePickerActivity.REQUEST_GALLERY_IMAGE
-        )
+//        startActivity(Intent(this,CropActivity::class.java))
+//        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+//        intent.putExtra(
+//            ImagePickerActivity.INTENT_IMAGE_PICKER_OPTION,
+//            ImagePickerActivity.REQUEST_GALLERY_IMAGE
+//        )
 
 //        intent.putExtra(ImagePickerActivity.INTENT_SET_BITMAP_MAX_WIDTH_HEIGHT, true)
 //        intent.putExtra(ImagePickerActivity.INTENT_BITMAP_MAX_WIDTH, 1000)
 //        intent.putExtra(ImagePickerActivity.INTENT_BITMAP_MAX_HEIGHT, 1000)
+        val intent = Intent(this, CropActivity::class.java)
+        intent.putExtra("COUNT_IMAGES",photoList.size)
         businessProofImageActivity.launch(intent)
 
     }
@@ -614,11 +691,34 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
                     map["brand"] =
                         JavaUtils.toRequestBody(binding.etProductBrand.text.toString().trim())
 
-                    var csv = arrayToCSV(productDetails.product?.images)
+                    val urlList : ArrayList<String> = arrayListOf()
+                    Log.e(TAG, "Before postNewProduct: ${Gson().toJson(photoList)}")
 
-                    map["images"] = JavaUtils.toRequestBody(csv)
+                    for (i in 0 until photoList.size){
+                        if (photoList[i].id != -2 && i != 1){
+                            if (photoList[i].uri == null){
+                                urlList.add(photoList[i].image)
+                            }
+                        }
+                    }
+                    Log.e(TAG, "postNewProduct: ${urlList.toString()}")
+                    val csv = arrayToCSV(urlList)
+                    Log.e(TAG, "CSV postNewProduct: ${csv}")
 
-                    manageProduct(map)
+                    map["existing_images"] = JavaUtils.toRequestBody(csv)
+                    var isUrl = false
+                    if (photoList.size > 1){
+                        if (photoList[1].uri != null){
+                            //URI
+                        }else{
+                            //String url image
+                            isUrl = true
+                            map["display_image"] = JavaUtils.toRequestBody(photoList[1].image)
+                        }
+                    }
+                    Log.e(TAG, "Complet map: ${Gson().to(map)}", )
+                    manageProduct(map,isUrl)
+
                 } else {
                     showToast("Please turn on your location")
                 }
@@ -628,11 +728,14 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
 
     private fun addImage() {
         serverPhotoList.clear()
-        for (item in photoList) {
-            if (item.uri != null) {
-                if (item.id != -2) {
-                    serverPhotoList.add(item.uri.toString())
+        for (item in 0..photoList.size-1) {
+            if (photoList[item].uri != null) {
+                Log.e(TAG, "addImage: ${photoList[item].uri}")
+                if (photoList[item].id != -2 && item != 1) {
+                    serverPhotoList.add(photoList[item].uri.toString())
                 }
+            }else{
+                Log.e(TAG, "addImage: ${photoList[item].image}")
             }
         }
 
@@ -663,7 +766,7 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
         }
     }
 
-    private fun manageProduct(body: Map<String, RequestBody>) {
+    private fun manageProduct(body: Map<String, RequestBody>,isUrl:Boolean) {
         lifecycleScope.launch {
 
             val imagePathList = ArrayList<String>()
@@ -673,6 +776,7 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
                     MediaStore.Images.Media.getBitmap(
                         contentResolver,
                         Uri.parse(it)
+
                     )
                 } else {
                     val source =
@@ -705,15 +809,51 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
                     )
                 }"
             )
-            var imageMap = HashMap<String, ArrayList<String>>()
-            imageMap["images"] = productDetails.product?.images!!
-            mainViewModel.updateProduct(
-                map,
-                productDetails.product?.id!!.toString(),
-                productDetails.product?.images!!,
-                body,
-                JavaUtils.prepareFilePart(imagePathList, RequestKeys.productImages)
-            )
+            if (isUrl){
+                mainViewModel.updateProduct(
+                    map,
+                    productDetails.product?.id!!.toString(),
+                    productDetails.product?.images!!,
+                    body,
+                    JavaUtils.prepareFilePart(imagePathList, RequestKeys.productImages)
+                )
+            }else{
+                if (photoList[1].uri != null){
+
+                    val bitmap = if (Build.VERSION.SDK_INT < 28) {
+                        MediaStore.Images.Media.getBitmap(
+                            contentResolver,
+                            Uri.parse(photoList[1].uri.toString())
+
+                        )
+                    } else {
+                        val source =
+                            ImageDecoder.createSource(contentResolver, Uri.parse(photoList[1].uri.toString()))
+                        ImageDecoder.decodeBitmap(source)
+                    }
+
+                    val imageFile = ImageUtils.bitmapToFile(
+                        bitmap,
+                        this@EditProductActivity,
+                        "product_name00.jpg"
+                    )
+                    val compressedImage = async {
+                        Compressor.compress(this@EditProductActivity, imageFile)
+                    }
+
+//                    imagePathList.add()
+
+                    mainViewModel.updateProductIfImage(
+                        map,
+                        productDetails.product?.id!!.toString(),
+                        productDetails.product?.images!!,
+                        body,
+                        JavaUtils.prepareFilePart(imagePathList, RequestKeys.productImages),
+                        JavaUtils.profileImagePrepareFilePart1(compressedImage.await().path)
+                    )
+                }
+            }
+
         }
     }
 

@@ -110,8 +110,8 @@ class ContentManagementActivity : BaseActivity() {
     private fun setUpObserver() {
         mainViewModel.supportDataSuccess.observe(this) {
             if (it.code == 200) {
-                binding.mobileNum.text = it.data?.email
-                binding.emailTxt.text = it.data?.phone
+                binding.mobileNum.text = it.data?.phone
+                binding.emailTxt.text = it.data?.email
 //                binding.version.text = it.data?.version
 
             } else {
@@ -162,6 +162,11 @@ class ContentManagementActivity : BaseActivity() {
         binding.rateUsTxt.setOnClickListener {
             goToPlayStore()
         }
+        binding.mobileNum.setOnClickListener {
+            val i = Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+binding.mobileNum.text.toString()))
+            startActivity(i)
+        }
+
 
     }
 

@@ -7,6 +7,7 @@ import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -48,8 +49,17 @@ class NewHomeActivity : BaseActivity() {
         setContentView(binding.root)
 
         actionBar?.hide()
+
+        window.statusBarColor =
+            ContextCompat.getColor(
+                this,
+                R.color.blue_status_bar_color
+            )
+
         mAppUpdateManager = AppUpdateManagerFactory.create(this)
         checkForUpdate()
+
+
 
         val host: NavHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment_activity_new_home) as NavHostFragment?
@@ -161,30 +171,6 @@ class NewHomeActivity : BaseActivity() {
         } else navView.visibility = View.VISIBLE
     }
 
-    @Subscribe
-    fun onMessageEvent(event: NotificationEntity) {
-        // Do something
-        Log.d("Notification ", "onMessageEvent: ${Gson().toJson(event)}")
-    }
-
-    override fun onResume() {
-        super.onResume()
-       /* mAppUpdateManager.appUpdateInfo.addOnSuccessListener {
-            if (it.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
-                try {
-                    mAppUpdateManager.startUpdateFlowForResult(
-                        it,
-                        AppUpdateType.FLEXIBLE,
-                        this,
-                        RC_APP_UPDATE
-                    )
-                } catch (e: IntentSender.SendIntentException) {
-                    Log.d("IntentSenderError", e.localizedMessage!!)
-                }
-            }
-        }*/
-
-    }
     companion object {
         fun createIntent(context: Context): Intent {
             val intent = Intent(context, NewHomeActivity::class.java)
@@ -209,4 +195,8 @@ class NewHomeActivity : BaseActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        Log.e("Cycle-TAG", "onResume: HOMEACTIVITY")
+    }
 }

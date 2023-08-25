@@ -448,6 +448,32 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
             <TextView
+                android:id="@+id/mainImagePlaceholder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/montserrat_medium"
+                android:text="Display Image"
+                android:textColor="@color/edit_text_color"
+                android:textSize="10sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/placeholderMsg" />
+
+            <TextView
+                android:id="@+id/placeholderMsg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textSize="12sp"
+                android:visibility="gone"
+                android:fontFamily="@font/montserrat_regular"
+                android:text="Hold &amp; Drag to reorder the images "
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView12" />
+
+            <TextView
                 android:id="@+id/textView12"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -464,11 +490,10 @@
                 android:id="@+id/rv_images"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/textView12"
-                app:layout_constraintTop_toBottomOf="@+id/textView12">
+                app:layout_constraintTop_toBottomOf="@+id/arrowImage">
 
             </androidx.recyclerview.widget.RecyclerView>
 
@@ -479,7 +504,7 @@
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/montserrat_regular"
-                android:text="Minimum 2 views."
+                android:text="Minimum 2 views. Hold &amp; Drag to reorder the images "
                 android:textColor="@color/edit_text_color"
                 android:textSize="10sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -545,6 +570,15 @@
                 app:layout_constraintBottom_toBottomOf="@+id/i_agree_checkbox"
                 app:layout_constraintEnd_toStartOf="@+id/i_agree_checkbox"
                 app:layout_constraintTop_toTopOf="@+id/i_agree_checkbox" />
+
+            <ImageView
+                android:id="@+id/arrowImage"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                app:layout_constraintEnd_toEndOf="@+id/mainImagePlaceholder"
+                app:layout_constraintStart_toStartOf="@+id/mainImagePlaceholder"
+                app:layout_constraintTop_toBottomOf="@+id/mainImagePlaceholder"
+                app:srcCompat="@drawable/arrow_downward" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>

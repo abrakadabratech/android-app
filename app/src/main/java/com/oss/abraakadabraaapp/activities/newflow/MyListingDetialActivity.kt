@@ -24,6 +24,7 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.gson.Gson
+import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.CatMainAdapter
@@ -88,7 +89,7 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         loadUsedForData()
         loadConditionData()
 
-        val apiKey = getString(R.string.akd)
+        val apiKey = BuildConfig.API_KEY
 
         if (!Places.isInitialized()) {
             Places.initialize(this, apiKey)

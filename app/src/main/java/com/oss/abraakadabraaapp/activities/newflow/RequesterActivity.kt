@@ -449,6 +449,8 @@ class RequesterActivity : BaseActivity() {
             val intent = Intent(this, ChatDetailActivity::class.java)
             intent.putExtra(Constants.CHATS_DATA, Gson().toJson(chat_room))
             intent.putExtra("data_from", "activity")
+            intent.putExtra(Constants.DISPLAY_NAME,receiver_name)
+            intent.putExtra(Constants.DISPLAY_PIC,productDetails?.data?.receiverInfo?.userAvatar)
             startActivity(intent)
         }
     }

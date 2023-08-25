@@ -1,16 +1,15 @@
 package com.oss.abraakadabraaapp.utils
 
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.util.Log
-import android.widget.Toast
+import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.retrofit.utils.ApiConstants
+import java.io.File
 
 
 object Utility {
+    const val EXTRA_PREFIX = BuildConfig.APPLICATION_ID
 
     fun getHeaders(context: Context): HashMap<String, String> {
         val map = HashMap<String, String>()
@@ -38,5 +37,15 @@ object Utility {
         map[RequestKeys.authorization] = token
 
         return map
+    }
+
+    fun deleteRecursive(fileOrDirectory: File) {
+        if (fileOrDirectory.isDirectory) {
+            for (child in fileOrDirectory.listFiles()) {
+                deleteRecursive(child)
+            }
+        }
+        fileOrDirectory.delete()
+        Log.d("ok", "deleteRecursive: cache cleared")
     }
 }

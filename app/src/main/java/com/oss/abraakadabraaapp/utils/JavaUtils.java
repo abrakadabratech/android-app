@@ -20,11 +20,11 @@ public class JavaUtils {
     }
     public static MultipartBody.Part profileImagePrepareFilePart1(String filePath) {
         if (filePath.isEmpty()) {
-            return MultipartBody.Part.createFormData("image", "", RequestBody.create("", MediaType.parse("image/*")));
+            return MultipartBody.Part.createFormData("display_image", "", RequestBody.create("", MediaType.parse("image/*")));
         } else {
             File file = new File(filePath);
             RequestBody requestFile = RequestBody.create(file, MediaType.parse("image/*"));
-            return MultipartBody.Part.createFormData("image", file.getName(), requestFile);
+            return MultipartBody.Part.createFormData("display_image", file.getName(), requestFile);
         }
     }
 

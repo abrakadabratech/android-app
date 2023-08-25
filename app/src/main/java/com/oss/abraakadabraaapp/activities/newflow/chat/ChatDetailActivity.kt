@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
@@ -35,8 +36,11 @@ import com.oss.abraakadabraaapp.utils.Constants.BUTTON_CHAT_OPTION_MENU
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_CHAT_REPORT_USER
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_CHAT_SEND_MESSAGE
 import com.oss.abraakadabraaapp.utils.Constants.CHATS_DATA
+import com.oss.abraakadabraaapp.utils.Constants.DISPLAY_NAME
+import com.oss.abraakadabraaapp.utils.Constants.DISPLAY_PIC
 import com.oss.abraakadabraaapp.utils.Constants.PAGE_CHATS_DETAILS
 import com.oss.abraakadabraaapp.utils.Constants.UNDER_DEV
+import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -66,10 +70,15 @@ class ChatDetailActivity : BaseActivity() {
             loaddata()
         }
         if (intent.hasExtra(CHATS_DATA)) {
+            binding.chatName.text = intent.extras?.getString(DISPLAY_NAME)
+            Glide.with(this).load(intent.extras?.getString(DISPLAY_PIC))
+                .placeholder(resources.getDrawable(R.drawable.ic_profile))
+                .into(binding.profilePic)
             chatData = Gson().fromJson(intent.extras?.getString(CHATS_DATA,""),ChatListModel::class.java)
             chatNode = chatData!!.product_id + setOneToOneChat(
                 chatData!!.sender_id.toString(),
                 chatData!!.receiver_id.toString())
+
             setUpRecycler(chatNode)
         }
         if (intent.hasExtra("data_from")) {
@@ -81,19 +90,9 @@ class ChatDetailActivity : BaseActivity() {
 
         Log.d("ok", "onCreate: $chatData")
         setUpObserver()
+        var currentUserInfo = PreferencesManagement.getUserInfo(this)
 
         if (chatData != null) {
-            if (data_from == "activity") {
-                binding.chatName.text = chatData!!.receiver_name.toString()
-                Glide.with(this).load(chatData!!.receiver_avatar)
-                    .placeholder(resources.getDrawable(R.drawable.ic_profile))
-                    .into(binding.profilePic)
-            } else if(data_from == "fragment"){
-                binding.chatName.text = chatData!!.sender_name
-                Glide.with(applicationContext).load(chatData!!.sender_avatar)
-                    .placeholder(resources.getDrawable(R.drawable.ic_profile))
-                    .into(binding.profilePic)
-            }
             binding.productName.text = chatData!!.product
         }
 
@@ -267,6 +266,20 @@ class ChatDetailActivity : BaseActivity() {
                     /*val intent = Intent(this,ChatDetailActivity::class.java)
                     intent.putExtra(Constants.CHATS_DATA,chat_room)
                     startActivity(intent)*/
+                    val isScrolledToBottom = (binding.rvChats.layoutManager as LinearLayoutManager)
+                        .findLastCompletelyVisibleItemPosition() == (firestoreUserAdapter?.itemCount?.minus(
+                        2
+                    ))
+
+// Notify the adapter about the change
+                    firestoreUserAdapter?.notifyDataSetChanged()
+
+// Scroll to the last item if it was already at the bottom, else show a new message indicator
+                    if (isScrolledToBottom) {
+                        binding.rvChats.scrollToPosition(adapter.itemCount - 1)
+                    } else {
+                        // Show a new message indicator or any visual cue
+                    }
                 }
                 .addOnFailureListener {
 
@@ -344,7 +357,8 @@ class ChatDetailActivity : BaseActivity() {
 
         binding.rvChats.layoutManager = layoutManager
         binding.rvChats.adapter = firestoreUserAdapter
-
+        binding.rvChats.scrollToPosition(firestoreUserAdapter?.itemCount?.minus(1)!!)
+        firestoreUserAdapter?.notifyDataSetChanged()
 //        val adapter = ChatMessageAdapter
     }
 
