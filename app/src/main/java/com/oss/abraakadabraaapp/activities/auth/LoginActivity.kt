@@ -65,6 +65,7 @@ class LoginActivity : BaseActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        postEvent(Constants.PAGE_LOGIN, null)
 
         binding.loginLayout.visibility = View.VISIBLE
         binding.otpLayout.visibility = View.GONE
@@ -88,6 +89,7 @@ class LoginActivity : BaseActivity() {
 
         with(binding) {
             generateOtpBtn.setOnClickListener {
+                postEvent(Constants.BUTTON_GENERATE_OTP,null)
                 editMode = false
 //                PreferencesManagement.saveTempBaseUrl(this@LoginActivity,editTextText.text.toString())
                 startTimer()
@@ -104,6 +106,7 @@ class LoginActivity : BaseActivity() {
 
         with(binding) {
             editPhoneNumber.setOnClickListener {
+                postEvent(Constants.BUTTON_EDIT_PHONENUMBER,null)
                 editMode = true
                 cancelTimer()
                 clearEditText()
@@ -112,12 +115,14 @@ class LoginActivity : BaseActivity() {
             }
 
             tvResendOtp.setOnClickListener {
+                postEvent(Constants.BUTTON_RESEND_OTP,null)
                 if (isOtpSend) {
                     resendOtp()
                 }
             }
 
             otpVerifyBtn.setOnClickListener {
+                postEvent(Constants.BUTTON_VERIFY_OTP,null)
                 editPhoneNumber.isEnabled = false
                 val otpString = binding.firstEdit.text.toString() +
                         binding.secondEdit.text.toString() +

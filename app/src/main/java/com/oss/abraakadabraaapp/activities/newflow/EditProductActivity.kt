@@ -338,8 +338,6 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
                 recycledViewPool.setMaxRecycledViews(1, 0)
                 adapter = imageAdapter
             }
-            mainImagePlaceholder.visibility = View.GONE
-            arrowImage.visibility = View.GONE
         }
     }
 
@@ -389,25 +387,51 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
 
     private fun selectImage() {
         postEvent(Constants.BUTTON_UPLOAD_IMAGE, null)
-        Dexter.withContext(this)
-            .withPermissions(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_MEDIA_IMAGES,Manifest.permission.READ_EXTERNAL_STORAGE)
-            .withListener(object : MultiplePermissionsListener {
-                override fun onPermissionsChecked(report: MultiplePermissionsReport) {
-                    if (report.areAllPermissionsGranted()) {
-                        bannerOptions()
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Dexter.withContext(this)
+                .withPermissions(Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.READ_MEDIA_AUDIO,
+                    Manifest.permission.READ_MEDIA_VIDEO)
+                .withListener(object : MultiplePermissionsListener {
+                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                        if (report.areAllPermissionsGranted()) {
+                            bannerOptions()
+                        }
+                        if (report.isAnyPermissionPermanentlyDenied) {
+                            showSettingsDialog()
+                        }
                     }
-                    if (report.isAnyPermissionPermanentlyDenied) {
-                        showSettingsDialog1()
-                    }
-                }
 
-                override fun onPermissionRationaleShouldBeShown(
-                    permissions: List<PermissionRequest>,
-                    token: PermissionToken
-                ) {
-                    token.continuePermissionRequest()
-                }
-            }).check()
+                    override fun onPermissionRationaleShouldBeShown(
+                        permissions: List<PermissionRequest>,
+                        token: PermissionToken
+                    ) {
+                        token.continuePermissionRequest()
+                    }
+                }).check()
+        }else{
+            Dexter.withContext(this)
+                .withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.CAMERA)
+                .withListener(object : MultiplePermissionsListener {
+                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                        if (report.areAllPermissionsGranted()) {
+                            bannerOptions()
+                        }
+                        if (report.isAnyPermissionPermanentlyDenied) {
+                            showSettingsDialog()
+                        }
+                    }
+
+                    override fun onPermissionRationaleShouldBeShown(
+                        permissions: List<PermissionRequest>,
+                        token: PermissionToken
+                    ) {
+                        token.continuePermissionRequest()
+                    }
+                }).check()
+        }
     }
 
     private fun bannerOptions() {
@@ -425,20 +449,6 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
                 }
             })
     }
-
-    fun showSettingsDialog1() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle(getString(R.string.dialog_permission_title))
-        builder.setMessage(getString(R.string.dialog_permission_message))
-        builder.setPositiveButton(getString(R.string.go_to_settings)) { dialog, _ ->
-            postClick(Constants.BUTTON_GOTO_SETTINGS)
-            dialog.cancel()
-            openSettings()
-        }
-        builder.setNegativeButton(getString(android.R.string.cancel)) { dialog, _ -> dialog.cancel() }
-        builder.show()
-    }
-
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -517,16 +527,6 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
     }
 
     private fun openYourActivity() {
-//        startActivity(Intent(this,CropActivity::class.java))
-//        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-//        intent.putExtra(
-//            ImagePickerActivity.INTENT_IMAGE_PICKER_OPTION,
-//            ImagePickerActivity.REQUEST_GALLERY_IMAGE
-//        )
-
-//        intent.putExtra(ImagePickerActivity.INTENT_SET_BITMAP_MAX_WIDTH_HEIGHT, true)
-//        intent.putExtra(ImagePickerActivity.INTENT_BITMAP_MAX_WIDTH, 1000)
-//        intent.putExtra(ImagePickerActivity.INTENT_BITMAP_MAX_HEIGHT, 1000)
         val intent = Intent(this, CropActivity::class.java)
         intent.putExtra("COUNT_IMAGES",photoList.size)
         businessProofImageActivity.launch(intent)
@@ -546,9 +546,6 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
         val catRecycler = dialogView.findViewById<RecyclerView>(R.id.catRecycler)
 
         catRecycler.layoutManager = LinearLayoutManager(this)
-//        alertAdaper.i = loadData()
-//        alertAdaper.alerttype = "category"
-//        alertAdaper = alertAdaper
         catRecycler.adapter = mainCatAdapter
         alertAdaper.notifyDataSetChanged()
 
@@ -917,35 +914,6 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
                     showToast("Please price of the product!")
                     false
                 }
-
-                /*genderSpinner.selectedItem.toString() == resources.getString(R.string.select_gender) -> {
-                    showToast("Please Select Gender")
-                    false
-                }
-                categorySpinner.selectedItem.toString() == resources.getString(R.string.select_category) -> {
-                    showToast("Please Select Category")
-                    false
-                }
-                etBrand.text!!.toString().trim().isBlank() -> {
-                    textInputBrand.error = "Please Enter Brand Name"
-                    false
-                }
-                productAgeSpinner.selectedItem.toString() == resources.getString(R.string.select_age) -> {
-                    showToast("Please Select Age")
-                    false
-                }
-                productConditionSpinner.selectedItem.toString() == resources.getString(R.string.select_condition) -> {
-                    showToast("Please Select Condition")
-                    false
-                }
-                etLocation.text!!.toString().trim().isBlank() -> {
-                    textInputLocation.error = "Please Enter Product Location"
-                    false
-                }
-                etDescription.text!!.toString().trim().isBlank() -> {
-                    textInputDescription.error = "Please Enter Product Description"
-                    false
-                }*/
 
                 descEdt.text!!.toString().trim().length > 300 -> {
                     descEdt.error =
