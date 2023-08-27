@@ -189,7 +189,7 @@ class NewHomeActivity : BaseActivity() {
             "An update has just been downloaded.",
             Snackbar.LENGTH_INDEFINITE
         ).apply {
-            setAction("RESTART") { mAppUpdateManager.completeUpdate() }
+            setAction("INSTALL") { mAppUpdateManager.completeUpdate() }
             setActionTextColor(resources.getColor(R.color.btn_color))
             show()
         }
