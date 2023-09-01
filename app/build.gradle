@@ -17,8 +17,8 @@ android {
         applicationId "com.oss.abraakadabraaapp"
         minSdk 23
         targetSdk 33
-        versionCode 22
-        versionName "1.18"
+        versionCode 23
+        versionName "1.18.1"
 //        versionName "test_refresh_product"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -67,8 +67,8 @@ android {
             minifyEnabled false
 //            buildConfigField("String", "BASE_URL", "\"https://abrakadabraapp.app/app/api/v1/\"")
             //DEV
-//            buildConfigField("String", "BASE_URL", "\"https://akd-testing.web.app/\"")
-//            buildConfigField("String", "BASE_URL", "\"https://akd-testing.web.app/\"")
+//            buildConfigField("String", "BASE_URL", "\"https://abrakadabra-dev.web.app\"")
+//            buildConfigField("String", "BASE_URL", "\"https://abrakadabra-dev.web.app\"")
 
 //            //PROD
 //            buildConfigField("String", "BASE_URL", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
@@ -89,6 +89,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    namespace 'com.oss.abraakadabraaapp'
 }
 
 dependencies {

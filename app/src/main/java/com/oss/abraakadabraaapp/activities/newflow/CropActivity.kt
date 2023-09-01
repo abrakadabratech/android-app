@@ -158,16 +158,15 @@ class CropActivity : BaseActivity() ,CropSelectAdapter.OnSelectorClicks{
         }
         else if (resultCode == Activity.RESULT_OK && requestCode == 123) {
             if (data?.clipData != null) {
-                val mClipData = data?.clipData
+                val mClipData = data.clipData
 
-                if(mClipData!!.itemCount > 4){
+                if(mClipData!!.itemCount+COUNT_IMAGES >  5){
                     showToast("We allow maximum 4 images")
                 }
-                for (i in 0 until mClipData!!.itemCount) {
+                for (i in 0 until mClipData.itemCount) {
                     val item = mClipData.getItemAt(i)
                     val uri = item.uri
-                    if ((5 - COUNT_IMAGES) != 0
-                    ){
+                    if ((5 - COUNT_IMAGES) != 0){
                         images.add(uri)
                         imagesBottom.add(CropSelectModel(uri,false))
                         COUNT_IMAGES++

@@ -4,11 +4,7 @@ object Constants {
     //Page tags for GA-4
 
 
-    val BUTTON_GENERATE_OTP: String = "button_generate_otp"
-    val BUTTON_VERIFY_OTP: String = "button_verify_otp"
-    val BUTTON_RESEND_OTP: String = "button_resend_otp"
-    val BUTTON_EDIT_PHONENUMBER: String = "button_edit_phone_number"
-    val PAGE_LOGIN: String = "page_login"
+
     val DISPLAY_NAME: String? = "display_name"
     val DISPLAY_PIC: String? = "display_pic"
     const val CHATS_DATA: String = "chats_data"
@@ -24,12 +20,17 @@ object Constants {
     val API_TAG = "Api_Call_AKD"
 
     //ON-Boarding tags
+
+    val BUTTON_GENERATE_OTP: String = "button_generate_otp"
+    val BUTTON_VERIFY_OTP: String = "button_verify_otp"
+    val BUTTON_RESEND_OTP: String = "button_resend_otp"
+    val BUTTON_EDIT_PHONENUMBER: String = "button_edit_phone_number"
+    val PAGE_LOGIN: String = "page_login"
+
     const val PAGE_ADD_USER_PROFILE_ONBOARDING: String = "page_onboarding_user_profile"
     const val PAGE_ADD_SOCIAL_PROFILE_ONBOARDING: String = "page_onboarding_social_profile_add"
     const val BUTTON_LETS_START_USER_PROFILE: String = "button_lets_start_user_profile"
     const val BUTTON_LETS_START_SOCIAL_PROFILE: String = "button_lets_start_social_profile"
-
-
 
     //HOME page tags
     const val PAGE_HOME: String = "page_home"

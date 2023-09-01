@@ -92,7 +92,7 @@ class HomeFragment : Fragment(), LocationListener {
         application.postEvent(Constants.PAGE_HOME,null)
         val fragmentManager: FragmentManager = requireFragmentManager()
         fragmentManager.beginTransaction()
-            .replace(R.id.container, NewReceiverFragment::class.java, null)
+            .replace(R.id.container,NewReceiverFragment::class.java , null)
             .setReorderingAllowed(true)
 //            .addToBackStack("name") // name can be null
             .commit()

@@ -109,7 +109,7 @@ class RequesterActivity : BaseActivity() {
                 alertDialog.setTitle("Alert!")
                 alertDialog.setMessage("Are you sure you want to Reject?")
 
-                alertDialog.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, id ->
+                alertDialog.setPositiveButton("Yes") { dialog, id ->
                     //cancel the request
                     generateAuthToken()
                     mainViewModel.updateProductRequest(
@@ -118,10 +118,10 @@ class RequesterActivity : BaseActivity() {
                         "rejected"
                     )
                     dialog.dismiss()
-                })
-                alertDialog.setNegativeButton("No", DialogInterface.OnClickListener { dialog, id ->
+                }
+                alertDialog.setNegativeButton("No") { dialog, id ->
                     dialog.dismiss()
-                })
+                }
                 alertDialog.show()
 
             } else if (binding.markAsDelivered.text.toString().equals("Pay \nAs you Wish")) {
@@ -136,20 +136,6 @@ class RequesterActivity : BaseActivity() {
 //            i.putExtra("receiver_data", Gson().toJson(productDetailData))
                 startActivity(i)
             } else {
-                /*var alertDialog = AlertDialog.Builder(this)
-                alertDialog.setTitle("Alert!")
-                alertDialog.setMessage("Are you sure you want to Deliver?")
-
-                alertDialog.setPositiveButton("Yes", DialogInterface.OnClickListener{ dialog, id ->
-                    //cancel the request
-
-
-                    dialog.dismiss()
-                })
-                alertDialog.setNegativeButton("No", DialogInterface.OnClickListener{ dialog, id ->
-                    dialog.dismiss()
-                })
-                alertDialog.show()*/
                 generateAuthToken()
                 mainViewModel.updateProductRequest(
                     Utility.getAuthentication(this),
@@ -158,7 +144,30 @@ class RequesterActivity : BaseActivity() {
                 )
 
             }
+
             //Reject login write here...
+        }
+        binding.markAsDelivered2.setOnClickListener {
+            var alertDialog = AlertDialog.Builder(this)
+                alertDialog.setTitle("Alert!")
+                alertDialog.setMessage("Are you sure you want to Cancel the request?")
+
+                alertDialog.setPositiveButton("Yes") { dialog, id ->
+                    //cancel the request
+
+                    generateAuthToken()
+                    mainViewModel.updateProductRequest(
+                        Utility.getAuthentication(this),
+                        productDetails?.data?.requestId.toString(),
+                        "cancelled"
+                    )
+                    dialog.dismiss()
+                }
+            alertDialog.setNegativeButton("No", DialogInterface.OnClickListener{ dialog, id ->
+                    dialog.dismiss()
+                })
+                alertDialog.show()
+
         }
         binding.okGotItBtn.setOnClickListener {
             postClick(BUTTON_OK_GOT_IT_IN_REQUESTER)
@@ -293,24 +302,62 @@ class RequesterActivity : BaseActivity() {
                 binding.status.setTextColor(resources.getColor(R.color.status_accepted))
                 binding.statusIcon.setImageResource(R.drawable.status_accepted)
 
+                binding.successLayout.visibility = View.VISIBLE
+                binding.markAsDelivered.text = "Mark As\nDelivered"
+                binding.acceptTxt.text = "Chat"
+                binding.acceptBtn.isClickable = true
+                binding.chatIcon.visibility = View.VISIBLE
+                binding.markAsDelivered.isEnabled = true
+                binding.markAsDelivered.setTextColor(resources.getColor(R.color.title_color))
+                binding.markAsDelivered2.visibility = View.VISIBLE
+
             }
             "rejected" -> {
                 binding.status.setText("Declined")
                 binding.status.setTextColor(resources.getColor(R.color.status_declined))
                 binding.statusIcon.setImageResource(R.drawable.status_declined)
+
+                binding.markAsDelivered.setText("Rejected")
+                binding.markAsDelivered.isEnabled = false
+                binding.acceptBtn.visibility = View.GONE
+                binding.markAsDelivered.visibility = View.GONE
+                binding.constraintLayout3.visibility = View.GONE
             }
             "received" -> {
                 binding.status.setText("Received")
                 binding.status.setTextColor(resources.getColor(R.color.status_accepted))
                 binding.statusIcon.setImageResource(R.drawable.status_accepted)
+
+                binding.markAsDelivered.text = "Mark As\nDelivered"
+                binding.markAsDelivered.setTextColor(resources.getColor(R.color.title_color))
+                binding.acceptBtn.isClickable = true
+                binding.acceptTxt.text = "Chat"
+                binding.chatIcon.visibility = View.VISIBLE
             }
             "delivered" -> {
                 binding.status.setText("Delivered")
                 binding.status.setTextColor(resources.getColor(R.color.status_accepted))
                 binding.statusIcon.setImageResource(R.drawable.status_accepted)
+
+                binding.markAsDelivered.visibility = View.VISIBLE
+                binding.markAsDelivered.text = "Pay \nAs you Wish"
+                binding.chatIcon.visibility = View.VISIBLE
+                binding.markAsDelivered.isEnabled = true
+                binding.acceptTxt.text = "Chat"
+                binding.acceptBtn.isClickable = true
+                binding.markAsDelivered.setTextColor(resources.getColor(R.color.title_color))
+            }
+            "cancelled" -> {
+                binding.status.setText("Cancelled")
+                binding.status.setTextColor(resources.getColor(R.color.status_declined))
+                binding.statusIcon.setImageResource(R.drawable.status_declined)
+
+                binding.markAsDelivered.visibility = View.GONE
+                binding.acceptBtn.visibility = View.GONE
+                binding.markAsDelivered2.visibility = View.GONE
+
             }
         }
-
 
         val imageList = ArrayList<SlideModel>()
         for (i in it.data!!.product?.images!!) {
@@ -333,13 +380,11 @@ class RequesterActivity : BaseActivity() {
             binding.some.text = "Brand"
         }
 
-//        binding.dateOfPostTxt.text = (it.data.createdAt.toString())
         binding.descriptionTxt.text = (data.description?.capitalize().toString())
         binding.locationName.text = (data.locationName.toString())
         binding.userLocation.text = "location ?"
         binding.userName.text = it.data?.receiverInfo!!.name
         binding.email.text = it.data?.receiverInfo!!.email
-//        binding.phone.text = it..receiverInfo.phone
 
         binding.phone.text = it.data?.receiverInfo!!.phone
         Glide.with(this@RequesterActivity).load(it.data!!.receiverInfo!!.userAvatar)
@@ -350,39 +395,6 @@ class RequesterActivity : BaseActivity() {
             it.data!!.request!!.coordinates?.Longitude?.toDouble()!!
         )
         binding.userMessage.text = it.data!!.request!!.message
-
-        if (it.data!!.request!!.status == "accepted") {
-            binding.successLayout.visibility = View.VISIBLE
-            binding.markAsDelivered.text = "Mark As\nDelivered"
-            binding.acceptTxt.text = "Chat"
-            binding.acceptBtn.isClickable = true
-            binding.chatIcon.visibility = View.VISIBLE
-            binding.markAsDelivered.isEnabled = true
-            binding.markAsDelivered.setTextColor(resources.getColor(R.color.title_color))
-        } else if (it.data!!.request!!.status == "rejected") {
-            binding.markAsDelivered.setText("Rejected")
-            binding.markAsDelivered.isEnabled = false
-            binding.acceptBtn.visibility = View.GONE
-            binding.markAsDelivered.visibility = View.GONE
-            binding.constraintLayout3.visibility = View.GONE
-        } else if (it.data!!.request!!.status == "delivered") {
-//            binding.constraintLayout3.visibility = View.GONE
-            binding.markAsDelivered.visibility = View.VISIBLE
-            binding.markAsDelivered.text = "Pay \nAs you Wish"
-            binding.chatIcon.visibility = View.VISIBLE
-            binding.markAsDelivered.isEnabled = true
-            binding.acceptTxt.text = "Chat"
-            binding.acceptBtn.isClickable = true
-            binding.markAsDelivered.setTextColor(resources.getColor(R.color.title_color))
-//            binding.payAsYouWish.visibility = View.VISIBLE
-        } else if (it.data!!.request!!.status == "received") {
-            binding.markAsDelivered.text = "Mark As\nDelivered"
-            binding.markAsDelivered.setTextColor(resources.getColor(R.color.title_color))
-            binding.acceptBtn.isClickable = true
-            binding.acceptTxt.text = "Chat"
-            binding.chatIcon.visibility = View.VISIBLE
-            //binding.successLayout2.visibility = View.VISIBLE
-        }
 
         if (it.data?.request?.isDelivered != null){
             if (it.data?.request?.isDelivered!!) {
@@ -399,11 +411,6 @@ class RequesterActivity : BaseActivity() {
                 binding.statusIcon.setImageResource(R.drawable.status_accepted)
             }
         }
-//        binding.email.text = it.requests[0].message
-//        binding.email.text = it.requests[0].phone
-//        binding.responsesOne.text = "${it.requests.size} Responses"
-//        binding.responsesTwo.text = "${it.requests.size} Responses"
-
     }
 
     private fun sendToChat() {

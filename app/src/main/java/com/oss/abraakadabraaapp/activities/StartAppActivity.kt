@@ -101,7 +101,7 @@ class StartAppActivity : BaseActivity(),LocationListener  {
                         try {
                             val response = referrerClient.installReferrer
                             val referrerUrl = response.installReferrer
-                            showToast(referrerUrl)
+//                            showToast(referrerUrl)
 
                             Log.e(TAG, "onInstallReferrerSetupFinished: $referrerUrl", )
 
@@ -584,40 +584,43 @@ class StartAppActivity : BaseActivity(),LocationListener  {
                         "Error Please try again !"
                     )
                 }
-                val u_info = PreferencesManagement.getUserInfo(this@StartAppActivity)!!
+                val u_info = PreferencesManagement.getUserInfo(this@StartAppActivity)
 
                 Log.d("LOGIN>>>", "setUpObserver: ${Gson().toJson(u_info)}")
 
-                if ((u_info.data?.name == null || u_info.data?.name == "") ||
-                    (u_info.data?.email == "" || u_info.data?.email == null)
-                /*(u_info.data?.socialLink == null || u_info.data?.socialLink == "")*/
-                ) {
-                    val intent = Intent(this@StartAppActivity, AuthUserDetailActivity::class.java)
-                    intent.putExtra(
-                        Constants.phoneNumber,
-                        FirebaseAuth.getInstance().currentUser?.phoneNumber
-                    )
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    startActivity(intent)
-
-                } /*else if (PreferencesManagement.getUserInfo(this@StartAppActivity)!!.data?.socialLink != null) {
-                    startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
-                }*/
-                else {
-                    startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
-                    /*if (u_info.data?.socialLink != null || u_info.data?.socialLink != "") {
-                        startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
-                    } else {
-                        val intent =
-                            Intent(this@StartAppActivity, AuthUserDetailActivity::class.java)
+                if(u_info != null){
+                    if ((u_info.data?.name == null || u_info.data?.name == "") ||
+                        (u_info.data?.email == "" || u_info.data?.email == null)
+                    /*(u_info.data?.socialLink == null || u_info.data?.socialLink == "")*/
+                    ) {
+                        val intent = Intent(this@StartAppActivity, AuthUserDetailActivity::class.java)
                         intent.putExtra(
                             Constants.phoneNumber,
                             FirebaseAuth.getInstance().currentUser?.phoneNumber
                         )
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                         startActivity(intent)
-                    }*/
+
+                    } /*else if (PreferencesManagement.getUserInfo(this@StartAppActivity)!!.data?.socialLink != null) {
+                    startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
+                }*/
+                    else {
+                        startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
+                        /*if (u_info.data?.socialLink != null || u_info.data?.socialLink != "") {
+                            startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
+                        } else {
+                            val intent =
+                                Intent(this@StartAppActivity, AuthUserDetailActivity::class.java)
+                            intent.putExtra(
+                                Constants.phoneNumber,
+                                FirebaseAuth.getInstance().currentUser?.phoneNumber
+                            )
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            startActivity(intent)
+                        }*/
+                    }
                 }
+
 
 //                startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
             } else {
@@ -629,18 +632,10 @@ class StartAppActivity : BaseActivity(),LocationListener  {
                     startActivity(Intent(this@StartAppActivity, LoginActivity::class.java))
                 }
             }
-            /*if (PreferencesManagement.getUserInfo(this)?.data?.phone != null){
 
-            }else{
-                showToast("Seems! you haven't setup name and email. Please login again")
-                Firebase.auth.signOut()
-                startActivity(Intent(this@StartAppActivity, LoginActivity::class.java))
-
-            }
-*/
             finish()
-//        }, if (BuildConfig.DEBUG) 0 else 2000)
-        }, 2000)
+        }, if (BuildConfig.DEBUG) 0 else 2000)
+//        }, 2000)
     }
 
     /*private fun getLocationAddress() {
