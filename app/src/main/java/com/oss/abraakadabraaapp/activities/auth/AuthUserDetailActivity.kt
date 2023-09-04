@@ -29,7 +29,6 @@ import com.oss.abraakadabraaapp.utils.Constants.API_TAG
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_LETS_START_SOCIAL_PROFILE
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_LETS_START_USER_PROFILE
 import com.oss.abraakadabraaapp.utils.Constants.PAGE_ADD_SOCIAL_PROFILE_ONBOARDING
-import com.oss.abraakadabraaapp.utils.Constants.USER_CREATED
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.regex.Matcher
@@ -82,15 +81,6 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
 
             authViewModel.getUser(map)
         }
-
-       /* if (PreferencesManagement.getUserInfoFlag(this)!!) {
-            binding.userDetailsLayout.visibility = View.GONE
-            binding.socialProfileLayout.visibility = View.VISIBLE
-        } else {
-            binding.userDetailsLayout.visibility = View.VISIBLE
-            binding.socialProfileLayout.visibility = View.GONE
-            binding.etName.setText(PreferencesManagement.getUserName(this).toString())
-        }*/
 
         postEvent(Constants.PAGE_ADD_USER_PROFILE_ONBOARDING, null)
 
@@ -236,21 +226,8 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
                 map[RequestKeys.email] = email
                 map[RequestKeys.phoneNumber] = phone
 
-                /*if (PreferencesManagement.getUserLocation(this@AuthUserDetailActivity) != null) {
-                    val userLocation =
-                        PreferencesManagement.getUserLocation(this@AuthUserDetailActivity)!!
-                    latitude = userLocation.lat
-                    longitude = userLocation.long
-                    address = userLocation.address ?: ""
-                }
-
-                map[RequestKeys.lat] = latitude
-                map[RequestKeys.lng] = longitude
-                map[RequestKeys.fullAddress] = address*/
                 Log.d(API_TAG, "registerUser: ${Gson().toJson(mapAuth)}")
                 authViewModel.postUser(mapAuth, map)
-
-//                getFCMToken(map)
 
             } else {
                 showSnackBar(
@@ -271,8 +248,6 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
                 (u_info.data?.email == "" || u_info.data?.email == null)
             ) {
                 if (PreferencesManagement.getUserInfoFlag(this)!!) {
-//                    binding.userDetailsLayout.visibility = View.GONE
-//                    binding.socialProfileLayout.visibility = View.VISIBLE
                     startActivity(Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java))
                     finish()
                 } else {
@@ -282,32 +257,10 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
                     binding.etEmail.setText(PreferencesManagement.getUserEmail(this).toString())
                 }
 
-            } /*else if ((u_info.data?.socialLink == null || u_info.data?.socialLink == "")) {
-                if (PreferencesManagement.getUserInfoFlag(this)!!) {
-                    binding.userDetailsLayout.visibility = View.GONE
-                    binding.socialProfileLayout.visibility = View.VISIBLE
-                } else {
-                    binding.userDetailsLayout.visibility = View.VISIBLE
-                    binding.socialProfileLayout.visibility = View.GONE
-                    binding.etName.setText(PreferencesManagement.getUserName(this).toString())
-                    binding.etEmail.setText(PreferencesManagement.getUserEmail(this).toString())
-                }
-            }*/
+            }
             else {
                 startActivity(Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java))
                 finish()
-                /*if (u_info.data?.socialLink != null || u_info.data?.socialLink != "") {
-                    startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
-                } else {
-                    val intent =
-                        Intent(this@StartAppActivity, AuthUserDetailActivity::class.java)
-                    intent.putExtra(
-                        Constants.phoneNumber,
-                        FirebaseAuth.getInstance().currentUser?.phoneNumber
-                    )
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    startActivity(intent)
-                }*/
             }
             if (mAuth.currentUser != null) {
                 generateAuthToken()
@@ -332,6 +285,9 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
                 }
             }
         }
+        authViewModel.updateUserSuccess.observe(this) {
+            PreferencesManagement.saveUserInfo(this,it)
+        }
 
         authViewModel.postUserSuccess.observe(this) {
             Log.d(API_TAG, "postUserSuccess: ${Gson().toJson(it)}")
@@ -339,39 +295,12 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
             if (it.code == 200 || it.code == 201) {
                 PreferencesManagement.saveUserFlag(this, true)
 
-                var user_info = PreferencesManagement.getUserInfo(this)
+                val map = java.util.HashMap<String, String>()
 
-                val intent =
-                    Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-//            intent.putExtra(Constants.phoneNumber,phoneNumber)
-                startActivity(intent)
-                finish()
+                map[RequestKeys.authorization] = generateAuthToken()
 
-                /*if (user_info?.data?.socialLink != null ||user_info?.data?.socialLink != ""){
-                    PreferencesManagement.saveUserProfileFlag(this, true)
-
-
-                }else{
-                    binding.userDetailsLayout.visibility = View.GONE
-                   // binding.socialProfileLayout.visibility = View.VISIBLE
-                    val mapAuth = HashMap<String, String>()
-                    mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
-
-                    authViewModel.getUserSocialProfile(mapAuth)
-                }*/
-
-
-                /*if (PreferencesManagement.getAuthToken(this@AuthUserDetailActivity) != null){
-                    mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
-                }else{
-                    generateAuthToken()
-                    mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
-                }*/
-
+                authViewModel.getUser(map)
             }
-//            showToast(it.responseMessage)
-//            loginInUser(it.data)
         }
         authViewModel.getSocialProfileSuccess.observe(this) {
             Log.d(API_TAG, "getSocialProfileSuccess: ${Gson().toJson(it)}")
@@ -389,9 +318,7 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
                     )
                 )
                 finish()
-//                successDialog()
             }
-//            if (it.responseMessage == "")
         }
 
         authViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }

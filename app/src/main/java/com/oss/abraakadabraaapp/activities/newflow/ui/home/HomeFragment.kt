@@ -27,6 +27,7 @@ import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_GIVE
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_NOTIFICATION
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SHARE
+import com.oss.abraakadabraaapp.utils.Constants.NOTIFICATION_REFRESH_EVENT
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -50,6 +51,7 @@ class HomeFragment : Fragment(), LocationListener {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private val TAG = "HomeFragment"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,7 +61,7 @@ class HomeFragment : Fragment(), LocationListener {
         val homeViewModel =
             ViewModelProvider(this).get(HomeViewModel::class.java)
 
-
+        Log.d(TAG, "onCreateView: called")
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
         application = (activity as BaseActivity)
@@ -187,14 +189,21 @@ class HomeFragment : Fragment(), LocationListener {
 
         val docRef = db.collection("notifications").whereEqualTo("userId",currentUserId)
             .whereEqualTo("deleted",false)
-
-        docRef.get().addOnSuccessListener { snap ->
-            if(snap.isEmpty){
+        docRef.addSnapshotListener{ snapshot,e ->
+            if(snapshot!!.isEmpty){
                 binding.notifications.setImageResource(R.drawable.ic_bell)
             }else{
                 binding.notifications.setImageResource(R.drawable.ic_bell_fille)
             }
         }
+
+        /*docRef.get().addOnSuccessListener { snap ->
+            if(snap.isEmpty){
+                binding.notifications.setImageResource(R.drawable.ic_bell)
+            }else{
+                binding.notifications.setImageResource(R.drawable.ic_bell_fille)
+            }
+        }*/
 
     }
 
@@ -241,30 +250,37 @@ class HomeFragment : Fragment(), LocationListener {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: String?) {
-        if(event == "clear"){
-            // For selecting the Receiver Tab
-            binding.receiveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
-            binding.receiveBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
-            binding.giveBtn.setTextColor(resources.getColor(R.color.hyper_link_text_color))
-            binding.giveBtn.background = null
-            fragmentManager?.beginTransaction()
-                ?.replace(R.id.container, NewReceiverFragment::class.java, null)
-                ?.setReorderingAllowed(true)
+        when(event){
+            "clear" ->{
+                binding.receiveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
+                binding.receiveBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
+                binding.giveBtn.setTextColor(resources.getColor(R.color.hyper_link_text_color))
+                binding.giveBtn.background = null
+                fragmentManager?.beginTransaction()
+                    ?.replace(R.id.container, NewReceiverFragment::class.java, null)
+                    ?.setReorderingAllowed(true)
 //                .addToBackStack("name") // name can be null
-                ?.commit()
-            EventBus.getDefault().post(1)
-        }else{
-            binding.profileLayout.visibility = View.VISIBLE
+                    ?.commit()
+                EventBus.getDefault().post(1)
+            }
+            NOTIFICATION_REFRESH_EVENT -> {
+                Log.d("TAG:Notifications", "getNotificationData: triggered from eventbus")
+                getNotificationData()
+            }
+            else -> binding.profileLayout.visibility = View.VISIBLE
+
         }
     }
     override fun onStart() {
         super.onStart()
         EventBus.getDefault().register(this)
+        Log.d(TAG, "onStart: Called")
     }
 
     override fun onStop() {
         super.onStop()
         EventBus.getDefault().unregister(this)
+        Log.d(TAG, "onStop: called")
     }
 
     override fun onLocationChanged(p0: Location) {
@@ -273,6 +289,8 @@ class HomeFragment : Fragment(), LocationListener {
 
     override fun onResume() {
         super.onResume()
+//        getNotificationData()
         Log.e("Cycle-TAG", "onResume: HOMEFRAGMENT")
+        Log.d(TAG, "onResume: called")
     }
 }

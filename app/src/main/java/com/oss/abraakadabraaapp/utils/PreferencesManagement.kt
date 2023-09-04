@@ -182,7 +182,7 @@ object PreferencesManagement {
 
         val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
-        val json = pref.getString("userInfo", null)
+        val json = pref.getString("userInfo", "active")
 
         return if (json == null)
             null

@@ -3,6 +3,8 @@ package com.oss.abraakadabraaapp.activities.newflow
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Parcelable
+import android.os.PersistableBundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -34,12 +36,25 @@ import com.oss.abraakadabraaapp.databinding.NotificationRowBinding
 import com.oss.abraakadabraaapp.localdb.NotificationEntity
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_NOTIFICATIONS
+import com.oss.abraakadabraaapp.utils.Constants.NOTIFICATION_REFRESH_EVENT
+import org.greenrobot.eventbus.EventBus
 import java.text.SimpleDateFormat
 import java.util.*
 
 class NewNotificationActivity : BaseActivity() {
     lateinit var firestoreUserAdapter: FirestoreRecyclerAdapter<NotificationEntity, UsersViewholder>
     private lateinit var binding: ActivityNewNotificationBinding
+
+    private val LIST_STATE_KEY = "recycler_state"
+    private var recyclerViewState: Parcelable? = null
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        recyclerViewState = binding.rvNotification.layoutManager?.onSaveInstanceState()
+        outState.putParcelable(LIST_STATE_KEY, recyclerViewState)
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNewNotificationBinding.inflate(layoutInflater)
@@ -57,6 +72,14 @@ class NewNotificationActivity : BaseActivity() {
         }
     }
 
+    override fun onRestoreInstanceState(
+        savedInstanceState: Bundle?,
+        persistentState: PersistableBundle?
+    ) {
+        super.onRestoreInstanceState(savedInstanceState, persistentState)
+        recyclerViewState = savedInstanceState?.getParcelable(LIST_STATE_KEY)
+
+    }
     private fun setUpRecyclerview() {
         var chatList = ArrayList<GiverChatModel>()
 
@@ -92,7 +115,6 @@ class NewNotificationActivity : BaseActivity() {
                 position: Int, model: NotificationEntity
             ) {
 
-                val user = model
                 if (!model.deleted) {
                     holder.binding.rootlayout.setBackgroundColor(resources.getColor(R.color.bg_color))
                 } else {
@@ -109,8 +131,6 @@ class NewNotificationActivity : BaseActivity() {
 
                 holder.itemView.setOnClickListener {
 
-//                    db.collection("notifications").("documentId",model.docId)
-//                        .update()
 
                     db.collection("notifications").document(model.docId).update("deleted", true)
 

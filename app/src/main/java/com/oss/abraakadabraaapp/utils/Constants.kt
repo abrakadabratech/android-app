@@ -15,7 +15,8 @@ object Constants {
     val instagram: String = "instagram"
     val UNDER_DEV: String = "Under development"
     val USER_NOT_FOUND: String = "User Not Found"
-    val USER_CREATED: String = "User Created"
+    val NOTIFICATION_REFRESH_EVENT: String = "notification_check"
+
 
     val API_TAG = "Api_Call_AKD"
 
