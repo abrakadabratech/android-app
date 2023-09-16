@@ -78,7 +78,7 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
         headerMap: HashMap<String, String>) {
         viewModelScope.launch {
 
-            isLoading.value = true
+//            isLoading.value = true
 
             suspend fun call() = repository.getUser(headerMap)
 
@@ -94,7 +94,7 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
                 }
             })
 
-            isLoading.value = false
+//            isLoading.value = false
 
         }
     }
@@ -728,7 +728,7 @@ fun getRequestDetails(
         headerMap: HashMap<String, String>
     ) {
         viewModelScope.launch {
-            isLoading.value = true
+//            isLoading.value = true
 
             suspend fun call() = repository.getAllCategories(headerMap)
             callApi(::call, object : CallHelper<AllCategoryResponse>{
@@ -741,7 +741,7 @@ fun getRequestDetails(
                 }
 
             })
-            isLoading.value = false
+//            isLoading.value = false
         }
     }
 

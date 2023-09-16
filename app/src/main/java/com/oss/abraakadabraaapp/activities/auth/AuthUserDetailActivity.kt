@@ -65,8 +65,7 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
         setContentView(view)
 
         if (PreferencesManagement.getUserInfoFlag(this)!!/* &&
-            PreferencesManagement.getUserProfileFlag(this)!!*/
-        ) {
+            PreferencesManagement.getUserProfileFlag(this)!!*/) {
             val intent =
                 Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -75,13 +74,13 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
             finish()
         }else{
             //Get user
-            val map = java.util.HashMap<String, String>()
-
-            map[RequestKeys.authorization] = generateAuthToken()
-
-            authViewModel.getUser(map)
+            generateAuthToken()
+            if (PreferencesManagement.getAuthToken(this) != null){
+                val map = java.util.HashMap<String, String>()
+                map[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
+                authViewModel.getUser(map)
+            }
         }
-
         postEvent(Constants.PAGE_ADD_USER_PROFILE_ONBOARDING, null)
 
         phoneNumber = intent.getStringExtra(Constants.phoneNumber) ?: "1234567890"
@@ -110,7 +109,6 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
 
         binding.okGotItBtn.setOnClickListener {
             postEvent(BUTTON_LETS_START_SOCIAL_PROFILE, null)
-            //postUserProfile()
         }
 
         setUpRecyclerView()
@@ -121,7 +119,6 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
             val intent =
                 Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-//            intent.putExtra(Constants.phoneNumber,phoneNumber)
             startActivity(intent)
             finish()
         }
@@ -133,7 +130,6 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
     }
 
     override fun onBackPressed() {
-//        super.onBackPressed()
         if (shouldAllowBack()) {
             super.onBackPressed();
         } else {
@@ -145,46 +141,6 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
         return false
     }
 
-    private fun postUserProfile() {
-        if (isUserProfileValidate()) {
-            if (isNetworkAvailable()) {
-                val mapAuth = HashMap<String, String>()
-                /*if (PreferencesManagement.getAuthToken(this@AuthUserDetailActivity) != null){
-                    mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
-                }else{
-                    generateAuthToken()
-                    mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
-                }*/
-                mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
-
-                val map = HashMap<String, String>()
-
-                map[RequestKeys.social_link_type] = socialLinkType
-                socialLink = binding.socialProfileHeader.text.toString().trim() +
-                        binding.profileLink.text.toString().trim()
-                map[RequestKeys.social_link] = binding.socialProfileHeader.text.toString().trim() +
-                        binding.profileLink.text.toString().trim()
-
-//                authViewModel.postUserSocialProfile(mapAuth, map)
-            }
-        }
-    }
-
-    private fun isUserProfileValidate(): Boolean {
-        with(binding) {
-            if (profileLink.text!!.length <= 3) {
-                showToast("Please Enter Valid Profile ID")
-                return false
-            }
-
-            if (profileLink.text!!.length > 20) {
-                showToast("Profile ID must be less than 20 character")
-                return false
-            }
-
-            return true
-        }
-    }
 
     private fun setUpRecyclerView() {
         var images: Array<Int> = arrayOf(
@@ -210,12 +166,6 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
                 if (isLocationEnabled()) getLastLocation()
 
                 val mapAuth = HashMap<String, String>()
-                /* if (PreferencesManagement.getAuthToken(this@AuthUserDetailActivity) != null){
-                     mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
-                 }else{
-                     generateAuthToken()
-                     mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
-                 }*/
                 mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
 
                 val map = HashMap<String, String>()
@@ -252,14 +202,13 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
                     finish()
                 } else {
                     binding.userDetailsLayout.visibility = View.VISIBLE
-                   // binding.socialProfileLayout.visibility = View.GONE
                     binding.etName.setText(PreferencesManagement.getUserName(this).toString())
                     binding.etEmail.setText(PreferencesManagement.getUserEmail(this).toString())
                 }
 
             }
             else {
-                startActivity(Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java))
+                startActivity(Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK))
                 finish()
             }
             if (mAuth.currentUser != null) {
@@ -285,22 +234,43 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
                 }
             }
         }
-        authViewModel.updateUserSuccess.observe(this) {
-            PreferencesManagement.saveUserInfo(this,it)
-        }
 
         authViewModel.postUserSuccess.observe(this) {
             Log.d(API_TAG, "postUserSuccess: ${Gson().toJson(it)}")
 
             if (it.code == 200 || it.code == 201) {
                 PreferencesManagement.saveUserFlag(this, true)
-
+                generateAuthToken()
                 val map = java.util.HashMap<String, String>()
-
-                map[RequestKeys.authorization] = generateAuthToken()
-
+                map[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
                 authViewModel.getUser(map)
+
+                if (mAuth.currentUser != null) {
+                    generateAuthToken()
+                    FirebaseMessaging.getInstance().token.addOnSuccessListener {
+                        PreferencesManagement.saveFCMToken(this, it)
+                        val data = UsersUpdateData(
+                            fcmToken = PreferencesManagement.getFCMToken(this)!!
+                        )
+                        val dataClass = DataClass(data)
+
+                        val map = java.util.HashMap<String, String>()
+                        val token = PreferencesManagement.getAuthToken(this)!!
+                        map[RequestKeys.authorization] = token
+
+                        authViewModel.updateUser(map, dataClass)
+
+                    }.addOnFailureListener {
+                        loader(false)
+                        if (BuildConfig.DEBUG) showToast("Error Please try again ! ${it.localizedMessage}") else showToast(
+                            "Error Please try again !"
+                        )
+                    }
+                }
+
             }
+//            showToast(it.responseMessage)
+//            loginInUser(it.data)
         }
         authViewModel.getSocialProfileSuccess.observe(this) {
             Log.d(API_TAG, "getSocialProfileSuccess: ${Gson().toJson(it)}")

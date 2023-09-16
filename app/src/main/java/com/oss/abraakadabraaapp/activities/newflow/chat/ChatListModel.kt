@@ -17,6 +17,7 @@ data class ChatListModel(
     @SerializedName("last_message"  ) var last_message  : String? = "",
     @SerializedName("time_stamp"  ) var time_stamp  : String? = "",
     @SerializedName("date"  ) var date  : String? = "",
+    @SerializedName("status"  ) var status  : String? = "",
     @SerializedName("Messages") var messages:List<ChatModel>? = null
 ){ constructor():this("","","","",
     "","","","","","",null)}

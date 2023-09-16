@@ -75,7 +75,7 @@ class ChatDetailActivity : BaseActivity() {
                 .placeholder(resources.getDrawable(R.drawable.ic_profile))
                 .into(binding.profilePic)
             chatData = Gson().fromJson(intent.extras?.getString(CHATS_DATA,""),ChatListModel::class.java)
-            chatNode = chatData!!.product_id + setOneToOneChat(
+            chatNode = chatData!!.product_id + Utility.setOneToOneChat(
                 chatData!!.sender_id.toString(),
                 chatData!!.receiver_id.toString())
 
@@ -215,7 +215,7 @@ class ChatDetailActivity : BaseActivity() {
             if (data_from == "activity"){
 
             }
-            chatNode = chatData!!.product_id!! + setOneToOneChat(
+            chatNode = chatData!!.product_id!! + Utility.setOneToOneChat(
                 chatData!!.sender_id.toString(),
                 chatData!!.receiver_id.toString()
             )
@@ -232,7 +232,7 @@ class ChatDetailActivity : BaseActivity() {
                 }
 
             val chats = hashMapOf(
-                "chatNode" to setOneToOneChat(
+                "chatNode" to Utility.setOneToOneChat(
                     chatData!!.sender_id.toString(),
                     chatData!!.receiver_id.toString()
                 ),
@@ -245,7 +245,7 @@ class ChatDetailActivity : BaseActivity() {
 
             db.collection("chats")
                 .document(
-                    chatData!!.product_id + setOneToOneChat(
+                    chatData!!.product_id + Utility.setOneToOneChat(
                         chatData!!.sender_id.toString(),
                         chatData!!.receiver_id.toString()
                     )
@@ -290,13 +290,7 @@ class ChatDetailActivity : BaseActivity() {
 
     // what is pointer in C
 //    depends on project vacancies
-    fun setOneToOneChat(uid1: String, uid2: String): String {
-        return if (uid1 < uid2) {
-            uid1 + uid2
-        } else {
-            uid2 + uid1
-        }
-    }
+
 
     private fun setUpRecycler(chatNode: String) {
 

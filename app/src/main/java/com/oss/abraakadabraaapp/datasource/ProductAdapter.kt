@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -20,11 +22,19 @@ class ProductAdapter(val onClick: OnProductClicked) :
         var tv_product_distance=itemView.rootView.findViewById<TextView>(R.id.tv_product_distance)
         var tv_product_location=itemView.rootView.findViewById<TextView>(R.id.tv_product_location)
         var iv=itemView.rootView.findViewById<ImageView>(R.id.iv_product)
+        var my_product: ConstraintLayout = itemView.rootView.findViewById<ConstraintLayout>(R.id.iv_given)
         fun bind(item: Product?) {
             tv.text=item?.name?.capitalize()
             Glide.with(itemView.context).load(item?.display_image).placeholder(R.drawable.image_placeholder).into(iv)
             tv_product_distance.setText("${(item?.distance?.div(1000))} KM")
             tv_product_location.setText("${item?.condition}")
+
+            if (item!!.isSelfProduct){
+                my_product.visibility = View.VISIBLE
+                iv.background = ContextCompat.getDrawable(itemView.context,R.color.transparent_blur)
+            }else{
+                my_product.visibility = View.GONE
+            }
 
         }
     }

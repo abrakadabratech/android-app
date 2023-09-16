@@ -1,7 +1,6 @@
 package com.oss.abraakadabraaapp.activities.newflow
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Parcelable
 import android.os.PersistableBundle
@@ -9,7 +8,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -19,27 +17,20 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
-import com.oss.abraakadabraaapp.activities.newflow.adapters.NewNotificationAdapter
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
-import com.oss.abraakadabraaapp.activities.newflow.chat.ChatListModel
 import com.oss.abraakadabraaapp.activities.newflow.chat.GiverChatModel
-import com.oss.abraakadabraaapp.activities.newflow.chat.ReceivingChatsFragment
 import com.oss.abraakadabraaapp.activities.newflow.customeview.WrapContentLinearLayoutManager
 import com.oss.abraakadabraaapp.activities.newflow.ui.MyRequestDetailsActivity
 import com.oss.abraakadabraaapp.databinding.ActivityNewNotificationBinding
-import com.oss.abraakadabraaapp.databinding.ChatRowBinding
 import com.oss.abraakadabraaapp.databinding.NotificationRowBinding
 import com.oss.abraakadabraaapp.localdb.NotificationEntity
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_NOTIFICATIONS
-import com.oss.abraakadabraaapp.utils.Constants.NOTIFICATION_REFRESH_EVENT
-import org.greenrobot.eventbus.EventBus
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 class NewNotificationActivity : BaseActivity() {
     lateinit var firestoreUserAdapter: FirestoreRecyclerAdapter<NotificationEntity, UsersViewholder>

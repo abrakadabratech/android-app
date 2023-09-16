@@ -13,18 +13,22 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.android.installreferrer.api.InstallReferrerClient
 import com.android.installreferrer.api.InstallReferrerStateListener
 import com.google.android.gms.analytics.HitBuilders
 import com.google.android.gms.analytics.Tracker
-import com.google.android.gms.location.*
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationListener
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.google.android.play.core.tasks.OnCompleteListener
 import com.google.android.play.core.tasks.Task
-import com.google.firebase.FirebaseApp
-import com.google.firebase.appcheck.FirebaseAppCheck
-import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GetTokenResult
 import com.google.firebase.messaging.FirebaseMessaging
@@ -52,8 +56,9 @@ import com.oss.abraakadabraaapp.viewModel.MainViewModel
 import org.json.JSONObject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.IOException
-import java.util.*
+import java.util.Locale
 import java.util.regex.Pattern
+
 
 class StartAppActivity : BaseActivity(),LocationListener  {
 
@@ -103,7 +108,7 @@ class StartAppActivity : BaseActivity(),LocationListener  {
                             val referrerUrl = response.installReferrer
 //                            showToast(referrerUrl)
 
-                            Log.e(TAG, "onInstallReferrerSetupFinished: $referrerUrl", )
+                            Log.e(TAG, "onInstallReferrerSetupFinished: $referrerUrl")
 
                             // Pass the referrer URL to Google Analytics
                             mTracker.send(
@@ -119,12 +124,12 @@ class StartAppActivity : BaseActivity(),LocationListener  {
                         }
                     }
                     InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE -> {
-                        Log.e(TAG, "onInstallReferrerSetupFinished: SERVICE_UNAVAILABLE", )
+                        Log.e(TAG, "onInstallReferrerSetupFinished: SERVICE_UNAVAILABLE")
                         showToast("SERVICE_UNAVAILABLE")
                     }
                     InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED -> {
                         showToast("FEATURE_NOT_SUPPORTED")
-                        Log.e(TAG, "onInstallReferrerSetupFinished: FEATURE_NOT_SUPPORTED", )
+                        Log.e(TAG, "onInstallReferrerSetupFinished: FEATURE_NOT_SUPPORTED")
                     }
                     // Handle other response codes as needed
                 }
@@ -244,50 +249,12 @@ class StartAppActivity : BaseActivity(),LocationListener  {
         authViewModel.updateUserSuccess.observe(this) {
 
         }
-
-        /*mainViewModel.addressSuccess.observe(this) {
-            val data = it.results[0]
-//            val fullAddress = data.formattedAddress
-//            var pinCode = ""
-//            var country = ""
-            var state = ""
-            var city = ""
-            var locality = ""
-
-            val addressComponents = data.addressComponents
-
-            for (item in addressComponents) {
-                for (i in item.types) {
-                    when (i) {
-//                        "postal_code" -> pinCode = item.longName
-//                        "country" -> country = item.longName
-                        "administrative_area_level_1" -> state = item.longName
-                        "administrative_area_level_2" -> city = item.longName
-                        "sublocality" -> locality = item.longName
-                    }
-                }
-            }
-
-            val address = "$locality, $city, $state"
-
-            Log.d("Addresses", "address $address")
-
-            PreferencesManagement.saveUserLocation(
-                this,
-                UserLocation(
-                    lat = lat,
-                    long = lng,
-                    address,
-                )
-            )
-
-            startApp()
-        }*/
     }
 
     override fun onStart() {
         super.onStart()
         checkPermissions()
+
     }
 
     private fun checkPermissions() {
@@ -320,7 +287,6 @@ class StartAppActivity : BaseActivity(),LocationListener  {
                     Manifest.permission.READ_MEDIA_IMAGES,
                     Manifest.permission.READ_MEDIA_VIDEO,
                     Manifest.permission.READ_MEDIA_AUDIO,
-
                     Manifest.permission.ACCESS_FINE_LOCATION)
             }
 
@@ -446,8 +412,8 @@ class StartAppActivity : BaseActivity(),LocationListener  {
             if (loca != ""){
                 f_address = "$f_address$loca,"
             }
-            Log.e("location_update", "${f_address}", )
-            Log.e("location_update", "${Gson().toJson(addresses)}", )
+            Log.e("location_update", "${f_address}")
+            Log.e("location_update", "${Gson().toJson(addresses)}")
 
             Log.d("location_update", "$locality\n $city\n $state\n $country\n $pinCode\n $fullAddress")
 

@@ -24,7 +24,6 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.codersroute.flexiblewidgets.FlexibleSwitch
 import com.codersroute.flexiblewidgets.FlexibleSwitch.OnStatusChangedListener
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -39,24 +38,28 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.CategorySelectActivity
+import com.oss.abraakadabraaapp.activities.newflow.MyListingDetialActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewProductDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewSearchActivity
 import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.adapter.CategoryAdapter
 import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.databinding.NewReceiverFlowBinding
-import com.oss.abraakadabraaapp.datasource.*
-import com.oss.abraakadabraaapp.datasource.products.Data
+import com.oss.abraakadabraaapp.datasource.APIService
+import com.oss.abraakadabraaapp.datasource.MainFilterViewModel
+import com.oss.abraakadabraaapp.datasource.MainViewModel
+import com.oss.abraakadabraaapp.datasource.MainViewModelFactory
+import com.oss.abraakadabraaapp.datasource.ProductAdapter
 import com.oss.abraakadabraaapp.datasource.products.Product
 import com.oss.abraakadabraaapp.location.livedata.LocationViewModel
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SWIPE_REFRESH
+import com.oss.abraakadabraaapp.utils.Constants.NOTIFICATION_REFRESH_EVENT
+import com.oss.abraakadabraaapp.utils.Constants.productId
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
-import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.utils.customView.MarginItemDecoration
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
@@ -70,8 +73,8 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     private val MY_PERMISSIONS_REQUEST_FINE_LOCATION: Int = 1001
     lateinit var application: BaseActivity
 
-    private var _binding: NewReceiverFlowBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: NewReceiverFlowBinding
+//    private val binding get() = _binding!!
     private val locationViewModel: LocationViewModel by viewModel()
 
     private var categoryList: ArrayList<UserCatData> = ArrayList()
@@ -98,7 +101,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         savedInstanceState: Bundle?
     ): View {
 
-        _binding = NewReceiverFlowBinding.inflate(inflater, container, false)
+        binding = NewReceiverFlowBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         application = (activity as BaseActivity)
@@ -132,6 +135,8 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         setUpObserver()
 
         clickEvents()
+
+        EventBus.getDefault().post(NOTIFICATION_REFRESH_EVENT)
 
         return root
     }
@@ -188,17 +193,14 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                 //show the dialog to enable the location permission
                 var alertDialog = AlertDialog.Builder(requireContext())
                 alertDialog.setTitle("Alert")
-                alertDialog.setMessage("Please enable location permission to view the products nearer to you.")
+                alertDialog.setMessage("Please turn on your location to view the products nearer to you.")
 
                 alertDialog.setPositiveButton(
                     "Enable",
                     DialogInterface.OnClickListener { dialog, id ->
 
 //                    checkPermissions()
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                        val uri: Uri =
-                            Uri.fromParts("package", requireActivity().getPackageName(), null)
-                        intent.data = uri
+                        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                         startActivity(intent)
                         dialog.dismiss()
                     })
@@ -336,8 +338,11 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                                 val map = HashMap<String, String>()
                                 val token = PreferencesManagement.getAuthToken(requireContext())!!
                                 map["Authorization"] = token
-
-                                authViewModel.getAllCategoriesData(map)
+                                if (application.isNetworkAvailable()){
+                                    authViewModel.getAllCategoriesData(map)
+                                }else{
+                                    application.showToast(getString(R.string.no_internet_connection_found))
+                                }
                                 if (PreferencesManagement.getFilters(requireContext())!!.nearest)
                                     getProductFromServer("nearest")
                                 else
@@ -350,119 +355,104 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
                     }
                 }
+        }else{
+            application.showToast(getString(R.string.no_internet_connection_found))
+            binding.sRLHome.isRefreshing = false
         }
     }
 
     private fun getProductFromServer(sortBy: String) {
 
-        val userLocation = PreferencesManagement.getUserLocation(requireContext())
+        if (application.isNetworkAvailable()){
+            val userLocation = PreferencesManagement.getUserLocation(requireContext())
 
-        val map = HashMap<String, String>()
-        val token = PreferencesManagement.getAuthToken(requireContext())!!
-        map["Authorization"] = token
+            val map = HashMap<String, String>()
+            val token = PreferencesManagement.getAuthToken(requireContext())!!
+            map["Authorization"] = token
 
-        // Pagination Library
-        if (sortBy == "latest") {
-            val viewModel =
-                ViewModelProvider(
-                    this,
-                    MainViewModelFactory(
-                        APIService.getApiService(),
-                        map,
-                        50,
-                        userLocation!!.lat.toDouble(),
-                        userLocation.long.toDouble(), "", sortBy
-                    )
-                )[MainViewModel::class.java]
-            mainListAdapter!!.submitData(lifecycle,PagingData.empty())
-            lifecycleScope.launchWhenCreated {
+            // Pagination Library
+            if (sortBy == "latest") {
+                val viewModel =
+                    ViewModelProvider(
+                        this,
+                        MainViewModelFactory(
+                            APIService.getApiService(),
+                            map,
+                            50,
+                            userLocation!!.lat.toDouble(),
+                            userLocation.long.toDouble(), "", sortBy
+                        )
+                    )[MainViewModel::class.java]
+                mainListAdapter!!.submitData(lifecycle,PagingData.empty())
+                lifecycleScope.launchWhenCreated {
 
-                viewModel.listData.collectLatest {
-                    launch(Dispatchers.Main) {
-                        mainListAdapter!!.loadStateFlow.collectLatest { loadStates ->
-                            if (loadStates.refresh is LoadState.Loading) {
-                                application.loader(true)
-                            } else {
-                                if (mainListAdapter!!.itemCount < 1) {
-                                    binding.nodata.visibility = View.VISIBLE
+                    viewModel.listData.collectLatest {
+                        launch(Dispatchers.Main) {
+                            mainListAdapter!!.loadStateFlow.collectLatest { loadStates ->
+                                if (loadStates.refresh is LoadState.Loading) {
+//                                    application.loader(true)
+                                    //shimmer ON
+                                    binding.shimmerLayout.visibility = View.VISIBLE
+                                    binding.shimmerLayout.startShimmer()
                                 } else {
-                                    binding.nodata.visibility = View.GONE
+                                    //shimmer OFF
+                                    binding.shimmerLayout.visibility = View.GONE
+                                    binding.shimmerLayout.stopShimmer()
+                                    if (mainListAdapter!!.itemCount < 1) {
+                                        binding.nodata.visibility = View.VISIBLE
+                                    } else {
+                                        binding.nodata.visibility = View.GONE
+                                    }
+//                                    application.loader(false)
                                 }
-                                application.loader(false)
                             }
                         }
+                        mainListAdapter!!.submitData(lifecycle,PagingData.empty())
+                        mainListAdapter!!.submitData(it)
                     }
-                    mainListAdapter!!.submitData(lifecycle,PagingData.empty())
-                    mainListAdapter!!.submitData(it)
+
                 }
+            } else {
 
-            }
-        } else {
+                val viewModel =
+                    ViewModelProvider(
+                        this,
+                        MainViewModelFactory(
+                            APIService.getApiService(),
+                            map,
+                            50,
+                            userLocation!!.lat.toDouble(),
+                            userLocation.long.toDouble(), "", sortBy
+                        )
+                    )[MainFilterViewModel::class.java]
 
-            val viewModel =
-                ViewModelProvider(
-                    this,
-                    MainViewModelFactory(
-                        APIService.getApiService(),
-                        map,
-                        50,
-                        userLocation!!.lat.toDouble(),
-                        userLocation.long.toDouble(), "", sortBy
-                    )
-                )[MainFilterViewModel::class.java]
+                mainListAdapter!!.submitData(lifecycle,PagingData.empty())
+                lifecycleScope.launchWhenCreated {
 
-            mainListAdapter!!.submitData(lifecycle,PagingData.empty())
-            lifecycleScope.launchWhenCreated {
-
-                viewModel.listData2.collectLatest {
-                    launch(Dispatchers.Main) {
-                        mainListAdapter!!.loadStateFlow.collectLatest { loadStates ->
-                            if (loadStates.refresh is LoadState.Loading) {
-                                application.loader(true)
-                            } else {
-                                if (mainListAdapter!!.itemCount < 1) {
-                                    binding.nodata.visibility = View.VISIBLE
+                    viewModel.listData2.collectLatest {
+                        launch(Dispatchers.Main) {
+                            mainListAdapter!!.loadStateFlow.collectLatest { loadStates ->
+                                if (loadStates.refresh is LoadState.Loading) {
+//                                    application.loader(true)
                                 } else {
-                                    binding.nodata.visibility = View.GONE
+                                    if (mainListAdapter!!.itemCount < 1) {
+                                        binding.nodata.visibility = View.VISIBLE
+                                    } else {
+                                        binding.nodata.visibility = View.GONE
+                                    }
+//                                    application.loader(false)
                                 }
-                                application.loader(false)
                             }
                         }
+                        mainListAdapter!!.submitData(it)
                     }
-                    mainListAdapter!!.submitData(it)
+
                 }
-
             }
-
-            /* lifecycleScope.launch {
-
-                */
-            /* mainListAdapter?.loadStateFlow?.collect{ loadState ->
-                        val isListEmpty =  mainListAdapter!!.itemCount == 0
-                        if ( loadState.append.endOfPaginationReached )
-                        {
-                            if ( mainListAdapter!!.itemCount < 1)
-                            /// show empty view
-                                binding.nodata.visibility = View.VISIBLE
-
-                            else binding.nodata.visibility = View.GONE
-                            ///  hide empty view
-                        }
-                    }*/
-            /*
-                    viewModel.listData.collect {
-
-                        mainListAdapter?.submitData(it)
-    //                    mainListAdapter?.submitData(PagingData.empty())
-                        if (mainListAdapter?.itemCount == 1){
-
-                            application.showToast(mainListAdapter?.itemCount.toString())
-                        }
-                    }
-
-                }*/
-
+        }else{
+            application.showToast(getString(R.string.no_internet_connection_found))
         }
+
 
     }
 
@@ -487,7 +477,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+//        binding = null
     }
 
     override fun onCategoryClick(data: UserCatData, position: Int) {
@@ -626,15 +616,21 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
     override fun onItemDetail(data: Product, position: Int) {
         val intent = Intent(requireContext(), NewProductDetailActivity::class.java)
-        intent.putExtra(Constants.PRODUCT, Gson().toJson(data))
+        intent.putExtra(productId, data.id)
         startActivity(intent)
     }
 
     override fun onProductClicked(product: Product?, position: Int) {
         Log.d(TAG, "onProductClicked: ${product?.name}")
-        val intent = Intent(requireContext(), NewProductDetailActivity::class.java)
-        intent.putExtra(Constants.PRODUCT, Gson().toJson(product))
-        startActivity(intent)
+        if (product?.isSelfProduct!!){
+            val intent = Intent(requireContext(), MyListingDetialActivity::class.java)
+            intent.putExtra(productId, product.id)
+            startActivity(intent)
+        }else{
+            val intent = Intent(requireContext(), NewProductDetailActivity::class.java)
+            intent.putExtra(productId, product.id)
+            startActivity(intent)
+        }
     }
 
     override fun onResume() {

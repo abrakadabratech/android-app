@@ -35,6 +35,7 @@ class AccountsFragment : Fragment(), View.OnClickListener {
 
 //    private val binding get() = _binding!!
     private val authViewModel: AuthViewModel by viewModel()
+    private val TAG = "HomeFragment"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,6 +44,7 @@ class AccountsFragment : Fragment(), View.OnClickListener {
     ): View {
         val notificationsViewModel =
             ViewModelProvider(this).get(NotificationsViewModel::class.java)
+        Log.d(TAG, "AccountsFragment onCreateView: called")
 
         binding = FragmentAccountsBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -108,7 +110,11 @@ class AccountsFragment : Fragment(), View.OnClickListener {
 
     override fun onStart() {
         super.onStart()
-        callUser()
+        if (application.isNetworkAvailable()){
+            callUser()
+        }else{
+            application.showToast(getString(R.string.no_internet_connection_found))
+        }
 
     }
     private fun callUser() {

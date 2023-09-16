@@ -16,6 +16,8 @@ data class Product(
     val id: String,
     @SerializedName("image")
     val image: String,
+    @SerializedName("is_self_product")
+    val isSelfProduct: Boolean,
     @SerializedName("display_image")
     val display_image: String,
     @SerializedName("name")

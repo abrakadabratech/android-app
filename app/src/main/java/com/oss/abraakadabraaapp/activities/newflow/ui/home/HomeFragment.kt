@@ -39,7 +39,7 @@ import java.util.*
 
 class HomeFragment : Fragment(), LocationListener {
 
-    private var _binding: FragmentHomeBinding? = null
+    private lateinit var binding: FragmentHomeBinding
     private val locationViewModel: LocationViewModel by viewModel()
     private var isGPSEnabled = false
     private lateinit var placesClient: PlacesClient
@@ -50,7 +50,6 @@ class HomeFragment : Fragment(), LocationListener {
 
     // This property is only valid between onCreateView and
     // onDestroyView.
-    private val binding get() = _binding!!
     private val TAG = "HomeFragment"
 
     override fun onCreateView(
@@ -62,7 +61,7 @@ class HomeFragment : Fragment(), LocationListener {
             ViewModelProvider(this).get(HomeViewModel::class.java)
 
         Log.d(TAG, "onCreateView: called")
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
         application = (activity as BaseActivity)
 
@@ -91,17 +90,17 @@ class HomeFragment : Fragment(), LocationListener {
 //            binding.locationOnActionbar.text = getAddress(userLocation.lat.toDouble(),userLocation.long.toDouble())
         }
         firebaseAnalytics = FirebaseAnalytics.getInstance(requireActivity())
-        application.postEvent(Constants.PAGE_HOME,null)
+        application.postEvent(Constants.PAGE_HOME, null)
         val fragmentManager: FragmentManager = requireFragmentManager()
         fragmentManager.beginTransaction()
-            .replace(R.id.container,NewReceiverFragment::class.java , null)
+            .replace(R.id.container, NewReceiverFragment::class.java, null)
             .setReorderingAllowed(true)
 //            .addToBackStack("name") // name can be null
             .commit()
 
         binding.submitProfile.setOnClickListener {
             val intent = Intent(requireContext(), MyNewProfileActivity::class.java)
-            intent.putExtra("from","activity")
+            intent.putExtra("from", "activity")
             startActivity(intent)
             binding.profileLayout.visibility = View.GONE
             binding.receiveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
@@ -120,18 +119,18 @@ class HomeFragment : Fragment(), LocationListener {
 
         binding.profileLayout.setOnClickListener {
 
-           /* binding.profileLayout.visibility = View.GONE
+            /* binding.profileLayout.visibility = View.GONE
 
-            binding.receiveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
-            binding.receiveBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
-            binding.giveBtn.setTextColor(resources.getColor(R.color.hyper_link_text_color))
-            binding.giveBtn.background = null
-            fragmentManager.beginTransaction()
-                .replace(R.id.container, NewReceiverFragment::class.java, null)
-                .setReorderingAllowed(true)
-//                .addToBackStack("name") // name can be null
-                .commit()
-            EventBus.getDefault().post(1)*/
+             binding.receiveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
+             binding.receiveBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
+             binding.giveBtn.setTextColor(resources.getColor(R.color.hyper_link_text_color))
+             binding.giveBtn.background = null
+             fragmentManager.beginTransaction()
+                 .replace(R.id.container, NewReceiverFragment::class.java, null)
+                 .setReorderingAllowed(true)
+ //                .addToBackStack("name") // name can be null
+                 .commit()
+             EventBus.getDefault().post(1)*/
 
         }
 
@@ -187,23 +186,17 @@ class HomeFragment : Fragment(), LocationListener {
         val db = Firebase.firestore
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
-        val docRef = db.collection("notifications").whereEqualTo("userId",currentUserId)
-            .whereEqualTo("deleted",false)
-        docRef.addSnapshotListener{ snapshot,e ->
-            if(snapshot!!.isEmpty){
-                binding.notifications.setImageResource(R.drawable.ic_bell)
-            }else{
-                binding.notifications.setImageResource(R.drawable.ic_bell_fille)
-            }
-        }
+        val docRef = db.collection("notifications").whereEqualTo("userId", currentUserId)
+            .whereEqualTo("deleted", false)
+        docRef.addSnapshotListener { snapshot, e ->
 
-        /*docRef.get().addOnSuccessListener { snap ->
-            if(snap.isEmpty){
+            if (snapshot!!.isEmpty) {
                 binding.notifications.setImageResource(R.drawable.ic_bell)
-            }else{
+            } else {
                 binding.notifications.setImageResource(R.drawable.ic_bell_fille)
             }
-        }*/
+
+        }
 
     }
 
@@ -212,9 +205,10 @@ class HomeFragment : Fragment(), LocationListener {
         val userLocation = PreferencesManagement.getUserLocation(requireContext())
         binding.locationOnActionbar.text = userLocation?.address
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+//        _binding = null
     }
 
     private fun loadData() {
@@ -222,10 +216,14 @@ class HomeFragment : Fragment(), LocationListener {
         val i = Intent(Intent.ACTION_SEND)
         i.type = "text/plain"
         i.putExtra(Intent.EXTRA_SUBJECT, "Subject test")
-        i.putExtra(Intent.EXTRA_TEXT, "Try this great app Abra Ka Dabra to share second hand products with others for free. App is available at the below link: https://play.google.com/store/apps/details?id=com.oss.abraakadabraaapp")
+        i.putExtra(
+            Intent.EXTRA_TEXT,
+            "Try this great app Abra Ka Dabra to share second hand products with others for free. App is available at the below link: https://play.google.com/store/apps/details?id=com.oss.abraakadabraaapp"
+        )
         startActivity(Intent.createChooser(i, "Share"))
     }
-    fun getAddress(lat: Double, lng: Double) :String{
+
+    fun getAddress(lat: Double, lng: Double): String {
 
         val geocoder = Geocoder(requireContext(), Locale.getDefault())
         try {
@@ -233,10 +231,10 @@ class HomeFragment : Fragment(), LocationListener {
             val obj = addresses!![0]
             var add = obj.getAddressLine(0)
             var string = ""
-            if(obj.subLocality != null){
+            if (obj.subLocality != null) {
                 string = "${obj.subLocality},${obj.locality},${obj.adminArea}"
-            }else{
-                string = obj.locality+","+obj.adminArea
+            } else {
+                string = obj.locality + "," + obj.adminArea
             }
 //            Toast.makeText(requireContext(),string,Toast.LENGTH_SHORT).show()
             return string
@@ -248,10 +246,11 @@ class HomeFragment : Fragment(), LocationListener {
         }
         return ""
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: String?) {
-        when(event){
-            "clear" ->{
+        when (event) {
+            "clear" -> {
                 binding.receiveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
                 binding.receiveBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
                 binding.giveBtn.setTextColor(resources.getColor(R.color.hyper_link_text_color))
@@ -263,14 +262,10 @@ class HomeFragment : Fragment(), LocationListener {
                     ?.commit()
                 EventBus.getDefault().post(1)
             }
-            NOTIFICATION_REFRESH_EVENT -> {
-                Log.d("TAG:Notifications", "getNotificationData: triggered from eventbus")
-                getNotificationData()
-            }
-            else -> binding.profileLayout.visibility = View.VISIBLE
 
         }
     }
+
     override fun onStart() {
         super.onStart()
         EventBus.getDefault().register(this)

@@ -39,31 +39,11 @@ class LatestProductAdapter(
         holder.binding.tvProductDistance.text = "${item.distance?.div(1000)} KM"
         holder.binding.tvProductName.text = item.name?.capitalize()
         holder.binding.tvProductLocation.text = item.condition
-
-        /*with(holder.binding) {
-
-            if (item.isGiven == 1) {
-                //ivGiven.visibility = View.VISIBLE
-                cv.elevation = 0f
-//                clMain.background = null
-            } else {
-//                ivGiven.visibility = View.GONE
-//                clMain.background = ContextCompat.getDrawable(context, R.drawable.bg_product)
-                cv.elevation = 1f
-            }
-
-            tvProductName.text = item.title
-            tvProductLocation.text = item.fullAddress
-
-            ImageUtils.setImage(
-                context,
-                ivProduct,
-                item.image ?: "",
-                null,
-                R.drawable.home_toolbar_app_logo
-            )
-
-        }*/
+        if (item!!.isSelfProduct){
+            holder.binding.ivGiven.visibility = View.VISIBLE
+        }else{
+            holder.binding.ivGiven.visibility = View.GONE
+        }
 
         holder.itemView.setOnClickListener {
             callback.onItemDetail(item, position)

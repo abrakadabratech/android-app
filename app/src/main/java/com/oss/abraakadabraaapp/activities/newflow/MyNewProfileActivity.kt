@@ -7,6 +7,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -33,6 +34,7 @@ import com.oss.abraakadabraaapp.activities.newflow.apimodels.User_Stats
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.activities.newflow.model.SocialData
 import com.oss.abraakadabraaapp.databinding.ActivityMyProfile2Binding
+import com.oss.abraakadabraaapp.model.ProductImage
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.*
 import com.oss.abraakadabraaapp.utils.Constants.API_TAG
@@ -55,6 +57,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
+import java.util.ArrayList
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -492,25 +495,51 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
 
     private fun selectImage() {
         postEvent(Constants.BUTTON_UPLOAD_IMAGE, null)
-        Dexter.withContext(this)
-            .withPermissions(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            .withListener(object : MultiplePermissionsListener {
-                override fun onPermissionsChecked(report: MultiplePermissionsReport) {
-                    if (report.areAllPermissionsGranted()) {
-                        bannerOptions()
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Dexter.withContext(this)
+                .withPermissions(Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.READ_MEDIA_AUDIO,
+                    Manifest.permission.READ_MEDIA_VIDEO)
+                .withListener(object : MultiplePermissionsListener {
+                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                        if (report.areAllPermissionsGranted()) {
+                            bannerOptions()
+                        }
+                        if (report.isAnyPermissionPermanentlyDenied) {
+                            showSettingsDialog()
+                        }
                     }
-                    if (report.isAnyPermissionPermanentlyDenied) {
-                        showSettingsDialog()
-                    }
-                }
 
-                override fun onPermissionRationaleShouldBeShown(
-                    permissions: List<PermissionRequest>,
-                    token: PermissionToken
-                ) {
-                    token.continuePermissionRequest()
-                }
-            }).check()
+                    override fun onPermissionRationaleShouldBeShown(
+                        permissions: List<PermissionRequest>,
+                        token: PermissionToken
+                    ) {
+                        token.continuePermissionRequest()
+                    }
+                }).check()
+        }else{
+            Dexter.withContext(this)
+                .withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.CAMERA)
+                .withListener(object : MultiplePermissionsListener {
+                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                        if (report.areAllPermissionsGranted()) {
+                            bannerOptions()
+                        }
+                        if (report.isAnyPermissionPermanentlyDenied) {
+                            showSettingsDialog()
+                        }
+                    }
+
+                    override fun onPermissionRationaleShouldBeShown(
+                        permissions: List<PermissionRequest>,
+                        token: PermissionToken
+                    ) {
+                        token.continuePermissionRequest()
+                    }
+                }).check()
+        }
     }
 
     private fun bannerOptions() {
@@ -566,25 +595,27 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val data: Intent? = result.data
             if (result.resultCode == Activity.RESULT_OK) {
-                val uri = data!!.getParcelableExtra<Uri>("path")!!
+                val uriList = data!!.getParcelableArrayListExtra<Uri>("imagesList") as ArrayList<Uri>
 
                 try {
-                    val bitmap = ImageUtils.uriToBitMap(uri, this@MyNewProfileActivity)
+                    if (uriList.size != 0){
+                        val bitmap = ImageUtils.uriToBitMap(uriList[0], this@MyNewProfileActivity)
 
-                    val imageFile =
-                        ImageUtils.bitmapToFile(bitmap, this@MyNewProfileActivity, "profile.jpg")
+                        val imageFile =
+                            ImageUtils.bitmapToFile(bitmap, this@MyNewProfileActivity, "profile.jpg")
 
-                    lifecycleScope.launch {
-                        val compressedImageFile =
-                            Compressor.compress(this@MyNewProfileActivity, imageFile)
-                        updatePhoto(imageFile)
+                        lifecycleScope.launch {
+                            val compressedImageFile =
+                                Compressor.compress(this@MyNewProfileActivity, imageFile)
+                            updatePhoto(compressedImageFile)
+                        }
+
                     }
 
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
 
-                binding.profilePic.setImageURI(uri)
             }
         }
 
@@ -604,13 +635,13 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
 
         Log.d(
             API_TAG,
-            "updatePhoto: ${JavaUtils.profileImagePrepareFilePart1(path.absolutePath)} \n ${
+            "updatePhoto: ${JavaUtils.profileImagePrepareFilePart1(path.absolutePath,"image")} \n ${
                 Gson().toJson(authMap)
             }"
         )
         authViewModel.updateProfilePic(
             authMap,
-            JavaUtils.profileImagePrepareFilePart1(path.absolutePath)
+            JavaUtils.profileImagePrepareFilePart1(path.absolutePath,"image")
         )
     }
 

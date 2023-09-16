@@ -241,20 +241,12 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
             }
             binding.textView75.text = "${it.data!!.products.size} Items"
 
-//            currentPage += 1
-
-
             if (it.data!!.products.size == 0) {
                 binding.nodata2.visibility = View.VISIBLE
                 showToast("No Data Found")
             } else {
                 binding.nodata2.visibility = View.GONE
             }
-//
-//            searchProductAdapter.setData(it.data)
-//            searchProductAdapter.notifyDataSetChanged()
-//        //            binding.sRLHome.isRefreshing = false
-
         }
         authViewModel.allproductsSuccess.observe(this) {
             Log.d("NewSearchActivity", "setUpObserver: ${it.data.products.size}")
@@ -263,7 +255,8 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
             } else binding.nodata2.visibility = View.GONE
 
             if (it.data.products.isNotEmpty()) {
-                if (currentPage == pageStart) latestProductList.clear()
+                searchProductList.clear()
+                latestProductList.clear()
                 latestProductList.addAll(it.data.products)
                 latestProductAdapter.notifyDataSetChanged()
                 binding.nodata2.visibility = View.GONE
@@ -468,17 +461,27 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
     }
 
     override fun onSearchItemDetail(data: Product, position: Int) {
-        val intent = Intent(this, NewProductDetailActivity::class.java)
-        //need some parsing the json data
-//        val product = Product(data.condition,data.tim)
-        intent.putExtra(Constants.PRODUCT, Gson().toJson(data))
-        startActivity(intent)
+        if (data?.isSelfProduct!!){
+            val intent = Intent(this, MyListingDetialActivity::class.java)
+            intent.putExtra(Constants.productId, data.id)
+            startActivity(intent)
+        }else{
+            val intent = Intent(this, NewProductDetailActivity::class.java)
+            intent.putExtra(Constants.productId, data.id)
+            startActivity(intent)
+        }
     }
 
     override fun onItemDetail(data: Product, position: Int) {
-        val intent = Intent(this, NewProductDetailActivity::class.java)
-        intent.putExtra(Constants.PRODUCT, Gson().toJson(data))
-        startActivity(intent)
+        if (data?.isSelfProduct!!){
+            val intent = Intent(this, MyListingDetialActivity::class.java)
+            intent.putExtra(Constants.productId, data.id)
+            startActivity(intent)
+        }else{
+            val intent = Intent(this, NewProductDetailActivity::class.java)
+            intent.putExtra(Constants.productId, data.id)
+            startActivity(intent)
+        }
     }
 
     fun EditText.debounce(delay: Long, action: (Editable?) -> Unit) {

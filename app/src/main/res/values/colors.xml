@@ -70,5 +70,6 @@
     <color name="status_pending">#FE962F</color>
     <color name="status_accepted">#2D7A76</color>
     <color name="status_declined">#F95565</color>
+    <color name="background">#dddddd</color>
 
 </resources>

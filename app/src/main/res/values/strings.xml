@@ -8,6 +8,7 @@
     <string name="settings">Settings</string>
     <string name="dialog_permission_title">Grant Permissions</string>
     <string name="dialog_permission_message">This app needs permission to use this feature. You can grant them in app settings.</string>
+    <string name="dialog_notification_permission_message">This app needs notification permission to receive notifications. You can grant them in app settings.</string>
     <string name="go_to_settings">GOTO SETTINGS</string>
     <string name="title_permission_permanently_denied">Location Permission Permanently Denied</string>
     <string name="message_permission_permanently_denied">The app will not work without providing location permission.
@@ -207,5 +208,6 @@
     <string name="edit_phone_number"><u>Edit phone number</u></string>
     <string name="social_link_alert">Your profile is successfully submitted for verification. We will take 2 business days to verify till when you will have read-only access. You will receive a notification.</string>
     <string name="done">Done</string>
+    <string name="on_hold_product_message">Only one request can be accepted at a time.\n Please cancel the previous request to accept this.</string>
 
 </resources>

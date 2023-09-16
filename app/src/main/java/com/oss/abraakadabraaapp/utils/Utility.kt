@@ -48,4 +48,12 @@ object Utility {
         fileOrDirectory.delete()
         Log.d("ok", "deleteRecursive: cache cleared")
     }
+
+    fun setOneToOneChat(uid1: String, uid2: String): String {
+        return if (uid1 < uid2) {
+            uid1 + uid2
+        } else {
+            uid2 + uid1
+        }
+    }
 }

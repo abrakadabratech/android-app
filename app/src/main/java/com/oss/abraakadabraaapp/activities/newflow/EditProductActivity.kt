@@ -846,7 +846,7 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
                         productDetails.product?.images!!,
                         body,
                         JavaUtils.prepareFilePart(imagePathList, RequestKeys.productImages),
-                        JavaUtils.profileImagePrepareFilePart1(compressedImage.await().path)
+                        JavaUtils.profileImagePrepareFilePart1(compressedImage.await().path,"display_image")
                     )
                 }
             }

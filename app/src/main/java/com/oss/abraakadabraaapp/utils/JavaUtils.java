@@ -18,13 +18,13 @@ public class JavaUtils {
             return MultipartBody.Part.createFormData("profile_image", file.getName(), requestFile);
         }
     }
-    public static MultipartBody.Part profileImagePrepareFilePart1(String filePath) {
+    public static MultipartBody.Part profileImagePrepareFilePart1(String filePath,String name) {
         if (filePath.isEmpty()) {
-            return MultipartBody.Part.createFormData("display_image", "", RequestBody.create("", MediaType.parse("image/*")));
+            return MultipartBody.Part.createFormData(name, "", RequestBody.create("", MediaType.parse("image/*")));
         } else {
             File file = new File(filePath);
             RequestBody requestFile = RequestBody.create(file, MediaType.parse("image/*"));
-            return MultipartBody.Part.createFormData("display_image", file.getName(), requestFile);
+            return MultipartBody.Part.createFormData(name, file.getName(), requestFile);
         }
     }
 

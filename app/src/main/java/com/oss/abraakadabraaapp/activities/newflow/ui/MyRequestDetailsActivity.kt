@@ -89,20 +89,6 @@ class MyRequestDetailsActivity : BaseActivity() {
                     Log.d("TAG - ", "sendToChat: ${doc.data?.get("user_avatar")}")
                     val userInfo = doc.toObject(UsersData::class.java)!!
 
-                    /*val chat_room = hashMapOf(
-                        "from" to sender_id,
-                        "sender_id" to sender_id,
-                        "sender_name" to doc.data?.get("name"),
-                        "sender_avatar" to doc.data?.get("user_avatar"),
-                        "receiver_id" to productDetial?.data?.postedBy?.id,
-                        "receiver_name" to productDetial?.data?.postedBy?.name,
-                        "receiver_avatar" to productDetial?.data!!.postedBy?.userAvatar,
-                        "product_id" to productDetial?.data!!.productId,
-                        "product" to productDetial?.data?.name?.capitalize(),
-                        "product_giver" to productDetial?.data?.postedBy?.id, //Product Giver
-                        "product_receiver" to sender_id //Product Receiver
-                    )*/
-
                     val chat_room = ChatListModel()
                     chat_room.from = sender_id
                     chat_room.sender_avatar = productDetial?.data!!.postedBy?.userAvatar
@@ -376,7 +362,7 @@ class MyRequestDetailsActivity : BaseActivity() {
 //                binding.constraintLayout3.visibility = View.GONE
             }else ->{
 
-            binding.status.setText("Product Deleted")
+            binding.status.setText("Cancelled")
             binding.status.setTextColor(resources.getColor(R.color.status_declined))
             binding.statusIcon.setImageResource(R.drawable.status_declined)
             binding.markAsDelivered.visibility = View.GONE

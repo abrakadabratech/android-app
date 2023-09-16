@@ -9,5 +9,6 @@ data class ProductDeleteResponse(
     @SerializedName("data") var data:Dataa
 )
 data class Dataa(
-    @SerializedName("request_status") var request_status:String? = null
+    @SerializedName("request_status") var request_status:String? = null,
+    @SerializedName("product_status") var product_status:String? = ""
 )

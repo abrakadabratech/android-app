@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -30,15 +31,14 @@ import java.util.*
 
 class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
     lateinit var application: BaseActivity
-    lateinit var rvChats: RecyclerView
-    lateinit var  nodata : TextView
-    lateinit var firestoreUserAdapter: FirestoreRecyclerAdapter<ChatListModel, UsersViewholder>
+    private lateinit var rvChats: RecyclerView
+    private lateinit var  nodata : TextView
+    private lateinit var firestoreUserAdapter: FirestoreRecyclerAdapter<ChatListModel, UsersViewholder>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
 
         val view = inflater.inflate(R.layout.fragment_receiving_chats, container, false)
         rvChats = view.findViewById(R.id.rvChats)
@@ -52,9 +52,6 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
         return view
     }
     private fun setUpRecyclerview() {
-        var chatList = ArrayList<GiverChatModel>()
-        var currentUserInfo = PreferencesManagement.getUserInfo(requireContext())
-
         val db = Firebase.firestore
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
@@ -70,6 +67,7 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
         val options: FirestoreRecyclerOptions<ChatListModel> = FirestoreRecyclerOptions.Builder<ChatListModel>()
             .setQuery(docRef,ChatListModel::class.java)
             .build()
+        val productInfoRef = db.collection("product_requests")
 
         firestoreUserAdapter=object :FirestoreRecyclerAdapter<ChatListModel, UsersViewholder>(options){
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):UsersViewholder {
@@ -79,59 +77,45 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
             }
 
             override fun onBindViewHolder(holder: UsersViewholder, position: Int, model: ChatListModel) {
-                val user=model
                 holder.bind(model)
-//                holder.binding.userName.text = model.receiver_name
                 holder.binding.productName.text = model.product
                 holder.binding.message.text = model.last_message
                 holder.binding.time.text = model.time_stamp
-//                holder.binding.message.text = model.messages?.get(model.messages?.size?.minus(1)!!).toString()
                 holder.binding.userName.text = model.sender_name
                 Glide.with(requireContext()).load(model.sender_avatar)
                     .placeholder(resources.getDrawable(R.drawable.ic_profile))
                     .into(holder.binding.profilePic)
-                holder.itemView.setOnClickListener {
-                   /* val chat_room = hashMapOf(
-                        "from" to model.from,
-                        "sender_id" to model.sender_id,
-                        "sender_name" to model.sender_name,
-                        "sender_avatar" to model.sender_avatar,
-                        "receiver_id" to model.receiver_id,
-                        "receiver_name" to model.receiver_name,
-                        "receiver_avatar" to model.receiver_avatar,
-                        "product_id" to model.product_id,
-                        "product" to model.product)*/
 
-                    val intent = Intent(requireContext(),ChatDetailActivity::class.java)
-                    intent.putExtra(Constants.CHATS_DATA, Gson().toJson(model))
-                    intent.putExtra("data_from","fragment")
-                    intent.putExtra(Constants.DISPLAY_NAME,model.sender_name)
-                    intent.putExtra(Constants.DISPLAY_PIC,model.sender_avatar)
-                    startActivity(intent)
+                if(model.status == "cancelled"){
+                    holder.binding.cancelledTxt.visibility = View.VISIBLE
+                }else{
+                    holder.binding.cancelledTxt.visibility = View.GONE
                 }
-                var a= GsonBuilder().create().toJson(model)
-                Log.d("TAG", "onBindViewHolder: "+a)
+                holder.itemView.setOnClickListener {
+                    if(model.status == "cancelled"){
+                        Toast.makeText(context,"Product Cancelled",Toast.LENGTH_SHORT).show()
+                    }else{
+                        navigateToChats(model)
+                    }
+
+                }
             }
         }
-        var layoutManager = WrapContentLinearLayoutManager(requireContext())
+        val layoutManager = WrapContentLinearLayoutManager(requireContext())
         rvChats.layoutManager = layoutManager
-//        val adapter = ChatAdapter(requireContext(),chatList,this)
         rvChats.adapter = firestoreUserAdapter
     }
-
-    override fun onChatClick(item: GiverChatModel) {
-      /*  val chat_room = hashMapOf(
-            "receiver_id" to item.receiverId,
-            "sender_id" to item.senderId,
-            "product_id" to item.productId,
-            "receiver_name" to item.receiverName,
-            "product" to item.product
-        )
+    private fun navigateToChats(model: ChatListModel) {
 
         val intent = Intent(requireContext(),ChatDetailActivity::class.java)
+        intent.putExtra(Constants.CHATS_DATA, Gson().toJson(model))
         intent.putExtra("data_from","fragment")
-        intent.putExtra(Constants.CHATS_DATA,chat_room)
-        startActivity(intent)*/
+        intent.putExtra(Constants.DISPLAY_NAME,model.sender_name)
+        intent.putExtra(Constants.DISPLAY_PIC,model.sender_avatar)
+        startActivity(intent)
+    }
+    override fun onChatClick(item: GiverChatModel) {
+
     }
     class UsersViewholder(val binding: ChatRowBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(documentSnapshot: ChatListModel) {
@@ -141,12 +125,10 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
     override fun onStart() {
         super.onStart()
         firestoreUserAdapter.startListening()
-//        EventBus.getDefault().register(this)
     }
 
     override fun onStop() {
         super.onStop()
         firestoreUserAdapter.stopListening()
-        //      EventBus.getDefault().unregister(this)
     }
 }

@@ -48,7 +48,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnRequestClicks,CategoryDialogAdapter.CategoryDialogAdapterInterface,
     CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAdapterInterface {
     lateinit var application: BaseActivity
-    lateinit var product: RequestData
     private val mainViewModel: AuthViewModel by viewModel()
     var productDetails : ListingResponse? = null
     private lateinit var binding:ActivityMyListingDetailsBinding
@@ -75,9 +74,6 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
 
         binding = ActivityMyListingDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        product =
-            Gson().fromJson(intent.extras?.getString(Constants.PRODUCT, ""), RequestData::class.java)
 
         if (intent.hasExtra(Constants.productId)) {
             productId = intent.getStringExtra(Constants.productId)!!
@@ -206,7 +202,7 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
                 binding.editMenuDialog.visibility = View.GONE
                 showToast("Your product is given")
             }else{
-                var alertDialog = AlertDialog.Builder(this)
+                val alertDialog = AlertDialog.Builder(this)
                 alertDialog.setTitle("Alert!")
                 alertDialog.setMessage("Are you sure you want to delete your listing?")
 
@@ -214,7 +210,7 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
                     //cancel the request
                     if (isNetworkAvailable()){
                         generateAuthToken()
-                        mainViewModel.deleteProduct(Utility.getAuthentication(this), product.id.toString())
+                        mainViewModel.deleteProduct(Utility.getAuthentication(this), productId)
                     }
                     dialog.dismiss()
                 })
@@ -292,7 +288,7 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         val map = HashMap<String, String>()
         val token = PreferencesManagement.getAuthToken(this)!!
         map[RequestKeys.authorization] = token
-        mainViewModel.getListingDetails(map, product.id!!)
+        mainViewModel.getListingDetails(map, productId)
     }
 
     private fun setUpObserver() {
@@ -384,7 +380,7 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         if (productDetails!=null){
             val intent = Intent(this,RequesterActivity::class.java)
             intent.putExtra(Constants.productId, productDetails!!.requests[position].requestId)
-            intent.putExtra("POSTION",position)
+            intent.putExtra(Constants.productStatus,productDetails!!.product?.status)
             startActivity(intent)
 
         }

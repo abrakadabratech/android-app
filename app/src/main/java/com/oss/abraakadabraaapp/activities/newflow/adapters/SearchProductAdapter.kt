@@ -10,6 +10,7 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.databinding.ItemProductBinding
 import Data
+import androidx.core.content.ContextCompat
 import com.oss.abraakadabraaapp.databinding.ItemProduct2Binding
 import com.oss.abraakadabraaapp.datasource.products.Product
 
@@ -33,7 +34,11 @@ class SearchProductAdapter(
         holder.binding.tvProductDistance.text = "${item.distance?.div(1000)} KM"
         holder.binding.tvProductName.text = item.name?.capitalize()
         holder.binding.tvProductLocation.text = item.condition
-
+        if (item!!.isSelfProduct){
+            holder.binding.ivGiven.visibility = View.VISIBLE
+        }else{
+            holder.binding.ivGiven.visibility = View.GONE
+        }
 
         holder.itemView.setOnClickListener {
             callback.onSearchItemDetail(item, position)

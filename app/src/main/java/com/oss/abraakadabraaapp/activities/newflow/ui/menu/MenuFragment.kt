@@ -39,6 +39,7 @@ class MenuFragment : Fragment() {
 
     lateinit var mAuth: FirebaseAuth
     private val authViewModel: AuthViewModel by viewModel()
+    private val TAG = "HomeFragment"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,6 +50,7 @@ class MenuFragment : Fragment() {
         _binding = NewMenuScreenBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        Log.d(TAG, "MenuFragment onCreateView: called")
 
 
         mAuth = FirebaseAuth.getInstance()

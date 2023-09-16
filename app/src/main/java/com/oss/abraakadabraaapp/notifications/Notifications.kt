@@ -17,6 +17,7 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.ProductDetailActivity
 import com.oss.abraakadabraaapp.activities.RequestProductDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
+import com.oss.abraakadabraaapp.activities.newflow.NewProductDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.RequesterActivity
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.ui.MyRequestDetailsActivity
@@ -86,8 +87,8 @@ object Notifications {
                 notificationBuilder.setContentIntent(pendingIntent)
             }
             Constants.productDetail -> {
-                val intent = Intent(context, ProductDetailActivity::class.java)
-                intent.putExtra(Constants.productId, map["module_id"])
+                val intent = Intent(context, NewProductDetailActivity::class.java)
+                intent.putExtra(Constants.productId, map["data"])
                 intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
 
                 val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

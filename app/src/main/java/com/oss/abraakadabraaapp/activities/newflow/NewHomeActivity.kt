@@ -7,6 +7,8 @@ import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AlertDialog
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -36,12 +38,9 @@ import org.greenrobot.eventbus.ThreadMode
 class NewHomeActivity : BaseActivity() {
 
     private lateinit var binding: ActivityNewHomeBinding
-    lateinit var navView: BottomNavigationView
-    private var mTracker: Tracker? = null
+    private lateinit var navView: BottomNavigationView
     private lateinit var mAppUpdateManager: AppUpdateManager
     private val RC_APP_UPDATE: Int = 1000
-
-    //    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +57,7 @@ class NewHomeActivity : BaseActivity() {
 
         mAppUpdateManager = AppUpdateManagerFactory.create(this)
         checkForUpdate()
-
+        checkNotificationPermission()
 
 
         val host: NavHostFragment = supportFragmentManager
@@ -71,7 +70,6 @@ class NewHomeActivity : BaseActivity() {
 
         val appBarConfiguration = AppBarConfiguration(navController.graph)
 
-        //        setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -83,11 +81,26 @@ class NewHomeActivity : BaseActivity() {
 
             Log.d("NavigationActivity", "Navigated to $dest")
         }
-        //        showToast("Test Analytics sent to the console")
-        Log.d("FIREBASE",
-                        "signInWithCredential:success tokeId is:${PreferencesManagement.getAuthToken(this)!!}"
-                    )
     }
+
+    private fun checkNotificationPermission() {
+        if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
+            // Notifications are already enabled
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle(getString(R.string.dialog_permission_title))
+            builder.setMessage(getString(R.string.dialog_notification_permission_message))
+            builder.setPositiveButton(getString(R.string.go_to_settings)) { dialog, _ ->
+                dialog.cancel()
+                val intent = Intent()
+                intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
+                intent.putExtra("android.provider.extra.APP_PACKAGE", packageName)
+                startActivity(intent)
+            }
+            builder.setNegativeButton(getString(android.R.string.cancel)) { dialog, _ -> dialog.cancel() }
+            builder.show()
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         super.onActivityResult(requestCode, resultCode, intent)
         when (requestCode) {
@@ -161,11 +174,9 @@ class NewHomeActivity : BaseActivity() {
         super.onStop()
     }
 
+    // Bottom Navigation will be disappear if not Home Tab
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: Int?) {
-
-        // Do something
-        Log.d("TAG", "onMessageEvent: $event")
         if (event == 0) {
             navView.visibility = View.GONE
         } else navView.visibility = View.VISIBLE
@@ -193,10 +204,5 @@ class NewHomeActivity : BaseActivity() {
             setActionTextColor(resources.getColor(R.color.btn_color))
             show()
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.e("Cycle-TAG", "onResume: HOMEACTIVITY")
     }
 }

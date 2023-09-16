@@ -1,7 +1,10 @@
 package com.oss.abraakadabraaapp.activities.newflow
 
 import LocationFragment
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -15,6 +18,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
 import com.google.android.gms.maps.GoogleMap
@@ -49,13 +53,11 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
     private lateinit var binding: ActivityNewProductDetailBinding
+    private lateinit var productId: String
 
-        private var mMap: GoogleMap? = null
-    var mMapView: MapView? = null
 
     private val mainViewModel: AuthViewModel by viewModel()
     private var productDetails: ProductDetailsData? = null
-    lateinit var product: Product
     private var reportType = "Inappropriate Content"
 
     var lattitude = ""
@@ -67,12 +69,11 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
         val view = binding.root
         setContentView(view)
 
-        product =
-            Gson().fromJson(intent.extras?.getString(Constants.PRODUCT, ""), Product::class.java)
-
-        Log.d("TAG - ", "onProductClicked: receives ${Gson().toJson(product)}")
-
         postEvent(Constants.PAGE_PRODUCT_DETAILS, null)
+
+        if (intent.hasExtra(Constants.productId)) {
+            productId = intent.getStringExtra(Constants.productId)!!
+        }
 
         setUpObserver()
 
@@ -143,8 +144,27 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
             postClick(Constants.BUTTON_CHAT_IN_DETAILS_PAGE)
 
         }
+        LocalBroadcastManager.getInstance(this@NewProductDetailActivity)
+            .registerReceiver(mReceiver, IntentFilter(Constants.notificationReceived))
     }
 
+    override fun onBackPressed() {
+        if (intent.hasExtra(Constants.hasNotificationData)) {
+            startActivity(NewHomeActivity.createIntent(this@NewProductDetailActivity))
+        }else{
+            super.onBackPressed()
+        }
+    }
+
+    private var mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action.equals(Constants.notificationReceived, ignoreCase = true)) {
+                if (intent.extras != null && intent.getStringExtra(Constants.notificationReceived) != null) {
+                    loaddata()
+                }
+            }
+        }
+    }
     private fun loadShareData() {
 
         val i = Intent(Intent.ACTION_SEND)
@@ -231,7 +251,7 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
         val map = HashMap<String, String>()
         val token = PreferencesManagement.getAuthToken(this)!!
         map[RequestKeys.authorization] = token
-        mainViewModel.getProductDetails(map, product.id)
+        mainViewModel.getProductDetails(map, productId)
     }
 
     private fun setUpObserver() {
@@ -331,14 +351,6 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
 
         }
 
-      /*  binding.mapsView.settings.javaScriptEnabled = true
-        binding.mapsView.setWebViewClient(
-            WebViewClient());
-        binding.mapsView.loadUrl("http://maps.google.com/maps?q=$lattitude,$longitude")
-*/
-        /*val supportMapFragment = (supportFragmentManager.findFragmentById(R.id.maps_view) as
-                SupportMapFragment?)!!
-        supportMapFragment.getMapAsync(this@NewProductDetailActivity)*/
 
     }
 
