@@ -3,6 +3,8 @@ package com.oss.abraakadabraaapp.service
 import android.content.Intent
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
@@ -17,7 +19,10 @@ class MessagingService : FirebaseMessagingService() {
         if (bundle != null) {
             val title = bundle.getString("gcm.notification.title")
             val body = bundle.getString("body")
+            val userId = bundle.getString("userId")
 //            val body = map["body"]
+
+            val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
             val map = HashMap<String,String>()
             map["title"] = title.toString()
@@ -34,7 +39,7 @@ class MessagingService : FirebaseMessagingService() {
 
             LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
 
-            if(title != null && body != null){
+            if(title != null && body != null /*&& userId != currentUserId*/){
                 Notifications.notifyMessage(
                     this,
                     title.toString(),

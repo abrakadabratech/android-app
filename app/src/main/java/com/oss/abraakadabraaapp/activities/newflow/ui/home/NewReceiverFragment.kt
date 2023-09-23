@@ -434,7 +434,11 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                             mainListAdapter!!.loadStateFlow.collectLatest { loadStates ->
                                 if (loadStates.refresh is LoadState.Loading) {
 //                                    application.loader(true)
+                                    binding.shimmerLayout.visibility = View.VISIBLE
+                                    binding.shimmerLayout.startShimmer()
                                 } else {
+                                    binding.shimmerLayout.visibility = View.GONE
+                                    binding.shimmerLayout.stopShimmer()
                                     if (mainListAdapter!!.itemCount < 1) {
                                         binding.nodata.visibility = View.VISIBLE
                                     } else {
