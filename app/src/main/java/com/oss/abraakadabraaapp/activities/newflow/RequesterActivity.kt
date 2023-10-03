@@ -70,6 +70,13 @@ class RequesterActivity : BaseActivity() {
             loaddata()
         }
 
+        if (intent.hasExtra(Constants.notificationDoc)){
+            val db = Firebase.firestore
+            db.collection("notifications")
+                .document(intent.extras!!.getString(Constants.notificationDoc,""))
+                .update("deleted", true)
+        }
+
         binding.ivBack.setOnClickListener {
             postClick(BUTTON_BACK_IN_REQUESTER)
             onBackPressed()

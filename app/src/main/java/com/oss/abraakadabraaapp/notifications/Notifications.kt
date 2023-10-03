@@ -57,38 +57,10 @@ object Notifications {
             .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher_))
 
         when (map["module"]) {
-            Constants.pendingIntentRequest -> {
-                var intent = Intent(context, ProductDetailActivity::class.java)
-
-                if (map["role"] == Constants.giver) {//role //1-> taker // 2->giver
-                    intent = Intent(context, RequestProductDetailActivity::class.java)
-                    intent.putExtra(Constants.productId, map["module_id"])
-                } else {
-                    intent.putExtra(Constants.productId, map["module_data_2"])//product id
-                    intent.putExtra(Constants.titleStatus, map["module_data"])
-                }
-                intent.putExtra(Constants.hasNotificationData, map["module_data"])
-                intent.putExtra(Constants.productStatus, map["module_data"])
-
-                val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    PendingIntent.getActivity(
-                        context,
-                        0,
-                        intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                    )
-                } else {
-                    PendingIntent.getActivity(
-                        context,
-                        0, intent, PendingIntent.FLAG_UPDATE_CURRENT
-                    )
-                }
-
-                notificationBuilder.setContentIntent(pendingIntent)
-            }
             Constants.productDetail -> {
                 val intent = Intent(context, NewProductDetailActivity::class.java)
                 intent.putExtra(Constants.productId, map["data"])
+                intent.putExtra(Constants.notificationDoc, map["notificationDoc"])
                 intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
 
                 val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -111,6 +83,7 @@ object Notifications {
                 Log.d("Notification -", "notifyMessage: requesting activity")
                 val intent = Intent(context, MyRequestDetailsActivity::class.java)
                 intent.putExtra(Constants.productId, map["data"])
+                intent.putExtra(Constants.notificationDoc, map["notificationDoc"])
                 intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
                 val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(context)
                 stackBuilder.addNextIntentWithParentStack(intent)
@@ -134,6 +107,7 @@ object Notifications {
                 Log.d("Notification -", "notifyMessage: requesting activity ${map["data"]}")
                 val intent = Intent(context, ChatDetailActivity::class.java)
                 intent.putExtra(Constants.productId, map["data"])
+                intent.putExtra(Constants.notificationDoc, map["notificationDoc"])
                 intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
                 val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(context)
                 stackBuilder.addNextIntentWithParentStack(intent)
@@ -157,6 +131,7 @@ object Notifications {
                 Log.d("Notification -", "notifyMessage: requesting activity ${map["productId"]}")
                 val intent = Intent(context, RequesterActivity::class.java)
                 intent.putExtra(Constants.productId, map["data"])
+                intent.putExtra(Constants.notificationDoc, map["notificationDoc"])
                 intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
                 val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(context)
                 stackBuilder.addNextIntentWithParentStack(intent)

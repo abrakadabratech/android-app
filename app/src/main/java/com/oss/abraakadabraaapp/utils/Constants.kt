@@ -188,6 +188,7 @@ object Constants {
     const val editProduct = "editProduct"
 
     const val productId = "productId"
+    const val notificationDoc = "notificationDoc"
 
     const val categoryId = "categoryId"
     const val categoryName = "categoryName"
@@ -229,6 +230,7 @@ object Constants {
     const val INSTA_URL = "https://www.instagram.com/"
     const val LINKED_IN_URL = "https://www.linkedin.com/in/"
     const val TWITTER_URL = "https://twitter.com/"
+    const val LOCATION_CHANGED = "location_changed"
 
 
 }

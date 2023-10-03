@@ -26,6 +26,7 @@ import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ChatMessageAdapter
 import com.oss.abraakadabraaapp.activities.newflow.customeview.WrapContentLinearLayoutManager
+import com.oss.abraakadabraaapp.activities.newflow.model.NotificationDataModel
 import com.oss.abraakadabraaapp.databinding.ActivityChatDetailBinding
 import com.oss.abraakadabraaapp.databinding.ChatMessageRowBinding
 import com.oss.abraakadabraaapp.utils.Constants
@@ -66,8 +67,13 @@ class ChatDetailActivity : BaseActivity() {
         postEvent(PAGE_CHATS_DETAILS, null)
 
         if (intent.hasExtra(Constants.productId)){
-            chatNode = intent.getStringExtra(Constants.productId).toString()
-            loaddata()
+            var bundle  = Gson().fromJson(intent.getStringExtra(Constants.productId).toString(),NotificationDataModel::class.java)
+            chatNode = bundle.chatNode.toString()
+            val db = Firebase.firestore
+            db.collection("notifications")
+                .document(bundle.notificationDoc.toString())
+                .update("deleted", true)
+                    loaddata()
         }
         if (intent.hasExtra(CHATS_DATA)) {
             binding.chatName.text = intent.extras?.getString(DISPLAY_NAME)

@@ -7,6 +7,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.View
+import com.google.android.play.core.review.ReviewInfo
+import com.google.android.play.core.review.ReviewManager
+import com.google.android.play.core.review.ReviewManagerFactory
+import com.google.android.play.core.tasks.Task
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
@@ -113,12 +117,44 @@ class FeedbackActivity : BaseActivity() {
 
         }
         binding.skipTxt.setOnClickListener {
-            gotoMain()
+//            gotoMain()
+            showRating()
         }
         binding.backButton.setOnClickListener {
             onBackPressed()
         }
         setUpObserver()
+    }
+
+    private fun showRating() {
+        val manager: ReviewManager = ReviewManagerFactory.create(this)
+
+// Create a ReviewManager request flow
+        val request: Task<ReviewInfo> = manager.requestReviewFlow()
+
+        request.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                // Get the ReviewInfo object
+                val reviewInfo: ReviewInfo = task.result
+
+                // Launch the in-app review flow
+                val flow: Task<Void> = manager.launchReviewFlow(this, reviewInfo)
+
+                flow.addOnCompleteListener { reviewFlowTask ->
+                    // In-app review completed
+                    if (reviewFlowTask.isSuccessful) {
+                        showToast("Thanks for your rating.")
+                    } else {
+                        // Handle review flow failure
+                    }
+                    gotoMain()
+                }
+            } else {
+                // There was an error getting the in-app review information
+                // Handle the error accordingly
+                showToast("Error getting rating information")
+            }
+        }
     }
 
     private fun gotoMain() {

@@ -45,6 +45,8 @@ class MyListingAdapter(val newMyRequestActivity: Context,
         holder.statusTxt.setText("Status - "+data.get(position).status?.capitalize())
         if (data.get(position).status == "given"){
             holder.statusTxt.setTextColor(newMyRequestActivity.resources.getColor(R.color.given_color))
+        }else{
+            holder.statusTxt.setTextColor(newMyRequestActivity.resources.getColor(R.color.cat_select_color))
         }
         holder.responsed.setText("Responses :"+data.get(position).responses.toString())
         Glide.with(newMyRequestActivity).load(data.get(position).image).into(holder.image)

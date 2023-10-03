@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
 import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
@@ -74,7 +75,9 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     lateinit var application: BaseActivity
 
     private lateinit var binding: NewReceiverFlowBinding
-//    private val binding get() = _binding!!
+    private var KEY_RECYCLER_STATE = "recycler_state"
+    private var mBundleRecyclerViewState: Bundle? = null
+
     private val locationViewModel: LocationViewModel by viewModel()
 
     private var categoryList: ArrayList<UserCatData> = ArrayList()
@@ -141,6 +144,12 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         return root
     }
 
+    override fun onPause() {
+        super.onPause()
+        mBundleRecyclerViewState = Bundle()
+        val listState: Parcelable = binding.rvLatestProduct.layoutManager?.onSaveInstanceState()!!
+        mBundleRecyclerViewState!!.putParcelable(KEY_RECYCLER_STATE, listState)
+    }
     override fun onStart() {
         super.onStart()
         EventBus.getDefault().register(this)
@@ -444,6 +453,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                                 }
                             }
                         }
+                        mainListAdapter!!.submitData(lifecycle,PagingData.empty())
                         mainListAdapter!!.submitData(it)
                     }
 
@@ -595,13 +605,17 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(data: Boolean) {
-        Log.d("TAG - ", "onMessageEvent: ${Gson().toJson(data)}")
-//        if (data?.toInt() == 0) {
-//            binding.nodata.visibility = View.VISIBLE
-//        } else binding.nodata.visibility = View.GONE
+    fun onMessageEvent(data: String) {
 
-//        application.showToast(data?.data?.products?.size.toString())
+        if (data == Constants.LOCATION_CHANGED){
+            Log.d("TAG - ", "onMessageEvent:${PreferencesManagement.getUserLocation(requireContext())} ${Gson().toJson(data)}")
+            mainListAdapter!!.submitData(lifecycle,PagingData.empty())
+            if (PreferencesManagement.getFilters(requireContext())!!.nearest)
+                getProductFromServer("nearest")
+            else
+                getProductFromServer("latest")
+        }
+
     }
 
     private fun sort() {
@@ -636,5 +650,9 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     override fun onResume() {
         super.onResume()
         Log.e("Cycle-TAG", "onResume: RECEIVERFRAGMENT")
+        if (mBundleRecyclerViewState != null) {
+            val listState = mBundleRecyclerViewState!!.getParcelable<Parcelable>(KEY_RECYCLER_STATE)
+            binding.rvLatestProduct.layoutManager?.onRestoreInstanceState(listState)
+        }
     }
 }

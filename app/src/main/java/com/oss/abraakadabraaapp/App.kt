@@ -15,9 +15,12 @@ import com.oss.abraakadabraaapp.di.module.repoModule
 import com.oss.abraakadabraaapp.di.module.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import javax.inject.Inject
+
 
 
 class App : Application() {
+
 
     companion object {
         const val CHANNEL_ID: String = "general_channel"
@@ -28,6 +31,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
         FirebaseApp.initializeApp(this@App)
         createNotificationChannels()
         startKoin {
