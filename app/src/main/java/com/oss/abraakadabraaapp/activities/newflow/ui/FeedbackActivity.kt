@@ -2,19 +2,15 @@ package com.oss.abraakadabraaapp.activities.newflow.ui
 
 import android.content.Intent
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.view.View
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.tasks.Task
-import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
-import com.oss.abraakadabraaapp.activities.newflow.customeview.ColorCollector
 import com.oss.abraakadabraaapp.databinding.ActivityFeedbackBinding
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Utility
@@ -33,7 +29,7 @@ class FeedbackActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityFeedbackBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        application = (this as BaseActivity)
+        application = this
         application.postEvent(Constants.PAGE_FEEDBACK,null)
 
         if (intent.hasExtra("PRODUCT_ID")) {
@@ -59,28 +55,28 @@ class FeedbackActivity : BaseActivity() {
 
         binding.seekbar.customSectionTrackColor { colorIntArr ->
             colorIntArr!![0] = Color.parseColor("#F95565")
-            colorIntArr!![1] = Color.parseColor("#FE962F")
-            colorIntArr!![2] = Color.parseColor("#FECE2F")
-            colorIntArr!![3] = Color.parseColor("#03C437")
-            colorIntArr!![4] = Color.parseColor("#2D7A76")
+            colorIntArr[1] = Color.parseColor("#FE962F")
+            colorIntArr[2] = Color.parseColor("#FECE2F")
+            colorIntArr[3] = Color.parseColor("#03C437")
+            colorIntArr[4] = Color.parseColor("#2D7A76")
 
             true
         }
         binding.seekbar1.customSectionTrackColor { colorIntArr ->
             colorIntArr!![0] = Color.parseColor("#F95565")
-            colorIntArr!![1] = Color.parseColor("#FE962F")
-            colorIntArr!![2] = Color.parseColor("#FECE2F")
-            colorIntArr!![3] = Color.parseColor("#03C437")
-            colorIntArr!![4] = Color.parseColor("#2D7A76")
+            colorIntArr[1] = Color.parseColor("#FE962F")
+            colorIntArr[2] = Color.parseColor("#FECE2F")
+            colorIntArr[3] = Color.parseColor("#03C437")
+            colorIntArr[4] = Color.parseColor("#2D7A76")
 
             true
         }
         binding.seekbar2.customSectionTrackColor { colorIntArr ->
             colorIntArr!![0] = Color.parseColor("#F95565")
-            colorIntArr!![1] = Color.parseColor("#FE962F")
-            colorIntArr!![2] = Color.parseColor("#FECE2F")
-            colorIntArr!![3] = Color.parseColor("#03C437")
-            colorIntArr!![4] = Color.parseColor("#2D7A76")
+            colorIntArr[1] = Color.parseColor("#FE962F")
+            colorIntArr[2] = Color.parseColor("#FECE2F")
+            colorIntArr[3] = Color.parseColor("#03C437")
+            colorIntArr[4] = Color.parseColor("#2D7A76")
 
             true
         }
@@ -121,7 +117,7 @@ class FeedbackActivity : BaseActivity() {
             showRating()
         }
         binding.backButton.setOnClickListener {
-            onBackPressed()
+            showRating()
         }
         setUpObserver()
     }

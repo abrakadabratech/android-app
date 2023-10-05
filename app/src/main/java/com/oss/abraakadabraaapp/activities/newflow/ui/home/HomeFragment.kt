@@ -2,18 +2,18 @@ package com.oss.abraakadabraaapp.activities.newflow.ui.home
 
 import android.content.Intent
 import android.graphics.Color
-import android.location.*
+import android.location.Location
+import android.location.LocationListener
 import android.os.Bundle
 import android.util.Log
-import android.view.*
-import android.widget.Toast
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.ViewModelProvider
 import com.devs.readmoreoption.ReadMoreOption
-import com.google.android.gms.analytics.Tracker
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.PlacesClient
@@ -29,20 +29,15 @@ import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.MyNewProfileActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewNotificationActivity
 import com.oss.abraakadabraaapp.databinding.FragmentHomeBinding
-import com.oss.abraakadabraaapp.location.livedata.LocationViewModel
 import com.oss.abraakadabraaapp.model.UserLocation
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_GIVE
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_NOTIFICATION
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SHARE
-import com.oss.abraakadabraaapp.utils.Constants.NOTIFICATION_REFRESH_EVENT
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.io.IOException
-import java.util.*
 
 
 class HomeFragment : Fragment(), LocationListener {
@@ -190,7 +185,11 @@ class HomeFragment : Fragment(), LocationListener {
                         )
 
                         binding.locationOnActionbar.text = Constants.fullAddress
-                        EventBus.getDefault().post(Constants.LOCATION_CHANGED)
+                        val fragmentManager: FragmentManager = requireFragmentManager()
+                        fragmentManager.beginTransaction()
+                            .replace(R.id.container, NewReceiverFragment::class.java, null)
+                            .setReorderingAllowed(true)
+                            .commit()
 
                     }
                 }

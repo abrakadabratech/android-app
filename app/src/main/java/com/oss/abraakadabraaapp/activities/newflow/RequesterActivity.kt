@@ -13,9 +13,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
@@ -35,10 +33,8 @@ import com.oss.abraakadabraaapp.utils.Constants.BUTTON_OK_GOT_IT_TO_FEEDBACK
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
-import io.reactivex.rxjava3.annotations.NonNull
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Locale
-import java.util.Objects
 
 
 class RequesterActivity : BaseActivity() {
@@ -154,7 +150,6 @@ class RequesterActivity : BaseActivity() {
                     productDetails?.data?.requestId.toString(),
                     "delivered"
                 )
-
             }
 
             //Reject login write here...
@@ -175,10 +170,10 @@ class RequesterActivity : BaseActivity() {
                     )
                     dialog.dismiss()
                 }
-            alertDialog.setNegativeButton("No", { dialog, id ->
-                    dialog.dismiss()
-                })
-                alertDialog.show()
+            alertDialog.setNegativeButton("No") { dialog, id ->
+                dialog.dismiss()
+            }
+            alertDialog.show()
 
         }
         binding.okGotItBtn.setOnClickListener {

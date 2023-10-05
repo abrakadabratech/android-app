@@ -64,8 +64,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -152,7 +150,6 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     }
     override fun onStart() {
         super.onStart()
-        EventBus.getDefault().register(this)
         checkPermissions()
     }
 
@@ -381,46 +378,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
             // Pagination Library
             if (sortBy == "latest") {
-                val viewModel =
-                    ViewModelProvider(
-                        this,
-                        MainViewModelFactory(
-                            APIService.getApiService(),
-                            map,
-                            50,
-                            userLocation!!.lat.toDouble(),
-                            userLocation.long.toDouble(), "", sortBy
-                        )
-                    )[MainViewModel::class.java]
-                mainListAdapter!!.submitData(lifecycle,PagingData.empty())
-                lifecycleScope.launchWhenCreated {
-
-                    viewModel.listData.collectLatest {
-                        launch(Dispatchers.Main) {
-                            mainListAdapter!!.loadStateFlow.collectLatest { loadStates ->
-                                if (loadStates.refresh is LoadState.Loading) {
-//                                    application.loader(true)
-                                    //shimmer ON
-                                    binding.shimmerLayout.visibility = View.VISIBLE
-                                    binding.shimmerLayout.startShimmer()
-                                } else {
-                                    //shimmer OFF
-                                    binding.shimmerLayout.visibility = View.GONE
-                                    binding.shimmerLayout.stopShimmer()
-                                    if (mainListAdapter!!.itemCount < 1) {
-                                        binding.nodata.visibility = View.VISIBLE
-                                    } else {
-                                        binding.nodata.visibility = View.GONE
-                                    }
-//                                    application.loader(false)
-                                }
-                            }
-                        }
-                        mainListAdapter!!.submitData(lifecycle,PagingData.empty())
-                        mainListAdapter!!.submitData(it)
-                    }
-
-                }
+                loadLatest()
             } else {
 
                 val viewModel =
@@ -464,6 +422,55 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         }
 
 
+    }
+
+    private fun loadLatest() {
+        val userLocation = PreferencesManagement.getUserLocation(requireContext())
+
+        val map = HashMap<String, String>()
+        val token = PreferencesManagement.getAuthToken(requireContext())!!
+        map["Authorization"] = token
+
+        val viewModel =
+            ViewModelProvider(
+                this,
+                MainViewModelFactory(
+                    APIService.getApiService(),
+                    map,
+                    50,
+                    userLocation!!.lat.toDouble(),
+                    userLocation.long.toDouble(), "", "latest"
+                )
+            )[MainViewModel::class.java]
+        mainListAdapter!!.submitData(lifecycle,PagingData.empty())
+        lifecycleScope.launchWhenCreated {
+
+            viewModel.listData.collectLatest {
+                launch(Dispatchers.Main) {
+                    mainListAdapter!!.loadStateFlow.collectLatest { loadStates ->
+                        if (loadStates.refresh is LoadState.Loading) {
+//                                    application.loader(true)
+                            //shimmer ON
+                            binding.shimmerLayout.visibility = View.VISIBLE
+                            binding.shimmerLayout.startShimmer()
+                        } else {
+                            //shimmer OFF
+                            binding.shimmerLayout.visibility = View.GONE
+                            binding.shimmerLayout.stopShimmer()
+                            if (mainListAdapter!!.itemCount < 1) {
+                                binding.nodata.visibility = View.VISIBLE
+                            } else {
+                                binding.nodata.visibility = View.GONE
+                            }
+//                                    application.loader(false)
+                        }
+                    }
+                }
+                mainListAdapter!!.submitData(lifecycle,PagingData.empty())
+                mainListAdapter!!.submitData(it)
+            }
+
+        }
     }
 
 
@@ -604,19 +611,6 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(data: String) {
-
-        if (data == Constants.LOCATION_CHANGED){
-            Log.d("TAG - ", "onMessageEvent:${PreferencesManagement.getUserLocation(requireContext())} ${Gson().toJson(data)}")
-            mainListAdapter!!.submitData(lifecycle,PagingData.empty())
-            if (PreferencesManagement.getFilters(requireContext())!!.nearest)
-                getProductFromServer("nearest")
-            else
-                getProductFromServer("latest")
-        }
-
-    }
 
     private fun sort() {
         latestProductList.sortByDescending { list -> list.timestamp }
@@ -625,7 +619,6 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
     override fun onStop() {
         super.onStop()
-        EventBus.getDefault().unregister(this)
     }
 
     override fun onItemDetail(data: Product, position: Int) {
