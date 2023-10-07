@@ -34,6 +34,7 @@ import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatListModel
+import com.oss.abraakadabraaapp.activities.newflow.model.NotificationDataModel
 import com.oss.abraakadabraaapp.activities.newflow.ui.home.NewGiverFragment
 import com.oss.abraakadabraaapp.databinding.ActivityNewProductDetailBinding
 import com.oss.abraakadabraaapp.datasource.products.Product
@@ -73,6 +74,18 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
 
         if (intent.hasExtra(Constants.productId)) {
             productId = intent.getStringExtra(Constants.productId)!!
+        }
+
+        if (intent.hasExtra(Constants.hasNotificationData)){
+            val bundle = Gson().fromJson(intent.extras?.getString(Constants.productId),NotificationDataModel::class.java)
+            productId = bundle.product_id.toString()
+            val db = Firebase.firestore
+            if (bundle.notificationDoc.toString() != ""){
+                db.collection("notifications")
+                    .document(bundle.notificationDoc.toString())
+                    .update("deleted", true)
+
+            }
         }
 
         setUpObserver()

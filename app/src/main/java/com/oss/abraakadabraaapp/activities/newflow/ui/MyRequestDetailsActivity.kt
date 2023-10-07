@@ -22,6 +22,7 @@ import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatListModel
+import com.oss.abraakadabraaapp.activities.newflow.model.NotificationDataModel
 import com.oss.abraakadabraaapp.databinding.ActivityMyRequestingDetailBinding
 import com.oss.abraakadabraaapp.response.productRequestResponse.Data
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
@@ -36,7 +37,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class MyRequestDetailsActivity : BaseActivity() {
     private var productDetial: RequestDetails? = null
     lateinit var application: BaseActivity
-//    var product: Data? = null
     private val mainViewModel: AuthViewModel by viewModel()
     private lateinit var productId: String
 
@@ -52,12 +52,17 @@ class MyRequestDetailsActivity : BaseActivity() {
         if (intent.hasExtra(Constants.productId)) {
             productId = intent.getStringExtra(Constants.productId)!!
         }
+        if (intent.hasExtra(Constants.hasNotificationData)) {
+            var bundle  = Gson().fromJson(intent.getStringExtra(Constants.productId).toString(),
+                NotificationDataModel::class.java)
+            productId = bundle.requestId.toString()
+            val db = Firebase.firestore
+            db.collection("notifications")
+                .document(bundle.notificationDoc.toString())
+                .update("deleted", true)
+            loaddata()
+        }
 
-       /* if (intent.hasExtra(Constants.PRODUCT)) {
-            product =
-                Gson().fromJson(intent.extras?.getString(Constants.PRODUCT, ""), Data::class.java)
-            Log.d("ok", "onCreate in linsting activity: $${Gson().toJson(product)}")
-        }*/
 
         LocalBroadcastManager.getInstance(this@MyRequestDetailsActivity)
             .registerReceiver(mReceiver, IntentFilter(Constants.notificationReceived))

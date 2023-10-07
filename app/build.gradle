@@ -17,8 +17,8 @@ android {
         applicationId "com.oss.abraakadabraaapp"
         minSdk 23
         targetSdk 33
-        versionCode 24
-        versionName "1.18.2"
+        versionCode 25
+        versionName "1.18.3"
 //        versionName "test_refresh_product"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

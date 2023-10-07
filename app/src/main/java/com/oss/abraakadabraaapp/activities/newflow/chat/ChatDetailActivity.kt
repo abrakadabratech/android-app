@@ -67,7 +67,7 @@ class ChatDetailActivity : BaseActivity() {
         postEvent(PAGE_CHATS_DETAILS, null)
 
         if (intent.hasExtra(Constants.productId)){
-            var bundle  = Gson().fromJson(intent.getStringExtra(Constants.productId).toString(),NotificationDataModel::class.java)
+            val bundle  = Gson().fromJson(intent.extras?.getString(Constants.productId),NotificationDataModel::class.java)
             chatNode = bundle.chatNode.toString()
             val db = Firebase.firestore
             db.collection("notifications")

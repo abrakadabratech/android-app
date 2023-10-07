@@ -21,6 +21,7 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatListModel
+import com.oss.abraakadabraaapp.activities.newflow.model.NotificationDataModel
 import com.oss.abraakadabraaapp.databinding.ActivityRequesterBinding
 import com.oss.abraakadabraaapp.response.productRequestResponse.RequestorResponse
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
@@ -65,13 +66,17 @@ class RequesterActivity : BaseActivity() {
             requestor_id = intent.extras!!.getString(Constants.productId).toString()
             loaddata()
         }
-
-        if (intent.hasExtra(Constants.notificationDoc)){
+        if (intent.hasExtra(Constants.hasNotificationData)){
+            val bundle = Gson().fromJson(intent.extras?.getString(Constants.productId),
+                NotificationDataModel::class.java)
+            requestor_id = bundle.requestId.toString()
+            loaddata()
             val db = Firebase.firestore
             db.collection("notifications")
-                .document(intent.extras!!.getString(Constants.notificationDoc,""))
+                .document(bundle.notificationDoc.toString())
                 .update("deleted", true)
         }
+
 
         binding.ivBack.setOnClickListener {
             postClick(BUTTON_BACK_IN_REQUESTER)

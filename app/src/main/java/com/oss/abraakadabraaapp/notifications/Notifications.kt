@@ -12,6 +12,7 @@ import androidx.core.app.TaskStackBuilder
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.gson.Gson
 import com.oss.abraakadabraaapp.App
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.ProductDetailActivity
@@ -20,6 +21,7 @@ import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewProductDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.RequesterActivity
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
+import com.oss.abraakadabraaapp.activities.newflow.model.NotificationDataModel
 import com.oss.abraakadabraaapp.activities.newflow.ui.MyRequestDetailsActivity
 import com.oss.abraakadabraaapp.localdb.*
 import com.oss.abraakadabraaapp.utils.Constants
@@ -35,12 +37,6 @@ object Notifications {
         notificationId: Int,
         map: HashMap<String, String>
     ) {
-
-      /*  val noteDatabase = NotificationDatabase(context)
-        val repository = NotificationRepository(noteDatabase)
-        val factory = NoteViewModelFactory(repository)
-        val viewModel = ViewModelProvider(context).get(NotificationViewModel::class.java);*/
-
         val color = ContextCompat.getColor(context, R.color.theme_color)
 
         val notificationBuilder = NotificationCompat.Builder(
@@ -55,11 +51,14 @@ object Notifications {
             .setAutoCancel(true)
             .setColor(color)
             .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher_))
+        Log.d("Notification TAG", "notification.kt: ${map["data"]}")
 
+        val dataModel = Gson().fromJson(map["data"],NotificationDataModel::class.java)
         when (map["module"]) {
+
             Constants.productDetail -> {
                 val intent = Intent(context, NewProductDetailActivity::class.java)
-                intent.putExtra(Constants.productId, map["data"])
+                intent.putExtra(Constants.productId, Gson().toJson(dataModel))
                 intent.putExtra(Constants.notificationDoc, map["notificationDoc"])
                 intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
 
@@ -82,8 +81,7 @@ object Notifications {
             Constants.productRequestDetails -> {
                 Log.d("Notification -", "notifyMessage: requesting activity")
                 val intent = Intent(context, MyRequestDetailsActivity::class.java)
-                intent.putExtra(Constants.productId, map["data"])
-                intent.putExtra(Constants.notificationDoc, map["notificationDoc"])
+                intent.putExtra(Constants.productId, Gson().toJson(dataModel))
                 intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
                 val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(context)
                 stackBuilder.addNextIntentWithParentStack(intent)
@@ -106,8 +104,7 @@ object Notifications {
             Constants.chatDetails -> {
                 Log.d("Notification -", "notifyMessage: requesting activity ${map["data"]}")
                 val intent = Intent(context, ChatDetailActivity::class.java)
-                intent.putExtra(Constants.productId, map["data"])
-                intent.putExtra(Constants.notificationDoc, map["notificationDoc"])
+                intent.putExtra(Constants.productId, Gson().toJson(dataModel))
                 intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
                 val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(context)
                 stackBuilder.addNextIntentWithParentStack(intent)
@@ -130,8 +127,7 @@ object Notifications {
             Constants.productListing -> {
                 Log.d("Notification -", "notifyMessage: requesting activity ${map["productId"]}")
                 val intent = Intent(context, RequesterActivity::class.java)
-                intent.putExtra(Constants.productId, map["data"])
-                intent.putExtra(Constants.notificationDoc, map["notificationDoc"])
+                intent.putExtra(Constants.productId, Gson().toJson(dataModel))
                 intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
                 val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(context)
                 stackBuilder.addNextIntentWithParentStack(intent)

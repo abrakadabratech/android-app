@@ -17,12 +17,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.chat.GiverChatModel
 import com.oss.abraakadabraaapp.activities.newflow.customeview.WrapContentLinearLayoutManager
+import com.oss.abraakadabraaapp.activities.newflow.model.NotificationDataModel
 import com.oss.abraakadabraaapp.activities.newflow.ui.MyRequestDetailsActivity
 import com.oss.abraakadabraaapp.databinding.ActivityNewNotificationBinding
 import com.oss.abraakadabraaapp.databinding.NotificationRowBinding
@@ -124,12 +126,13 @@ class NewNotificationActivity : BaseActivity() {
 
 
                     db.collection("notifications").document(model.docId).update("deleted", true)
+                    val dataModel = model.data
 
                     when (model.module) {
                         Constants.productListing -> {
                             val intent =
                                 Intent(this@NewNotificationActivity, RequesterActivity::class.java)
-                            intent.putExtra(Constants.productId, model.data)
+                            intent.putExtra(Constants.productId,dataModel?.requestId )
                             startActivity(intent)
                         }
 
@@ -138,14 +141,14 @@ class NewNotificationActivity : BaseActivity() {
                                 this@NewNotificationActivity,
                                 MyRequestDetailsActivity::class.java
                             )
-                            intent.putExtra(Constants.productId, model.data)
+                            intent.putExtra(Constants.productId, dataModel?.requestId)
                             startActivity(intent)
                         }
 
                         Constants.chatDetails -> {
                             val intent =
                                 Intent(this@NewNotificationActivity, ChatDetailActivity::class.java)
-                            intent.putExtra(Constants.productId, model.data)
+                            intent.putExtra(Constants.productId, Gson().toJson(dataModel))
                             startActivity(intent)
                         }
                     }
