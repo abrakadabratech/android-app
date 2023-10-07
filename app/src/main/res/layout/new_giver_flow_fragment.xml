@@ -382,6 +382,7 @@
                 android:layout_weight="9"
                 android:orientation="vertical"
                 android:paddingTop="10dp"
+                android:visibility="gone"
                 android:paddingBottom="10dp"
                 app:layout_constraintEnd_toEndOf="@+id/linearLayout5"
                 app:layout_constraintStart_toStartOf="@+id/linearLayout5"

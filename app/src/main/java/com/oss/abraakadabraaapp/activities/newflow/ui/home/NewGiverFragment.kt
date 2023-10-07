@@ -677,7 +677,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                     Log.d("MYT", "latitude $latitude")
                     Log.d("MYT", "longitude $longitude")
                     Log.d("MYT", "fullAddress $fullAddress")
-                    map["price"] = JavaUtils.toRequestBody(binding.etProductBrand1.text.toString().trim())
+                    map["price"] = JavaUtils.toRequestBody("0")
                     map["brand"] = JavaUtils.toRequestBody(binding.etProductBrand.text.toString().trim())
 
                     manageProduct(map)
