@@ -410,6 +410,7 @@
                     android:text="Cost Saving"
                     android:textColor="@color/title_color"
                     android:textSize="16sp"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toStartOf="@+id/textView21"
                     app:layout_constraintStart_toStartOf="@+id/condition"
                     app:layout_constraintTop_toBottomOf="@+id/condition" />
@@ -422,6 +423,7 @@
                     android:text="Energy Saving"
                     android:textColor="@color/title_color"
                     android:textSize="16sp"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@+id/textView20"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/textView20"
@@ -436,6 +438,7 @@
                     android:textColor="@color/sub_text_color"
 
                     android:textSize="16sp"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toStartOf="@+id/energySaving"
                     app:layout_constraintStart_toStartOf="@+id/textView20"
                     app:layout_constraintTop_toBottomOf="@+id/textView20" />
@@ -447,6 +450,7 @@
                     android:fontFamily="@font/montserrat_medium"
                     android:textColor="@color/sub_text_color"
                     android:textSize="16sp"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@+id/castSaving"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/castSaving"
