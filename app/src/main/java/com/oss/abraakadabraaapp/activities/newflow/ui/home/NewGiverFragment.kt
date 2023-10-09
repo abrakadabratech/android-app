@@ -837,11 +837,11 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                     showToast("Please select used for!")
                     false
                 }
-                etProductBrand1.text.toString() == "" -> {
-//                    etProductBrand1.error = "Please select used for"
-                    showToast("Please price of the product!")
-                    false
-                }
+//                etProductBrand1.text.toString() == "" -> {
+////                    etProductBrand1.error = "Please select used for"
+//                    showToast("Please price of the product!")
+//                    false
+//                }
                 descEdt.text.toString() == "" -> {
 //                    etProductBrand1.error = "Please select used for"
                     showToast("Please enter decription!")
