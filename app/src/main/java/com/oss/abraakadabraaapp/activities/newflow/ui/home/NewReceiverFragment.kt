@@ -218,7 +218,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 //            show the dialog to enable the location permission
             var alertDialog = AlertDialog.Builder(requireContext())
             alertDialog.setTitle("Alert")
-            alertDialog.setMessage("Please enable location permission to view the products nearer to you.")
+            alertDialog.setMessage("For accurate distance of the products, please enable Precise location..")
 
             alertDialog.setPositiveButton("Enable", DialogInterface.OnClickListener { dialog, id ->
 

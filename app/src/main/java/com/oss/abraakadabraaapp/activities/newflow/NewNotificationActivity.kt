@@ -116,8 +116,8 @@ class NewNotificationActivity : BaseActivity() {
                 holder.bind(model)
                 holder.binding.userName.text = model.body
                 holder.binding.productName.text = model.title
-                holder.binding.message.text = getTime(model.timestamp?.toDate()?.toString()!!)
-//                holder.binding.message.text = model.messages?.get(model.messages?.size?.minus(1)!!).toString()
+                holder.binding.message.text = SimpleDateFormat("MMM dd,yyyy HH:mm").format(model.timestamp?.toDate())
+
                 Glide.with(applicationContext).load(model.image)
                     .placeholder(resources.getDrawable(R.drawable.user))
                     .into(holder.binding.profilePic)
