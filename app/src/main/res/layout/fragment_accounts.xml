@@ -72,6 +72,32 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/imageView28"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/myRatingTxt2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/cardView6"
+            app:layout_constraintTop_toTopOf="@+id/myRatingTxt2"
+            app:srcCompat="@drawable/dummy_stars" />
+
+        <TextView
+            android:id="@+id/myRatingTxt2"
+            android:layout_width="wrap_content"
+            android:layout_height="19dp"
+            android:fontFamily="@font/montserrat_medium"
+            android:text="4.5"
+            android:textColor="@color/sub_text_color"
+            android:textSize="@dimen/sp_16"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/userName"
+            app:layout_constraintTop_toBottomOf="@+id/userName" />
+
         <ImageView
             android:id="@+id/ivBack"
             android:layout_width="24dp"
@@ -340,6 +366,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="32dp"
             android:background="#F2F2F2"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/my_achievement_layout"
             app:layout_constraintTop_toBottomOf="@+id/my_achievement_layout" />
@@ -353,6 +380,7 @@
             android:orientation="horizontal"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/textView4"
             app:layout_constraintTop_toBottomOf="@+id/textView4">
@@ -363,8 +391,7 @@
                 android:layout_weight="9"
                 android:fontFamily="@font/montserrat_medium"
                 android:text="My Achievements"
-                android:textSize="16sp"
-                 />
+                android:textSize="16sp" />
 
             <ImageView
                 android:layout_width="0dp"

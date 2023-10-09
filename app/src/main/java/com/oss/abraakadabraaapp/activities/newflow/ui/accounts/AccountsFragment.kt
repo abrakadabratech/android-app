@@ -9,15 +9,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.*
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.User_Stats
+import com.oss.abraakadabraaapp.adapter.RatingAdapter
 import com.oss.abraakadabraaapp.databinding.FragmentAccountsBinding
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.API_TAG
@@ -169,6 +172,23 @@ class AccountsFragment : Fragment(), View.OnClickListener {
                     .load(it.data?.userAvatar)
                     .placeholder(resources.getDrawable(R.drawable.ic_profile))
                     .into(profilePic)
+
+                myRatingTxt2.text = it.data?.userStats?.rating.toString()
+
+                val count = it.data?.userStats?.rating
+                var list:ArrayList<Boolean> = ArrayList()
+                for (i in 0..4){
+                    if (i < count!!) list.add(true)
+                    else list.add(false)
+//                if (i< count!!){
+//
+//                }else list.add(false)
+                }
+                Log.d("Rating", "setupProfile: ${Gson().toJson(list)}")
+
+                binding.imageView28.layoutManager = LinearLayoutManager(requireContext(),
+                    LinearLayoutManager.HORIZONTAL,false)
+                binding.imageView28.adapter = RatingAdapter(requireContext(),list)
             }
         }
     }
