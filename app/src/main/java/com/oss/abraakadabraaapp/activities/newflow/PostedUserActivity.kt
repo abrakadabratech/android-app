@@ -143,7 +143,7 @@ class PostedUserActivity : BaseActivity() {
             productName.setText(productDetails?.data?.name?.capitalize())
             locationTxt.setText(productDetails?.data?.locationName)
             memberSince.setText(productDetails?.data?.postedBy?.memberSince)
-            givenItems.setText("Given ${productDetails?.data?.postedBy?.given} Items")
+            givenItems.setText("Given ${productDetails?.data?.postedBy?.userStats?.given} Items")
             postedBy.setText("Posted By " + productDetails?.data?.postedBy?.name?.capitalize())
             Glide.with(this@PostedUserActivity).load(productDetails.data.images[0])
                 .placeholder(resources.getDrawable(R.drawable.user))
