@@ -37,13 +37,13 @@ object Notifications {
         notificationId: Int,
         map: HashMap<String, String>
     ) {
-        val color = ContextCompat.getColor(context, R.color.theme_color)
+        val color = ContextCompat.getColor(context, R.color.new_theme_color)
 
         val notificationBuilder = NotificationCompat.Builder(
             context,
             App.CHANNEL_ID
         )
-            .setSmallIcon(R.drawable.notification_icon)
+            .setSmallIcon(R.mipmap.ic_launcher_)
             .setContentTitle(notificationTitle)
             .setContentText(notificationSubtitle)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
