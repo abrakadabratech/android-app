@@ -1,29 +1,22 @@
 package com.oss.abraakadabraaapp.activities.newflow
 
-import Data
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.postDelayed
 import androidx.core.widget.doAfterTextChanged
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.codersroute.flexiblewidgets.FlexibleSwitch
-import com.google.android.datatransport.cct.internal.LogResponse.fromJson
-import com.google.android.gms.wallet.IsReadyToPayRequest.fromJson
 import com.google.common.reflect.TypeToken
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
@@ -34,30 +27,18 @@ import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.adapter.CategoryAdapter
 import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.databinding.ActivityNewSearchBinding
-import com.oss.abraakadabraaapp.datasource.APIService
-import com.oss.abraakadabraaapp.datasource.MainViewModel
-import com.oss.abraakadabraaapp.datasource.MainViewModelFactory
-import com.oss.abraakadabraaapp.datasource.ProductAdapter
 import com.oss.abraakadabraaapp.datasource.products.Product
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.utils.customView.MarginItemDecoration
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.selects.whileSelect
-import org.koin.androidx.scope.activityScope
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.lang.reflect.Type
-import java.util.concurrent.TimeUnit
 
 class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterface,
     LatestProductAdapter.LatestProductAdapterInterface,
     SearchProductAdapter.LatestProductAdapterInterface {
-
 
     private lateinit var binding: ActivityNewSearchBinding
     private val authViewModel: AuthViewModel by viewModel()
@@ -69,8 +50,6 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
     private var noMoreData = false
     private var isLoading = false
     private var isLastPage = false
-    private var mainListAdapter: ProductAdapter? = null
-
 
     private var latestProductList: ArrayList<Product> = ArrayList()
     private var searchProductList: ArrayList<Product> = ArrayList()
@@ -86,11 +65,8 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
         val view = binding.root
         setContentView(view)
         postEvent(Constants.PAGE_SEARCH, null)
-
         val type: Type = object : TypeToken<List<UserCatData?>?>() {}.getType()
-
         from = intent.extras?.getString("from").toString()
-
         setUpObserver()
         searchProductAdapter = SearchProductAdapter(searchProductList, this, this)
 
@@ -103,29 +79,16 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
             var csvString = ""
             for (i in categoryList) {
                 csvString = csvString + i.id.toString() + ","
-//                showToast(categoryList.size.toString())
             }
             searchQuery = csvString.dropLast(1)
-
-//            showToast(categoryList.size.toString())
             setupList()
             searchCategories(csvString)
         } else {
             binding.searchEdit.requestFocus()
             setUpRecyclerView()
-
         }
-
-        binding.searchEdit.debounce(500L) { text -> searchProducts(text.toString(), "latest") }
-
-
-//        setupList()
-
-//        searchProducts()
-
-
+        binding.searchEdit.debounce(700L) { text -> searchProducts(text.toString(), "latest") }
         clickEvents()
-
     }
 
     private fun searchCategories(string: String) {
@@ -133,8 +96,6 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
         Log.d("TAG - ", "searchCategories: $string")
         if (isNetworkAvailable()) {
             generateAuthToken()
-//            lateinit var viewModel: MainViewModel
-
             val mUser = FirebaseAuth.getInstance().currentUser
             mUser!!.getIdToken(true)
                 .addOnCompleteListener {
@@ -159,7 +120,6 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
         latestProductAdapter = LatestProductAdapter(latestProductList, this, this)
         val lm = GridLayoutManager(this, 2)
         binding.rvLatestProduct.apply {
-//            layoutManager = LinearLayoutManager(requireContext())
             layoutManager = lm
             addItemDecoration(
                 MarginItemDecoration(18)
@@ -178,7 +138,6 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
                         if (!noMoreData) {
                             isLoading = true
                             isLastPage = true
-                            //getProductFromServer()
                         }
                     }
                 }
@@ -188,39 +147,43 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
 
     private fun getProductFromServer(sortBy: String) {
         if (from == "category") {
-            val userLocation = PreferencesManagement.getUserLocation(this)
+            if (PreferencesManagement.getUserLocation(this) != null) {
+                val userLocation = PreferencesManagement.getUserLocation(this)
 
-            val map = HashMap<String, String>()
-            val token = PreferencesManagement.getAuthToken(this)!!
-            map["Authorization"] = token
-//                            map["logging"] = "true"
-
-            authViewModel.getProductsData(
-                map, 1,
-                50,
-                userLocation!!.lat.toDouble(),
-                userLocation.long.toDouble(), searchQuery, sortBy
-            )
+                val map = HashMap<String, String>()
+                val token = PreferencesManagement.getAuthToken(this)!!
+                map["Authorization"] = token
+                authViewModel.getProductsData(
+                    map, 1,
+                    50,
+                    userLocation!!.lat.toDouble(),
+                    userLocation.long.toDouble(), searchQuery, sortBy
+                )
+            }
         } else {
             searchProducts(query = searchQuery, sortBy)
         }
     }
 
-    fun searchProducts(query: String, sortBy: String) {
+    private fun searchProducts(query: String, sortBy: String) {
         setUpRecyclerView()
         searchQuery = query
         currentPage = 1
         generateAuthToken()
         val userLocation = PreferencesManagement.getUserLocation(this)
-        authViewModel.searchQuery(
-            Utility.getAuthentication(this),
-            query,
-            userLocation?.lat?.toDouble()!!,
-            userLocation?.long?.toDouble()!!,
-            50,
-            currentPage,
-            sortBy
-        )
+        if (userLocation != null) {
+            authViewModel.searchQuery(
+                Utility.getAuthentication(this),
+                query,
+                userLocation.lat.toDouble(),
+                userLocation.long.toDouble(),
+                50,
+                currentPage,
+                sortBy
+            )
+        } else {
+            showToast("Failed to get your location.Try again!")
+        }
     }
 
     private fun setUpObserver() {
@@ -230,8 +193,6 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
             latestProductList.clear()
             searchProductList.addAll(it.data?.products!!)
             searchProductAdapter.notifyDataSetChanged()
-//            binding.nodata2.visibility = View.GONE
-
             val lastPosition = searchProductList.size - it.data!!.products.size
 
             if (latestProductList.size == it.data!!.products.size) {
@@ -272,10 +233,6 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
 
                 currentPage += 1
             }
-//            latestProductAdapter.setData(it.data.products)
-//            latestProductAdapter.notifyDataSetChanged()
-//        //            binding.sRLHome.isRefreshing = false
-
         }
 
         authViewModel.errorMessage.observe(this) {
@@ -289,7 +246,6 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
         binding.catFilter.setOnClickListener {
             postEvent(Constants.BUTTON_FILTER_SEARCH, null)
             showNearByFilterDialog()
-//            startActivity(Intent(requireContext(),CategorySelectActivity::class.java))
         }
 
         binding.ivBack.setOnClickListener {
@@ -306,27 +262,17 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
     private fun setUpRecyclerView() {
 
         val lm = GridLayoutManager(this, 2)
-//        binding.rvHomeCategory.isNestedScrollingEnabled = false
-//        binding.rvLatestProduct.isNestedScrollingEnabled = false
         binding.rvHomeCategory.apply {
             layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-//            adapter = categoryAdapter
             recycledViewPool.setMaxRecycledViews(1, 0)
-//            isNestedScrollingEnabled = false
             setHasFixedSize(false)
         }
 
         //when search the products
         binding.rvLatestProduct.apply {
             layoutManager = lm
-            /* addItemDecoration(
-                 MarginItemDecoration(18)
-             )*/
             adapter = searchProductAdapter
-//            isNestedScrollingEnabled = false
-//            recycledViewPool.setMaxRecycledViews(1, 0)
-//            setHasFixedSize(false)
         }
 
         binding.rvLatestProduct.addOnScrollListener(object :
@@ -342,12 +288,9 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
                             if (!noMoreData) {
                                 isLoading = true
                                 isLastPage = true
-//                                getProductFromServer()
                             }
                         }
                     }
-                } else {
-
                 }
 
             }
@@ -357,7 +300,7 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
     //Alert Dialog for show nearby filter
     private fun showNearByFilterDialog() {
 
-        var filters = PreferencesManagement.getFilters(this)
+        val filters = PreferencesManagement.getFilters(this)
         Log.d("TAG - ", "showNearByFilterDialog: ${Gson().toJson(filters)}")
         val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
         val inflater = this.layoutInflater
@@ -387,8 +330,8 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
 
         nearToMeSwitch.addOnStatusChangedListener(FlexibleSwitch.OnStatusChangedListener {
             if (it) {
-                filters?.newest = false
-                filters?.nearest = true
+                filters.newest = false
+                filters.nearest = true
 
                 nearToMeTxt.setTextColor(resources.getColor(R.color.cat_select_color))
 //                nearToMeSwitch.isChecked = true
@@ -396,8 +339,8 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
                 newestFirstTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
 
             } else {
-                filters?.newest = true
-                filters?.nearest = false
+                filters.newest = true
+                filters.nearest = false
 
                 nearToMeTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
                 newestFirstTxt.setTextColor(resources.getColor(R.color.cat_select_color))
@@ -407,15 +350,15 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
 
         newestFirstSwitch.addOnStatusChangedListener(FlexibleSwitch.OnStatusChangedListener {
             if (it) {
-                filters?.newest = true
-                filters?.nearest = false
+                filters.newest = true
+                filters.nearest = false
 
                 newestFirstTxt.setTextColor(resources.getColor(R.color.cat_select_color))
                 nearToMeTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
                 nearToMeSwitch.isChecked = false
             } else {
-                filters?.newest = false
-                filters?.nearest = true
+                filters.newest = false
+                filters.nearest = true
 
                 newestFirstTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
                 nearToMeTxt.setTextColor(resources.getColor(R.color.cat_select_color))
@@ -461,11 +404,11 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
     }
 
     override fun onSearchItemDetail(data: Product, position: Int) {
-        if (data?.isSelfProduct!!){
+        if (data?.isSelfProduct!!) {
             val intent = Intent(this, MyListingDetialActivity::class.java)
             intent.putExtra(Constants.productId, data.id)
             startActivity(intent)
-        }else{
+        } else {
             val intent = Intent(this, NewProductDetailActivity::class.java)
             intent.putExtra(Constants.productId, data.id)
             startActivity(intent)
@@ -473,11 +416,11 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
     }
 
     override fun onItemDetail(data: Product, position: Int) {
-        if (data?.isSelfProduct!!){
+        if (data?.isSelfProduct!!) {
             val intent = Intent(this, MyListingDetialActivity::class.java)
             intent.putExtra(Constants.productId, data.id)
             startActivity(intent)
-        }else{
+        } else {
             val intent = Intent(this, NewProductDetailActivity::class.java)
             intent.putExtra(Constants.productId, data.id)
             startActivity(intent)

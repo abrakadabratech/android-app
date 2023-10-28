@@ -193,12 +193,6 @@ class StartAppActivity : BaseActivity(),LocationListener  {
                     final_str.dropLast(1) ,
                 )
             )
-
-            Log.e(
-                "Addresses",
-                "Final String from prefe ${PreferencesManagement.getUserLocation(this)?.address}"
-            )
-
         }
 
         authViewModel.getUserSuccess.observe(this) {

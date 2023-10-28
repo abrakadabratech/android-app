@@ -298,15 +298,6 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         }
     }
 
-    /* private fun setupView() {
-         lifecycleScope.launch {
-             viewModel.listData.collect {
-                 mainListAdapter.submitData(it)
-             }
-         }
-     }
- */
-
 
     private fun setupList() {
         mainListAdapter = ProductAdapter(this)

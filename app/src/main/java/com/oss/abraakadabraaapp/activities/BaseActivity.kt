@@ -178,32 +178,6 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
     fun getAddress(lat: Double, lng: Double) :String{
         val geocoder = Geocoder(this, Locale.getDefault())
 
-        //        val geocoder = Geocoder(context, Locale.getDefault())
-
-        /* var result: String? = null
-        try {
-            val addressList = geocoder.getFromLocation(
-                lat, lng, 1
-            )
-            if (addressList != null && addressList.size > 0) {
-                val address = addressList[0]
-                val sb = StringBuilder()
-                for (i in 0 until address.maxAddressLineIndex) {
-                    sb.append(address.getAddressLine(i)).append("\n")
-                }
-                sb.append(address.premises).append("\n")
-                sb.append(address.subLocality).append("\n")
-                sb.append(address.locality).append("\n")
-                sb.append(address.postalCode).append("\n")
-                sb.append(address.countryName)
-                result = sb.toString()
-                Log.e("TAG--->", "Location Details are:${result.toString()}")
-
-            }
-        } catch (e: IOException) {
-            Log.e("TAG--->", "Unable connect to Geocoder", e)
-        }*/
-
         try {
             val addresses = geocoder.getFromLocation(lat, lng, 1)
             val obj = addresses!![0]
@@ -214,17 +188,6 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
             }else{
                 string = obj.locality+","+obj.adminArea
             }
-//            Toast.makeText(requireContext(),string,Toast.LENGTH_SHORT).show()
-//            Log.d("TAG--->", "maxAddressLineIndex: ${obj.maxAddressLineIndex}")
-//            Log.d("TAG--->", "locality: ${obj.locality}")
-//            Log.d("TAG--->", "subLocality: ${obj.subLocality}")
-//            Log.d("TAG--->", "adminArea: ${obj.adminArea}")
-//            Log.d("TAG--->", "subAdminArea: ${obj.subAdminArea}")
-//            Log.d("TAG--->", "premises: ${obj.premises}")
-//            Log.d("TAG--->", "countryName: ${obj.countryName}")
-//            Log.d("TAG--->", "locale: ${obj.locale}")
-//            Log.d("TAG--->", "featureName: ${obj.featureName}")
-//            Log.d("TAG--->", "complete address: ${obj.getAddressLine(0)}")
             return add
 
         } catch (e: IOException) {
@@ -289,10 +252,6 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
                 )
             )
 
-
-            Log.e("location_debug", "Base Activity Final String from prefe ${PreferencesManagement.getUserLocation(this)?.address}")
-
-
         }
     }
 
@@ -310,7 +269,6 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
         }
         mFusedLocationClient.lastLocation.addOnCompleteListener(this) { task ->
             val location: Location? = task.result
-//            Log.d("LocationCall", "getLastLocation: $location ")
             if (location == null) {
                 requestNewLocationData()
             } else {
@@ -337,14 +295,6 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
         } catch (e: IOException) {
             Log.d("MYT", "e ${e.localizedMessage}")
         }
-
-        val url =
-            ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" +
-                BuildConfig.API_KEY
-
-       // mainViewModel.getAddress(url)
-
-
 
         if (addresses != null && addresses.isNotEmpty()) {
 
@@ -424,7 +374,7 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
         }
     }
 
-    public fun getLocationAddress() {
+    fun getLocationAddress() {
 
         if (BuildConfig.DEBUG) {
             showToast("lat $lat,long $lng")
