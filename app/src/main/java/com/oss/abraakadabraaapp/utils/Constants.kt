@@ -6,6 +6,7 @@ object Constants {
 
 
     val DISPLAY_NAME: String? = "display_name"
+    val GLOBAL_TAG: String = "Exception"
     val DISPLAY_PIC: String? = "display_pic"
     const val CHATS_DATA: String = "chats_data"
     const val PRODUCT: String = "product_detail"

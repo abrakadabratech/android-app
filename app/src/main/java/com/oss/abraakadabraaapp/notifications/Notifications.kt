@@ -160,7 +160,7 @@ object Notifications {
                 } else {
                     PendingIntent.getActivity(
                         context,
-                        0, intent, PendingIntent.FLAG_ONE_SHOT
+                        0, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
                     )
                 }
 

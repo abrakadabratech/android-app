@@ -233,9 +233,11 @@ object PreferencesManagement {
         val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
         val json = pref.getString("userCategories", null)
+        val a = arrayListOf<UserCatData>()
+        a.add(UserCatData("","No Data","",true))
 
         return if (json == null)
-            null
+            AllCategoryResponse(100,0,a )
         else
             Gson().fromJson(json, AllCategoryResponse::class.java)
 

@@ -25,6 +25,7 @@ import com.oss.abraakadabraaapp.databinding.FragmentAccountsBinding
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.API_TAG
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_ON_ACCOUNTS
+import com.oss.abraakadabraaapp.utils.Constants.GLOBAL_TAG
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
@@ -62,7 +63,7 @@ class AccountsFragment : Fragment(), View.OnClickListener {
                 requireActivity().onBackPressed()
             }
         }
-        setUpProfile(PreferencesManagement.getUserInfo(requireContext())!!)
+        setUpProfile()
         binding.myListingLayout.setOnClickListener(this)
         binding.myRequestLayout.setOnClickListener(this)
         binding.myChatsLayout.setOnClickListener(this)
@@ -143,31 +144,25 @@ class AccountsFragment : Fragment(), View.OnClickListener {
     }
 
     private fun setUpProfileFromServer(getUserResponse: GetUserResponse?) {
-//        application.showToast("${getUserResponse?.data?.userStats?.given} Received ${getUserResponse?.data?.userStats?.received} ")
-        with(binding){
-            userName.text = if(getUserResponse?.data?.name != null) getUserResponse.data?.name.toString() else "Set Ur Name"
-//                giversCount.text = it.data?.userStats?.given.toString()
-          /*  giversCount.text = if(getUserResponse?.data?.userStats?.given != null)
-                getUserResponse.data?.userStats?.given.toString()+" Items" else "0 Items"
-            receiverCount.text = if(getUserResponse?.data?.userStats?.received != null)
-                getUserResponse.data?.userStats?.received.toString()+" Items" else "0 Items"*/
-            Glide.with(this@AccountsFragment)
-                .load(getUserResponse?.data?.userAvatar)
-                .placeholder(resources.getDrawable(R.drawable.user))
-                .into(profilePic)
+        try{
+            with(binding){
+                userName.text = if(getUserResponse?.data?.name != null) getUserResponse.data?.name.toString() else "Set Ur Name"
+                Glide.with(this@AccountsFragment)
+                    .load(getUserResponse?.data?.userAvatar)
+                    .placeholder(resources.getDrawable(R.drawable.user))
+                    .into(profilePic)
+            }
+            PreferencesManagement.saveUserInfo(requireActivity(),getUserResponse)
+        }catch (e:Exception){
+            Log.d(GLOBAL_TAG, "setUpProfileFromServer: "+e.message)
         }
-        PreferencesManagement.saveUserInfo(requireActivity(),getUserResponse)
     }
 
-    private fun setUpProfile(getUserResponse: GetUserResponse) {
+    private fun setUpProfile() {
         val it: GetUserResponse? = PreferencesManagement.getUserInfo(requireContext())
         if (it != null){
             with(binding){
                 userName.text = if(it.data?.name != null) it.data?.name.toString() else "Set Ur Name"
-//                giversCount.text = it.data?.userStats?.given.toString()
-//                giversCount.text = if(it.data?.userStats?.given != null) it.data?.userStats?.given.toString()+" Items" else "0 Items"
-//                receiverCount.text = if(it.data?.userStats?.received != null) it.data?.userStats?.received.toString()+" Items" else "0 Items"
-//                receiverCount.text = it.data?.userStats?.received.toString()
                 Glide.with(this@AccountsFragment)
                     .load(it.data?.userAvatar)
                     .placeholder(resources.getDrawable(R.drawable.ic_profile))
@@ -176,13 +171,10 @@ class AccountsFragment : Fragment(), View.OnClickListener {
                 myRatingTxt2.text = it.data?.userStats?.rating.toString()
 
                 val count = it.data?.userStats?.rating
-                var list:ArrayList<Boolean> = ArrayList()
+                val list:ArrayList<Boolean> = ArrayList()
                 for (i in 0..4){
                     if (i < count!!) list.add(true)
                     else list.add(false)
-//                if (i< count!!){
-//
-//                }else list.add(false)
                 }
                 Log.d("Rating", "setupProfile: ${Gson().toJson(list)}")
 

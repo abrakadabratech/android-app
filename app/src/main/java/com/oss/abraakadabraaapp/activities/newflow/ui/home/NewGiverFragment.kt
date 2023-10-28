@@ -149,8 +149,8 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         placesClient = Places.createClient(requireContext())
 
         try{
-            userCatData = PreferencesManagement.getCategories(requireActivity())!!
 
+            userCatData = PreferencesManagement.getCategories(requireActivity())!!
             if (userCatData.data.size > 0){
                 mainAdapterList = userCatData.data
                 mainAdapterList[0].isSelect = true
@@ -179,9 +179,8 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
             touchHelper!!.attachToRecyclerView(binding.rvImages)
         }catch (e:Exception){
             e.printStackTrace()
+            Log.d(Constants.GLOBAL_TAG, "NewGiverFragment: "+e.message)
         }
-
-
         return root
     }
 
@@ -191,7 +190,6 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
     }
 
     private fun clickEvents() {
-
 
         //Cat adpater
         mainCatAdapter = CatMainAdapter(requireContext(),mainAdapterList,this)
@@ -517,18 +515,6 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
     }
 
     private fun openYourActivity() {
-/*
-        val intent = Intent(requireContext(), ImagePickerActivity::class.java)
-        intent.putExtra(
-            ImagePickerActivity.INTENT_IMAGE_PICKER_OPTION,
-            ImagePickerActivity.REQUEST_GALLERY_IMAGE
-        )
-
-//        intent.putExtra(ImagePickerActivity.INTENT_SET_BITMAP_MAX_WIDTH_HEIGHT, true)
-//        intent.putExtra(ImagePickerActivity.INTENT_BITMAP_MAX_WIDTH, 1000)
-//        intent.putExtra(ImagePickerActivity.INTENT_BITMAP_MAX_HEIGHT, 1000)
-        businessProofImageActivity.launch(intent)
-*/
         val intent = Intent(requireContext(), CropActivity::class.java)
         intent.putExtra("COUNT_IMAGES",photoList.size)
         businessProofImageActivity.launch(intent)
@@ -547,23 +533,14 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         val catRecycler = dialogView.findViewById<RecyclerView>(R.id.catRecycler)
 
         catRecycler.layoutManager = LinearLayoutManager(context)
-//        alertAdaper.i = loadData()
-//        alertAdaper.alerttype = "category"
-//        alertAdaper = alertAdaper
         catRecycler.adapter = mainCatAdapter
         alertAdaper.notifyDataSetChanged()
 
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
-//        if (selectedProdCategory == "") selectedProdCategory = mainAdapterList[0].title?.capitalize().toString()
-//        if (PROD_CATEGORY == "") PROD_CATEGORY = mainAdapterList[0].id.toString()
-
-//        binding.categorySelectedTxt.text = selectedProdCategory
-//        PROD_CATEGORY = mainAdapterList[0].id.toString()
         binding.cateogoryTxt.error = null
         alertDialog.show()
-//        binding.categorySelectedTxt.visibility = View.VISIBLE
     }
 
     private fun showConditionDialog() {
@@ -577,20 +554,14 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         val catRecycler = dialogView.findViewById<RecyclerView>(R.id.catRecycler)
         catRecycler.layoutManager = LinearLayoutManager(context)
 
-        // Condition adapter
         catRecycler.adapter = condtionAdapter
         condtionAdapter.notifyDataSetChanged()
 
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
-//        if(PROD_CONDITION == "") PROD_CONDITION = listConditon[0].name.toString()
-//        else PROD_CONDITION = PROD_CONDITION
-//
-//        binding.conditionSelectedTxt.text = PROD_CONDITION
-//        binding.conditionTxt.error = null
+
         alertDialog.show()
-//        binding.conditionSelectedTxt.visibility = View.VISIBLE
     }
 
     private fun showUsedForDialog() {
@@ -605,8 +576,6 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         alertName.text = "Used For"
         val catRecycler = dialogView.findViewById<RecyclerView>(R.id.catRecycler)
         catRecycler.layoutManager = LinearLayoutManager(context)
-//        alertAdaper.i = loadUsedForData()
-//        alertAdaper.alerttype = "used_for"
 
         catRecycler.adapter = alertAdaper
         alertAdaper.notifyDataSetChanged()
@@ -614,12 +583,6 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
-//        if(PROD_USED_FOR == "") PROD_USED_FOR = list[0].name.toString()
-//
-//        binding.usedForSelectedTxt.text = PROD_USED_FOR
-//        binding.usedForSelectedTxt.visibility = View.VISIBLE
-//
-//        binding.usedForTxt.error = null
 
         alertDialog.show()
     }
@@ -822,9 +785,9 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                     application.showToast("Please Enter Product Name")
                     false
                 }
-                PROD_CATEGORY == "" -> {
+                PROD_CATEGORY == "" || PROD_CATEGORY == "No Data" -> {
 //                    cateogoryTxt.error = "Please select category of product"
-                    showToast("Please select category of product!")
+                    showToast("Please select category of product or refresh it on home page!")
                     false
                 }
                 PROD_CONDITION == "" -> {
@@ -833,7 +796,6 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                     false
                 }
                 PROD_USED_FOR == "" -> {
-//                    usedForTxt.error = "Please select used for"
                     showToast("Please select used for!")
                     false
                 }
