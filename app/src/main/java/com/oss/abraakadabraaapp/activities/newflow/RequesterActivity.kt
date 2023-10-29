@@ -103,7 +103,7 @@ class RequesterActivity : BaseActivity() {
 //                showToast(productDetails?.product?.name.toString())
             } else {
                 if (productStatus == "hold"){
-                    showToast("Can't accept this request. Please cancel the previous request to accept ")
+                    showToast(getString(R.string.on_hold_product_message))
                 }else{
                     generateAuthToken()
                     mainViewModel.updateProductRequest(

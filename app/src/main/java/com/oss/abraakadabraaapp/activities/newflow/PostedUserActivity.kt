@@ -124,9 +124,9 @@ class PostedUserActivity : BaseActivity() {
                 showToast(it.responseMessage.toString())
                 binding.successAlertDialog.visibility = View.VISIBLE
 
-                if (it.data.product_status == "hold"){
+                /*if (it.data.product_status == "hold"){
                     binding.textView81.text = getString(R.string.on_hold_product_message)
-                }
+                }*/
 
             } else {
                 Log.d("TAG -", "setUpObserver: fail")
