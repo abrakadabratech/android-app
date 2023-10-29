@@ -232,4 +232,9 @@ class AuthRepository(private val apiHelper: APIs) {
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
     ) = apiHelper.changePassword(headerMap, map)
+
+    suspend fun postUPIPayment(
+        headerMap: HashMap<String, String>,
+        map: HashMap<String, String>
+    ) = apiHelper.postUPIPayment(headerMap, map)
 }

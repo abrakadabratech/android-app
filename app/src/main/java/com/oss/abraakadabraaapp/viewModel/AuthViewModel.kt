@@ -50,6 +50,7 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
 
     var loginWithPhoneNumberSuccess = MutableLiveData<SignInResponse>()
     var changePasswordSuccess = MutableLiveData<CommonResponse>()
+    var postUPIPaymentSuccess = MutableLiveData<UPIModel>()
 
     var productDetailsData = MutableLiveData<ProductDetailsData>()
     var listingDetailsuccess = MutableLiveData<ListingResponse>()
@@ -783,6 +784,30 @@ fun getRequestDetails(
             callApi(::call, object : CallHelper<CommonResponse> {
                 override fun onSuccessful(data: CommonResponse) {
                     changePasswordSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+
+        }
+    }
+    fun postUPIPayment(
+        headerMap: HashMap<String, String>,
+        map: HashMap<String, String>
+    ) {
+        viewModelScope.launch {
+
+            isLoading.value = true
+
+            suspend fun call() = repository.postUPIPayment(headerMap, map)
+
+            callApi(::call, object : CallHelper<UPIModel> {
+                override fun onSuccessful(data: UPIModel) {
+                    postUPIPaymentSuccess.value = data
                 }
 
                 override fun onError(errorResponse: HttpErrorResponse) {

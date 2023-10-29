@@ -78,12 +78,6 @@ class LoginActivity : BaseActivity() {
                 R.color.blue_status_bar_color
             )
 
-//        FirebaseApp.initializeApp(/*context=*/this)
-//        val firebaseAppCheck = FirebaseAppCheck.getInstance()
-//        firebaseAppCheck.installAppCheckProviderFactory(
-//            PlayIntegrityAppCheckProviderFactory.getInstance()
-//        )
-
         setMessage()
         setUpObserver()
 

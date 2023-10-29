@@ -56,7 +56,6 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
         val docRef = db.collection("chats").whereEqualTo("product_receiver",currentUserId)
-
         docRef.get().addOnSuccessListener { snap ->
             if(snap.isEmpty){
                 nodata.visibility = View.VISIBLE

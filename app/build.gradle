@@ -50,16 +50,16 @@ android {
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             //DEV
-//            buildConfigField("String", "BASE_URL", "\"https://akd-testing.web.app/\"")
-//            buildConfigField("String", "BASE_DEMO", "\"https://akd-testing.web.app/\"")
+            buildConfigField("String", "BASE_URL", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
+            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
 
             //PROD
 //            buildConfigField("String", "BASE_URL", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
 //            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
 
             //NEW_PROD_URL
-            buildConfigField("String", "BASE_URL", "\"https://api.abrakadabraapp.app/\"")
-            buildConfigField("String", "BASE_DEMO", "\"https://api.abrakadabraapp.app/\"")
+//            buildConfigField("String", "BASE_URL", "\"https://api.abrakadabraapp.app/\"")
+//            buildConfigField("String", "BASE_DEMO", "\"https://api.abrakadabraapp.app/\"")
 //
             buildConfigField "String", "API_KEY", "\"${project.property('API_KEY')}\""
             signingConfig signingConfigs.release
@@ -70,17 +70,17 @@ android {
             minifyEnabled false
             shrinkResources false
 //            buildConfigField("String", "BASE_URL", "\"https://abrakadabraapp.app/app/api/v1/\"")
-            //DEV
-//            buildConfigField("String", "BASE_URL", "\"https://abrakadabra-dev.web.app\"")
-//            buildConfigField("String", "BASE_URL", "\"https://abrakadabra-dev.web.app\"")
+
+            buildConfigField("String", "BASE_URL", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
+            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
 
 //            //PROD
 //            buildConfigField("String", "BASE_URL", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
 //            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
 
             //NEW_PROD_URL
-            buildConfigField("String", "BASE_URL", "\"https://api.abrakadabraapp.app/\"")
-            buildConfigField("String", "BASE_DEMO", "\"https://api.abrakadabraapp.app/\"")
+//            buildConfigField("String", "BASE_URL", "\"https://api.abrakadabraapp.app/\"")
+//            buildConfigField("String", "BASE_DEMO", "\"https://api.abrakadabraapp.app/\"")
 
             buildConfigField "String", "API_KEY", "\"${project.property('API_KEY')}\""
 
@@ -215,7 +215,7 @@ dependencies {
     //Razor pay
     implementation 'com.razorpay:checkout:1.6.26'
 
-    // FirebaseUI for Cloud Firestore
+    // FirebaseUI for Cloud Fire-store
     implementation 'com.firebaseui:firebase-ui-firestore:8.0.2'
 
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
@@ -234,6 +234,9 @@ dependencies {
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-appcheck-playintegrity'
 
+    implementation("com.google.firebase:firebase-appcheck-ktx")
+
+    implementation("com.google.firebase:firebase-appcheck-debug")
     implementation("com.google.firebase:firebase-config-ktx")
 
     //Install-Referrer

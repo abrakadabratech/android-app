@@ -451,4 +451,10 @@ interface APIs {
         @QueryMap map: HashMap<String, String>
     ): Response<RequestActionResponse>
 
+    @POST("app/payment/new")
+    suspend fun postUPIPayment(
+        @HeaderMap header: Map<String, String>,
+        @Body map: HashMap<String, String>
+    ): Response<UPIModel>
+
 }

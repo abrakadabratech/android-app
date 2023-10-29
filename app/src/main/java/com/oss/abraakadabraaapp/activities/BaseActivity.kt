@@ -3,8 +3,6 @@ package com.oss.abraakadabraaapp.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -29,7 +27,10 @@ import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.Tracker
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
@@ -99,6 +100,24 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
         val appSignatureHashHelper = AppSignatureHashHelper(this)
         smsToken = appSignatureHashHelper.appSignatures[0]
 
+        FirebaseApp.initializeApp(this)
+        val firebaseAppCheck = FirebaseAppCheck.getInstance()
+        firebaseAppCheck.installAppCheckProviderFactory(
+            PlayIntegrityAppCheckProviderFactory.getInstance()
+        )
+
+        /*if (BuildConfig.DEBUG){
+            FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
+                DebugAppCheckProviderFactory.getInstance(),
+            )
+        }else{
+
+
+            *//*val firebaseAppCheck = FirebaseAppCheck.getInstance()
+            firebaseAppCheck.installAppCheckProviderFactory(
+              //  CustomAppCheckProviderFactory()
+            )*//*
+        }*/
         setUpObserver()
     }
 
@@ -305,7 +324,7 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
             val pinCode = addresses[0].postalCode ?: ""
 
             val fullAddress = addresses[0].getAddressLine(0) ?: ""
-            Log.e("location_update", "${Gson().toJson(addresses)}", )
+            Log.e("location_update", "${Gson().toJson(addresses)}")
 
             val featurename = addresses[0].featureName ?: ""
             val subloc = addresses[0].subLocality ?: ""
@@ -321,7 +340,7 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
             if (loca != ""){
                 f_address = "$f_address$loca,"
             }
-            Log.e("location_update", "${f_address}", )
+            Log.e("location_update", "${f_address}")
 
             Log.d("location_update", "$locality\n $city\n $state\n $country\n $pinCode\n $fullAddress")
 

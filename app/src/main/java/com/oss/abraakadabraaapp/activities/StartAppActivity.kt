@@ -544,14 +544,12 @@ class StartAppActivity : BaseActivity(),LocationListener  {
                         "Error Please try again !"
                     )
                 }
-                val u_info = PreferencesManagement.getUserInfo(this@StartAppActivity)
 
-                Log.d("LOGIN>>>", "setUpObserver: ${Gson().toJson(u_info)}")
+                if(PreferencesManagement.getUserInfo(this@StartAppActivity) != null){
+                    val u_info = PreferencesManagement.getUserInfo(this@StartAppActivity)
 
-                if(u_info != null){
-                    if ((u_info.data?.name == null || u_info.data?.name == "") ||
+                    if ((u_info?.data?.name == null || u_info.data?.name == "") ||
                         (u_info.data?.email == "" || u_info.data?.email == null)
-                    /*(u_info.data?.socialLink == null || u_info.data?.socialLink == "")*/
                     ) {
                         val intent = Intent(this@StartAppActivity, AuthUserDetailActivity::class.java)
                         intent.putExtra(
@@ -561,28 +559,11 @@ class StartAppActivity : BaseActivity(),LocationListener  {
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                         startActivity(intent)
 
-                    } /*else if (PreferencesManagement.getUserInfo(this@StartAppActivity)!!.data?.socialLink != null) {
-                    startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
-                }*/
+                    }
                     else {
                         startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
-                        /*if (u_info.data?.socialLink != null || u_info.data?.socialLink != "") {
-                            startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
-                        } else {
-                            val intent =
-                                Intent(this@StartAppActivity, AuthUserDetailActivity::class.java)
-                            intent.putExtra(
-                                Constants.phoneNumber,
-                                FirebaseAuth.getInstance().currentUser?.phoneNumber
-                            )
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                            startActivity(intent)
-                        }*/
                     }
                 }
-
-
-//                startActivity(Intent(this@StartAppActivity, NewHomeActivity::class.java))
             } else {
 
                 if (PreferencesManagement.isFistOpen(this)) {

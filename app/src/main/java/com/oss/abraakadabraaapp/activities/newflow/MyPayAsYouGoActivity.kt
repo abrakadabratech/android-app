@@ -3,9 +3,14 @@ package com.oss.abraakadabraaapp.activities.newflow
 import RequestDetails
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
@@ -17,6 +22,7 @@ import com.oss.abraakadabraaapp.utils.Constants.BUTTON_200
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_500
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_PAYASWISH
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_CONTRIBUTE
+import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import com.razorpay.Checkout
@@ -32,11 +38,12 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
     var name = ""
     var email = ""
     var phone = ""
+    val map = HashMap<String, String>()
     private var productDetial: RequestDetails? = null
     private val mainViewModel: AuthViewModel by viewModel()
     private lateinit var from: String
 
-    private lateinit var binding:ActivityMyPayAsYouGoBinding
+    private lateinit var binding: ActivityMyPayAsYouGoBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -44,28 +51,31 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
         setContentView(binding.root)
         from = intent.extras?.getString("from", "").toString()
 
-        productId = intent.extras?.getString("productId","")!!
+        productId = intent.extras?.getString("productId", "")!!
 
-        name = intent.extras?.getString("name","")!!
-        email = intent.extras?.getString("email","")!!
-        phone = intent.extras?.getString("phone","")!!
-        receiverId = intent.extras?.getString("receiver_id","")!!
+        name = intent.extras?.getString("name", "")!!
+        email = intent.extras?.getString("email", "")!!
+        phone = intent.extras?.getString("phone", "")!!
+        receiverId = intent.extras?.getString("receiver_id", "")!!
 
-        getRazorPay()
+        //getRazorPay()
 
         binding.ivBack.setOnClickListener {
             postClick(BUTTON_BACK_IN_PAYASWISH)
             onBackPressed()
         }
         binding.skipPay.setOnClickListener {
-            if (from == "listing" || from == "requesting"){
-                val intent = Intent(this, FeedbackActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                intent.putExtra("from",from)
+            if (from == "listing" || from == "requesting") {
+                val intent = Intent(
+                    this,
+                    FeedbackActivity::class.java
+                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                intent.putExtra("from", from)
                 intent.putExtra("PRODUCT_ID", productId)
-                intent.putExtra("USER_ID",receiverId)
+                intent.putExtra("USER_ID", receiverId)
                 startActivity(intent)
                 finish()
-            }else{
+            } else {
                 finish()
             }
         }
@@ -77,15 +87,15 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
         binding.button5.setOnClickListener {
             postClick(BUTTON_200)
             takeToPayment("200")
-             }
+        }
         binding.button6.setOnClickListener {
             postClick(BUTTON_500)
             takeToPayment("500")
-            }
+        }
         binding.button7.setOnClickListener {
             postClick(BUTTON_CONTRIBUTE)
             takeToPayment(binding.customAmount.text.toString())
-            }
+        }
 
         setUpObserver()
 
@@ -93,56 +103,96 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
 
     private fun getRazorPay() {
         generateAuthToken()
-        val map = HashMap<String,String>()
+        val map = HashMap<String, String>()
         val authMap = Utility.getAuthentication(this)
         mainViewModel.getRazorPay(authMap)
     }
 
-    private fun takeToPayment(s: String) {
-        if (s == ""){
+    private fun takeToPayment(amount: String) {
+        if (amount == "") {
             showToast("Please enter some amount")
-        }else{
-            generateAuthToken()
+        } else {
+            /*generateAuthToken()
             val map = HashMap<String,String>()
             map["amount"] = (s).toString()
             map["productId"] = productId
             val authMap = Utility.getAuthentication(this)
             authMap["logging"] = "true"
-            mainViewModel.initPayment(authMap,map)
+            mainViewModel.initPayment(authMap,map)*/
+
+            val user = PreferencesManagement.getUserName(this)
+            val auth = FirebaseAuth.getInstance().currentUser
+
+            if (auth != null){
+                Log.d("TAG_UPI", "takeToPayment: ${auth.displayName}")
+                Log.d("TAG_UPI", "takeToPayment:user ${user}")
+                val uri = Uri.parse("upi://pay").buildUpon()
+                    .appendQueryParameter("pa", Constants.upiId)
+                    .appendQueryParameter("pn", user)
+                    .appendQueryParameter("tn", "")
+                    .appendQueryParameter("am", amount)
+                    .appendQueryParameter("cu", "INR")
+                    .build()
+
+                map["amount"] = amount
+                map["payeeName"] = user.toString()
+                map["transactionNote"] = "payment from ${user.toString()}"
+
+                val upiPayIntent = Intent(Intent.ACTION_VIEW)
+                upiPayIntent.data = uri
+
+                // will always show a dialog to user to choose an app
+                val chooser = Intent.createChooser(upiPayIntent, "Pay with")
+
+                // check if intent resolves
+                if (null != chooser.resolveActivity(packageManager)) {
+                    startActivityForResult(chooser, 1001)
+                } else {
+                    Toast.makeText(
+                        this,
+                        "No UPI app found, please install one to continue",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }else{
+                showToast("no user found")
+            }
         }
 
     }
 
-    private fun setUpObserver()
-    {
-        mainViewModel.razorpaySuccess.observe(this){
-            if (it.code == 200){
+    private fun setUpObserver() {
+        mainViewModel.razorpaySuccess.observe(this) {
+            if (it.code == 200) {
                 razorPayId = it.data?.RAZORPAYKEYID.toString()
             }
         }
 
-        mainViewModel.initPaymentSuccess.observe(this){
-            if (it.code == 200){
+        mainViewModel.initPaymentSuccess.observe(this) {
+            if (it.code == 200) {
                 orderId = it.data?.orderId.toString()
                 sendToRazorPay(it.data?.orderId, it.data?.amount!!)
             }
         }
 
-        mainViewModel.updatePaymentSuccess.observe(this){
-            if (it.code == 200){
-                showToast("Payment Success")
-                if (from == "listing" || from == "requesting"){
-                    val intent = Intent(this, FeedbackActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    intent.putExtra("from",from)
-                    intent.putExtra("PRODUCT_ID", productId)
-                    intent.putExtra("USER_ID",receiverId)
-                    startActivity(intent)
-                    finish()
-                }else{
-                    finish()
-                }
-//                sendToRazorPay(it.data?.orderId,it.data?.amount)
+        mainViewModel.postUPIPaymentSuccess.observe(this) {
+
+            showToast(it.userMessage.toString())
+            if (from == "listing" || from == "requesting") {
+                val intent = Intent(
+                    this,
+                    FeedbackActivity::class.java
+                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                intent.putExtra("from", from)
+                intent.putExtra("PRODUCT_ID", productId)
+                intent.putExtra("USER_ID", receiverId)
+                startActivity(intent)
+                finish()
+            } else {
+                finish()
             }
+//                sendToRazorPay(it.data?.orderId,it.data?.amount)
+
         }
         mainViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
         mainViewModel.isLoading.observe(this) { loader(it) }
@@ -152,7 +202,7 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
         val activity: Activity = this
 //        var amount = (amount?.times(100))
 //        Log.d("Razorpay - ", "onPaymentSuccess: $amount")
-        if (razorPayId != ""){
+        if (razorPayId != "") {
             val checkout = Checkout()
             checkout.setKeyID(razorPayId)
 //        checkout.setKeyID(Constants.razor_pay_id)
@@ -162,7 +212,7 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
             payloadHelper.prefillEmail = email
             payloadHelper.prefillContact = phone
             checkout.open(activity, payloadHelper.getJson())
-        }else{
+        } else {
             showToast("Razor pay id is missing")
         }
     }
@@ -170,28 +220,111 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
     override fun onPaymentSuccess(p0: String?) {
         Log.d("Razorpay - ", "onPaymentSuccess: $p0")
         generateAuthToken()
-        val map = HashMap<String,String>()
+        val map = HashMap<String, String>()
         map["orderId"] = orderId
         map["transactionId"] = p0.toString()
         map["status"] = "success"
 
         val authMap = Utility.getAuthentication(this)
         authMap["logging"] = "true"
-        mainViewModel.updatePayment(authMap,map)
+        mainViewModel.updatePayment(authMap, map)
     }
 
     override fun onPaymentError(p0: Int, p1: String?) {
         Log.d("Razorpay - ", "Failed: $p0  : $p1")
         showToast("Payment Failed!")
         generateAuthToken()
-        val map = HashMap<String,String>()
+        val map = HashMap<String, String>()
         map["orderId"] = orderId
         map["transactionId"] = "null"
         map["status"] = "failed"
 
         val authMap = Utility.getAuthentication(this)
         authMap["logging"] = "true"
-        mainViewModel.updatePayment(authMap,map)
+        mainViewModel.updatePayment(authMap, map)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        when (requestCode) {
+            1001 -> if (Activity.RESULT_OK == resultCode || resultCode == 11) {
+                if (data != null) {
+                    val trxt = data.getStringExtra("response")
+                    Log.d("UPI", "onActivityResult: $trxt")
+                    val dataList = ArrayList<String>()
+                    if (trxt != null) {
+                        dataList.add(trxt)
+                    }
+                    upiPaymentDataOperation(dataList)
+                } else {
+                    Log.d("UPI", "onActivityResult: " + "Return data is null")
+                    val dataList = ArrayList<String>()
+                    dataList.add("nothing")
+                    upiPaymentDataOperation(dataList)
+                }
+            } else {
+                Log.d(
+                    "UPI",
+                    "onActivityResult: " + "Return data is null"
+                ) //when user simply back without payment
+                val dataList = ArrayList<String>()
+                dataList.add("nothing")
+                upiPaymentDataOperation(dataList)
+            }
+        }
+    }
+
+    private fun upiPaymentDataOperation(data: ArrayList<String>) {
+        if (data.size > 0) {
+            var str: String? = data[0]
+            Log.d("UPIPAY", "upiPaymentDataOperation: " + str!!)
+            var paymentCancel = ""
+            if (str == null) str = "discard"
+            var status = ""
+            var approvalRefNo = ""
+            val response = str.split("&".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            Log.d("UPIPAY", "upiPaymentDataOperation: response arr " + Gson().toJson(response))
+
+            for (i in response.indices) {
+                val equalStr =
+                    response[i].split("=".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                if (equalStr.size >= 2) {
+                    if (equalStr[0].toLowerCase() == "Status".toLowerCase()) {
+                        status = equalStr[1].toLowerCase()
+                    } else if (equalStr[0].toLowerCase() == "ApprovalRefNo".toLowerCase() || equalStr[0].toLowerCase() == "txnId".toLowerCase()) {
+                        approvalRefNo = equalStr[1]
+                    }
+                } else {
+                    paymentCancel = "Payment cancelled by user."
+                }
+            }
+
+            generateAuthToken()
+            val authMap = Utility.getAuthentication(this)
+            if (status == "success") {
+                //Code to handle successful transaction here.
+                map["status"] = status
+                map["transactionId"] = approvalRefNo
+
+                mainViewModel.postUPIPayment(authMap, map)
+                Log.d("UPI", "responseStr: $approvalRefNo")
+            } else if ("Payment cancelled by user." == paymentCancel) {
+                map["status"] = "failed"
+                map["transactionId"] = "Cancelled by the user"
+
+                mainViewModel.postUPIPayment(authMap, map)
+
+//                Toast.makeText(this, "Payment cancelled by user.", Toast.LENGTH_SHORT).show()
+            } else {
+                map["status"] = "failed"
+                map["transactionId"] = approvalRefNo
+                mainViewModel.postUPIPayment(authMap, map)
+
+//                Toast.makeText(this, "Transaction failed.Please try again", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            showToast("Please try again!")
+        }
+    }
 }

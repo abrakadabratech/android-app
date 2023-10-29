@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
@@ -58,7 +59,6 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
         val docRef = db.collection("chats").whereEqualTo("product_giver", currentUserId)
-
         docRef.get().addOnSuccessListener { snap ->
             if (snap.isEmpty) {
                 nodata.visibility = View.VISIBLE
