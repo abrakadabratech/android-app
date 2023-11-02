@@ -4,13 +4,12 @@ import RequestDetails
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import android.widget.Toast
-import com.google.firebase.FirebaseApp
+import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
@@ -39,7 +38,6 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
     var email = ""
     var phone = ""
     val map = HashMap<String, String>()
-    private var productDetial: RequestDetails? = null
     private val mainViewModel: AuthViewModel by viewModel()
     private lateinit var from: String
 
@@ -81,6 +79,7 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
         }
         binding.button3.setOnClickListener {
             postClick(BUTTON_100)
+            changeButtonSelection(binding.button3)
             takeToPayment("100")
 
         }
@@ -101,9 +100,38 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
 
     }
 
+    private fun changeButtonSelection(selectBtn: TextView) {
+        when(selectBtn){
+            binding.button3 -> {
+                binding.button3.setTextColor(ContextCompat.getColor(this, R.color.white))
+                binding.button5.setTextColor(ContextCompat.getColor(this, R.color.title_color))
+                binding.button7.setTextColor(ContextCompat.getColor(this, R.color.title_color))
+                binding.button3.background = (ContextCompat.getDrawable(this, R.drawable.btn_bg_rounded_rect))
+                binding.button5.background = (ContextCompat.getDrawable(this, R.drawable.rounded_rect_border))
+                binding.button7.background = (ContextCompat.getDrawable(this, R.drawable.rounded_rect_border))
+            }
+            binding.button5 -> {
+                binding.button5.setTextColor(ContextCompat.getColor(this, R.color.white))
+                binding.button3.setTextColor(ContextCompat.getColor(this, R.color.title_color))
+                binding.button7.setTextColor(ContextCompat.getColor(this, R.color.title_color))
+                binding.button5.background = (ContextCompat.getDrawable(this, R.drawable.btn_bg_rounded_rect))
+                binding.button3.background = (ContextCompat.getDrawable(this, R.drawable.rounded_rect_border))
+                binding.button7.background = (ContextCompat.getDrawable(this, R.drawable.rounded_rect_border))
+            }
+            binding.button7 -> {
+                binding.button7.setTextColor(ContextCompat.getColor(this, R.color.white))
+                binding.button3.setTextColor(ContextCompat.getColor(this, R.color.title_color))
+                binding.button5.setTextColor(ContextCompat.getColor(this, R.color.title_color))
+                binding.button7.background = (ContextCompat.getDrawable(this, R.drawable.btn_bg_rounded_rect))
+                binding.button3.background = (ContextCompat.getDrawable(this, R.drawable.rounded_rect_border))
+                binding.button5.background = (ContextCompat.getDrawable(this, R.drawable.rounded_rect_border))
+            }
+        }
+
+    }
+
     private fun getRazorPay() {
         generateAuthToken()
-        val map = HashMap<String, String>()
         val authMap = Utility.getAuthentication(this)
         mainViewModel.getRazorPay(authMap)
     }
@@ -280,7 +308,7 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
             var str: String? = data[0]
             Log.d("UPIPAY", "upiPaymentDataOperation: " + str!!)
             var paymentCancel = ""
-            if (str == null) str = "discard"
+            if (str == "") str = "discard"
             var status = ""
             var approvalRefNo = ""
             val response = str.split("&".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -290,9 +318,9 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
                 val equalStr =
                     response[i].split("=".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                 if (equalStr.size >= 2) {
-                    if (equalStr[0].toLowerCase() == "Status".toLowerCase()) {
-                        status = equalStr[1].toLowerCase()
-                    } else if (equalStr[0].toLowerCase() == "ApprovalRefNo".toLowerCase() || equalStr[0].toLowerCase() == "txnId".toLowerCase()) {
+                    if (equalStr[0].lowercase() == "Status".lowercase()) {
+                        status = equalStr[1].lowercase()
+                    } else if (equalStr[0].lowercase() == "ApprovalRefNo".lowercase() || equalStr[0].lowercase() == "txnId".lowercase()) {
                         approvalRefNo = equalStr[1]
                     }
                 } else {
@@ -310,12 +338,7 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
                 mainViewModel.postUPIPayment(authMap, map)
                 Log.d("UPI", "responseStr: $approvalRefNo")
             } else if ("Payment cancelled by user." == paymentCancel) {
-                map["status"] = "failed"
-                map["transactionId"] = "Cancelled by the user"
-
-                mainViewModel.postUPIPayment(authMap, map)
-
-//                Toast.makeText(this, "Payment cancelled by user.", Toast.LENGTH_SHORT).show()
+                showToast("Payment cancelled")
             } else {
                 map["status"] = "failed"
                 map["transactionId"] = approvalRefNo
