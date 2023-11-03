@@ -71,5 +71,10 @@
     <color name="status_accepted">#2D7A76</color>
     <color name="status_declined">#F95565</color>
     <color name="background">#dddddd</color>
+    <color name="product_alert_warning">#fdeded</color>
+    <color name="product_status_danger_color">#fdeded</color>
+    <color name="product_status_success_color">#edf7ee</color>
+
+
 
 </resources>
