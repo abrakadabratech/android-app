@@ -6,26 +6,21 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.App
 import com.oss.abraakadabraaapp.R
-import com.oss.abraakadabraaapp.activities.ProductDetailActivity
-import com.oss.abraakadabraaapp.activities.RequestProductDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewProductDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.RequesterActivity
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.model.NotificationDataModel
 import com.oss.abraakadabraaapp.activities.newflow.ui.MyRequestDetailsActivity
-import com.oss.abraakadabraaapp.localdb.*
 import com.oss.abraakadabraaapp.utils.Constants
-import org.greenrobot.eventbus.EventBus
 
 
 object Notifications {
@@ -103,26 +98,31 @@ object Notifications {
             }
             Constants.chatDetails -> {
                 Log.d("Notification -", "notifyMessage: requesting activity ${map["data"]}")
-                val intent = Intent(context, ChatDetailActivity::class.java)
-                intent.putExtra(Constants.productId, Gson().toJson(dataModel))
-                intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
-                val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(context)
-                stackBuilder.addNextIntentWithParentStack(intent)
-                val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    PendingIntent.getActivity(
-                        context,
-                        0,
-                        intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                    )
-                } else {
-                    PendingIntent.getActivity(
-                        context,
-                        0, intent, PendingIntent.FLAG_UPDATE_CURRENT
-                    )
-                }
+                if (dataModel.requestStatus != "cancelled"){
+                    val intent = Intent(context, ChatDetailActivity::class.java)
+                    intent.putExtra(Constants.productId, Gson().toJson(dataModel))
+                    intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
+                    val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(context)
+                    stackBuilder.addNextIntentWithParentStack(intent)
+                    val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        PendingIntent.getActivity(
+                            context,
+                            0,
+                            intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                        )
+                    } else {
+                        PendingIntent.getActivity(
+                            context,
+                            0, intent, PendingIntent.FLAG_UPDATE_CURRENT
+                        )
+                    }
 
-                notificationBuilder.setContentIntent(pendingIntent)
+                    notificationBuilder.setContentIntent(pendingIntent)
+                }else{
+                    gotoHome(context,notificationBuilder)
+                    Toast.makeText(context,"Your product request is cancelled!",Toast.LENGTH_SHORT).show()
+                }
             }
             Constants.productListing -> {
                 Log.d("Notification -", "notifyMessage: requesting activity ${map["productId"]}")
@@ -148,29 +148,33 @@ object Notifications {
                 notificationBuilder.setContentIntent(pendingIntent)
             }
             else -> {
-                val intent = Intent(context, NewHomeActivity::class.java)
-
-                val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    PendingIntent.getActivity(
-                        context,
-                        0,
-                        intent,
-                        PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
-                    )
-                } else {
-                    PendingIntent.getActivity(
-                        context,
-                        0, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
-                    )
-                }
-
-                notificationBuilder.setContentIntent(pendingIntent)
+                gotoHome(context,notificationBuilder)
             }
         }
 
         val notification = notificationBuilder.build()
         val manager = NotificationManagerCompat.from(context)
         manager.notify(notificationId, notification)
+    }
+
+    private fun gotoHome(context: Context, notificationBuilder: NotificationCompat.Builder) {
+        val intent = Intent(context, NewHomeActivity::class.java)
+
+        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PendingIntent.getActivity(
+                context,
+                0,
+                intent,
+                PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+            )
+        } else {
+            PendingIntent.getActivity(
+                context,
+                0, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+            )
+        }
+
+        notificationBuilder.setContentIntent(pendingIntent)
     }
 
 }
