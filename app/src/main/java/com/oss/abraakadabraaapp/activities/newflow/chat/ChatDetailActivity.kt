@@ -9,12 +9,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -24,6 +27,7 @@ import com.google.gson.GsonBuilder
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
+import com.oss.abraakadabraaapp.activities.newflow.RequesterActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ChatMessageAdapter
 import com.oss.abraakadabraaapp.activities.newflow.customeview.WrapContentLinearLayoutManager
 import com.oss.abraakadabraaapp.activities.newflow.model.NotificationDataModel
@@ -43,6 +47,8 @@ import com.oss.abraakadabraaapp.utils.Constants.PAGE_CHATS_DETAILS
 import com.oss.abraakadabraaapp.utils.Constants.UNDER_DEV
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
+import com.oss.abraakadabraaapp.utils.Utility.toDate
+import com.oss.abraakadabraaapp.utils.Utility.toDateAndTime
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
@@ -56,7 +62,7 @@ class ChatDetailActivity : BaseActivity() {
     var chatData : ChatListModel? = null
     var data_from = ""
     var chatNode = ""
-
+    private val TAG = "ChatDetailActivity"
     var firestoreUserAdapter: FirestoreRecyclerAdapter<ChatModel, UsersViewholder>? = null
     private val mainViewModel: AuthViewModel by viewModel()
 
@@ -65,6 +71,10 @@ class ChatDetailActivity : BaseActivity() {
         binding = ActivityChatDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
         postEvent(PAGE_CHATS_DETAILS, null)
+
+        if (intent.hasExtra(Constants.hasNotificationData)) {
+            generateAuthToken()
+        }
 
         if (intent.hasExtra(Constants.productId)){
             val bundle  = Gson().fromJson(intent.extras?.getString(Constants.productId),NotificationDataModel::class.java)
@@ -184,25 +194,76 @@ class ChatDetailActivity : BaseActivity() {
         }
         binding.blockUser.setOnClickListener {
             postClick(BUTTON_CHAT_BLOCK_USER)
-            showToast(UNDER_DEV)
+            blockUser()
         }
         binding.reportUser.setOnClickListener {
             postClick(BUTTON_CHAT_REPORT_USER)
             showToast(UNDER_DEV)
         }
         binding.deleteChat.setOnClickListener {
-            showToast(UNDER_DEV)
             postClick(BUTTON_CHAT_DELETE)
-
+            deleteChat()
         }
 
         binding.sendMessage.setOnClickListener {
             postClick(BUTTON_CHAT_SEND_MESSAGE)
-            sendMessage(binding.messageBox.text.toString().trim())
-            list.add(binding.messageBox.text.toString().trim())
+            if(chatData?.status == "cancelled"){
+                Toast.makeText(this,"Product Cancelled", Toast.LENGTH_SHORT).show()
+                binding.messageBox.setText("")
+            }else{
+                sendMessage(binding.messageBox.text.toString().trim())
+                list.add(binding.messageBox.text.toString().trim())
+                binding.messageBox.setText("")
+            }
 
-            binding.messageBox.setText("")
         }
+    }
+
+    private fun blockUser() {
+        showToast("Please cancel the request to block the user")
+        finish()
+        val intent = Intent(this, RequesterActivity::class.java)
+        intent.putExtra(Constants.productId, chatData?.requestId)
+        startActivity(intent)
+    }
+
+    private fun deleteChat() {
+        val db = Firebase.firestore
+        val postsCollectionRef = db.collection("chats").document(chatNode)
+            .collection("Messages")
+
+        postsCollectionRef
+            .get()
+            .addOnCompleteListener(OnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    for (document in task.result!!) {
+                        val documentRef = postsCollectionRef.document(document.id)
+                        documentRef.delete()
+                            .addOnSuccessListener {
+                                // Document in subcollection successfully deleted
+                            }
+                            .addOnFailureListener { e ->
+                                // Handle errors while deleting documents in sub-collection
+                            }
+                    }
+                } else {
+                    // Handle errors while retrieving documents in subcollection
+                }
+
+                // Step 2: Delete the main document
+                val userDocumentRef = db.collection("users").document(chatNode)
+                userDocumentRef
+                    .delete()
+                    .addOnSuccessListener {
+                        // Main document successfully deleted
+                        showToast("Chat deleted")
+                        finish()
+                    }
+                    .addOnFailureListener { e ->
+                        // Handle errors while deleting the main document
+                    }
+            })
+
     }
 
     private fun sendMessage(message: String) {
@@ -216,7 +277,7 @@ class ChatDetailActivity : BaseActivity() {
             val currentDate: String = sdf.format(calendar.time)
             chatData!!.last_message = message
             val c = Calendar.getInstance().time
-            chatData!!.time_stamp = currentDate
+            chatData!!.time_stamp = Timestamp.now()
 
             if (data_from == "activity"){
 
@@ -246,7 +307,8 @@ class ChatDetailActivity : BaseActivity() {
                 "senderId" to sender_id,
                 "text" to message,
                 "from" to sender_id,
-                "timestamp" to System.currentTimeMillis()
+                "read" to false,
+                "timestamp" to Timestamp.now()
             )
 
             db.collection("chats")
@@ -272,20 +334,7 @@ class ChatDetailActivity : BaseActivity() {
                     /*val intent = Intent(this,ChatDetailActivity::class.java)
                     intent.putExtra(Constants.CHATS_DATA,chat_room)
                     startActivity(intent)*/
-                    val isScrolledToBottom = (binding.rvChats.layoutManager as LinearLayoutManager)
-                        .findLastCompletelyVisibleItemPosition() == (firestoreUserAdapter?.itemCount?.minus(
-                        2
-                    ))
 
-// Notify the adapter about the change
-                    firestoreUserAdapter?.notifyDataSetChanged()
-
-// Scroll to the last item if it was already at the bottom, else show a new message indicator
-                    if (isScrolledToBottom) {
-                        binding.rvChats.scrollToPosition(adapter.itemCount - 1)
-                    } else {
-                        // Show a new message indicator or any visual cue
-                    }
                 }
                 .addOnFailureListener {
 
@@ -299,8 +348,6 @@ class ChatDetailActivity : BaseActivity() {
 
 
     private fun setUpRecycler(chatNode: String) {
-
-        var chatList = ArrayList<ChatModel>()
 
         val db = Firebase.firestore
         val sender_id = FirebaseAuth.getInstance().currentUser?.uid
@@ -337,14 +384,17 @@ class ChatDetailActivity : BaseActivity() {
                     val user = model
                     holder.bind(model)
                     if (model.from == sender_id) {
-
                         holder.binding.toLayout.visibility = View.VISIBLE
                         holder.binding.fromLayout.visibility = View.GONE
                         holder.binding.toMessage.text = model.text
+                        holder.binding.toMessageTime.text = toDateAndTime(model.timeStamp!!)
+                        holder.binding.toMessage.setTextIsSelectable(true)
                     } else {
                         holder.binding.fromLayout.visibility = View.VISIBLE
                         holder.binding.toLayout.visibility = View.GONE
                         holder.binding.fromMessage.text = model.text
+                        holder.binding.fromMessageTime.text = toDateAndTime(model.timeStamp!!)
+                        holder.binding.fromMessage.setTextIsSelectable(true)
                     }
                     var a = GsonBuilder().create().toJson(model)
                     Log.d("TAG", "onBindViewHolder: " + a)
@@ -357,7 +407,18 @@ class ChatDetailActivity : BaseActivity() {
 
         binding.rvChats.layoutManager = layoutManager
         binding.rvChats.adapter = firestoreUserAdapter
-        binding.rvChats.scrollToPosition(firestoreUserAdapter?.itemCount?.minus(1)!!)
+
+        val isScrolledToBottom = (binding.rvChats.layoutManager as LinearLayoutManager)
+            .findLastCompletelyVisibleItemPosition() == (firestoreUserAdapter?.itemCount?.minus(
+            2
+        ))
+
+// Scroll to the last item if it was already at the bottom, else show a new message indicator
+        if (!isScrolledToBottom) {
+            binding.rvChats.scrollToPosition(firestoreUserAdapter?.itemCount?.minus(1)!!)
+        } else {
+            // Show a new message indicator or any visual cue
+        }
         firestoreUserAdapter?.notifyDataSetChanged()
 //        val adapter = ChatMessageAdapter
     }

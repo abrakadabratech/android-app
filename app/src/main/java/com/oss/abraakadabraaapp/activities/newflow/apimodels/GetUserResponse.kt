@@ -1,5 +1,6 @@
 package com.oss.abraakadabraaapp.activities.newflow.apimodels
 
+import com.google.firebase.Timestamp
 import com.google.gson.annotations.SerializedName
 
 data class GetUserResponse(
@@ -23,8 +24,10 @@ data class UserStats (
 )
 data class UsersData (
 
+    @SerializedName("role"          ) var role         : String?    = null,
+    @SerializedName("created_at"    ) var createdAt    : Timestamp? = Timestamp.now(),
     @SerializedName("phone"            ) var phone          : String? = "",
-    @SerializedName("status"            ) var status          : String? = "active",
+    @SerializedName("status"           ) var status          : String? = "active",
     @SerializedName("social_link_type" ) var socialLinkType : String? = "",
     @SerializedName("social_link"      ) var socialLink     : String? = "",
     @SerializedName("user_avatar"      ) var userAvatar     : String? = "",
@@ -32,8 +35,15 @@ data class UsersData (
     @SerializedName("name"             ) var name           : String? = "",
     @SerializedName("user_stats"       ) var userStats      : UserStats? = UserStats(),
     @SerializedName("uid"              ) var uid            : String? = "",
-    @SerializedName("location"              ) var location            : String? = "",
+    @SerializedName("location"         ) var location            : Location? = Location(),
+    @SerializedName("updated_at"         )     val updated_at: Timestamp?,
+    @SerializedName("signin_method"         ) var signinMethod            : String? = "",
     @SerializedName("fcmToken"         ) var fcmToken            : String? = ""
-) {constructor():this("","","","",
-    "","","",null,"","","")}
+) {constructor():this("", Timestamp.now(),"","","","","",
+    "","",null,"", Location(),null,"")
+    }
+data class Timestamp(
+    val _seconds: Long,
+    val _nanoseconds: Long
+)
 

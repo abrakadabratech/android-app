@@ -40,7 +40,9 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
     var getUserSuccess = MutableLiveData<GetUserResponse>()
     var logoutNewSuccess = MutableLiveData<LogoutResponse>()
     var postUserSuccess = MutableLiveData<CreatedUserResponse>()
+    var createUserSuccess = MutableLiveData<CreatedUserResponse>()
     var updateUserSuccess = MutableLiveData<GetUserResponse>()
+    var fcmSuccess = MutableLiveData<FcmResponse>()
     var userProfilePicSuccess = MutableLiveData<UploadProfileResponse>()
     var postProductSuccess = MutableLiveData<PostProductResponse>()
 
@@ -78,8 +80,6 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
     fun getUser(
         headerMap: HashMap<String, String>) {
         viewModelScope.launch {
-
-//            isLoading.value = true
 
             suspend fun call() = repository.getUser(headerMap)
 
@@ -151,7 +151,109 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
         }
     }
 
+    fun postUserV2(
+        body: CreateUserRequest) {
+        viewModelScope.launch {
+
+            isLoading.value = true
+
+            suspend fun call() = repository.postUserV2(body)
+
+            callApi(::call, object : CallHelper<CreatedUserResponse> {
+                override fun onSuccessful(data: CreatedUserResponse) {
+                    createUserSuccess.value = data
+                    Log.d("TAG::", "onSuccess: firebase message ${data}")
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    Log.d("TAG::", "onError: firebase error ${Gson().toJson(errorResponse)}")
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+
+        }
+    }
+
     fun updateUser(
+        headerMap: HashMap<String, String>, bodyMap: DataClass
+    ) {
+        viewModelScope.launch {
+
+            isLoading.value = true
+
+            suspend fun call() = repository.updateUser(headerMap,bodyMap)
+
+            callApi(::call, object : CallHelper<GetUserResponse> {
+                override fun onSuccessful(data: GetUserResponse) {
+                    updateUserSuccess.value = data
+//                    Log.d("TAG::", "onSuccess: firebase message ${data.message}")
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    Log.d("TAG::", "onError: firebase error ${Gson().toJson(errorResponse)}")
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+
+        }
+    }
+
+    fun updateUserV2(
+        headerMap: HashMap<String, String>, bodyMap: DataClass
+    ) {
+        viewModelScope.launch {
+
+            isLoading.value = true
+
+            suspend fun call() = repository.updateUserV2(headerMap,bodyMap)
+
+            callApi(::call, object : CallHelper<GetUserResponse> {
+                override fun onSuccessful(data: GetUserResponse) {
+                    updateUserSuccess.value = data
+//                    Log.d("TAG::", "onSuccess: firebase message ${data.message}")
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    Log.d("TAG::", "onError: firebase error ${Gson().toJson(errorResponse)}")
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+
+        }
+    }
+
+    fun postFCMToken(
+        headerMap: HashMap<String, String>, bodyMap: FcmRequest) {
+        viewModelScope.launch {
+
+            isLoading.value = true
+
+            suspend fun call() = repository.postFCMToken(headerMap,bodyMap)
+
+            callApi(::call, object : CallHelper<FcmResponse> {
+                override fun onSuccessful(data: FcmResponse) {
+                    fcmSuccess.value = data
+//                    Log.d("TAG::", "onSuccess: firebase message ${data.message}")
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    Log.d("TAG::", "onError: firebase error ${Gson().toJson(errorResponse)}")
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+
+        }
+    }
+
+    fun postFCMToken(
         headerMap: HashMap<String, String>, bodyMap: DataClass
     ) {
         viewModelScope.launch {
@@ -1074,5 +1176,49 @@ fun getRequestDetails(
         }
     }
 
+    var bannerSuccess = MutableLiveData<BannerResponce>()
+    fun getBanners(map: HashMap<String, String>) {
+        viewModelScope.launch {
+
+            isLoading.value = true
+
+            suspend fun call() = repository.getBanners(map)
+
+            callApi(::call, object : CallHelper<BannerResponce> {
+                override fun onSuccessful(data: BannerResponce) {
+                    bannerSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+
+        }
+    }
+    var reportSuccess = MutableLiveData<ReportResponce>()
+    fun reportApi(map: HashMap<String, String>,body:ReportRequest) {
+        viewModelScope.launch {
+
+            isLoading.value = true
+
+            suspend fun call() = repository.reportApi(map,body)
+
+            callApi(::call, object : CallHelper<ReportResponce> {
+                override fun onSuccessful(data: ReportResponce) {
+                    reportSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+
+        }
+    }
 
 }

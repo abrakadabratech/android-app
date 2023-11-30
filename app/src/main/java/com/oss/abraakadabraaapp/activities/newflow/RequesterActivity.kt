@@ -13,6 +13,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -67,6 +68,7 @@ class RequesterActivity : BaseActivity() {
             loaddata()
         }
         if (intent.hasExtra(Constants.hasNotificationData)){
+            generateAuthToken()
             val bundle = Gson().fromJson(intent.extras?.getString(Constants.productId),
                 NotificationDataModel::class.java)
             requestor_id = bundle.requestId.toString()
@@ -321,6 +323,7 @@ class RequesterActivity : BaseActivity() {
 
     private fun setUpProductDetails(it: RequestorResponse) {
         Log.d("ok", "setUpProductDetails: ${Gson().toJson(it)}")
+        productStatus = it.data?.product?.status.toString()
         when (it.data?.request?.status) {
             "requested" -> {
                 binding.status.text = "Requested"
@@ -491,6 +494,11 @@ class RequesterActivity : BaseActivity() {
             chat_room.product = product
             chat_room.product_giver = sender_id
             chat_room.product_receiver = receiver_id
+            chat_room.requestId = requestor_id
+            chat_room.time_stamp = Timestamp.now()
+            if(productDetails?.data?.product?.images?.size!! > 0) {
+                chat_room.product_image = productDetails?.data?.product?.images!![0]
+            }
             val intent = Intent(this, ChatDetailActivity::class.java)
             intent.putExtra(Constants.CHATS_DATA, Gson().toJson(chat_room))
             intent.putExtra("data_from", "activity")

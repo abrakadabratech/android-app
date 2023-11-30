@@ -38,6 +38,8 @@ interface APIs {
 
     //API MVP2.0
     //=================================================================================//
+
+    //Deprecated
     @GET("user")
     suspend fun getUser(@HeaderMap header: Map<String, String>) : Response<GetUserResponse>
 
@@ -55,6 +57,11 @@ interface APIs {
     suspend fun updateUser(@HeaderMap header: Map<String, String>,
                          @Body map: DataClass
     ) : Response<GetUserResponse>
+    @POST("v2/update/user")
+    suspend fun updateUserV2(@HeaderMap header: Map<String, String>,
+                         @Body map: DataClass
+    ) : Response<GetUserResponse>
+
 
     //Get user social link
     @GET("user/socialprofilelink")
@@ -91,10 +98,7 @@ interface APIs {
         @Query("long") long:Double,
         @Query("category") category:String,
         @Query("pageSize") size:String,
-        @Query("sortBy") sortBy:String
-
-
-        ): Response<GetProducts>
+        @Query("sortBy") sortBy:String): Response<GetProducts>
 
     //Get product when click on card (single product)
     @GET("product/{id}")
@@ -456,5 +460,20 @@ interface APIs {
         @HeaderMap header: Map<String, String>,
         @Body map: HashMap<String, String>
     ): Response<UPIModel>
+
+    @POST("v2/create/user")
+    suspend fun postUserV2(@Body body: CreateUserRequest) : Response<CreatedUserResponse>
+
+    @POST("v2/update/fcm-token")
+    suspend fun postFCMToken(@HeaderMap header: Map<String, String>,
+                             @Body map: FcmRequest
+    ) : Response<FcmResponse>
+
+    @GET("app/banners")
+    suspend fun getBanners(@HeaderMap header: Map<String, String>) : Response<BannerResponce>
+
+    @POST("app/reports")
+    suspend fun reportApi(@HeaderMap header: Map<String, String>,@Body body:ReportRequest) : Response<ReportResponce>
+
 
 }

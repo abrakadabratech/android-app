@@ -10,14 +10,15 @@
         android:name="com.oss.abraakadabraaapp.activities.newflow.ui.home.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/new_receiver_flow" >
-       
+
     </fragment>
 
     <fragment
         android:id="@+id/navigation_community"
-        android:name="com.oss.abraakadabraaapp.activities.newflow.ui.community.CommunityFragment"
-        android:label="@string/title_community"
-        tools:layout="@layout/fragment_community" />
+        android:name="com.oss.abraakadabraaapp.activities.newflow.ui.chats.ChatsFragment"
+        android:label="@string/title_chats"
+        tools:layout="@layout/fragment_chats" >
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_account"
@@ -28,7 +29,14 @@
      <fragment
         android:id="@+id/navigation_menu"
         android:name="com.oss.abraakadabraaapp.activities.newflow.ui.menu.MenuFragment"
-        android:label="Menu" />
+        android:label="Menu"
+         tools:layout="@layout/new_menu_screen"/>
+
+   <!-- <fragment
+        android:id="@+id/navigation_chats"
+        android:name="com.oss.abraakadabraaapp.activities.newflow.ui.chats.ChatsFragment"
+        android:label="Chats"
+        tools:layout="@layout/fragment_chats"/>-->
 
     <!-- Home-->
 

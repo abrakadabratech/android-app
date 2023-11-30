@@ -27,9 +27,9 @@ data class Products (
     @SerializedName("location_name" ) var locationName : String?           = null,
     @SerializedName("brand" ) var brand : String?           = null,
     @SerializedName("energy_saving" ) var energySaving : Int?              = 0,
-    @SerializedName("isReported"    ) var isReported   : Boolean?          = null,
-    @SerializedName("isRequested"   ) var isRequested  : Boolean?          = null,
-    @SerializedName("requestAccepted"   ) var requestedStatus  : Boolean?          = null,
+    @SerializedName("isReported"    ) var isReported   : Boolean = false,
+    @SerializedName("isRequested"   ) var isRequested  : Boolean = false,
+    @SerializedName("requestAccepted"   ) var requestedStatus  : Boolean = false,
     @SerializedName("created_at"    ) var createdAt    : String?           = null
 
 )

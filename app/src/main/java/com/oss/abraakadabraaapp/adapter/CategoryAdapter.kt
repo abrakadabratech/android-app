@@ -41,8 +41,6 @@ class CategoryAdapter(
 
             tvCategoryName.text = item.title?.capitalize()?.trim()
 
-//            progressBar.visibility = View.VISIBLE
-
             if (!keyFrom.equals("search")) {
                 checkFrame.visibility = View.GONE
             } else {
@@ -54,35 +52,6 @@ class CategoryAdapter(
             if (keyFrom.equals("search")){
                 Glide.with(context).load(item.image).into(ivCategoryImage)
             }
-//            ivCategoryImage.setImageResource(item.image)
-
-            /*GlideApp.with(context)
-                .load(item.image)
-                .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-//                        progressBar.visibility = View.GONE
-                        return false
-                    }
-
-                    override fun onResourceReady(
-                        resource: Drawable?,
-                        model: Any?,
-                        target: Target<Drawable>?,
-                        dataSource: DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-//                        progressBar.visibility = View.GONE
-                        return false
-                    }
-                })
-//                .error(item.image)
-                .into(ivCategoryImage)*/
-
 
         }
 
@@ -95,19 +64,16 @@ class CategoryAdapter(
             }else{
                 //callback.onCategoryClick(item)
             }
-
         }
-
     }
 
 
-    override fun getItemCount(): Int {
-        return data.size
-    }
+    override fun getItemCount() = data.size
 
-    override fun getItemViewType(position: Int): Int {
+  /*  override fun getItemViewType(position: Int): Int {
         return 1
     }
+*/
 
     fun setData(list:ArrayList<UserCatData>) {
         data = list

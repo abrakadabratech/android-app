@@ -5,12 +5,6 @@
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_home"
         android:title="@string/title_home" />
-
- <!--   <item
-        android:id="@+id/navigation_community"
-        android:icon="@drawable/ic_community_team"
-        android:title="@string/title_community" />-->
-
     <item
         android:id="@+id/navigation_account"
         android:icon="@drawable/ic_profile"
@@ -20,5 +14,15 @@
         android:id="@+id/navigation_menu"
         android:icon="@drawable/ic_menu"
         android:title="@string/title_menu" />
+
+    <item
+        android:id="@+id/navigation_community"
+        android:icon="@drawable/ic_mychats_icon"
+        android:title="@string/title_chats" />
+
+  <!--  <item
+        android:id="@+id/navigation_chat"
+        android:icon="@drawable/ic_mychats_icon"
+        android:title="@string/title_chats" />-->
 
 </menu>

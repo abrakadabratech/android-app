@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.oss.abraakadabraaapp.R
@@ -32,9 +33,11 @@ class MyRequestedUsersAdapter(val context: MyListingDetialActivity, val data: Ar
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        Glide.with(context).load(data[position].user_avatar)
-            .placeholder(context.resources.getDrawable(R.drawable.ic_profile))
-            .into(holder.imgaeView)
+        if (data[position].user_avatar != null) {
+            Glide.with(context).load(data[position].user_avatar)
+                .placeholder(ContextCompat.getDrawable(context,R.drawable.ic_profile))
+                .into(holder.imgaeView)
+        }
         holder.userName.setText(data[position].username)
         holder.message.setText(data[position].message)
         holder.locatinName.setText(context.getAddress(data[position].coordinates?.Latitude?.toDouble()!!,

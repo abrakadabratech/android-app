@@ -3,6 +3,8 @@ package com.oss.abraakadabraaapp.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -88,6 +90,9 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
         }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        lat = ""
+        lng = ""
 
         sAnalytics = GoogleAnalytics.getInstance(this);
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
@@ -655,10 +660,10 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
                     val idToken = it.result.token
                     val auth = "Bearer $idToken"
 
-                   /* val clipboard =
+                    val clipboard =
                         getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     val clip = ClipData.newPlainText(android.R.attr.label.toString(), idToken)
-                    clipboard.setPrimaryClip(clip)*/
+//                    clipboard.setPrimaryClip(clip)
                     if(PreferencesManagement.saveAuthToken(this@BaseActivity,auth))
                     {
                         Log.d("akd_debug", "generateAuthToken: Data saved in preferences.")

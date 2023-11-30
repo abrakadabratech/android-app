@@ -10,15 +10,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.ContentManagementActivity
 import com.oss.abraakadabraaapp.activities.auth.LoginActivity
 import com.oss.abraakadabraaapp.activities.newflow.TermsAndConditionsActivity
 import com.oss.abraakadabraaapp.databinding.NewMenuScreenBinding
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.Constants.SIGN_IN_METHOD_GOOGLE
+import com.oss.abraakadabraaapp.utils.Constants.SIGN_IN_METHOD_PHONE
 import com.oss.abraakadabraaapp.utils.Constants.aboutUs
 import com.oss.abraakadabraaapp.utils.Constants.privacyPolicy
 import com.oss.abraakadabraaapp.utils.Constants.termsConditions
@@ -32,6 +38,7 @@ class MenuFragment : Fragment() {
     lateinit var application: BaseActivity
 
     private var _binding: NewMenuScreenBinding? = null
+    private lateinit var mGoogleSignInClient: GoogleSignInClient
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -52,7 +59,11 @@ class MenuFragment : Fragment() {
 
         Log.d(TAG, "MenuFragment onCreateView: called")
 
-
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.your_web_client_id))
+            .requestEmail()
+            .build()
+        mGoogleSignInClient = GoogleSignIn.getClient(requireActivity(), gso);
         mAuth = FirebaseAuth.getInstance()
         application = (activity as BaseActivity)
         application.postEvent(Constants.PAGE_MENU, null)
@@ -94,7 +105,7 @@ class MenuFragment : Fragment() {
         }
         binding.termsAndConditions.setOnClickListener {
             val intent = Intent(requireContext(), TermsAndConditionsActivity::class.java)
-            intent.putExtra("FROM_KEY",termsConditions)
+            intent.putExtra("FROM_KEY", termsConditions)
             startActivity(intent)
         }
         binding.logoutLayout.setOnClickListener {
@@ -105,41 +116,7 @@ class MenuFragment : Fragment() {
 
             alertDialog.setPositiveButton("Yes") { dialog, id ->
 
-                val mUser = FirebaseAuth.getInstance().currentUser
-                if (mUser != null){
-                    mUser.getIdToken(true)
-                        .addOnCompleteListener {
-                            if (it.isSuccessful) {
-                                val idToken = it.result.token
-                                val auth = "Bearer $idToken"
-
-                                val activity: Activity? = activity
-                                if (activity != null) {
-                                    if (PreferencesManagement.saveAuthToken(requireActivity(), auth)) {
-
-                                        val map = HashMap<String, String>()
-                                        val token =
-                                            PreferencesManagement.getAuthToken(requireContext())!!
-                                        map["Authorization"] = token
-                                        authViewModel.logoutUser(map)
-
-
-                                    } else {
-                                        application.showToast("Error generating the token!")
-                                    }
-                                }
-
-                            }
-                        }
-                }else{
-                    Firebase.auth.signOut()
-                    requireActivity().startActivity(
-                        Intent(requireActivity(), LoginActivity::class.java)
-                    )
-                    requireActivity().finish()
-                }
-
-
+                signoutFromFirebase()
 
                 dialog.dismiss()
             }
@@ -156,21 +133,71 @@ class MenuFragment : Fragment() {
         return root
     }
 
+    private fun signoutFromFirebase() {
+        val activity: Activity? = activity
+        if (activity != null) {
+            val mUser = FirebaseAuth.getInstance().currentUser
+            if (mUser != null) {
+                mUser.getIdToken(true)
+                    .addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            val idToken = it.result.token
+                            val auth = "Bearer $idToken"
+                            if (PreferencesManagement.saveAuthToken(requireActivity(), auth)) {
+
+                                val map = HashMap<String, String>()
+                                val token =
+                                    PreferencesManagement.getAuthToken(requireContext())!!
+                                map["Authorization"] = token
+                                authViewModel.logoutUser(map)
+
+
+                            } else {
+                                application.showToast("Error generating the token!")
+                            }
+
+                        }
+                    }
+            } else {
+                Firebase.auth.signOut()
+                requireActivity().startActivity(
+                    Intent(requireActivity(), LoginActivity::class.java)
+                )
+                requireActivity().finish()
+            }
+        }
+
+    }
+
     private fun setUpObserver() {
         val activity: Activity? = activity
         if (activity != null) {
             authViewModel.logoutNewSuccess.observe(requireActivity()) {
                 if (it.code == 200) {
 
-                    PreferencesManagement.saveUserProfileFlag(requireContext(),false)
-                    PreferencesManagement.saveUserFlag(requireContext(),false)
-                    PreferencesManagement.saveUserInfo(requireContext(),null)
-                    PreferencesManagement.saveUserName(requireContext(),"")
-                    PreferencesManagement.saveUserEmail(requireContext(),"")
-
+                    PreferencesManagement.saveUserProfileFlag(requireContext(), false)
+                    PreferencesManagement.saveUserFlag(requireContext(), false)
+                    PreferencesManagement.saveUserInfo(requireContext(), null)
+                    PreferencesManagement.saveUserName(requireContext(), "")
+                    PreferencesManagement.saveUserEmail(requireContext(), "")
 
                     Firebase.auth.signOut()
+
+                    if (PreferencesManagement.getSignInMethod(requireContext()) == SIGN_IN_METHOD_GOOGLE) {
+                        mGoogleSignInClient.revokeAccess()
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    // Google access revoked
+                                    signoutFromFirebase()
+                                } else {
+                                    // Handle error
+                                    application.showToast("Error! Please try again.")
+                                }
+                            }
+                    }
                     application.showToast(it.responseMessage.toString())
+                    PreferencesManagement.saveSignInMethod(requireContext(), "")
+
                     activity.startActivity(
                         Intent(requireActivity(), LoginActivity::class.java)
                     )

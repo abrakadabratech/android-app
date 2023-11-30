@@ -11,8 +11,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.denzcoskun.imageslider.constants.ScaleTypes
+import com.denzcoskun.imageslider.models.SlideModel
 import com.devs.readmoreoption.ReadMoreOption
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -30,14 +33,19 @@ import com.oss.abraakadabraaapp.activities.newflow.MyNewProfileActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewNotificationActivity
 import com.oss.abraakadabraaapp.databinding.FragmentHomeBinding
 import com.oss.abraakadabraaapp.model.UserLocation
+import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_GIVE
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_NOTIFICATION
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SHARE
+import com.oss.abraakadabraaapp.utils.JavaUtils
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
+import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.HashMap
 
 
 class HomeFragment : Fragment(), LocationListener {
@@ -47,6 +55,7 @@ class HomeFragment : Fragment(), LocationListener {
     private lateinit var firebaseAnalytics: FirebaseAnalytics
     lateinit var application: BaseActivity
     private val TAG = "HomeFragment"
+    private val mainViewModel: AuthViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,6 +67,10 @@ class HomeFragment : Fragment(), LocationListener {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
         application = (activity as BaseActivity)
+
+
+        loadBanner()
+        setUpObserver()
 
         if (PreferencesManagement.getUserLocation(requireContext()) != null) {
             val userLocation = PreferencesManagement.getUserLocation(requireContext())!!
@@ -151,6 +164,40 @@ class HomeFragment : Fragment(), LocationListener {
         getUserLocation()
 
         return root
+    }
+
+    private fun setUpObserver() {
+        mainViewModel.bannerSuccess.observe(requireActivity()){
+            application.showToast(it.toString())
+            val imageList = ArrayList<SlideModel>()
+            if(it.data.size > 0){
+                for (i in it.data) {
+                    imageList.add(SlideModel(i.imageUrl, i.title, ScaleTypes.FIT))
+                }
+                binding.imageSlider.setImageList(imageList)
+                binding.imageSliderLayout.visibility = View.VISIBLE
+                val params = binding.cardView5.layoutParams
+                if (params is ViewGroup.MarginLayoutParams) {
+                    params.topMargin = 10
+                    view?.layoutParams = binding.cardView5.layoutParams
+                }
+            }else{
+                binding.imageSliderLayout.visibility = View.GONE
+                val params = binding.cardView5.layoutParams
+                if (params is ViewGroup.MarginLayoutParams) {
+                    params.topMargin = 18
+                    view?.layoutParams = binding.cardView5.layoutParams
+                }
+            }
+        }
+    }
+
+    private fun loadBanner() {
+        application.generateAuthToken()
+        val map = HashMap<String, String>()
+        val token = PreferencesManagement.getAuthToken(requireContext())!!
+        map[RequestKeys.authorization] = token
+        mainViewModel.getBanners(map)
     }
 
     private fun locationPicker() {

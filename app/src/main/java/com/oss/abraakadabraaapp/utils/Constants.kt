@@ -59,7 +59,8 @@ object Constants {
     const val BUTTON_CONDITION_OF_PRODUCT_SELECT = "button_condition_of_product"
     const val BUTTON_USED_FOR_SELECT = "button_used_for"
     const val BUTTON_SUBMIT = "button_submit"
-    const val BUTTON_I_ACCEPT = "button_i_accept"
+    const val BUTTON_ALERT_NOT_FOR_SELL = "button_on_not_for_selling"
+    const val BUTTON_I_ACCEPT = "button_i_accept_post_product"
     const val BUTTON_OK_GOT_IT = "button_ok_got_it"
 
     //==============================================
@@ -233,5 +234,10 @@ object Constants {
     const val TWITTER_URL = "https://twitter.com/"
     const val LOCATION_CHANGED = "location_changed"
 
+    const val SUCCESS = "success"
+    const val DANGER = "danger"
+    const val WARNING = "warning"
 
+    const val SIGN_IN_METHOD_GOOGLE = "google"
+    const val SIGN_IN_METHOD_PHONE = "phone"
 }

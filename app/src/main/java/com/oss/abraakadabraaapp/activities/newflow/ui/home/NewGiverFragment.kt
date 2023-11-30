@@ -13,6 +13,8 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,10 +23,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -67,6 +69,7 @@ import com.oss.abraakadabraaapp.utils.Constants.BUTTON_FROM_GALLERY
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_GOTO_SETTINGS
 import com.oss.abraakadabraaapp.utils.Constants.fullAddress
 import com.oss.abraakadabraaapp.utils.Constants.latitude
+import com.oss.abraakadabraaapp.utils.Utility.array
 import com.oss.abraakadabraaapp.utils.customView.ImagePickerActivity
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import id.zelory.compressor.Compressor
@@ -121,6 +124,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
     lateinit var mainAdapterList:ArrayList<UserCatData>
     lateinit var userInfo : GetUserResponse
     var touchHelper: ItemTouchHelper? = null
+    var profanityWords = arrayOf("badword1", "badword2", "badword3")
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -212,8 +216,8 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
             application.postClick(Constants.BUTTON_USED_FOR_SELECT)
             showUsedForDialog()
         }
-        binding.button.setOnClickListener {
-            application.postClick(Constants.BUTTON_SUBMIT)
+        binding.submitProfile.setOnClickListener {
+            application.postClick(Constants.BUTTON_ALERT_NOT_FOR_SELL)
             val userInfo = PreferencesManagement.getUserInfo(requireContext())
             if (userInfo?.data?.status != "active"){
                 //Show a pop up that is not verified yet
@@ -233,6 +237,48 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                 }
             }
         }
+        binding.button.setOnClickListener {
+            application.postClick(Constants.BUTTON_SUBMIT)
+//            binding.giveFormCautionLayout.visibility = View.VISIBLE
+
+            showSubmitCautionDialog()
+        }
+
+        binding.giveFormCautionLayout.setOnClickListener {
+            binding.giveFormCautionLayout.visibility = View.GONE
+        }
+        binding.cautionDialog.setOnClickListener {
+            binding.giveFormCautionLayout.visibility = View.VISIBLE
+        }
+
+        /*binding.descEdt.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(
+                charSequence: CharSequence,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
+                // Not used in this example
+            }
+
+            override fun onTextChanged(
+                charSequence: CharSequence,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
+                // Check for profanity words and filter
+                val filteredText = filterProfanity(charSequence.toString())
+                if (filteredText != charSequence.toString()) {
+                    binding.descEdt.setText(filteredText)
+                    binding.descEdt.setSelection(filteredText!!.length) // Move cursor to the end
+                }
+            }
+
+            override fun afterTextChanged(editable: Editable) {
+                // Not used in this example
+            }
+        });*/
 
         binding.linearLayout1.setOnClickListener {
             locationPicker()
@@ -621,6 +667,9 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
 
     private fun postNewProduct() {
         if (isValidate()) {
+            if (filterProfanity(binding.descEdt.text.toString())){
+                showToast("Your product may not be visible to others due to having profanity words in the description")
+            }
             addImage()
             if (application.isNetworkAvailable()) {
                 application.generateAuthToken()
@@ -892,4 +941,9 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         alertDialog.dismiss()
     }
 
+    private fun filterProfanity(input: String): Boolean {
+        val regexPattern = array.joinToString(separator = "|") { "\\b$it\\b" }.toRegex(RegexOption.IGNORE_CASE)
+
+        return regexPattern.containsMatchIn(input)
+    }
 }

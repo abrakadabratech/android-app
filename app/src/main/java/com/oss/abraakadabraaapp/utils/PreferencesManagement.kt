@@ -325,4 +325,20 @@ object PreferencesManagement {
         return prefsEditor.commit()
     }
 
+    fun saveSignInMethod(context: Context, signinMethod: String):Boolean {
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        val prefsEditor = pref.edit()
+
+        prefsEditor.putString("SIGN_IN_METHOD",signinMethod)
+
+        return prefsEditor.commit()
+    }
+    fun getSignInMethod(context: Context): String {
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        val json = pref.getString("SIGN_IN_METHOD", "phone").toString()
+
+        return json
+    }
 }

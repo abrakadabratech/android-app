@@ -11,6 +11,7 @@
         android:gravity="center"
         android:orientation="vertical"
         android:layout_margin="5dp"
+        android:background="@drawable/sender_chat_bg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,15 +22,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/sender_chat_bg"
             android:gravity="center"
-            android:inputType="textMultiLine|textNoSuggestions"
             android:paddingStart="20dp"
             android:paddingTop="20dp"
             android:paddingEnd="20dp"
-            android:paddingBottom="20dp"
+            android:paddingBottom="10dp"
+            android:textIsSelectable="true"
+            android:textSize="12sp"
+            android:fontFamily="@font/montserrat_semi_bold"
             android:text="Hi this is test"
             android:textColor="#267F7B" />
+
+        <TextView
+            android:id="@+id/to_message_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="8sp"
+            android:gravity="right"
+            android:paddingBottom="5dp"
+            android:paddingRight="5dp"
+            android:fontFamily="@font/montserrat_regular"
+            android:text="Nov 29 04:00 PM" />
     </LinearLayout>
 
     <LinearLayout
@@ -40,6 +53,7 @@
         android:gravity="center"
         android:visibility="gone"
         android:orientation="vertical"
+        android:background="@drawable/receiver_chat_bg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -50,14 +64,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/receiver_chat_bg"
             android:gravity="center"
-            android:inputType="textMultiLine"
             android:paddingStart="20dp"
+            android:textIsSelectable="true"
             android:paddingTop="20dp"
             android:paddingEnd="20dp"
-            android:paddingBottom="20dp"
+            android:paddingBottom="10dp"
             android:text="Hi this is test"
             android:textColor="#267F7B" />
+        <TextView
+            android:id="@+id/from_message_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="8sp"
+            android:gravity="left"
+            android:paddingBottom="5dp"
+            android:paddingLeft="5dp"
+            android:fontFamily="@font/montserrat_regular"
+            android:text="Nov 29 04:00 PM" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -85,10 +85,12 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
         }
         binding.button5.setOnClickListener {
             postClick(BUTTON_200)
+            changeButtonSelection(binding.button5)
             takeToPayment("200")
         }
         binding.button6.setOnClickListener {
             postClick(BUTTON_500)
+            changeButtonSelection(binding.button6)
             takeToPayment("500")
         }
         binding.button7.setOnClickListener {
@@ -105,24 +107,24 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
             binding.button3 -> {
                 binding.button3.setTextColor(ContextCompat.getColor(this, R.color.white))
                 binding.button5.setTextColor(ContextCompat.getColor(this, R.color.title_color))
-                binding.button7.setTextColor(ContextCompat.getColor(this, R.color.title_color))
-                binding.button3.background = (ContextCompat.getDrawable(this, R.drawable.btn_bg_rounded_rect))
+                binding.button6.setTextColor(ContextCompat.getColor(this, R.color.title_color))
+                binding.button3.background = (ContextCompat.getDrawable(this, R.drawable.amount_select_bg))
                 binding.button5.background = (ContextCompat.getDrawable(this, R.drawable.rounded_rect_border))
-                binding.button7.background = (ContextCompat.getDrawable(this, R.drawable.rounded_rect_border))
+                binding.button6.background = (ContextCompat.getDrawable(this, R.drawable.rounded_rect_border))
             }
             binding.button5 -> {
                 binding.button5.setTextColor(ContextCompat.getColor(this, R.color.white))
                 binding.button3.setTextColor(ContextCompat.getColor(this, R.color.title_color))
-                binding.button7.setTextColor(ContextCompat.getColor(this, R.color.title_color))
-                binding.button5.background = (ContextCompat.getDrawable(this, R.drawable.btn_bg_rounded_rect))
+                binding.button6.setTextColor(ContextCompat.getColor(this, R.color.title_color))
+                binding.button5.background = (ContextCompat.getDrawable(this, R.drawable.amount_select_bg))
                 binding.button3.background = (ContextCompat.getDrawable(this, R.drawable.rounded_rect_border))
-                binding.button7.background = (ContextCompat.getDrawable(this, R.drawable.rounded_rect_border))
+                binding.button6.background = (ContextCompat.getDrawable(this, R.drawable.rounded_rect_border))
             }
-            binding.button7 -> {
-                binding.button7.setTextColor(ContextCompat.getColor(this, R.color.white))
+            binding.button6 -> {
+                binding.button6.setTextColor(ContextCompat.getColor(this, R.color.white))
                 binding.button3.setTextColor(ContextCompat.getColor(this, R.color.title_color))
                 binding.button5.setTextColor(ContextCompat.getColor(this, R.color.title_color))
-                binding.button7.background = (ContextCompat.getDrawable(this, R.drawable.btn_bg_rounded_rect))
+                binding.button6.background = (ContextCompat.getDrawable(this, R.drawable.amount_select_bg))
                 binding.button3.background = (ContextCompat.getDrawable(this, R.drawable.rounded_rect_border))
                 binding.button5.background = (ContextCompat.getDrawable(this, R.drawable.rounded_rect_border))
             }

@@ -1,6 +1,5 @@
 package com.oss.abraakadabraaapp.activities.newflow
 
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
@@ -8,12 +7,12 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.denzcoskun.imageslider.constants.ScaleTypes
@@ -36,7 +35,6 @@ import com.oss.abraakadabraaapp.activities.newflow.model.CatData
 import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.databinding.ActivityMyListingDetailsBinding
 import com.oss.abraakadabraaapp.response.productRequestResponse.ListingResponse
-import com.oss.abraakadabraaapp.response.productRequestResponse.RequestData
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_MYLISTING_DETAILS
@@ -317,7 +315,8 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
                 Log.d("TAG -", "setUpObserver: fail")
             }
         }
-        mainViewModel.reportProductSuccess.observe(this){
+        mainViewModel.
+        reportProductSuccess.observe(this){
             if (it.code == 201){
                 showToast("Product reported")
             }else{
@@ -331,6 +330,7 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
 
     private fun setUpProductDetails(it: ListingResponse) {
 //        PROD_CATEGORY = it.product!!.category.toString()
+
         selectedProdCategory = it.product!!.category.toString()
         PROD_CONDITION = it.product!!.condition.toString()
         PROD_USED_FOR = it.product!!.usedFor.toString()
@@ -365,6 +365,33 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         val adapter = MyRequestedUsersAdapter(this,it.requests,this)
         binding.rvRequestedUsers.layoutManager = LinearLayoutManager(this)
         binding.rvRequestedUsers.adapter = adapter
+
+        //Alert messages
+        when(it.alertMessage.type){
+            Constants.WARNING -> {
+                binding.statusLayout.visibility = View.VISIBLE
+                binding.statusLayout.setCardBackgroundColor(ContextCompat.getColor(this, R.color.product_alert_warning))
+                binding.statusIcon.background = ContextCompat.getDrawable(this, R.drawable.status_pending_icon)
+                binding.statusText.text = it.alertMessage.message.toString()
+                binding.statusText.setTextColor(ContextCompat.getColor(this,R.color.status_pending))
+            }
+            Constants.SUCCESS -> {
+                binding.statusLayout.visibility = View.VISIBLE
+                binding.statusLayout.setCardBackgroundColor(ContextCompat.getColor(this, R.color.product_status_success_color))
+                binding.statusIcon.background = ContextCompat.getDrawable(this, R.drawable.status_accepted)
+                binding.statusText.text = it.alertMessage.message.toString()
+                binding.statusText.setTextColor(ContextCompat.getColor(this,R.color.status_accepted))
+            }
+            Constants.DANGER -> {
+                binding.statusLayout.visibility = View.VISIBLE
+                binding.statusLayout.setCardBackgroundColor(ContextCompat.getColor(this, R.color.product_status_danger_color))
+                binding.statusIcon.background = ContextCompat.getDrawable(this, R.drawable.status_declined_icon)
+                binding.statusText.text = it.alertMessage.message.toString()
+                binding.statusText.setTextColor(ContextCompat.getColor(this,R.color.status_declined))
+            }
+            else -> binding.statusLayout.visibility = View.GONE
+
+        }
 
     }
     private fun loadShareData() {

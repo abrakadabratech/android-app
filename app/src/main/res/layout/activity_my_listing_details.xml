@@ -204,16 +204,16 @@
                 android:id="@+id/status_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
-                android:layout_marginBottom="4dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:visibility="gone"
                 app:cardBackgroundColor="@color/product_alert_warning"
                 app:cardCornerRadius="8dp"
-                android:visibility="gone"
-                app:cardElevation="8dp"
-                app:layout_constraintBottom_toTopOf="@+id/categoryTxt"
+
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/app_bar">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -223,25 +223,27 @@
                         android:id="@+id/status_icon"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
+                        android:layout_marginStart="16dp"
                         android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
                         android:layout_marginBottom="8dp"
+                        android:background="@drawable/status_pending_icon"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/status_text"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:background="@drawable/status_pending_icon" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/status_text"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="4dp"
                         android:fontFamily="@font/montserrat_medium"
+
                         android:text="This is an error alert - Check it out!"
                         android:textColor="@color/status_pending"
                         app:layout_constraintBottom_toBottomOf="@+id/status_icon"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.61"
-                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/status_icon"
                         app:layout_constraintTop_toTopOf="@+id/status_icon" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -252,13 +254,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="8dp"
                 android:fontFamily="@font/montserrat_medium"
                 android:text=""
                 android:textColor="@color/new_text_color"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/app_bar" />
+                app:layout_constraintTop_toBottomOf="@+id/status_layout" />
             <!--<EditText
                 android:id="@+id/productNameEdt"
                 android:layout_width="wrap_content"

@@ -22,22 +22,21 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.ReportRequest
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatListModel
 import com.oss.abraakadabraaapp.activities.newflow.model.NotificationDataModel
-import com.oss.abraakadabraaapp.activities.newflow.ui.home.NewGiverFragment
 import com.oss.abraakadabraaapp.databinding.ActivityNewProductDetailBinding
-import com.oss.abraakadabraaapp.datasource.products.Product
 import com.oss.abraakadabraaapp.response.productdetails.ProductDetailsData
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
@@ -48,7 +47,6 @@ import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SHARE_PRODUCT
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
-import okhttp3.internal.notify
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -77,6 +75,7 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
         }
 
         if (intent.hasExtra(Constants.hasNotificationData)){
+            generateAuthToken()
             val bundle = Gson().fromJson(intent.extras?.getString(Constants.productId),NotificationDataModel::class.java)
             productId = bundle.product_id.toString()
             val db = Firebase.firestore
@@ -145,8 +144,8 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
             }
         }
         binding.chatBtn.setOnClickListener {
-            if (productDetails?.data?.isRequested!!){
-                if (productDetails?.data?.requestedStatus!!){
+            if (productDetails?.data!!.isRequested){
+                if (productDetails?.data!!.requestedStatus){
                     sendToChat()
                 }else{
                     showToast("Chat request will be enable after\nyour request is accepted")
@@ -238,6 +237,11 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
             chat_room.receiver_avatar = sender_avatar.toString()
             chat_room.product_id = product_id
             chat_room.product = product
+            chat_room.product_id = productDetails?.data?.id
+            chat_room.time_stamp = Timestamp.now()
+            if(productDetails?.data?.images?.size!! > 0) {
+                chat_room.product_image = productDetails?.data?.images!![0]
+            }
 
             /*val chat_room = hashMapOf(
                 "from" to sender_id,
@@ -285,7 +289,7 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
                 Log.d("TAG -", "setUpObserver: fail")
             }
         }
-        mainViewModel.reportProductSuccess.observe(this){
+        mainViewModel.reportSuccess.observe(this){
             if (it.code == 201){
                 showToast("Product reported")
                 productDetails?.data?.isReported = true
@@ -479,13 +483,23 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
                     if (isNetworkAvailable()){
 //                    val request = ReportProductRequest(productDetails!!.data.id,reportType,reportEdt.text.toString())
 
+                        /*
+                        Deprecated api
                         val requestMap = HashMap<String,String>()
                         requestMap["productId"] = productDetails!!.data.id.toString()
+                        requestMap["product_id"] = productDetails!!.data.id.toString()
+                        requestMap["source"] = "product"
                         requestMap["type"] = reportType
-                        requestMap["message"] = reportEdt.text.toString()
+                        requestMap["message"] = reportEdt.text.toString()*/
 
+                        val body = ReportRequest(
+                            source = "product",
+                            productId = productDetails!!.data.id.toString(),
+                            type = reportType,
+                            message = reportEdt.text.toString()
+                        )
 
-                        mainViewModel.reportProduct(map, requestMap)
+                        mainViewModel.reportApi(map, body)
                     }
                 }
                 alertDialog.dismiss()

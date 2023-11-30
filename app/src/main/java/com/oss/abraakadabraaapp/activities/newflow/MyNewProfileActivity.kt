@@ -30,6 +30,7 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.SocialShareAdapter
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.Timestamp
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.User_Stats
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.activities.newflow.model.SocialData
@@ -41,6 +42,8 @@ import com.oss.abraakadabraaapp.utils.Constants.API_TAG
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_PROFILE
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SOCIAL_PROFILE_CHANGE
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_UPLOAD_PROFILE_PIC
+import com.oss.abraakadabraaapp.utils.Constants.SIGN_IN_METHOD_GOOGLE
+import com.oss.abraakadabraaapp.utils.Constants.SIGN_IN_METHOD_PHONE
 import com.oss.abraakadabraaapp.utils.Constants.facebook
 import com.oss.abraakadabraaapp.utils.Constants.instagram
 import com.oss.abraakadabraaapp.utils.Constants.linkedin
@@ -223,9 +226,9 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                     userAvatar = it.data,
                     email = userInfo.data?.email,
                     uid = userInfo.data?.uid,
-                    location = userInfo.data?.location,
                     fcmToken = userInfo.data?.fcmToken,
-
+                    location = userInfo.data?.location,
+                    updated_at = userInfo.data?.updated_at,
                 )
                 val newUserInfo = GetUserResponse(
                     code = userInfo.code,
@@ -245,17 +248,21 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
 
             binding.instaEdit.setText(profileLink)
 
-            val userInfo = PreferencesManagement.getUserInfo(this)!!
+            /*val userInfo = PreferencesManagement.getUserInfo(this)!!
             val userData = UsersData(phone = userInfo.data?.phone,
+                status = userInfo.data?.status,
                 socialLinkType = it.data?.socialLinkType,
                 socialLink = it.data?.socialLink,
-                name = userInfo.data?.name,
-                userAvatar = userInfo.data?.userAvatar,
-                email = userInfo.data?.email,
-                uid = userInfo.data?.uid,
+                userAvatar = it.data?.userAvatar,
+                email = it.data?.email,
+                name = it.data?.name,
+                userStats = it.data?.userStats,
+                uid = it.data?.uid,
+                location = it.data?.location,
                 location = userInfo.data?.location,
-                fcmToken = userInfo.data?.fcmToken,
-                status = userInfo.data?.status
+                updated_at = userInfo.data?.updated_at,
+                signinMethod = userInfo.data?.signinMethod,
+                fcmToken = userInfo.data?.fcmToken
             )
             val newUserInfo = GetUserResponse(
                 code = userInfo.code,
@@ -270,7 +277,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             binding.successLayout.visibility = View.VISIBLE
             binding.socialProfilePopUPLayout.visibility = View.GONE
             editMode(false)
-            setProfileStatus(userInfo.data?.status.toString())
+            setProfileStatus(userInfo.data?.status.toString())*/
         }
     }
 
@@ -354,7 +361,11 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
 
         binding.nameEdit.isEnabled = isEditMode
         binding.uploadImage.isEnabled = isEditMode
-        binding.emailEdit.isEnabled = isEditMode
+        if(PreferencesManagement.getSignInMethod(this) == SIGN_IN_METHOD_PHONE){
+            binding.emailEdit.isEnabled = isEditMode
+        }else{
+            binding.phoneEdit.isEnabled = isEditMode
+        }
 //        binding.phoneEdit.isEnabled = isEditMode
 //        binding.locationEdit.isEnabled = isEditMode
         binding.instaEdit.isEnabled = isEditMode
@@ -422,22 +433,40 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
     private fun postUserData() {
         if (isValidate()) {
             generateAuthToken()
-            //getFCMToken()
-            val data = UsersUpdateData(
-                name = binding.nameEdit.text.toString(),
-                email = binding.emailEdit.text.toString(),
-                fcmToken = PreferencesManagement.getFCMToken(this)!!
-            )
-            val dataClass = DataClass(data)
+            //getFCMToken
+            if (PreferencesManagement.getSignInMethod(this) == SIGN_IN_METHOD_GOOGLE){
+                val data = UsersUpdateData(
+                    name = binding.nameEdit.text.toString(),
+                    phone = binding.phoneEdit.text.toString(),
+//                fcmToken = PreferencesManagement.getFCMToken(this)!!
+                )
+                val dataClass = DataClass(data)
 
-            val map = HashMap<String, String>()
-            val token = PreferencesManagement.getAuthToken(this)!!
-            map[RequestKeys.authorization] = token
-            Log.d(
-                "TAG",
-                "Token in Accounts fragment: ${JSONObject(Gson().toJson(dataClass))}"
-            )
-            authViewModel.updateUser(map, dataClass)
+                val map = HashMap<String, String>()
+                val token = PreferencesManagement.getAuthToken(this)!!
+                map[RequestKeys.authorization] = token
+                Log.d(
+                    "TAG",
+                    "Token in Accounts fragment: ${JSONObject(Gson().toJson(dataClass))}"
+                )
+                authViewModel.updateUserV2(map, dataClass)
+            }else{
+                val data = UsersUpdateData(
+                    name = binding.nameEdit.text.toString(),
+                    email = binding.emailEdit.text.toString(),
+//                fcmToken = PreferencesManagement.getFCMToken(this)!!
+                )
+                val dataClass = DataClass(data)
+
+                val map = HashMap<String, String>()
+                val token = PreferencesManagement.getAuthToken(this)!!
+                map[RequestKeys.authorization] = token
+                Log.d(
+                    "TAG",
+                    "Token in Accounts fragment: ${JSONObject(Gson().toJson(dataClass))}"
+                )
+                authViewModel.updateUserV2(map, dataClass)
+            }
         }
     }
 

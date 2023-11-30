@@ -34,6 +34,7 @@ data class Product1 (
     @SerializedName("condition"     ) var condition    : String?           = null,
     @SerializedName("cost_saving"   ) var costSaving   : Int?              = null,
     @SerializedName("used_for"      ) var usedFor      : String?           = null,
+    @SerializedName("status"        ) var status       : String?           = "",
     @SerializedName("images"        ) var images       : ArrayList<String> = arrayListOf(),
     @SerializedName("energy_saving" ) var energySaving : Int?              = null
 

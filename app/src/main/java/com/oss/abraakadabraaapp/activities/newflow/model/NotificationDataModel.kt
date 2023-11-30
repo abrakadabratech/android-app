@@ -7,7 +7,8 @@ data class NotificationDataModel(
     @SerializedName("user_id"        ) var user_id        : String? = "",
     @SerializedName("requestId"        ) var requestId        : String? = "",
     @SerializedName("product_id"        ) var product_id        : String? = "",
-    @SerializedName("notificationDoc" ) var notificationDoc : String? = ""
+    @SerializedName("notificationDoc" ) var notificationDoc : String? = "",
+    @SerializedName("request_status" ) var requestStatus : String? = ""
 )
 
 data class BroadCastNotificationModel(

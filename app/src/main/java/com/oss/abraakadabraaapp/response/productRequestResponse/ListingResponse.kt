@@ -6,6 +6,7 @@ data class ListingResponse (
 
     @SerializedName("code"     ) var code     : Int?              = null,
     @SerializedName("status"   ) var status   : Int?              = null,
+    @SerializedName("alert_message"  ) var alertMessage  : AlertMessage          = AlertMessage(),
     @SerializedName("product"  ) var product  : ListingProduct?          = ListingProduct(),
     @SerializedName("requests" ) var requests : ArrayList<Requests> = arrayListOf()
 
@@ -69,5 +70,10 @@ data class Category (
 
     @SerializedName("id"   ) var id   : String? = null,
     @SerializedName("name" ) var name : String? = null
+
+)
+data class AlertMessage(
+    @SerializedName("type"   ) var type   : String = "",
+    @SerializedName("message" ) var message : String = "Data message to be displayed"
 
 )

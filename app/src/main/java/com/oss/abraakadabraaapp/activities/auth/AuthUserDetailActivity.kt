@@ -1,6 +1,7 @@
 package com.oss.abraakadabraaapp.activities.auth
 
 import DataClass
+import Location
 import UsersUpdateData
 import android.content.Intent
 import android.os.Bundle
@@ -18,6 +19,8 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.SocialShareAdapter
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.FCMData
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.FcmRequest
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.UserStats
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
@@ -168,7 +171,7 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
                 val mapAuth = HashMap<String, String>()
                 mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
 
-                val map = HashMap<String, String>()
+               /* val map = HashMap<String, String>()
                 name = binding.etName.text.toString().trim()
                 email = binding.etEmail.text.toString().trim()
                 phone = phoneNumber.trim()
@@ -177,7 +180,20 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
                 map[RequestKeys.phoneNumber] = phone
 
                 Log.d(API_TAG, "registerUser: ${Gson().toJson(mapAuth)}")
-                authViewModel.postUser(mapAuth, map)
+                authViewModel.postUser(mapAuth, map)*/
+                getLastLocation()
+                val data = UsersUpdateData(
+                    name = binding.etName.text.toString().trim(),
+                    email = binding.etEmail.text.toString().trim()
+                )
+                val dataClass = DataClass(data)
+
+                generateAuthToken()
+                val map = java.util.HashMap<String, String>()
+                val token = PreferencesManagement.getAuthToken(this)!!
+                map[RequestKeys.authorization] = token
+
+                authViewModel.updateUserV2(map, dataClass)
 
             } else {
                 showSnackBar(
@@ -212,19 +228,21 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
                 finish()
             }
             if (mAuth.currentUser != null) {
+
                 generateAuthToken()
                 FirebaseMessaging.getInstance().token.addOnSuccessListener {
                     PreferencesManagement.saveFCMToken(this, it)
-                    val data = UsersUpdateData(
-                        fcmToken = PreferencesManagement.getFCMToken(this)!!
+                    val data = FcmRequest(
+                        data = FCMData(
+                            fcmToken = PreferencesManagement.getFCMToken(this)!!
+                        )
                     )
-                    val dataClass = DataClass(data)
 
                     val map = java.util.HashMap<String, String>()
                     val token = PreferencesManagement.getAuthToken(this)!!
                     map[RequestKeys.authorization] = token
 
-                    authViewModel.updateUser(map, dataClass)
+                    authViewModel.postFCMToken(map, data)
 
                 }.addOnFailureListener {
                     loader(false)
@@ -235,7 +253,7 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
             }
         }
 
-        authViewModel.postUserSuccess.observe(this) {
+        authViewModel.updateUserSuccess.observe(this) {
             Log.d(API_TAG, "postUserSuccess: ${Gson().toJson(it)}")
 
             if (it.code == 200 || it.code == 201) {
@@ -249,16 +267,17 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
                     generateAuthToken()
                     FirebaseMessaging.getInstance().token.addOnSuccessListener {
                         PreferencesManagement.saveFCMToken(this, it)
-                        val data = UsersUpdateData(
-                            fcmToken = PreferencesManagement.getFCMToken(this)!!
+                        val data = FcmRequest(
+                            data = FCMData(
+                                fcmToken = PreferencesManagement.getFCMToken(this)!!
+                            )
                         )
-                        val dataClass = DataClass(data)
 
                         val map = java.util.HashMap<String, String>()
                         val token = PreferencesManagement.getAuthToken(this)!!
                         map[RequestKeys.authorization] = token
 
-                        authViewModel.updateUser(map, dataClass)
+                        authViewModel.postFCMToken(map, data)
 
                     }.addOnFailureListener {
                         loader(false)

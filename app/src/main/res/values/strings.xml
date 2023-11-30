@@ -168,7 +168,7 @@
     <string name="hyphen_str">-</string>
     <string name="enter_phone_number">Enter Phone Number</string>
     <string name="generate_otp">Generate OTP</string>
-    <string name="login_terms_conditions"><![CDATA[By providing your mobile number, you agree to our Privacy Policy.]]></string>
+    <string name="login_terms_conditions"><![CDATA[By providing your email address or mobile number, you agree to our Privacy Policy.]]></string>
     <string name="otp_verification">OTP Verification</string>
     <string name="did_receive_otp">Didn\'t receive OTP ?</string>
     <string name="re_send_otp">Re send Otp</string>
@@ -192,6 +192,7 @@
     <string name="title_community">Community</string>
     <string name="title_account">Account</string>
     <string name="title_menu">Menu</string>
+    <string name="title_chats">Chats</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="new_product_name">For example  - Toys, Shoe , Book</string>
@@ -209,5 +210,6 @@
     <string name="social_link_alert">Your profile is successfully submitted for verification. We will take 2 business days to verify till when you will have read-only access. You will receive a notification.</string>
     <string name="done">Done</string>
     <string name="on_hold_product_message">Only one request can be accepted at a time.\n Please cancel the previous request to accept this.</string>
+    <string name="your_web_client_id">323424345844-ja1qdgtpmfbssfik9qhaduh3nevggmst.apps.googleusercontent.com</string>
 
 </resources>

@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/success_alert_dialog"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintHorizontal_bias="1.0"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintVertical_bias="1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <!--
@@ -18,11 +15,13 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cautionDialog"
-        android:layout_height="375dp"
-        android:layout_width="312dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         app:cardBackgroundColor="@color/new_bg_color"
         app:cardCornerRadius="8dp"
         android:visibility="visible"
+        app:layout_constraintHeight_percent="0.7"
+        app:layout_constraintWidth_percent="0.9"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -59,11 +58,27 @@
                     app:lottie_rawRes="@raw/warning" />
 
                 <TextView
+                    android:id="@+id/textView812"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:gravity="center"
+                    android:text="This product is not being sold."
+                    android:textColor="@color/message_color"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/success_anim" />
+
+                <TextView
                     android:id="@+id/textView81"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="11dp"
+                    android:layout_marginTop="8dp"
                     android:layout_marginEnd="16dp"
                     android:fontFamily="@font/montserrat_medium"
                     android:gravity="center"
@@ -72,14 +87,14 @@
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/success_anim" />
+                    app:layout_constraintTop_toBottomOf="@+id/textView812" />
 
                 <TextView
                     android:id="@+id/success_ok_btn"
                     android:layout_width="98dp"
                     android:layout_height="36dp"
                     android:layout_marginStart="32dp"
-                    android:layout_marginTop="3dp"
+                    android:layout_marginTop="8dp"
                     android:layout_marginEnd="32dp"
                     android:layout_marginBottom="16dp"
                     android:background="@drawable/btn_bg_rounded_rect"

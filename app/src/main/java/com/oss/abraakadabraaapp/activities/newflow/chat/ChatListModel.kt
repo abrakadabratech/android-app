@@ -1,5 +1,6 @@
 package com.oss.abraakadabraaapp.activities.newflow.chat
 
+import com.google.firebase.Timestamp
 import com.google.gson.annotations.SerializedName
 
 data class ChatListModel(
@@ -15,9 +16,21 @@ data class ChatListModel(
     @SerializedName("sender_id"  ) var sender_id  : String? = "",
     @SerializedName("sender_name"  ) var sender_name  : String? = "",
     @SerializedName("last_message"  ) var last_message  : String? = "",
-    @SerializedName("time_stamp"  ) var time_stamp  : String? = "",
+    @SerializedName("time_stamp"  ) var time_stamp  : Timestamp? = Timestamp.now(),
     @SerializedName("date"  ) var date  : String? = "",
-    @SerializedName("status"  ) var status  : String? = "",
-    @SerializedName("Messages") var messages:List<ChatModel>? = null
+    @SerializedName("status"  ) var status  : String? = "accepted",
+    @SerializedName("Messages") var messages:List<ChatModel>? = null,
+    @SerializedName("request_id") var requestId:String = "",
+    @SerializedName("product_image") var product_image:String = ""
 ){ constructor():this("","","","",
     "","","","","","",null)}
+
+data class GroupedChatListModel(
+    @Transient
+    var isListShown:Boolean = false,
+    var product_id:String,
+    var product_name:String,
+    var posted_by:String,
+    var product_url:String,
+    var chats:List<ChatListModel>
+)

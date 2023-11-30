@@ -132,6 +132,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             startActivity(Intent(requireContext(), NewSearchActivity::class.java))
         }
         setupList()
+        setUpCategories()
 
         setUpObserver()
 
@@ -237,7 +238,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     private fun setUpObserver() {
         authViewModel.getAllcategoriesSuccess.observe(requireActivity()) {
             if (it.code == 200) {
-                setUpCategories()
+
 
                 PreferencesManagement.saveCategories(requireActivity(), it)
                 categoryList = it.data
@@ -316,9 +317,22 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         if (application.isNetworkAvailable()) {
             application.generateAuthToken()
 
+            val map = HashMap<String, String>()
+            val token = PreferencesManagement.getAuthToken(requireContext())!!
+            map["Authorization"] = token
+            if (application.isNetworkAvailable()){
+                authViewModel.getAllCategoriesData(map)
+            }else{
+                application.showToast(getString(R.string.no_internet_connection_found))
+            }
+            if (PreferencesManagement.getFilters(requireContext())!!.nearest)
+                getProductFromServer("nearest")
+            else
+                getProductFromServer("latest")
+
 //            lateinit var viewModel: MainViewModel
 
-            val mUser = FirebaseAuth.getInstance().currentUser
+            /*val mUser = FirebaseAuth.getInstance().currentUser
 
             mUser!!.getIdToken(true)
                 .addOnCompleteListener {
@@ -332,18 +346,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                                 val userLocation =
                                     PreferencesManagement.getUserLocation(requireContext())
 
-                                val map = HashMap<String, String>()
-                                val token = PreferencesManagement.getAuthToken(requireContext())!!
-                                map["Authorization"] = token
-                                if (application.isNetworkAvailable()){
-                                    authViewModel.getAllCategoriesData(map)
-                                }else{
-                                    application.showToast(getString(R.string.no_internet_connection_found))
-                                }
-                                if (PreferencesManagement.getFilters(requireContext())!!.nearest)
-                                    getProductFromServer("nearest")
-                                else
-                                    getProductFromServer("latest")
+
 
                             } else {
                                 application.showToast("Error generating the token!")
@@ -351,7 +354,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                         }
 
                     }
-                }
+                }*/
         }else{
             application.showToast(getString(R.string.no_internet_connection_found))
             binding.sRLHome.isRefreshing = false

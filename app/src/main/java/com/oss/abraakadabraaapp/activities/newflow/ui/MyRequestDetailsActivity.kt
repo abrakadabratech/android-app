@@ -11,6 +11,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -53,6 +54,7 @@ class MyRequestDetailsActivity : BaseActivity() {
             productId = intent.getStringExtra(Constants.productId)!!
         }
         if (intent.hasExtra(Constants.hasNotificationData)) {
+            generateAuthToken()
             var bundle  = Gson().fromJson(intent.getStringExtra(Constants.productId).toString(),
                 NotificationDataModel::class.java)
             productId = bundle.requestId.toString()
@@ -92,20 +94,24 @@ class MyRequestDetailsActivity : BaseActivity() {
                 senderInfo.get().addOnSuccessListener { doc->
                     Log.d("TAG - ", "sendToChat: ${doc.data}")
                     Log.d("TAG - ", "sendToChat: ${doc.data?.get("user_avatar")}")
-                    val userInfo = doc.toObject(UsersData::class.java)!!
-
                     val chat_room = ChatListModel()
                     chat_room.from = sender_id
-                    chat_room.sender_avatar = productDetial?.data!!.postedBy?.userAvatar
-                    chat_room.sender_id = productDetial?.data?.postedBy?.id
-                    chat_room.sender_name = productDetial?.data?.postedBy?.name
-                    chat_room.receiver_id = sender_id
-                    chat_room.receiver_name = doc.data?.get("name").toString()
-                    chat_room.receiver_avatar = doc.data?.get("user_avatar").toString()
                     chat_room.product_id = productDetial?.data!!.productId
                     chat_room.product = productDetial?.data?.name?.capitalize()
                     chat_room.product_giver = productDetial?.data?.postedBy?.id
                     chat_room.product_receiver = sender_id
+                    chat_room.receiver_id = sender_id
+                    chat_room.receiver_avatar = doc.data?.get("user_avatar").toString()
+                    chat_room.receiver_name = doc.data?.get("name").toString()
+                    chat_room.sender_avatar = productDetial?.data!!.postedBy?.userAvatar
+                    chat_room.sender_id = productDetial?.data?.postedBy?.id
+                    chat_room.sender_name = productDetial?.data?.postedBy?.name
+                    chat_room.requestId = productDetial?.data?.request_id.toString()
+                    chat_room.time_stamp = Timestamp.now()
+                    chat_room.status = productDetial?.data?.status
+                    if(productDetial?.data?.images?.size!! > 0) {
+                        chat_room.product_image = productDetial?.data?.images!![0]
+                    }
 
                     val intent = Intent(this, ChatDetailActivity::class.java)
                     intent.putExtra(Constants.CHATS_DATA,Gson().toJson(chat_room))
