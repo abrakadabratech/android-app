@@ -22,6 +22,7 @@ import com.oss.abraakadabraaapp.utils.Utility.getAuthentication
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.greenrobot.eventbus.EventBus
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.Locale
 
 class PostedUserActivity : BaseActivity() {
 
@@ -140,11 +141,19 @@ class PostedUserActivity : BaseActivity() {
 
     private fun setData(productDetails: ProductDetailsData) {
         with(binding){
-            productName.setText(productDetails?.data?.name?.capitalize())
+            productName.setText(productDetails?.data?.name?.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(
+                    Locale.getDefault()
+                ) else it.toString()
+            })
             locationTxt.setText(productDetails?.data?.locationName)
             memberSince.setText(productDetails?.data?.postedBy?.memberSince)
             givenItems.setText("Given ${productDetails?.data?.postedBy?.userStats?.given} Items")
-            postedBy.setText("Posted By " + productDetails?.data?.postedBy?.name?.capitalize())
+            postedBy.setText("Posted By " + productDetails?.data?.postedBy?.name?.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(
+                    Locale.getDefault()
+                ) else it.toString()
+            })
             Glide.with(this@PostedUserActivity).load(productDetails.data.images[0])
                 .placeholder(resources.getDrawable(R.drawable.user))
                 .into(imageView20)

@@ -61,6 +61,7 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
 import java.util.ArrayList
+import java.util.Locale
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -118,21 +119,37 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
         PreferencesManagement.saveUserInfo(this,userInfo)
         with(binding){
             if (status == "pending" || status == "not verified"){
-                profileStatus.setText(status!!.capitalize())
+                profileStatus.setText(status!!.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.getDefault()
+                    ) else it.toString()
+                })
                 profileStatus.setTextColor(resources.getColor(R.color.status_pending))
                 profileStatusImage.setImageResource(R.drawable.status_pending)
 
             }else if (status == "declined"){
-                profileStatus.setText(status.capitalize())
+                profileStatus.setText(status.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.getDefault()
+                    ) else it.toString()
+                })
                 profileStatus.setTextColor(resources.getColor(R.color.status_declined))
                 profileStatusImage.setImageResource(R.drawable.status_declined)
             }
             else if (status == "suspended"){
-                profileStatus.setText(status.capitalize())
+                profileStatus.setText(status.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.getDefault()
+                    ) else it.toString()
+                })
                 profileStatus.setTextColor(resources.getColor(R.color.status_declined))
                 profileStatusImage.setImageResource(R.drawable.status_declined)
             }else{
-                profileStatus.setText(status.capitalize())
+                profileStatus.setText(status.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.getDefault()
+                    ) else it.toString()
+                })
                 profileStatus.setTextColor(resources.getColor(R.color.status_accepted))
                 profileStatusImage.setImageResource(R.drawable.status_accepted)
             }

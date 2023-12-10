@@ -33,6 +33,7 @@ import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.Locale
 
 
 class MyRequestDetailsActivity : BaseActivity() {
@@ -91,13 +92,15 @@ class MyRequestDetailsActivity : BaseActivity() {
                 val db = Firebase.firestore
 
                 val senderInfo = db.collection("users").document(sender_id.toString())
-                senderInfo.get().addOnSuccessListener { doc->
+                senderInfo.get().addOnSuccessListener { doc ->
                     Log.d("TAG - ", "sendToChat: ${doc.data}")
                     Log.d("TAG - ", "sendToChat: ${doc.data?.get("user_avatar")}")
                     val chat_room = ChatListModel()
                     chat_room.from = sender_id
                     chat_room.product_id = productDetial?.data!!.productId
-                    chat_room.product = productDetial?.data?.name?.capitalize()
+                    chat_room.product = productDetial?.data?.name?.replaceFirstChar {
+                        if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+                    }
                     chat_room.product_giver = productDetial?.data?.postedBy?.id
                     chat_room.product_receiver = sender_id
                     chat_room.receiver_id = sender_id
@@ -109,15 +112,18 @@ class MyRequestDetailsActivity : BaseActivity() {
                     chat_room.requestId = productDetial?.data?.request_id.toString()
                     chat_room.time_stamp = Timestamp.now()
                     chat_room.status = productDetial?.data?.status
-                    if(productDetial?.data?.images?.size!! > 0) {
+                    if (productDetial?.data?.images?.size!! > 0) {
                         chat_room.product_image = productDetial?.data?.images!![0]
                     }
 
                     val intent = Intent(this, ChatDetailActivity::class.java)
-                    intent.putExtra(Constants.CHATS_DATA,Gson().toJson(chat_room))
-                    intent.putExtra("data_from","activity")
-                    intent.putExtra(Constants.DISPLAY_NAME,productDetial?.data?.postedBy?.name)
-                    intent.putExtra(Constants.DISPLAY_PIC,productDetial?.data?.postedBy?.userAvatar)
+                    intent.putExtra(Constants.CHATS_DATA, Gson().toJson(chat_room))
+                    intent.putExtra("data_from", "activity")
+                    intent.putExtra(Constants.DISPLAY_NAME, productDetial?.data?.postedBy?.name)
+                    intent.putExtra(
+                        Constants.DISPLAY_PIC,
+                        productDetial?.data?.postedBy?.userAvatar
+                    )
                     startActivity(intent)
                 }
 
@@ -317,7 +323,7 @@ class MyRequestDetailsActivity : BaseActivity() {
 
     private fun setUpProductDetails(it: RequestDetails) {
 
-        when(it.data?.requestStatus){
+        when (it.data?.requestStatus) {
             "requested" -> {
                 binding.status.setText("Requested")
                 binding.status.setTextColor(resources.getColor(R.color.status_pending))
@@ -326,6 +332,7 @@ class MyRequestDetailsActivity : BaseActivity() {
                 binding.chatBtn.background = (resources.getDrawable(R.drawable.chat_disabled_bg))
 //                binding.chatBtn.isEnabled = false
             }
+
             "accepted" -> {
                 binding.status.setText("Accepted")
                 binding.status.setTextColor(resources.getColor(R.color.status_accepted))
@@ -336,6 +343,7 @@ class MyRequestDetailsActivity : BaseActivity() {
                 binding.chatBtn.background = (resources.getDrawable(R.drawable.btn_bg_rounded_rect))
 
             }
+
             "rejected" -> {
                 binding.status.setText("Declined")
                 binding.status.setTextColor(resources.getColor(R.color.status_declined))
@@ -348,6 +356,7 @@ class MyRequestDetailsActivity : BaseActivity() {
                 //hiding the accept and chat button
                 binding.constraintLayout3.visibility = View.GONE
             }
+
             "delivered" -> {
                 binding.status.setText("Delivered")
                 binding.status.setTextColor(resources.getColor(R.color.status_accepted))
@@ -355,11 +364,12 @@ class MyRequestDetailsActivity : BaseActivity() {
 //                binding.payAsYouWish.visibility = View.VISIBLE
                 binding.chatBtn.isEnabled = true
                 binding.chatBtn.background = (resources.getDrawable(R.drawable.btn_bg_rounded_rect))
-               // binding.markAsDelivered.setText("Pay\nAs you wish")
+                // binding.markAsDelivered.setText("Pay\nAs you wish")
 //                binding.payAsYouWish.visibility = View.VISIBLE
                 binding.chatBtn.background = (resources.getDrawable(R.drawable.btn_bg_rounded_rect))
 //                binding.constraintLayout3.visibility = View.GONE
             }
+
             "received" -> {
                 binding.status.setText("Received")
                 binding.status.setTextColor(resources.getColor(R.color.status_accepted))
@@ -371,24 +381,26 @@ class MyRequestDetailsActivity : BaseActivity() {
                 binding.chatBtn.isEnabled = true
                 binding.chatBtn.background = (resources.getDrawable(R.drawable.btn_bg_rounded_rect))
 //                binding.constraintLayout3.visibility = View.GONE
-            }else ->{
+            }
 
-            binding.status.setText("Cancelled")
-            binding.status.setTextColor(resources.getColor(R.color.status_declined))
-            binding.statusIcon.setImageResource(R.drawable.status_declined)
-            binding.markAsDelivered.visibility = View.GONE
+            else -> {
+
+                binding.status.setText("Cancelled")
+                binding.status.setTextColor(resources.getColor(R.color.status_declined))
+                binding.statusIcon.setImageResource(R.drawable.status_declined)
+                binding.markAsDelivered.visibility = View.GONE
 //                binding.payAsYouWish.visibility = View.GONE
 //                binding.markAsDelivered.setText("Rejected")
-            binding.chatBtn.isEnabled = false
-            binding.chatBtn.background = (resources.getDrawable(R.drawable.chat_disabled_bg))
-            //hiding the accept and chat button
-            binding.constraintLayout3.visibility = View.GONE
+                binding.chatBtn.isEnabled = false
+                binding.chatBtn.background = (resources.getDrawable(R.drawable.chat_disabled_bg))
+                //hiding the accept and chat button
+                binding.constraintLayout3.visibility = View.GONE
+
+            }
 
         }
 
-        }
-
-        if(it.data?.isReceived!!){
+        if (it.data?.isReceived!!) {
             binding.status.setText("Received")
             binding.status.setTextColor(resources.getColor(R.color.status_accepted))
             binding.statusIcon.setImageResource(R.drawable.status_accepted)
@@ -411,15 +423,25 @@ class MyRequestDetailsActivity : BaseActivity() {
             .placeholder(resources.getDrawable(R.drawable.user))
             .into(binding.imageView20)
 
-        binding.categoryTxt.setText(it.data?.category?.name?.capitalize())
-        binding.productName.setText(it.data?.name?.capitalize())
+        binding.categoryTxt.setText(it.data?.category?.name?.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(
+                Locale.getDefault()
+            ) else it.toString()
+        })
+        binding.productName.setText(it.data?.name?.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(
+                Locale.getDefault()
+            ) else it.toString()
+        })
         binding.condition.setText(it.data?.condition)
         binding.usedFor.setText(it.data?.usedFor)
         binding.castSaving.setText("Rs ${it.data?.costSaving}")
         binding.energySaving.text = (it.data?.energySaving?.toString())
         binding.prodcutLocation.text = (it.data?.locationName.toString())
-        binding.descriptionTxt.text = (it.data?.description.toString().capitalize())
-        binding.postedUserName.text = (it.data?.postedBy?.name.toString().capitalize())
+        binding.descriptionTxt.text = (it.data?.description.toString()
+            .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
+        binding.postedUserName.text = (it.data?.postedBy?.name.toString()
+            .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
         binding.phone.text = (it.data?.postedBy?.phone.toString())
         binding.email.text = (it.data?.postedBy?.email.toString())
         binding.postedLocation.text = (it.data?.locationName.toString())

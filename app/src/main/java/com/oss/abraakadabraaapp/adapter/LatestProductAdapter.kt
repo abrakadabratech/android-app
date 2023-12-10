@@ -16,6 +16,7 @@ import com.oss.abraakadabraaapp.databinding.LayoutProductBinding
 import com.oss.abraakadabraaapp.datasource.products.Product
 import com.oss.abraakadabraaapp.response.mainResponse.LatestProductData
 import com.oss.abraakadabraaapp.utils.ImageUtils
+import java.util.Locale
 
 
 class LatestProductAdapter(
@@ -37,11 +38,12 @@ class LatestProductAdapter(
         Glide.with(context).load(item.display_image).placeholder(R.drawable.image_placeholder)
             .into(holder.binding.ivProduct)
         holder.binding.tvProductDistance.text = "${item.distance?.div(1000)} KM"
-        holder.binding.tvProductName.text = item.name?.capitalize()
+        holder.binding.tvProductName.text =
+            item.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
         holder.binding.tvProductLocation.text = item.condition
-        if (item!!.isSelfProduct){
+        if (item!!.isSelfProduct) {
             holder.binding.ivGiven.visibility = View.VISIBLE
-        }else{
+        } else {
             holder.binding.ivGiven.visibility = View.GONE
         }
 

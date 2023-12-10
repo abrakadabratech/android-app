@@ -16,6 +16,7 @@ import com.oss.abraakadabraaapp.activities.newflow.ui.MyRequestDetailsActivity
 import com.oss.abraakadabraaapp.response.productRequestResponse.Data
 import com.oss.abraakadabraaapp.response.productRequestResponse.Product
 import com.oss.abraakadabraaapp.response.productRequestResponse.RequestData
+import java.util.Locale
 
 class MyRequestAdapter(
     val newMyRequestActivity: NewMyRequestActivity,
@@ -38,32 +39,60 @@ class MyRequestAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.itemName.setText(data[position].product?.name?.capitalize())
+        holder.itemName.setText(data[position].product?.name?.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(
+                Locale.getDefault()
+            ) else it.toString()
+        })
         holder.itemRaisedOn.setText(data[position].requestedAt)
 
         when(data[position].status){
             "requested" -> {
                 holder.status.setTextColor(newMyRequestActivity.getColor(R.color.status_pending))
-                holder.status.setText(data[position].status?.capitalize())
+                holder.status.setText(data[position].status?.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.getDefault()
+                    ) else it.toString()
+                })
             }
             "accepted" -> {
                 holder.status.setTextColor(newMyRequestActivity.getColor(R.color.status_accepted))
-                holder.status.setText(data[position].status?.capitalize())
+                holder.status.setText(data[position].status?.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.getDefault()
+                    ) else it.toString()
+                })
             }
             "rejected" -> {
                 holder.status.setTextColor(newMyRequestActivity.getColor(R.color.status_declined))
-                holder.status.setText(data[position].status?.capitalize())
+                holder.status.setText(data[position].status?.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.getDefault()
+                    ) else it.toString()
+                })
             }
             "received" -> {
                 holder.status.setTextColor(newMyRequestActivity.getColor(R.color.status_accepted))
-                holder.status.setText(data[position].status?.capitalize())
+                holder.status.setText(data[position].status?.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.getDefault()
+                    ) else it.toString()
+                })
             }
             "delivered" -> {
                 holder.status.setTextColor(newMyRequestActivity.getColor(R.color.status_accepted))
-                holder.status.setText(data[position].status?.capitalize())
+                holder.status.setText(data[position].status?.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.getDefault()
+                    ) else it.toString()
+                })
             }else ->{
                 holder.status.setTextColor(newMyRequestActivity.getColor(R.color.status_declined))
-                holder.status.setText(data[position].status?.capitalize())
+                holder.status.setText(data[position].status?.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.getDefault()
+                    ) else it.toString()
+                })
             }
         }
 

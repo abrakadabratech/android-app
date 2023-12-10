@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.newflow.model.CatData
 import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
+import java.util.Locale
 
 class CatMainAdapter(
     val context: Context, var i: ArrayList<UserCatData>?,
@@ -33,7 +34,8 @@ class CatMainAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        holder.cardName.text = i!![position].title?.capitalize()
+        holder.cardName.text =
+            i!![position].title?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
         if (i!![position].isSelect) {
             holder.checkBox.setBackgroundResource(R.drawable.ic_radio_select)
             holder.cardName.setTextColor(context.resources.getColor(R.color.cat_select_color))
@@ -44,7 +46,7 @@ class CatMainAdapter(
             i!!.get(position).isSelect = false
         }
         holder.cardLayout.setOnClickListener {
-            callback.onMainItemClick(position,!i!![position].isSelect)
+            callback.onMainItemClick(position, !i!![position].isSelect)
 //            notifyDataSetChanged()
         }
 

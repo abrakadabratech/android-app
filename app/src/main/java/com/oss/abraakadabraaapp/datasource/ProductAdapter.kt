@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.oss.abraakadabraaapp.datasource.products.Product
 import com.bumptech.glide.Glide
 import com.oss.abraakadabraaapp.R
+import java.util.Locale
 
 class ProductAdapter(val onClick: OnProductClicked) :
     PagingDataAdapter<Product, ProductAdapter.ViewHolder>(ProductDifferntiator) {
@@ -24,15 +25,18 @@ class ProductAdapter(val onClick: OnProductClicked) :
         var iv=itemView.rootView.findViewById<ImageView>(R.id.iv_product)
         var my_product: ConstraintLayout = itemView.rootView.findViewById<ConstraintLayout>(R.id.iv_given)
         fun bind(item: Product?) {
-            tv.text=item?.name?.capitalize()
-            Glide.with(itemView.context).load(item?.display_image).placeholder(R.drawable.image_placeholder).into(iv)
+            tv.text =
+                item?.name?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            Glide.with(itemView.context).load(item?.display_image)
+                .placeholder(R.drawable.image_placeholder).into(iv)
             tv_product_distance.setText("${(item?.distance?.div(1000))} KM")
             tv_product_location.setText("${item?.condition}")
 
-            if (item!!.isSelfProduct){
+            if (item!!.isSelfProduct) {
                 my_product.visibility = View.VISIBLE
-                iv.background = ContextCompat.getDrawable(itemView.context,R.color.transparent_blur)
-            }else{
+                iv.background =
+                    ContextCompat.getDrawable(itemView.context, R.color.transparent_blur)
+            } else {
                 my_product.visibility = View.GONE
             }
 

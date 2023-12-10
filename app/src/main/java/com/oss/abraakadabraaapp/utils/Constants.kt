@@ -5,9 +5,9 @@ object Constants {
 
 
     val upiId: String = "asvikritajna@icici"
-    val DISPLAY_NAME: String? = "display_name"
+    val DISPLAY_NAME: String = "display_name"
     val GLOBAL_TAG: String = "Exception"
-    val DISPLAY_PIC: String? = "display_pic"
+    val DISPLAY_PIC: String = "display_pic"
     const val CHATS_DATA: String = "chats_data"
     const val PRODUCT: String = "product_detail"
     val facebook: String = "facebook"
@@ -43,7 +43,6 @@ object Constants {
     //========================================
 
     const val PAGE_RECEIVER: String = "page_receiver"
-    const val BUTTON_SEARCH_BAR = "button_search_bar_in_home"
     const val BUTTON_FILTER = "button_filter_in_home"
     const val BUTTON_FILTER_APPLY = "button_filter_apply_in_home"
 
@@ -217,6 +216,7 @@ object Constants {
     const val productRequestDetails = "request_details_screen"
     const val chatDetails = "chat_details"
     const val productListing = "listing_details_screen"
+    const val productListingDetails = "listing_detail"
 
     const val hasNotificationData = "hasNotificationData"
     const val productStatus = "productStatus"

@@ -1,7 +1,10 @@
 package com.oss.abraakadabraaapp.activities.newflow
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -13,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.denzcoskun.imageslider.constants.ScaleTypes
@@ -42,27 +46,29 @@ import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.Locale
 
-class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnRequestClicks,CategoryDialogAdapter.CategoryDialogAdapterInterface,
+class MyListingDetialActivity : BaseActivity(), MyRequestedUsersAdapter.OnRequestClicks,
+    CategoryDialogAdapter.CategoryDialogAdapterInterface,
     CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAdapterInterface {
     lateinit var application: BaseActivity
     private val mainViewModel: AuthViewModel by viewModel()
-    var productDetails : ListingResponse? = null
-    private lateinit var binding:ActivityMyListingDetailsBinding
+    var productDetails: ListingResponse? = null
+    private lateinit var binding: ActivityMyListingDetailsBinding
     private lateinit var productId: String
 
     lateinit var alertDialog: AlertDialog
     lateinit var alertAdaper: CategoryDialogAdapter
     lateinit var condtionAdapter: ConditionDialogAdapter
     lateinit var mainCatAdapter: CatMainAdapter
-    lateinit var mainAdapterList:ArrayList<UserCatData>
+    lateinit var mainAdapterList: ArrayList<UserCatData>
     var list = arrayListOf<CatData>()
     var listConditon = arrayListOf<CatData>()
     private var PROD_CATEGORY: String = ""
     private var PROD_CONDITION: String = ""
     private var PROD_USED_FOR: String = ""
 
-    private var selectedProdCategory:String = ""
+    private var selectedProdCategory: String = ""
     private lateinit var placesClient: PlacesClient
 
     lateinit var userCatData: AllCategoryResponse
@@ -78,7 +84,7 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         }
 
         application = this
-        application.postEvent(Constants.PAGE_MY_LISTING_DETAIL,null)
+        application.postEvent(Constants.PAGE_MY_LISTING_DETAIL, null)
 
         loadUsedForData()
         loadConditionData()
@@ -93,7 +99,7 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
 
         userCatData = PreferencesManagement.getCategories(this)!!
 
-        if (userCatData.data.size > 0){
+        if (userCatData.data.size > 0) {
             mainAdapterList = userCatData.data
             mainAdapterList[0].isSelect = true
         }
@@ -102,10 +108,10 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         }
 
         //Cat adpater
-        mainCatAdapter = CatMainAdapter(this,mainAdapterList,this)
+        mainCatAdapter = CatMainAdapter(this, mainAdapterList, this)
 
         //Used for adapter
-        alertAdaper = CategoryDialogAdapter(this,list, this,"")
+        alertAdaper = CategoryDialogAdapter(this, list, this, "")
 
         //Condition adapter
         condtionAdapter = ConditionDialogAdapter(this, listConditon, this)
@@ -124,12 +130,12 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
 
         binding.editProduct.setOnClickListener {
             postClick(Constants.BUTTON_EDIT_PRODUCT)
-            if (productDetails?.product?.status == "active"){
-                val intent = Intent(this,EditProductActivity::class.java)
-                intent.putExtra("data_from_listing",Gson().toJson(productDetails))
+            if (productDetails?.product?.status == "active") {
+                val intent = Intent(this, EditProductActivity::class.java)
+                intent.putExtra("data_from_listing", Gson().toJson(productDetails))
                 startActivity(intent)
                 binding.editMenuDialog.visibility = View.GONE
-            }else if(productDetails?.product?.status == "given"){
+            } else if (productDetails?.product?.status == "given") {
                 binding.editMenuDialog.visibility = View.GONE
                 showToast("Your product is given")
             }
@@ -137,23 +143,29 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
 
         binding.conditionTxt.setOnClickListener {
             //condition popup
-            for(i in listConditon){
-                i.isSelect = i.name?.capitalize() == productDetails?.product?.condition.toString().capitalize()
+            for (i in listConditon) {
+                i.isSelect =
+                    i.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } == productDetails?.product?.condition.toString()
+                        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
             showConditionDialog()
         }
         binding.usedForTxt.setOnClickListener {
             //used for popup
-            for(i in list){
-                i.isSelect = i.name?.capitalize() == productDetails?.product?.usedFor.toString().capitalize()
+            for (i in list) {
+                i.isSelect =
+                    i.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } == productDetails?.product?.usedFor.toString()
+                        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
             showUsedForDialog()
         }
 
         binding.categoryTxt.setOnClickListener {
             //category pop up
-            for(i in mainAdapterList){
-                i.isSelect = i.title?.capitalize() == productDetails?.product?.category.toString().capitalize()
+            for (i in mainAdapterList) {
+                i.isSelect =
+                    i.title?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } == productDetails?.product?.category.toString()
+                        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
             showCategoryFilterDialog()
         }
@@ -172,16 +184,17 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
 
         binding.updateBtn.setOnClickListener {
             if (binding.productName.text.toString().isNotEmpty() &&
-                    binding.descriptionTxt.text.toString().isNotEmpty()){
-                val map = HashMap<String,String>()
+                binding.descriptionTxt.text.toString().isNotEmpty()
+            ) {
+                val map = HashMap<String, String>()
                 map["name"] = binding.productName.text.toString()
                 map["description"] = binding.descriptionTxt.text.toString()
                 postClick(Constants.BUTTON_UPDATE_PRODUCT)
-                if (isNetworkAvailable()){
+                if (isNetworkAvailable()) {
                     generateAuthToken()
 //                    mainViewModel.updateProduct(Utility.getAuthentication(this),product.id.toString(),map)
                 }
-            }else{
+            } else {
                 showToast("Please enter Product Name and description")
             }
 
@@ -196,23 +209,23 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         binding.deleteProduct.setOnClickListener {
             postClick(Constants.BUTTON_DELETE_PRODUCT)
 
-            if (productDetails?.product?.status == "given"){
+            if (productDetails?.product?.status == "given") {
                 binding.editMenuDialog.visibility = View.GONE
                 showToast("Your product is given")
-            }else{
+            } else {
                 val alertDialog = AlertDialog.Builder(this)
                 alertDialog.setTitle("Alert!")
                 alertDialog.setMessage("Are you sure you want to delete your listing?")
 
-                alertDialog.setPositiveButton("Yes", DialogInterface.OnClickListener{ dialog, id ->
+                alertDialog.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, id ->
                     //cancel the request
-                    if (isNetworkAvailable()){
+                    if (isNetworkAvailable()) {
                         generateAuthToken()
                         mainViewModel.deleteProduct(Utility.getAuthentication(this), productId)
                     }
                     dialog.dismiss()
                 })
-                alertDialog.setNegativeButton("No", DialogInterface.OnClickListener{ dialog, id ->
+                alertDialog.setNegativeButton("No", DialogInterface.OnClickListener { dialog, id ->
                     dialog.dismiss()
                 })
                 alertDialog.show()
@@ -221,8 +234,20 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
 
         setUpObserver()
 
+        LocalBroadcastManager.getInstance(this@MyListingDetialActivity)
+            .registerReceiver(mReceiver, IntentFilter(Constants.notificationReceived))
 
 
+    }
+
+    private var mReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action.equals(Constants.notificationReceived, ignoreCase = true)) {
+                if (intent.extras != null && intent.getStringExtra(Constants.notificationReceived) != null) {
+                    loaddata()
+                }
+            }
+        }
     }
 
     override fun onResume() {
@@ -282,6 +307,7 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
 
         return list
     }
+
     private fun loaddata() {
         val map = HashMap<String, String>()
         val token = PreferencesManagement.getAuthToken(this)!!
@@ -290,19 +316,19 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
     }
 
     private fun setUpObserver() {
-        mainViewModel.updateProductSuccess.observe(this){
-            if (it.code == 201){
+        mainViewModel.updateProductSuccess.observe(this) {
+            if (it.code == 201) {
                 showToast(it.responseMessage.toString())
-                binding.productName.setText( it.data?.name)
+                binding.productName.setText(it.data?.name)
                 binding.descriptionTxt.setText(it.data?.description)
 //                binding.productName.isEnabled = false
 //                binding.descriptionTxt.isEnabled = false
                 binding.updateBtn.visibility = View.GONE
             }
         }
-        mainViewModel.deleteProductSuccess.observe(this){
-            if (it.code == 200){
-               finish()
+        mainViewModel.deleteProductSuccess.observe(this) {
+            if (it.code == 200) {
+                finish()
             }
         }
         mainViewModel.listingDetailsuccess.observe(this) {
@@ -315,11 +341,10 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
                 Log.d("TAG -", "setUpObserver: fail")
             }
         }
-        mainViewModel.
-        reportProductSuccess.observe(this){
-            if (it.code == 201){
+        mainViewModel.reportProductSuccess.observe(this) {
+            if (it.code == 201) {
                 showToast("Product reported")
-            }else{
+            } else {
                 showToast(it.responseMessage.toString())
             }
         }
@@ -342,72 +367,123 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         val data = it.product!!
         binding.imageSlider.setImageList(imageList)
 
-        binding.categoryTxt.text = data.category?.name?.capitalize()
+        binding.categoryTxt.text =
+            data.category?.name?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
         binding.conditionTxt.text = data.condition
-        binding.productName.setText(data.name?.capitalize())
+        binding.productName.setText(data.name?.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(
+                Locale.getDefault()
+            ) else it.toString()
+        })
         binding.usedForTxt.text = data.usedFor
         binding.costSavingTxt.text = "Rs ${data.costSaving}"
         binding.textView23.text = "Rs ${data.energySaving}"
-        if (data.brand == null || data.brand == "No Brand" || data.brand == ""){
+        if (data.brand == null || data.brand == "No Brand" || data.brand == "") {
             binding.brandTxt.visibility = View.GONE
             binding.some111.visibility = View.GONE
-        }else{
+        } else {
             binding.brandTxt.text = (data.brand.toString())
         }
 //        binding.responsesOne.text = (data.postedBy.toString())
 //        binding.dateOfPostTxt.text = (it.data.createdAt.toString())
-        binding.descriptionTxt.setText(data.description?.capitalize().toString())
+        binding.descriptionTxt.setText(data.description?.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(
+                Locale.getDefault()
+            ) else it.toString()
+        }.toString())
         binding.locationName.setText(data.locationName.toString())
 
-        binding.responsesOne.text = if(it.requests.size == 1) "${it.requests.size} Response" else "${it.requests.size} Responses"
-        binding.responsesTwo.text = if(it.requests.size == 1) "${it.requests.size} Response" else "${it.requests.size} Responses"
+        binding.responsesOne.text =
+            if (it.requests.size == 1) "${it.requests.size} Response" else "${it.requests.size} Responses"
+        binding.responsesTwo.text =
+            if (it.requests.size == 1) "${it.requests.size} Response" else "${it.requests.size} Responses"
 
-        val adapter = MyRequestedUsersAdapter(this,it.requests,this)
+        val adapter = MyRequestedUsersAdapter(this, it.requests, this)
         binding.rvRequestedUsers.layoutManager = LinearLayoutManager(this)
         binding.rvRequestedUsers.adapter = adapter
 
         //Alert messages
-        when(it.alertMessage.type){
+        when (it.alertMessage.type) {
             Constants.WARNING -> {
                 binding.statusLayout.visibility = View.VISIBLE
-                binding.statusLayout.setCardBackgroundColor(ContextCompat.getColor(this, R.color.product_alert_warning))
-                binding.statusIcon.background = ContextCompat.getDrawable(this, R.drawable.status_pending_icon)
+                binding.statusLayout.setCardBackgroundColor(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.product_alert_warning
+                    )
+                )
+                binding.statusIcon.background =
+                    ContextCompat.getDrawable(this, R.drawable.status_pending_icon)
                 binding.statusText.text = it.alertMessage.message.toString()
-                binding.statusText.setTextColor(ContextCompat.getColor(this,R.color.status_pending))
+                binding.statusText.setTextColor(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.status_pending
+                    )
+                )
             }
+
             Constants.SUCCESS -> {
                 binding.statusLayout.visibility = View.VISIBLE
-                binding.statusLayout.setCardBackgroundColor(ContextCompat.getColor(this, R.color.product_status_success_color))
-                binding.statusIcon.background = ContextCompat.getDrawable(this, R.drawable.status_accepted)
+                binding.statusLayout.setCardBackgroundColor(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.product_status_success_color
+                    )
+                )
+                binding.statusIcon.background =
+                    ContextCompat.getDrawable(this, R.drawable.status_accepted)
                 binding.statusText.text = it.alertMessage.message.toString()
-                binding.statusText.setTextColor(ContextCompat.getColor(this,R.color.status_accepted))
+                binding.statusText.setTextColor(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.status_accepted
+                    )
+                )
             }
+
             Constants.DANGER -> {
                 binding.statusLayout.visibility = View.VISIBLE
-                binding.statusLayout.setCardBackgroundColor(ContextCompat.getColor(this, R.color.product_status_danger_color))
-                binding.statusIcon.background = ContextCompat.getDrawable(this, R.drawable.status_declined_icon)
+                binding.statusLayout.setCardBackgroundColor(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.product_status_danger_color
+                    )
+                )
+                binding.statusIcon.background =
+                    ContextCompat.getDrawable(this, R.drawable.status_declined_icon)
                 binding.statusText.text = it.alertMessage.message.toString()
-                binding.statusText.setTextColor(ContextCompat.getColor(this,R.color.status_declined))
+                binding.statusText.setTextColor(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.status_declined
+                    )
+                )
             }
+
             else -> binding.statusLayout.visibility = View.GONE
 
         }
 
     }
+
     private fun loadShareData() {
 
         val i = Intent(Intent.ACTION_SEND)
         i.type = "text/plain"
         i.putExtra(Intent.EXTRA_SUBJECT, "Share Product")
-        i.putExtra(Intent.EXTRA_TEXT, "Check out the product I have listed on this great app Abra Ka Dabra where we can share second hand products with others for free: https://play.google.com/store/apps/details?id=com.oss.abraakadabraaapp")
+        i.putExtra(
+            Intent.EXTRA_TEXT,
+            "Check out the product I have listed on this great app Abra Ka Dabra where we can share second hand products with others for free: https://play.google.com/store/apps/details?id=com.oss.abraakadabraaapp"
+        )
         startActivity(Intent.createChooser(i, "Share"))
     }
 
-    override fun onClick(position:Int) {
-        if (productDetails!=null){
-            val intent = Intent(this,RequesterActivity::class.java)
+    override fun onClick(position: Int) {
+        if (productDetails != null) {
+            val intent = Intent(this, RequesterActivity::class.java)
             intent.putExtra(Constants.productId, productDetails!!.requests[position].requestId)
-            intent.putExtra(Constants.productStatus,productDetails!!.product?.status)
+            intent.putExtra(Constants.productStatus, productDetails!!.product?.status)
             startActivity(intent)
 
         }
@@ -437,7 +513,9 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         closeBtn.setOnClickListener { alertDialog.dismiss() }
         if (selectedProdCategory == "") PROD_CATEGORY = mainAdapterList[0].id.toString()
         else PROD_CATEGORY = PROD_CATEGORY
-        if (selectedProdCategory == "") selectedProdCategory = mainAdapterList[0].title?.capitalize().toString()
+        if (selectedProdCategory == "") selectedProdCategory =
+            mainAdapterList[0].title?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                .toString()
 
         binding.categoryTxt.text = selectedProdCategory
 
@@ -464,7 +542,7 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
-        if(PROD_CONDITION == "") PROD_CONDITION = listConditon[0].name.toString()
+        if (PROD_CONDITION == "") PROD_CONDITION = listConditon[0].name.toString()
         else PROD_CONDITION = PROD_CONDITION
 
         binding.conditionTxt.text = PROD_CONDITION
@@ -494,7 +572,7 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         alertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
-        if(PROD_USED_FOR == "") PROD_USED_FOR = list[0].name.toString()
+        if (PROD_USED_FOR == "") PROD_USED_FOR = list[0].name.toString()
         else PROD_USED_FOR = PROD_USED_FOR
 
         binding.usedForTxt.text = PROD_USED_FOR
@@ -504,9 +582,12 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
 
         alertDialog.show()
     }
+
     override fun onMainItemClick(position: Int, isSelect: Boolean) {
         PROD_CATEGORY = mainAdapterList[position].id.toString()
-        selectedProdCategory = mainAdapterList[position].title?.capitalize().toString()
+        selectedProdCategory = mainAdapterList[position].title?.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+        }.toString()
         binding.categoryTxt.text = selectedProdCategory
 
         for (i in 0 until mainAdapterList.size) mainAdapterList[i].isSelect = i == position
@@ -525,7 +606,8 @@ class MyListingDetialActivity : BaseActivity() ,MyRequestedUsersAdapter.OnReques
         condtionAdapter.notifyDataSetChanged()
         alertDialog.dismiss()
     }
-    override fun onItemClick(position: Int, isSelect: Boolean,alerttype:String) {
+
+    override fun onItemClick(position: Int, isSelect: Boolean, alerttype: String) {
 //        list.get(position).isSelect = isSelect
         for (i in 0 until list.size) list[i].isSelect = i == position
         PROD_USED_FOR = list[position].name.toString()

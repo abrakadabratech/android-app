@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.App
 import com.oss.abraakadabraaapp.R
+import com.oss.abraakadabraaapp.activities.newflow.MyListingDetialActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewProductDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.RequesterActivity
@@ -57,19 +58,13 @@ object Notifications {
                 intent.putExtra(Constants.notificationDoc, map["notificationDoc"])
                 intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
 
-                val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                val pendingIntent =
                     PendingIntent.getActivity(
                         context,
                         0,
                         intent,
                         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
-                } else {
-                    PendingIntent.getActivity(
-                        context,
-                        0, intent, PendingIntent.FLAG_UPDATE_CURRENT
-                    )
-                }
 
                 notificationBuilder.setContentIntent(pendingIntent)
             }
@@ -80,19 +75,13 @@ object Notifications {
                 intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
                 val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(context)
                 stackBuilder.addNextIntentWithParentStack(intent)
-                val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                val pendingIntent =
                     PendingIntent.getActivity(
                         context,
                         0,
                         intent,
                         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
-                } else {
-                    PendingIntent.getActivity(
-                        context,
-                        0, intent, PendingIntent.FLAG_UPDATE_CURRENT
-                    )
-                }
 
                 notificationBuilder.setContentIntent(pendingIntent)
             }
@@ -104,19 +93,13 @@ object Notifications {
                     intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
                     val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(context)
                     stackBuilder.addNextIntentWithParentStack(intent)
-                    val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    val pendingIntent =
                         PendingIntent.getActivity(
                             context,
                             0,
                             intent,
                             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                         )
-                    } else {
-                        PendingIntent.getActivity(
-                            context,
-                            0, intent, PendingIntent.FLAG_UPDATE_CURRENT
-                        )
-                    }
 
                     notificationBuilder.setContentIntent(pendingIntent)
                 }else{
@@ -131,19 +114,30 @@ object Notifications {
                 intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
                 val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(context)
                 stackBuilder.addNextIntentWithParentStack(intent)
-                val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                val pendingIntent =
                     PendingIntent.getActivity(
                         context,
                         0,
                         intent,
                         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
-                } else {
+
+                notificationBuilder.setContentIntent(pendingIntent)
+            }
+            Constants.productListingDetails -> {
+                Log.d("Notification -", "notifyMessage: requesting activity ${map["productId"]}")
+                val intent = Intent(context, MyListingDetialActivity::class.java)
+                intent.putExtra(Constants.productId, Gson().toJson(dataModel))
+                intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
+                val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(context)
+                stackBuilder.addNextIntentWithParentStack(intent)
+                val pendingIntent =
                     PendingIntent.getActivity(
                         context,
-                        0, intent, PendingIntent.FLAG_UPDATE_CURRENT
+                        0,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
-                }
 
                 notificationBuilder.setContentIntent(pendingIntent)
             }
@@ -160,19 +154,13 @@ object Notifications {
     private fun gotoHome(context: Context, notificationBuilder: NotificationCompat.Builder) {
         val intent = Intent(context, NewHomeActivity::class.java)
 
-        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        val pendingIntent =
             PendingIntent.getActivity(
                 context,
                 0,
                 intent,
                 PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
             )
-        } else {
-            PendingIntent.getActivity(
-                context,
-                0, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
-            )
-        }
 
         notificationBuilder.setContentIntent(pendingIntent)
     }

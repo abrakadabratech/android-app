@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.newflow.model.CatData
 import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
+import java.util.Locale
 
 class CategorySelectAdapter(val context: Context, var i: ArrayList<UserCatData>,val onclick:OnCategoryClicked)
     : RecyclerView.Adapter<CategorySelectAdapter.ViewHolder>() {
@@ -29,20 +30,21 @@ class CategorySelectAdapter(val context: Context, var i: ArrayList<UserCatData>,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if (i[position].isSelect){
+        if (i[position].isSelect) {
             holder.checkBox.setBackgroundResource(R.drawable.ic_check)
-        }else{
+        } else {
             holder.checkBox.setBackgroundResource(R.drawable.ic_uncheck)
         }
         holder.itemView.setOnClickListener {
             onclick.onClick()
         }
-        holder.cardName.text = i[position].title?.capitalize()
+        holder.cardName.text =
+            i[position].title?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
         holder.cardLayout.setOnClickListener {
-            if (i[position].isSelect){
+            if (i[position].isSelect) {
                 holder.checkBox.setBackgroundResource(R.drawable.ic_uncheck)
                 i.get(position).isSelect = false
-            }else {
+            } else {
                 holder.checkBox.setBackgroundResource(R.drawable.ic_check)
                 i.get(position).isSelect = true
             }

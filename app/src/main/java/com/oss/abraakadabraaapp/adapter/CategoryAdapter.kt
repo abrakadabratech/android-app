@@ -19,6 +19,7 @@ import com.oss.abraakadabraaapp.databinding.ItemCategory2Binding
 import com.oss.abraakadabraaapp.databinding.ItemCategoryBinding
 import com.oss.abraakadabraaapp.response.mainResponse.CategoryData
 import com.oss.abraakadabraaapp.module.GlideApp
+import java.util.Locale
 
 class CategoryAdapter(
     private var data: ArrayList<UserCatData>,
@@ -39,17 +40,19 @@ class CategoryAdapter(
 
         with(holder.binding) {
 
-            tvCategoryName.text = item.title?.capitalize()?.trim()
+            tvCategoryName.text =
+                item.title?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                    ?.trim()
 
             if (!keyFrom.equals("search")) {
                 checkFrame.visibility = View.GONE
             } else {
                 checkFrame.visibility = View.VISIBLE
             }
-            if (position == data.size-1){
+            if (position == data.size - 1) {
                 Glide.with(context).load(R.drawable.temp_seven).into(ivCategoryImage)
-            }else  Glide.with(context).load(item.image).into(ivCategoryImage)
-            if (keyFrom.equals("search")){
+            } else Glide.with(context).load(item.image).into(ivCategoryImage)
+            if (keyFrom.equals("search")) {
                 Glide.with(context).load(item.image).into(ivCategoryImage)
             }
 

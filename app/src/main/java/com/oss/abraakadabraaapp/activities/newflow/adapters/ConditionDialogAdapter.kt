@@ -10,6 +10,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.newflow.model.CatData
+import java.util.Locale
 
 class ConditionDialogAdapter(
 val context: Context, var i: ArrayList<CatData>,
@@ -32,7 +33,8 @@ private var callback: ConditionAdapterInterface
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        holder.cardName.text = i[position].name?.capitalize()
+        holder.cardName.text =
+            i[position].name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
         if (i[position].isSelect) {
             holder.checkBox.setBackgroundResource(R.drawable.ic_radio_select)
             holder.cardName.setTextColor(context.resources.getColor(R.color.cat_select_color))
@@ -43,7 +45,7 @@ private var callback: ConditionAdapterInterface
             i.get(position).isSelect = false
         }
         holder.cardLayout.setOnClickListener {
-            callback.onConditionItemClick(position,!i[position].isSelect)
+            callback.onConditionItemClick(position, !i[position].isSelect)
 //            notifyDataSetChanged()
         }
 

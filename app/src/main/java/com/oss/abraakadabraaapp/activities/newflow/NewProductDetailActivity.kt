@@ -48,6 +48,7 @@ import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.Locale
 
 
 class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
@@ -305,45 +306,56 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
     private fun setUpProductDetails(it: ProductDetailsData) {
         val imageList = ArrayList<SlideModel>()
 
-        if(it.data.images.size > 0){
+        if (it.data.images.size > 0) {
             for (i in it.data.images) {
                 imageList.add(SlideModel(i, "", ScaleTypes.FIT))
             }
-        }else{
-            imageList.add(SlideModel(R.drawable.no_image,"",ScaleTypes.FIT))
+        } else {
+            imageList.add(SlideModel(R.drawable.no_image, "", ScaleTypes.FIT))
         }
 
         binding.imageSlider.setImageList(imageList)
 
-        binding.categoryTxt.setText(it.data.category?.name?.capitalize())
-        binding.productName.setText(it.data.name?.capitalize())
-        binding.energySaving.setText("${if(it.data.energySaving != null) it.data.energySaving else 0}")
+        binding.categoryTxt.setText(it.data.category?.name?.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(
+                Locale.getDefault()
+            ) else it.toString()
+        })
+        binding.productName.setText(it.data.name?.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(
+                Locale.getDefault()
+            ) else it.toString()
+        })
+        binding.energySaving.setText("${if (it.data.energySaving != null) it.data.energySaving else 0}")
         binding.conditionTxt.setText(it.data.condition)
         binding.usedForTxt.setText(it.data.usedFor)
-        binding.costSavingTxt.setText("Rs ${if(it.data.costSaving != null) it.data.costSaving else 0}")
+        binding.costSavingTxt.setText("Rs ${if (it.data.costSaving != null) it.data.costSaving else 0}")
         binding.postedByTxt.text = (it.data.postedBy?.name.toString())
         binding.dateOfPostTxt.text = (it.data.createdAt.toString())
-        binding.descriptionTxt.text = (it.data.description.toString()?.capitalize())
+        binding.descriptionTxt.text = (it.data.description.toString()
+            .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
         binding.locationName.text = (it.data.locationName.toString())
-        if (it.data.brand == null || it.data.brand == "No Brand" || it.data.brand == ""){
+        if (it.data.brand == null || it.data.brand == "No Brand" || it.data.brand == "") {
             binding.brandTxt.visibility = View.GONE
             binding.some111.visibility = View.GONE
-        }else{
+        } else {
             binding.brandTxt.text = (it.data.brand.toString())
         }
 
         lattitude = it.data.coordinates?.Latitude.toString()
         longitude = it.data.coordinates?.Longitude.toString()
 
-        val bundle = bundleOf("lat_value" to lattitude,
+        val bundle = bundleOf(
+            "lat_value" to lattitude,
             "lang_value" to longitude,
-        "title" to productDetails?.data?.name)
+            "title" to productDetails?.data?.name
+        )
         supportFragmentManager.commit {
             setReorderingAllowed(true)
-            add<LocationFragment>(R.id.maps_view,args = bundle)
+            add<LocationFragment>(R.id.maps_view, args = bundle)
         }
 
-        if (it.data.isRequested!!){
+        if (it.data.isRequested!!) {
             binding.requestBtn.setText("Requested")
             binding.requestBtn.isEnabled = false
             //binding.chatBtn.isEnabled = true
@@ -351,8 +363,8 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
 
 //            binding.chatBtn.visibility = View.VISIBLE
         }
-        if (it.data.isReported!!){
-           /* binding.reportThis.setText("Reported")
+        if (it.data.isReported!!) {
+            /* binding.reportThis.setText("Reported")
             binding.reportThis.setTextColor(resources.getColor(R.color.status_declined))*/
 //            binding.reportThis.isEnabled = false
 //            binding.chatBtn.visibility = View.GONE
@@ -361,10 +373,11 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
 
         }
 
-        if (it.data.requestedStatus!!){
+        if (it.data.requestedStatus!!) {
             binding.requestBtn.setText("Accepted")
             binding.requestBtn.isEnabled = false
-            binding.chatBtn.background = resources.getDrawable(R.drawable.rounded_rect_white_gray_stroke)
+            binding.chatBtn.background =
+                resources.getDrawable(R.drawable.rounded_rect_white_gray_stroke)
 
         }
 

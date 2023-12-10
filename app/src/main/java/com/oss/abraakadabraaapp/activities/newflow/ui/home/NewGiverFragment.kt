@@ -908,7 +908,9 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
 
     override fun onMainItemClick(position: Int, isSelect: Boolean) {
         PROD_CATEGORY = mainAdapterList[position].id.toString()
-        selectedProdCategory = mainAdapterList[position].title?.capitalize().toString()
+        selectedProdCategory = mainAdapterList[position].title?.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+        }.toString()
 
         binding.categorySelectedTxt.text = selectedProdCategory
         binding.categorySelectedTxt.visibility = View.VISIBLE

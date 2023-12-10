@@ -79,6 +79,7 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.net.URL
 import java.util.Collections
+import java.util.Locale
 
 
 class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
@@ -178,18 +179,30 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
     private fun prefillData(it: ListingResponse) {
         with(binding) {
             etProductName.setText(it.product?.name)
-            categorySelectedTxt.setText(it.product?.category?.name.toString().capitalize())
+            categorySelectedTxt.setText(
+                it.product?.category?.name.toString()
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
             PROD_CATEGORY = it.product?.category?.id.toString()
             categorySelectedTxt.visibility = View.VISIBLE
-            conditionSelectedTxt.setText(it.product?.condition.toString().capitalize())
-            PROD_CONDITION = it.product?.condition.toString().capitalize()
+            conditionSelectedTxt.setText(
+                it.product?.condition.toString()
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
+            PROD_CONDITION = it.product?.condition.toString()
+                .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             conditionSelectedTxt.visibility = View.VISIBLE
-            usedForSelectedTxt.setText(it.product?.usedFor.toString().capitalize())
-            PROD_USED_FOR = it.product?.usedFor.toString().capitalize()
+            usedForSelectedTxt.setText(
+                it.product?.usedFor.toString()
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
+            PROD_USED_FOR = it.product?.usedFor.toString()
+                .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             usedForSelectedTxt.visibility = View.VISIBLE
             etProductBrand.setText(it.product?.brand)
             etProductBrand1.setText(it.product?.price.toString())
-            descEdt.setText(it.product?.description?.capitalize())
+            descEdt.setText(it.product?.description?.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(
+                    Locale.getDefault()
+                ) else it.toString()
+            })
             locationTxt.setText(it.product?.locationName)
 
             //set images to the array
@@ -553,7 +566,8 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         closeBtn.setOnClickListener { alertDialog.dismiss() }
         if (selectedProdCategory == "") selectedProdCategory =
-            mainAdapterList[0].title?.capitalize().toString()
+            mainAdapterList[0].title?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                .toString()
         if (PROD_CATEGORY == "") PROD_CATEGORY = mainAdapterList[0].id.toString()
 
         binding.categorySelectedTxt.text = selectedProdCategory
@@ -939,7 +953,9 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
 
     override fun onMainItemClick(position: Int, isSelect: Boolean) {
         PROD_CATEGORY = mainAdapterList[position].id.toString()
-        selectedProdCategory = mainAdapterList[position].title?.capitalize().toString()
+        selectedProdCategory = mainAdapterList[position].title?.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+        }.toString()
 
         binding.categorySelectedTxt.text = selectedProdCategory
         binding.categorySelectedTxt.visibility = View.VISIBLE

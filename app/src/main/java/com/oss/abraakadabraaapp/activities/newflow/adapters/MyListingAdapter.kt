@@ -14,6 +14,7 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.newflow.MyListingDetialActivity
 import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.response.productRequestResponse.RequestData
+import java.util.Locale
 
 class MyListingAdapter(val newMyRequestActivity: Context,
                        private var data: ArrayList<RequestData>,var onclick:OnResponseClick)
@@ -40,12 +41,20 @@ class MyListingAdapter(val newMyRequestActivity: Context,
 //            newMyRequestActivity.startActivity(Intent(newMyRequestActivity,MyListingDetialActivity::class.java))
         }
 
-        holder.nameTxt.setText(data.get(position).name?.capitalize())
+        holder.nameTxt.setText(data.get(position).name?.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(
+                Locale.getDefault()
+            ) else it.toString()
+        })
         holder.listedOnTxt.setText("Listed on "+data.get(position).createdAt)
         if (data.get(position).status == "hold"){
             holder.statusTxt.setText("Status - On Hold")
         }else{
-            holder.statusTxt.setText("Status - "+data.get(position).status?.capitalize())
+            holder.statusTxt.setText("Status - " + data.get(position).status?.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(
+                    Locale.getDefault()
+                ) else it.toString()
+            })
         }
         if (data.get(position).status == "given"){
             holder.statusTxt.setTextColor(newMyRequestActivity.resources.getColor(R.color.given_color))

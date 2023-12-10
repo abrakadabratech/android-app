@@ -13,6 +13,7 @@ import Data
 import androidx.core.content.ContextCompat
 import com.oss.abraakadabraaapp.databinding.ItemProduct2Binding
 import com.oss.abraakadabraaapp.datasource.products.Product
+import java.util.Locale
 
 class SearchProductAdapter(
     private var data: ArrayList<Product>,
@@ -32,11 +33,12 @@ class SearchProductAdapter(
 
         Glide.with(context).load(item.display_image).into(holder.binding.ivProduct)
         holder.binding.tvProductDistance.text = "${item.distance?.div(1000)} KM"
-        holder.binding.tvProductName.text = item.name?.capitalize()
+        holder.binding.tvProductName.text =
+            item.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
         holder.binding.tvProductLocation.text = item.condition
-        if (item!!.isSelfProduct){
+        if (item!!.isSelfProduct) {
             holder.binding.ivGiven.visibility = View.VISIBLE
-        }else{
+        } else {
             holder.binding.ivGiven.visibility = View.GONE
         }
 
