@@ -644,9 +644,23 @@ class LoginActivity : BaseActivity() {
             PreferencesManagement.saveUserEmail(this, it.data?.email)
             PreferencesManagement.saveSignInMethod(this,SIGNIN_METHOD)
 
-            if (it.responseMessage != null) {
-                if (it.responseMessage == USER_NOT_FOUND) {
-                    Log.d("LOGIN>>>", "setUpObserver: User not found")
+            if (it.data?.onboardingStatus!!){
+                if (it.responseMessage != null) {
+                    if (it.responseMessage == USER_NOT_FOUND) {
+                        Log.d("LOGIN>>>", "setUpObserver: User not found")
+                        loader(false)
+                        val intent =
+                            Intent(this@LoginActivity, AuthUserDetailActivity::class.java)
+                        intent.putExtra(Constants.phoneNumber, phoneNumber)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        startActivity(intent)
+                        finish()
+                    }
+                } else if ((it.data?.email == null || it.data?.email == "") ||
+                    (it.data?.name == null || it.data?.name == "")
+                ) {
+                    Log.d("LOGIN>>>", "setUpObserver: EMail not found")
+
                     loader(false)
                     val intent =
                         Intent(this@LoginActivity, AuthUserDetailActivity::class.java)
@@ -654,12 +668,16 @@ class LoginActivity : BaseActivity() {
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     startActivity(intent)
                     finish()
+                } else if (it.data?.signinMethod == SIGN_IN_METHOD_GOOGLE) {
+                    postFCMtoken()
+                    updateUser(it)
+                } else {
+                    if (mAuth.currentUser != null) {
+                        postFCMtoken()
+                        postLocationUpdate()
+                    }
                 }
-            } else if ((it.data?.email == null || it.data?.email == "") ||
-                (it.data?.name == null || it.data?.name == "")
-            ) {
-                Log.d("LOGIN>>>", "setUpObserver: EMail not found")
-
+            }else{
                 loader(false)
                 val intent =
                     Intent(this@LoginActivity, AuthUserDetailActivity::class.java)
@@ -667,15 +685,8 @@ class LoginActivity : BaseActivity() {
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 startActivity(intent)
                 finish()
-            } else if (it.data?.signinMethod == SIGN_IN_METHOD_GOOGLE) {
-                postFCMtoken()
-                updateUser(it)
-            } else {
-                if (mAuth.currentUser != null) {
-                    postFCMtoken()
-                    postLocationUpdate()
-                }
             }
+
 
             authViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
 

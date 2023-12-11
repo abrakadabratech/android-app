@@ -32,11 +32,11 @@
         android:label="Menu"
          tools:layout="@layout/new_menu_screen"/>
 
-   <!-- <fragment
-        android:id="@+id/navigation_chats"
-        android:name="com.oss.abraakadabraaapp.activities.newflow.ui.chats.ChatsFragment"
-        android:label="Chats"
-        tools:layout="@layout/fragment_chats"/>-->
+    <!-- <fragment
+         android:id="@+id/navigation_chats"
+         android:name="com.oss.abraakadabraaapp.activities.newflow.ui.chats.ChatsFragment"
+         android:label="Chats"
+         tools:layout="@layout/fragment_chats"/>-->
 
     <!-- Home-->
 

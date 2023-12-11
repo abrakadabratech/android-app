@@ -75,7 +75,7 @@ object Utility {
 
         val date: Date = timestamp.toDate()
 
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:MM", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("MMM-dd-yy hh:mm a", Locale.getDefault())
         val formattedDate: String = dateFormat.format(date)
         return formattedDate
     }

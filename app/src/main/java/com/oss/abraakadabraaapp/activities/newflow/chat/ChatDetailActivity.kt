@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.WriteBatch
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
@@ -59,7 +60,7 @@ class ChatDetailActivity : BaseActivity() {
     private lateinit var binding: ActivityChatDetailBinding
     private lateinit var adapter: ChatMessageAdapter
     private var list: ArrayList<String> = ArrayList()
-    var chatData : ChatListModel? = null
+    var chatData: ChatListModel? = null
     var data_from = ""
     var chatNode = ""
     private val TAG = "ChatDetailActivity"
@@ -76,24 +77,31 @@ class ChatDetailActivity : BaseActivity() {
             generateAuthToken()
         }
 
-        if (intent.hasExtra(Constants.productId)){
-            val bundle  = Gson().fromJson(intent.extras?.getString(Constants.productId),NotificationDataModel::class.java)
+        if (intent.hasExtra(Constants.productId)) {
+            val bundle = Gson().fromJson(
+                intent.extras?.getString(Constants.productId),
+                NotificationDataModel::class.java
+            )
             chatNode = bundle.chatNode.toString()
             val db = Firebase.firestore
             db.collection("notifications")
                 .document(bundle.notificationDoc.toString())
                 .update("deleted", true)
-                    loaddata()
+
+
+            loaddata()
         }
         if (intent.hasExtra(CHATS_DATA)) {
             binding.chatName.text = intent.extras?.getString(DISPLAY_NAME)
             Glide.with(this).load(intent.extras?.getString(DISPLAY_PIC))
                 .placeholder(resources.getDrawable(R.drawable.ic_profile))
                 .into(binding.profilePic)
-            chatData = Gson().fromJson(intent.extras?.getString(CHATS_DATA,""),ChatListModel::class.java)
+            chatData =
+                Gson().fromJson(intent.extras?.getString(CHATS_DATA, ""), ChatListModel::class.java)
             chatNode = chatData!!.product_id + Utility.setOneToOneChat(
                 chatData!!.sender_id.toString(),
-                chatData!!.receiver_id.toString())
+                chatData!!.receiver_id.toString()
+            )
 
             setUpRecycler(chatNode)
         }
@@ -114,12 +122,33 @@ class ChatDetailActivity : BaseActivity() {
 
         clickEvents()
 
+        markAsRead()
+
+    }
+
+    private fun markAsRead() {
+        val db = Firebase.firestore
+        Log.d(TAG, "onCreate:before get true in chat node $chatNode")
+        val read = db.collection("chats").document(chatNode).collection("Messages")
+        read.get()
+            .addOnSuccessListener { snapshot ->
+                for (doc in snapshot.documents){
+                    Log.w(TAG, "onCreate: documents: $doc" )
+                    read.document(doc.id).update("read",true).addOnSuccessListener {
+                        Log.d(TAG, "onCreate: all messages read success")
+                    }.addOnFailureListener {
+                        Log.e(TAG, "onCreate: failed to mark as read")
+                    }
+                }
+            }.addOnFailureListener {
+                Log.d(TAG, "onCreate: error ${it.message}")
+            }
     }
 
     override fun onBackPressed() {
         if (intent.hasExtra(Constants.hasNotificationData)) {
-                startActivity(NewHomeActivity.createIntent(this@ChatDetailActivity))
-        }else{
+            startActivity(NewHomeActivity.createIntent(this@ChatDetailActivity))
+        } else {
             super.onBackPressed()
         }
     }
@@ -207,10 +236,10 @@ class ChatDetailActivity : BaseActivity() {
 
         binding.sendMessage.setOnClickListener {
             postClick(BUTTON_CHAT_SEND_MESSAGE)
-            if(chatData?.status == "cancelled"){
-                Toast.makeText(this,"Product Cancelled", Toast.LENGTH_SHORT).show()
+            if (chatData?.status == "cancelled") {
+                Toast.makeText(this, "Product Cancelled", Toast.LENGTH_SHORT).show()
                 binding.messageBox.setText("")
-            }else{
+            } else {
                 sendMessage(binding.messageBox.text.toString().trim())
                 list.add(binding.messageBox.text.toString().trim())
                 binding.messageBox.setText("")
@@ -267,9 +296,9 @@ class ChatDetailActivity : BaseActivity() {
     }
 
     private fun sendMessage(message: String) {
-        if (message == ""){
+        if (message == "") {
             showToast("Please enter some message")
-        }else{
+        } else {
             val db = Firebase.firestore
             val sender_id = FirebaseAuth.getInstance().currentUser?.uid
             val calendar = Calendar.getInstance()
@@ -279,7 +308,7 @@ class ChatDetailActivity : BaseActivity() {
             val c = Calendar.getInstance().time
             chatData!!.time_stamp = Timestamp.now()
 
-            if (data_from == "activity"){
+            if (data_from == "activity") {
 
             }
             chatNode = chatData!!.product_id!! + Utility.setOneToOneChat(
@@ -323,7 +352,8 @@ class ChatDetailActivity : BaseActivity() {
                 .addOnSuccessListener {
                     generateAuthToken()
 
-                    val notification_user = if (sender_id == chatData!!.sender_id.toString()) chatData!!.receiver_id.toString() else chatData!!.sender_id.toString()
+                    val notification_user =
+                        if (sender_id == chatData!!.sender_id.toString()) chatData!!.receiver_id.toString() else chatData!!.sender_id.toString()
                     val map = HashMap<String, String>()
                     map["receiverId"] = notification_user //chatData["receiver_id"].toString()
                     map["message"] = message
@@ -342,10 +372,6 @@ class ChatDetailActivity : BaseActivity() {
         }
 
     }
-
-    // what is pointer in C
-//    depends on project vacancies
-
 
     private fun setUpRecycler(chatNode: String) {
 

@@ -32,6 +32,7 @@ import com.oss.abraakadabraaapp.utils.Constants.API_TAG
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_LETS_START_SOCIAL_PROFILE
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_LETS_START_USER_PROFILE
 import com.oss.abraakadabraaapp.utils.Constants.PAGE_ADD_SOCIAL_PROFILE_ONBOARDING
+import com.oss.abraakadabraaapp.utils.Constants.SIGN_IN_METHOD_GOOGLE
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.regex.Matcher
@@ -96,6 +97,14 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
 
         setUpObserver()
 
+        if (PreferencesManagement.getSignInMethod(this) == SIGN_IN_METHOD_GOOGLE){
+            binding.etEmail.hint = "Mobile Number"
+            binding.skipTxt2.visibility = View.VISIBLE
+        }else{
+            binding.etEmail.hint = "Email"
+            binding.skipTxt2.visibility = View.GONE
+        }
+
         with(binding) {
 
             etName.filterByDataType(1)
@@ -108,6 +117,10 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
                 //Old Code
                 registerUser()
             }
+
+            skipTxt2.setOnClickListener {
+                goHome()
+            }
         }
 
         binding.okGotItBtn.setOnClickListener {
@@ -117,19 +130,23 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
         setUpRecyclerView()
 
         binding.skipTxt.setOnClickListener {
-            PreferencesManagement.saveUserProfileFlag(this, true)
-
-            val intent =
-                Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            startActivity(intent)
-            finish()
+            goHome()
         }
 
         binding.imageView11.setOnClickListener {
             binding.socialProfilePopUPLayout.visibility = View.GONE
         }
 
+    }
+
+    private fun goHome() {
+        PreferencesManagement.saveUserProfileFlag(this, true)
+
+        val intent =
+            Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
+        finish()
     }
 
     override fun onBackPressed() {
@@ -171,29 +188,21 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
                 val mapAuth = HashMap<String, String>()
                 mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
 
-               /* val map = HashMap<String, String>()
-                name = binding.etName.text.toString().trim()
-                email = binding.etEmail.text.toString().trim()
-                phone = phoneNumber.trim()
-                map[RequestKeys.name] = name
-                map[RequestKeys.email] = email
-                map[RequestKeys.phoneNumber] = phone
-
-                Log.d(API_TAG, "registerUser: ${Gson().toJson(mapAuth)}")
-                authViewModel.postUser(mapAuth, map)*/
-                getLastLocation()
-                val data = UsersUpdateData(
-                    name = binding.etName.text.toString().trim(),
-                    email = binding.etEmail.text.toString().trim()
-                )
-                val dataClass = DataClass(data)
+                val body = HashMap<String,String>()
+                body["name"] = binding.etName.text.toString()
+                if (PreferencesManagement.getSignInMethod(this) == SIGN_IN_METHOD_GOOGLE){
+                    body["phone"] = binding.etEmail.text.toString()
+                }else{
+                    body["email"] = binding.etEmail.text.toString()
+                }
+                body["signin_method"] = PreferencesManagement.getSignInMethod(this)
 
                 generateAuthToken()
                 val map = java.util.HashMap<String, String>()
                 val token = PreferencesManagement.getAuthToken(this)!!
                 map[RequestKeys.authorization] = token
 
-                authViewModel.updateUserV2(map, dataClass)
+                authViewModel.onBoardUser(map,body)
 
             } else {
                 showSnackBar(
@@ -207,6 +216,13 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
     private fun setUpObserver() {
         authViewModel.isLoading.observe(this) { loader(it) }
 
+        authViewModel.onBoardingResponse.observe(this){
+            if (it.code == 200){
+                val map = java.util.HashMap<String, String>()
+                map[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
+                authViewModel.getUser(map)
+            }
+        }
         authViewModel.getUserSuccess.observe(this) {
             PreferencesManagement.saveUserInfo(this, it)
             val u_info = PreferencesManagement.getUserInfo(this@AuthUserDetailActivity)!!

@@ -11,7 +11,7 @@ data class BannerResponce (
 data class BannerData(
     @SerializedName("id"        ) var id       : String? = "",
     @SerializedName("title"     ) var title    : String? = "",
-    @SerializedName("image_url" ) var imageUrl : String? = "",
+    @SerializedName("image" ) var imageUrl : String? = "",
     @SerializedName("height"    ) var height   : Int?    = 0,
     @SerializedName("width"     ) var width    : Int?    = 0
 )

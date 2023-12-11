@@ -169,25 +169,28 @@ class HomeFragment : Fragment(), LocationListener {
     private fun setUpObserver() {
         mainViewModel.bannerSuccess.observe(requireActivity()){
             application.showToast(it.toString())
+            Log.d(TAG, "setUpObserver: $it")
             val imageList = ArrayList<SlideModel>()
             if(it.data.size > 0){
-                for (i in it.data) {
+               /* for (i in it.data) {
                     imageList.add(SlideModel(i.imageUrl, i.title, ScaleTypes.FIT))
-                }
+                }*/
                 binding.imageSlider.setImageList(imageList)
                 binding.imageSliderLayout.visibility = View.VISIBLE
-                val params = binding.cardView5.layoutParams
+                
+                /*val params = binding.cardView5.layoutParams
                 if (params is ViewGroup.MarginLayoutParams) {
                     params.topMargin = 10
                     view?.layoutParams = binding.cardView5.layoutParams
-                }
+                }*/
+                
             }else{
                 binding.imageSliderLayout.visibility = View.GONE
-                val params = binding.cardView5.layoutParams
+                /*val params = binding.cardView5.layoutParams
                 if (params is ViewGroup.MarginLayoutParams) {
                     params.topMargin = 18
                     view?.layoutParams = binding.cardView5.layoutParams
-                }
+                }*/
             }
         }
     }

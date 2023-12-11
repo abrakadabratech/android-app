@@ -24,6 +24,10 @@ class AuthRepository(private val apiHelper: APIs) {
         map: HashMap<String, String>
     ) = apiHelper.getUser(map)
 
+    suspend fun onBoardUser(
+        map: HashMap<String, String>,body: HashMap<String, String>
+    ) = apiHelper.onBoardUser(map,body)
+
     suspend fun logoutUser(
         map: HashMap<String, String>
     ) = apiHelper.logoutUser(map)

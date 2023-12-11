@@ -42,6 +42,9 @@ interface APIs {
     //Deprecated
     @GET("user")
     suspend fun getUser(@HeaderMap header: Map<String, String>) : Response<GetUserResponse>
+    @GET("v2/onboarding/user")
+    suspend fun onBoardUser(@HeaderMap header: Map<String, String>,@Body body: HashMap<String, String>)
+    : Response<OnBoardingResponse>
 
     //Logout user
     @POST("user/logout")

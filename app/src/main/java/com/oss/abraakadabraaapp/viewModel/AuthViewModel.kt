@@ -100,6 +100,30 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
         }
     }
 
+    var onBoardingResponse = MutableLiveData<OnBoardingResponse>()
+    fun onBoardUser(
+        headerMap: HashMap<String, String> , body: HashMap<String, String>) {
+        viewModelScope.launch {
+
+            suspend fun call() = repository.onBoardUser(headerMap,body)
+
+            callApi(::call, object : CallHelper<OnBoardingResponse> {
+                override fun onSuccessful(data: OnBoardingResponse) {
+                    onBoardingResponse.value = data
+//                    Log.d("TAG::", "onSuccess: firebase message ${data.message}")
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    Log.d("TAG::", "onError: firebase error ${Gson().toJson(errorResponse)}")
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+//            isLoading.value = false
+
+        }
+    }
+
     //NEW
     fun logoutUser(
         headerMap: HashMap<String, String>) {

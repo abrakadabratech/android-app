@@ -33,6 +33,7 @@ data class UsersData (
     @SerializedName("user_avatar"      ) var userAvatar     : String? = "",
     @SerializedName("email"            ) var email          : String? = "",
     @SerializedName("name"             ) var name           : String? = "",
+    @SerializedName("onboarding_status") var onboardingStatus: Boolean? = false,
     @SerializedName("user_stats"       ) var userStats      : UserStats? = UserStats(),
     @SerializedName("uid"              ) var uid            : String? = "",
     @SerializedName("location"         ) var location            : Location? = Location(),
@@ -40,7 +41,7 @@ data class UsersData (
     @SerializedName("signin_method"         ) var signinMethod            : String? = "",
     @SerializedName("fcmToken"         ) var fcmToken            : String? = ""
 ) {constructor():this("", Timestamp.now(),"","","","","",
-    "","",null,"", Location(),null,"")
+    "","",false,null,"", Location(),null,"")
     }
 data class Timestamp(
     val _seconds: Long,
