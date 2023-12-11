@@ -13,6 +13,14 @@ plugins {
 android {
     compileSdk 33
 
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.4"
+    }
+
     defaultConfig {
         applicationId "com.oss.abraakadabraaapp"
         minSdk 23

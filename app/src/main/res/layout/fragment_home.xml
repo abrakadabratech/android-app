@@ -177,6 +177,12 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/imageSliderRV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            />
         <androidx.cardview.widget.CardView
             android:id="@+id/imageSliderLayout"
             android:layout_width="match_parent"

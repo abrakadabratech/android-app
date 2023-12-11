@@ -11,10 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import com.denzcoskun.imageslider.constants.ScaleTypes
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.denzcoskun.imageslider.models.SlideModel
 import com.devs.readmoreoption.ReadMoreOption
 import com.google.android.libraries.places.api.Places
@@ -31,6 +30,7 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.MyNewProfileActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewNotificationActivity
+import com.oss.abraakadabraaapp.activities.newflow.adapters.BannerAdapter
 import com.oss.abraakadabraaapp.databinding.FragmentHomeBinding
 import com.oss.abraakadabraaapp.model.UserLocation
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
@@ -38,7 +38,6 @@ import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_GIVE
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_NOTIFICATION
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SHARE
-import com.oss.abraakadabraaapp.utils.JavaUtils
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.greenrobot.eventbus.EventBus
@@ -168,30 +167,34 @@ class HomeFragment : Fragment(), LocationListener {
 
     private fun setUpObserver() {
         mainViewModel.bannerSuccess.observe(requireActivity()){
-            application.showToast(it.toString())
+
+            binding.imageSliderRV.layoutManager = LinearLayoutManager(requireContext(),
+                LinearLayoutManager.HORIZONTAL,false)
+            binding.imageSliderRV.adapter = BannerAdapter(requireContext(),it.data)
+            /*application.showToast(it.toString())
             Log.d(TAG, "setUpObserver: $it")
             val imageList = ArrayList<SlideModel>()
             if(it.data.size > 0){
-               /* for (i in it.data) {
+               *//* for (i in it.data) {
                     imageList.add(SlideModel(i.imageUrl, i.title, ScaleTypes.FIT))
-                }*/
+                }*//*
                 binding.imageSlider.setImageList(imageList)
                 binding.imageSliderLayout.visibility = View.VISIBLE
                 
-                /*val params = binding.cardView5.layoutParams
+                *//*val params = binding.cardView5.layoutParams
                 if (params is ViewGroup.MarginLayoutParams) {
                     params.topMargin = 10
                     view?.layoutParams = binding.cardView5.layoutParams
-                }*/
+                }*//*
                 
             }else{
                 binding.imageSliderLayout.visibility = View.GONE
-                /*val params = binding.cardView5.layoutParams
+                *//*val params = binding.cardView5.layoutParams
                 if (params is ViewGroup.MarginLayoutParams) {
                     params.topMargin = 18
                     view?.layoutParams = binding.cardView5.layoutParams
-                }*/
-            }
+                }*//*
+            }*/
         }
     }
 
