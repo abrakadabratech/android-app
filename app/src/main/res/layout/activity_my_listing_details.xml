@@ -238,7 +238,8 @@
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="4dp"
                         android:fontFamily="@font/montserrat_medium"
-
+                        android:paddingBottom="15dp"
+                        android:paddingTop="15dp"
                         android:text="This is an error alert - Check it out!"
                         android:textColor="@color/status_pending"
                         app:layout_constraintBottom_toBottomOf="@+id/status_icon"

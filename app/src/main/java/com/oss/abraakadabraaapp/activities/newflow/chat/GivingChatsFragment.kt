@@ -25,15 +25,24 @@ import com.oss.abraakadabraaapp.activities.newflow.adapters.ExpandableAdapter
 import com.oss.abraakadabraaapp.activities.newflow.customeview.WrapContentLinearLayoutManager
 import com.oss.abraakadabraaapp.databinding.ChatRowBinding
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.Utility.convertToTimestamp
 import com.oss.abraakadabraaapp.utils.Utility.toDate
 
 class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
     lateinit var application: BaseActivity
     private lateinit var nodata: TextView
     private lateinit var rvChats: RecyclerView
+    private lateinit var oldChatText: TextView
+    private lateinit var oldChats: RecyclerView
     private lateinit var firestoreUserAdapter: FirestoreRecyclerAdapter<ChatListModel, UsersViewholder>
 
     private val TAG = "GivingChatsFragment"
+
+    override fun onResume() {
+        super.onResume()
+        loadGroupedChats()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,6 +51,8 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
 
         rvChats = view.findViewById(R.id.rvChats)
         nodata = view.findViewById(R.id.nodata3)
+        oldChats = view.findViewById(R.id.oldChats)
+        oldChatText = view.findViewById(R.id.oldChatsTxt)
         application = (activity as BaseActivity)
 
         application.postEvent(Constants.PAGE_GIVER_CHAT, null)
@@ -55,72 +66,6 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
         val docRef = db.collection("chats").whereEqualTo("product_giver", currentUserId)
-        docRef.get().addOnSuccessListener { snap ->
-            if (snap.isEmpty) {
-                nodata.visibility = View.VISIBLE
-            } else {
-                nodata.visibility = View.GONE
-            }
-        }
-
-        //Grouping the messages by ProductID
-        val collectionRef = db.collection("chats").whereEqualTo("product_giver", currentUserId)
-            .orderBy("status", Query.Direction.ASCENDING)
-            .orderBy("time_stamp", Query.Direction.DESCENDING)
-
-        collectionRef
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                if (querySnapshot.isEmpty){
-                    nodata.visibility = View.VISIBLE
-                    application.loader(false)
-                }else{
-                    nodata.visibility = View.GONE
-                    var groupChats = mutableListOf<GroupedChatListModel>()
-                    val groupedItems = mutableMapOf<String, List<ChatListModel>>()
-
-                    for (document in querySnapshot.documents) {
-                        val item = document.toObject(ChatListModel::class.java)
-
-                        if (item != null) {
-                            val category = item.product_id.toString()
-
-                            if (groupedItems.containsKey(category)) {
-                                groupedItems[category] = groupedItems[category]!! + item
-                            } else {
-                                groupedItems[category] = listOf(item)
-                            }
-                        }
-                    }
-
-                    // Now 'groupedItems' contains items grouped by category
-                    // You can iterate through it and do whatever you need
-                    Log.d(TAG, "setUpRecyclerview: ${Gson().toJson(groupedItems)}")
-                    for ((category, items) in groupedItems) {
-                        // Process each category and its items
-                        if (items.size > 0) {
-                            groupChats.add(
-                                GroupedChatListModel(false,
-                                    category,
-                                    items[0].product.toString(),
-                                    "Me",
-                                    items[0].product_image,
-                                    items
-                                )
-                            )
-                        }
-                    }
-                    val adapter = ExpandableAdapter(requireContext(),groupChats,currentUserId)
-                    rvChats.adapter = adapter
-                    rvChats.layoutManager = LinearLayoutManager(requireContext())
-                    println("Category: $groupChats,")
-                    application.loader(false)
-                }
-
-            }
-            .addOnFailureListener { exception ->
-                // Handle errors
-            }
 
         val options: FirestoreRecyclerOptions<ChatListModel> =
             FirestoreRecyclerOptions.Builder<ChatListModel>()
@@ -150,7 +95,7 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
 
                     holder.binding.productName.text = model.product
                     holder.binding.message.text = model.last_message
-                    holder.binding.time.text = toDate(model.time_stamp!!)
+                    holder.binding.time.text = convertToTimestamp(model.time_stamp)!!
 
                     if (model.status == "cancelled") {
                         holder.binding.cancelledTxt.visibility = View.VISIBLE
@@ -167,8 +112,82 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
 
 
         val layoutManager = WrapContentLinearLayoutManager(requireContext())
-        rvChats.layoutManager = layoutManager
-//        rvChats.adapter = firestoreUserAdapter
+        oldChats.layoutManager = layoutManager
+        oldChats.adapter = firestoreUserAdapter
+        application.loader(false)
+    }
+
+    private fun loadGroupedChats() {
+        //Grouping the messages by ProductID
+        val db = Firebase.firestore
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+
+        val docRef = db.collection("chats").whereEqualTo("product_giver", currentUserId)
+
+        val collectionRef = db.collection("chats").whereEqualTo("product_giver", currentUserId)
+            .orderBy("status", Query.Direction.ASCENDING)
+            .orderBy("time_stamp", Query.Direction.DESCENDING)
+
+        collectionRef
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                if (querySnapshot.isEmpty) {
+                    docRef.get().addOnSuccessListener { snap ->
+                        if (snap.isEmpty) {
+                            nodata.visibility = View.VISIBLE
+                        } else {
+                            nodata.visibility = View.GONE
+                        }
+                    }
+                    application.loader(false)
+                } else {
+                    nodata.visibility = View.GONE
+                    val groupChats = mutableListOf<GroupedChatListModel>()
+                    val groupedItems = mutableMapOf<String, List<ChatListModel>>()
+
+                    for (document in querySnapshot.documents) {
+                        val item = document.toObject(ChatListModel::class.java)
+
+                        if (item != null) {
+                            val category = item.product_id.toString()
+
+                            if (groupedItems.containsKey(category)) {
+                                groupedItems[category] = groupedItems[category]!! + item
+                            } else {
+                                groupedItems[category] = listOf(item)
+                            }
+                        }
+                    }
+
+                    // Now 'groupedItems' contains items grouped by category
+                    // You can iterate through it and do whatever you need
+                    Log.d(TAG, "setUpRecyclerview: ${Gson().toJson(groupedItems)}")
+                    for ((category, items) in groupedItems) {
+                        // Process each category and its items
+                        if (items.size > 0) {
+                            groupChats.add(
+                                GroupedChatListModel(
+                                    false,
+                                    category,
+                                    items[0].product.toString(),
+                                    "Me",
+                                    items[0].product_image,
+                                    items
+                                )
+                            )
+                        }
+                    }
+                    val adapter = ExpandableAdapter(requireContext(), groupChats, currentUserId)
+                    rvChats.adapter = adapter
+                    rvChats.layoutManager = LinearLayoutManager(requireContext())
+                    println("Category: $groupChats,")
+                    application.loader(false)
+                }
+
+            }
+            .addOnFailureListener { exception ->
+                // Handle errors
+            }
     }
 
     private fun navigateToChats(model: ChatListModel) {

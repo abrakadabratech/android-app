@@ -116,7 +116,7 @@
         </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView4"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -697,7 +697,7 @@
                 app:layout_constraintTop_toTopOf="@+id/i_agree_checkbox1" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 
 

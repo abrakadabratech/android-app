@@ -42,7 +42,7 @@ interface APIs {
     //Deprecated
     @GET("user")
     suspend fun getUser(@HeaderMap header: Map<String, String>) : Response<GetUserResponse>
-    @GET("v2/onboarding/user")
+    @POST("v2/onboarding/user")
     suspend fun onBoardUser(@HeaderMap header: Map<String, String>,@Body body: HashMap<String, String>)
     : Response<OnBoardingResponse>
 
@@ -62,7 +62,7 @@ interface APIs {
     ) : Response<GetUserResponse>
     @POST("v2/update/user")
     suspend fun updateUserV2(@HeaderMap header: Map<String, String>,
-                         @Body map: DataClass
+                         @Body map: Map<String, String>
     ) : Response<GetUserResponse>
 
 
@@ -109,6 +109,12 @@ interface APIs {
         @HeaderMap header: Map<String, String>,
         @Path("id") id: String
     ): Response<ProductDetailsData>
+
+    @GET("product/v2/requests/product/{id}/detail")
+    suspend fun getListingDetailsV2(
+        @HeaderMap header: Map<String, String>,
+        @Path("id") id: String
+    ): Response<ListingResponse>
 
     @GET("product/requests/{id}")
     suspend fun getListingDetails(
@@ -477,6 +483,7 @@ interface APIs {
 
     @POST("app/reports")
     suspend fun reportApi(@HeaderMap header: Map<String, String>,@Body body:ReportRequest) : Response<ReportResponce>
+
 
 
 }

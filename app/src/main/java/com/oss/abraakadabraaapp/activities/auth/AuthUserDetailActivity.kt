@@ -68,23 +68,13 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
         mAuth = FirebaseAuth.getInstance()
         setContentView(view)
 
-        if (PreferencesManagement.getUserInfoFlag(this)!!/* &&
-            PreferencesManagement.getUserProfileFlag(this)!!*/) {
-            val intent =
-                Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-//            intent.putExtra(Constants.phoneNumber,phoneNumber)
-            startActivity(intent)
-            finish()
-        }else{
-            //Get user
-            generateAuthToken()
-            if (PreferencesManagement.getAuthToken(this) != null){
-                val map = java.util.HashMap<String, String>()
-                map[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
-                authViewModel.getUser(map)
-            }
+        generateAuthToken()
+        if (PreferencesManagement.getAuthToken(this) != null){
+            val map = java.util.HashMap<String, String>()
+            map[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
+            authViewModel.getUser(map)
         }
+
         postEvent(Constants.PAGE_ADD_USER_PROFILE_ONBOARDING, null)
 
         phoneNumber = intent.getStringExtra(Constants.phoneNumber) ?: "1234567890"
@@ -98,6 +88,7 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
         setUpObserver()
 
         if (PreferencesManagement.getSignInMethod(this) == SIGN_IN_METHOD_GOOGLE){
+            binding.etName.setText(phoneNumber)
             binding.etEmail.hint = "Mobile Number"
             binding.skipTxt2.visibility = View.VISIBLE
         }else{
@@ -127,8 +118,6 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
             postEvent(BUTTON_LETS_START_SOCIAL_PROFILE, null)
         }
 
-        setUpRecyclerView()
-
         binding.skipTxt.setOnClickListener {
             goHome()
         }
@@ -140,8 +129,6 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
     }
 
     private fun goHome() {
-        PreferencesManagement.saveUserProfileFlag(this, true)
-
         val intent =
             Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -159,24 +146,6 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
 
     private fun shouldAllowBack(): Boolean {
         return false
-    }
-
-
-    private fun setUpRecyclerView() {
-        var images: Array<Int> = arrayOf(
-            R.drawable.fb_icon, R.drawable.linked_in_icon, R.drawable.twitter_icon,
-            R.drawable.insta_icon
-        )
-        list.add(SocialData(R.drawable.fb_icon, true))
-        list.add(SocialData(R.drawable.insta_icon, false))
-        list.add(SocialData(R.drawable.twitter_icon, false))
-        list.add(SocialData(R.drawable.linked_in_icon, false))
-
-        adapter = SocialShareAdapter(this, list, this)
-        val layoutManager = GridLayoutManager(this, 4)
-
-        binding.rvSocialLinks.layoutManager = layoutManager
-        binding.rvSocialLinks.adapter = adapter
     }
 
 
@@ -225,88 +194,13 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
         }
         authViewModel.getUserSuccess.observe(this) {
             PreferencesManagement.saveUserInfo(this, it)
-            val u_info = PreferencesManagement.getUserInfo(this@AuthUserDetailActivity)!!
-            if ((u_info.data?.name == null || u_info.data?.name == "") ||
-                (u_info.data?.email == "" || u_info.data?.email == null)
-            ) {
-                if (PreferencesManagement.getUserInfoFlag(this)!!) {
-                    startActivity(Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java))
-                    finish()
-                } else {
-                    binding.userDetailsLayout.visibility = View.VISIBLE
-                    binding.etName.setText(PreferencesManagement.getUserName(this).toString())
-                    binding.etEmail.setText(PreferencesManagement.getUserEmail(this).toString())
-                }
-
-            }
-            else {
-                startActivity(Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK))
+            if (it.data?.onboardingStatus!!) {
+                postFCMtoken()
+                startActivity(Intent(this@AuthUserDetailActivity, NewHomeActivity::class.java))
                 finish()
             }
-            if (mAuth.currentUser != null) {
-
-                generateAuthToken()
-                FirebaseMessaging.getInstance().token.addOnSuccessListener {
-                    PreferencesManagement.saveFCMToken(this, it)
-                    val data = FcmRequest(
-                        data = FCMData(
-                            fcmToken = PreferencesManagement.getFCMToken(this)!!
-                        )
-                    )
-
-                    val map = java.util.HashMap<String, String>()
-                    val token = PreferencesManagement.getAuthToken(this)!!
-                    map[RequestKeys.authorization] = token
-
-                    authViewModel.postFCMToken(map, data)
-
-                }.addOnFailureListener {
-                    loader(false)
-                    if (BuildConfig.DEBUG) showToast("Error Please try again ! ${it.localizedMessage}") else showToast(
-                        "Error Please try again !"
-                    )
-                }
-            }
         }
 
-        authViewModel.updateUserSuccess.observe(this) {
-            Log.d(API_TAG, "postUserSuccess: ${Gson().toJson(it)}")
-
-            if (it.code == 200 || it.code == 201) {
-                PreferencesManagement.saveUserFlag(this, true)
-                generateAuthToken()
-                val map = java.util.HashMap<String, String>()
-                map[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
-                authViewModel.getUser(map)
-
-                if (mAuth.currentUser != null) {
-                    generateAuthToken()
-                    FirebaseMessaging.getInstance().token.addOnSuccessListener {
-                        PreferencesManagement.saveFCMToken(this, it)
-                        val data = FcmRequest(
-                            data = FCMData(
-                                fcmToken = PreferencesManagement.getFCMToken(this)!!
-                            )
-                        )
-
-                        val map = java.util.HashMap<String, String>()
-                        val token = PreferencesManagement.getAuthToken(this)!!
-                        map[RequestKeys.authorization] = token
-
-                        authViewModel.postFCMToken(map, data)
-
-                    }.addOnFailureListener {
-                        loader(false)
-                        if (BuildConfig.DEBUG) showToast("Error Please try again ! ${it.localizedMessage}") else showToast(
-                            "Error Please try again !"
-                        )
-                    }
-                }
-
-            }
-//            showToast(it.responseMessage)
-//            loginInUser(it.data)
-        }
         authViewModel.getSocialProfileSuccess.observe(this) {
             Log.d(API_TAG, "getSocialProfileSuccess: ${Gson().toJson(it)}")
         }
@@ -327,6 +221,30 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
         }
 
         authViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
+    }
+
+    private fun postFCMtoken() {
+        generateAuthToken()
+        FirebaseMessaging.getInstance().token.addOnSuccessListener {
+            PreferencesManagement.saveFCMToken(this, it)
+            val data = FcmRequest(
+                data = FCMData(
+                    fcmToken = PreferencesManagement.getFCMToken(this)!!
+                )
+            )
+
+            val map = java.util.HashMap<String, String>()
+            val token = PreferencesManagement.getAuthToken(this)!!
+            map[RequestKeys.authorization] = token
+
+            authViewModel.postFCMToken(map, data)
+
+        }.addOnFailureListener {
+            loader(false)
+            if (BuildConfig.DEBUG) showToast("Error Please try again ! ${it.localizedMessage}") else showToast(
+                "Error Please try again !"
+            )
+        }
     }
 
     private fun successDialog() {
@@ -379,9 +297,11 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
                 return false
             }
 
-            if (!emailMs.matches()) {
-                showToast("Please Enter Valid Email Address")
-                return false
+            if (PreferencesManagement.getSignInMethod(this@AuthUserDetailActivity) != SIGN_IN_METHOD_GOOGLE){
+                if (!emailMs.matches()) {
+                    showToast("Please Enter Valid Email Address")
+                    return false
+                }
             }
 
             return true

@@ -60,6 +60,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:visibility="gone"
                     android:orientation="horizontal"
                     android:padding="5dp">
 
@@ -153,11 +154,11 @@
         app:layout_constraintTop_toTopOf="@+id/cardView13" />
 
     <TextView
-        android:id="@+id/textView127"
+        android:id="@+id/onlineStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
-        android:text=""
+        android:text="online"
         android:fontFamily="@font/montserrat_medium"
         android:textSize="12sp"
         android:textColor="@color/title_color"

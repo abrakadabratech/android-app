@@ -11,7 +11,7 @@ plugins {
 }
 
 android {
-    compileSdk 33
+    compileSdk 34
 
     buildFeatures {
         compose = true
@@ -58,16 +58,16 @@ android {
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             //DEV
-            buildConfigField("String", "BASE_URL", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
-            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
+//            buildConfigField("String", "BASE_URL", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
+//            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
 
             //PROD
 //            buildConfigField("String", "BASE_URL", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
 //            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
 
             //NEW_PROD_URL
-//            buildConfigField("String", "BASE_URL", "\"https://api.abrakadabraapp.app/\"")
-//            buildConfigField("String", "BASE_DEMO", "\"https://api.abrakadabraapp.app/\"")
+            buildConfigField("String", "BASE_URL", "\"https://api.abrakadabraapp.app/\"")
+            buildConfigField("String", "BASE_DEMO", "\"https://api.abrakadabraapp.app/\"")
 //
             buildConfigField "String", "API_KEY", "\"${project.property('API_KEY')}\""
             signingConfig signingConfigs.release
@@ -79,16 +79,16 @@ android {
             shrinkResources false
 //            buildConfigField("String", "BASE_URL", "\"https://abrakadabraapp.app/app/api/v1/\"")
 
-            buildConfigField("String", "BASE_URL", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
-            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
+//            buildConfigField("String", "BASE_URL", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
+//            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
 
 //            //PROD
 //            buildConfigField("String", "BASE_URL", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
 //            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-akd-prod.cloudfunctions.net/api/\"")
 
             //NEW_PROD_URL
-//            buildConfigField("String", "BASE_URL", "\"https://api.abrakadabraapp.app/\"")
-//            buildConfigField("String", "BASE_DEMO", "\"https://api.abrakadabraapp.app/\"")
+            buildConfigField("String", "BASE_URL", "\"https://api.abrakadabraapp.app/\"")
+            buildConfigField("String", "BASE_DEMO", "\"https://api.abrakadabraapp.app/\"")
 
             buildConfigField "String", "API_KEY", "\"${project.property('API_KEY')}\""
 
@@ -270,5 +270,40 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
 
+    //Jetpack compose
+    implementation(platform("androidx.compose:compose-bom:2023.10.01"))
+
+    // Choose one of the following:
+    // Material Design 3
+    implementation("androidx.compose.material3:material3")
+    // or Material Design 2
+    implementation("androidx.compose.material:material")
+    // or skip Material Design and build directly on top of foundational components
+    implementation("androidx.compose.foundation:foundation")
+    // or only import the main APIs for the underlying toolkit systems,
+    // such as input and measurement/layout
+    implementation("androidx.compose.ui:ui")
+
+    // Android Studio Preview support
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+
+
+    // Optional - Included automatically by material, only add when you need
+    // the icons but not the material library (e.g. when using Material3 or a
+    // custom design system based on Foundation)
+    implementation("androidx.compose.material:material-icons-core")
+    // Optional - Add full set of material icons
+    implementation("androidx.compose.material:material-icons-extended")
+    // Optional - Add window size utils
+    implementation("androidx.compose.material3:material3-window-size-class")
+
+    // Optional - Integration with activities
+    implementation("androidx.activity:activity-compose:1.8.1")
+
+    implementation("com.google.accompanist:accompanist-pager:0.28.0")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.28.0")
+    implementation("androidx.compose.ui:ui-util:1.5.4")
+    implementation("io.coil-kt:coil-compose:2.5.0")
 
 }

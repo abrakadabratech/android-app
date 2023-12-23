@@ -645,7 +645,16 @@ class LoginActivity : BaseActivity() {
             PreferencesManagement.saveSignInMethod(this,SIGNIN_METHOD)
 
             if (it.data?.onboardingStatus!!){
-                if (it.responseMessage != null) {
+                if (it.data?.signinMethod == SIGN_IN_METHOD_GOOGLE) {
+                    postFCMtoken()
+                    updateUser(it)
+                } else {
+                    if (mAuth.currentUser != null) {
+                        postFCMtoken()
+                        postLocationUpdate()
+                    }
+                }
+                /*if (it.responseMessage != null) {
                     if (it.responseMessage == USER_NOT_FOUND) {
                         Log.d("LOGIN>>>", "setUpObserver: User not found")
                         loader(false)
@@ -676,12 +685,12 @@ class LoginActivity : BaseActivity() {
                         postFCMtoken()
                         postLocationUpdate()
                     }
-                }
+                }*/
             }else{
                 loader(false)
                 val intent =
                     Intent(this@LoginActivity, AuthUserDetailActivity::class.java)
-                intent.putExtra(Constants.phoneNumber, phoneNumber)
+                intent.putExtra(Constants.phoneNumber, it.data?.name)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 startActivity(intent)
                 finish()
@@ -705,14 +714,15 @@ class LoginActivity : BaseActivity() {
             val data = UsersUpdateData(
                 name = it?.data?.name
             )
-            val dataClass = DataClass(data)
+            val body = HashMap<String,String>()
+            body["name"] = it?.data?.name.toString()
 
             generateAuthToken()
             val map = java.util.HashMap<String, String>()
             val token = PreferencesManagement.getAuthToken(this)!!
             map[RequestKeys.authorization] = token
 
-            authViewModel.updateUserV2(map, dataClass)
+            authViewModel.updateUserV2(map, body)
 
         } else {
             showToast(
@@ -728,17 +738,16 @@ class LoginActivity : BaseActivity() {
             val mapAuth = HashMap<String, String>()
             mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
 
-            val data = UsersUpdateData(
-                location = Location(lat, lng)
-            )
-            val dataClass = DataClass(data)
+            val body = HashMap<String,String>()
+            body["location_lat"] = lat
+            body["location_lng"] = lng
 
             generateAuthToken()
             val map = java.util.HashMap<String, String>()
             val token = PreferencesManagement.getAuthToken(this)!!
             map[RequestKeys.authorization] = token
 
-            authViewModel.updateUserV2(map, dataClass)
+            authViewModel.updateUserV2(map, body)
 
         } else {
             showToast(

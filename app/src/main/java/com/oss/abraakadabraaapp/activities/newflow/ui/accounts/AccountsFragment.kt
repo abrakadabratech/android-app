@@ -170,13 +170,16 @@ class AccountsFragment : Fragment(), View.OnClickListener {
 
                 myRatingTxt2.text = it.data?.userStats?.rating.toString()
 
-                val count = it.data?.userStats?.rating
                 val list:ArrayList<Boolean> = ArrayList()
-                for (i in 0..4){
-                    if (i < count!!) list.add(true)
-                    else list.add(false)
+                if (it.data?.userStats != null){
+                    val count = it.data?.userStats?.rating
+                    for (i in 0..4){
+                        if (i < count!!) list.add(true)
+                        else list.add(false)
+                    }
+                    Log.d("Rating", "setupProfile: ${Gson().toJson(list)}")
                 }
-                Log.d("Rating", "setupProfile: ${Gson().toJson(list)}")
+
 
                 binding.imageView28.layoutManager = LinearLayoutManager(requireContext(),
                     LinearLayoutManager.HORIZONTAL,false)

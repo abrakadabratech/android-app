@@ -16,14 +16,15 @@ data class ChatListModel(
     @SerializedName("sender_id"  ) var sender_id  : String? = "",
     @SerializedName("sender_name"  ) var sender_name  : String? = "",
     @SerializedName("last_message"  ) var last_message  : String? = "",
-    @SerializedName("time_stamp"  ) var time_stamp  : Timestamp? = Timestamp.now(),
+//    @SerializedName("time_stamp"  ) var time_stamp  : String= "",
+    @SerializedName("time_stamp"  ) var time_stamp  : Any,
     @SerializedName("date"  ) var date  : String? = "",
     @SerializedName("status"  ) var status  : String? = "accepted",
     @SerializedName("Messages") var messages:List<ChatModel>? = null,
     @SerializedName("request_id") var requestId:String = "",
     @SerializedName("product_image") var product_image:String = ""
 ){ constructor():this("","","","",
-    "","","","","","",null)}
+    "","","","","","","","","")}
 
 data class GroupedChatListModel(
     @Transient

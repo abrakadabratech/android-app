@@ -2,7 +2,7 @@ import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.google.gson.Gson
-import com.oss.abraakadabraaapp.datasource.APIService
+import com.oss.abraakadabraaapp.retrofit.api.APIService
 import com.oss.abraakadabraaapp.datasource.products.Product
 import org.greenrobot.eventbus.EventBus
 

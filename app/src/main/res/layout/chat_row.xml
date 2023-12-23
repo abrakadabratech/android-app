@@ -11,7 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/postedBy"
         android:layout_width="match_parent"
-        android:layout_height="96dp"
+        android:layout_height="100dp"
         android:fontFamily="@font/montserrat_medium"
         android:text="Alex M"
         android:textSize="16sp"
@@ -67,27 +67,29 @@
             android:id="@+id/message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:fontFamily="@font/montserrat_regular"
-            android:textSize="@dimen/sp_16"
             android:maxLines="1"
             android:text="Hi... When can you collect"
+            android:textSize="@dimen/sp_16"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/time"
             app:layout_constraintStart_toStartOf="@+id/productName" />
 
         <TextView
             android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:fontFamily="@font/montserrat_regular"
             android:text="15 Sep 2022"
             android:textColor="@color/edit_text_color"
-            app:layout_constraintBottom_toBottomOf="@+id/userName"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/userName" />
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
             android:id="@+id/cancelledTxt"
@@ -95,11 +97,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:layout_marginEnd="4dp"
-            android:text="Cancelled"
-            android:visibility="gone"
             android:fontFamily="@font/montserrat_medium"
+            android:text="Cancelled"
             android:textColor="@color/status_declined"
             android:textSize="10sp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

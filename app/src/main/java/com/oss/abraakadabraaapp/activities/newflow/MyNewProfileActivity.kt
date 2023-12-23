@@ -452,37 +452,26 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             generateAuthToken()
             //getFCMToken
             if (PreferencesManagement.getSignInMethod(this) == SIGN_IN_METHOD_GOOGLE){
-                val data = UsersUpdateData(
-                    name = binding.nameEdit.text.toString(),
-                    phone = binding.phoneEdit.text.toString(),
-//                fcmToken = PreferencesManagement.getFCMToken(this)!!
-                )
-                val dataClass = DataClass(data)
+
+                val body = HashMap<String,String>()
+                body["name"] = binding.nameEdit.text.toString()
+                body["phone"] = binding.phoneEdit.text.toString()
 
                 val map = HashMap<String, String>()
                 val token = PreferencesManagement.getAuthToken(this)!!
                 map[RequestKeys.authorization] = token
-                Log.d(
-                    "TAG",
-                    "Token in Accounts fragment: ${JSONObject(Gson().toJson(dataClass))}"
-                )
-                authViewModel.updateUserV2(map, dataClass)
+
+                authViewModel.updateUserV2(map, body)
             }else{
-                val data = UsersUpdateData(
-                    name = binding.nameEdit.text.toString(),
-                    email = binding.emailEdit.text.toString(),
-//                fcmToken = PreferencesManagement.getFCMToken(this)!!
-                )
-                val dataClass = DataClass(data)
+                val body = HashMap<String,String>()
+                body["name"] = binding.nameEdit.text.toString()
+                body["email"] = binding.emailEdit.text.toString()
 
                 val map = HashMap<String, String>()
                 val token = PreferencesManagement.getAuthToken(this)!!
                 map[RequestKeys.authorization] = token
-                Log.d(
-                    "TAG",
-                    "Token in Accounts fragment: ${JSONObject(Gson().toJson(dataClass))}"
-                )
-                authViewModel.updateUserV2(map, dataClass)
+
+                authViewModel.updateUserV2(map, body)
             }
         }
     }

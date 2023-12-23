@@ -1,7 +1,6 @@
 package com.oss.abraakadabraaapp.activities.newflow.ui.home
 
 import android.Manifest
-import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
@@ -29,7 +28,6 @@ import com.codersroute.flexiblewidgets.FlexibleSwitch
 import com.codersroute.flexiblewidgets.FlexibleSwitch.OnStatusChangedListener
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -46,7 +44,7 @@ import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.adapter.CategoryAdapter
 import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.databinding.NewReceiverFlowBinding
-import com.oss.abraakadabraaapp.datasource.APIService
+import com.oss.abraakadabraaapp.retrofit.api.APIService
 import com.oss.abraakadabraaapp.datasource.MainFilterViewModel
 import com.oss.abraakadabraaapp.datasource.MainViewModel
 import com.oss.abraakadabraaapp.datasource.MainViewModelFactory
@@ -388,7 +386,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                     )[MainFilterViewModel::class.java]
 
                 mainListAdapter!!.submitData(lifecycle,PagingData.empty())
-                lifecycleScope.launchWhenCreated {
+                lifecycleScope.launch {
 
                     viewModel.listData2.collectLatest {
                         launch(Dispatchers.Main) {

@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -48,6 +49,7 @@ import com.oss.abraakadabraaapp.utils.Constants.PAGE_CHATS_DETAILS
 import com.oss.abraakadabraaapp.utils.Constants.UNDER_DEV
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
+import com.oss.abraakadabraaapp.utils.Utility.convertToTimestamp
 import com.oss.abraakadabraaapp.utils.Utility.toDate
 import com.oss.abraakadabraaapp.utils.Utility.toDateAndTime
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
@@ -72,6 +74,8 @@ class ChatDetailActivity : BaseActivity() {
         binding = ActivityChatDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
         postEvent(PAGE_CHATS_DETAILS, null)
+
+        showOnlineOrOffline()
 
         if (intent.hasExtra(Constants.hasNotificationData)) {
             generateAuthToken()
@@ -123,6 +127,38 @@ class ChatDetailActivity : BaseActivity() {
         clickEvents()
 
         markAsRead()
+
+    }
+
+    private fun showOnlineOrOffline() {
+        var document = ""
+        if (FirebaseAuth.getInstance().currentUser?.uid.toString() == chatData?.receiver_id){
+            document = chatData?.sender_id.toString()
+        }else document = chatData?.receiver_id.toString()
+
+        val userRef =
+            db.collection("online_users").document(document)
+
+        userRef.addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e)
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null && snapshot.exists()) {
+                val isOnline = snapshot.getBoolean("isOnline") ?: false
+                // Update UI to reflect user presence (e.g., show a green dot if online)
+                if (isOnline){
+                    binding.onlineStatus.text = "online"
+                    binding.onlineStatus.setTextColor(ContextCompat.getColor(this@ChatDetailActivity,R.color.status_accepted))
+                }else{
+                    binding.onlineStatus.text = "offline"
+                    binding.onlineStatus.setTextColor(ContextCompat.getColor(this,R.color.status_declined))
+                }
+//                updateUi(isOnline)
+            }
+        }
+
 
     }
 
@@ -408,22 +444,22 @@ class ChatDetailActivity : BaseActivity() {
                     model: ChatModel
                 ) {
                     val user = model
+                    Log.d("Chat-->", "onBindViewHolder: ${user}")
                     holder.bind(model)
                     if (model.from == sender_id) {
                         holder.binding.toLayout.visibility = View.VISIBLE
                         holder.binding.fromLayout.visibility = View.GONE
                         holder.binding.toMessage.text = model.text
-                        holder.binding.toMessageTime.text = toDateAndTime(model.timeStamp!!)
+                        holder.binding.toMessageTime.text = toDateAndTime(model.timestamp)
                         holder.binding.toMessage.setTextIsSelectable(true)
                     } else {
                         holder.binding.fromLayout.visibility = View.VISIBLE
                         holder.binding.toLayout.visibility = View.GONE
                         holder.binding.fromMessage.text = model.text
-                        holder.binding.fromMessageTime.text = toDateAndTime(model.timeStamp!!)
+                        holder.binding.fromMessageTime.text = toDateAndTime(model.timestamp)
                         holder.binding.fromMessage.setTextIsSelectable(true)
                     }
                     var a = GsonBuilder().create().toJson(model)
-                    Log.d("TAG", "onBindViewHolder: " + a)
                 }
             }
 

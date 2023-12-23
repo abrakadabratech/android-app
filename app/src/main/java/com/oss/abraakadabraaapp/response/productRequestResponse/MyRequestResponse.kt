@@ -24,6 +24,7 @@ data class Data (
 )
 data class PostedByUser1 (
 
+
     @SerializedName("uid"          ) var uid         : String? = null,
     @SerializedName("name"         ) var name        : String? = null,
     @SerializedName("user_avatar"  ) var userAvatar  : String? = null,

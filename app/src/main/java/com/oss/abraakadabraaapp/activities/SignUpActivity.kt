@@ -77,7 +77,7 @@ class SignUpActivity : BaseActivity() {
                 map[RequestKeys.phoneNumber] =
                     binding.etPhoneNumber.text.toString().trim()
                 map[RequestKeys.password] = binding.etPassword.text.toString().trim()
-                map[RequestKeys.deviceId] = getDeviceId()
+//                map[RequestKeys.deviceId] = getDeviceId()
                 map[RequestKeys.deviceType] = ApiConstants.deviceType
 
                 if (PreferencesManagement.getUserLocation(this@SignUpActivity) != null) {

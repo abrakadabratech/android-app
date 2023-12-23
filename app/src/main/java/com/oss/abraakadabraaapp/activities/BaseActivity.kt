@@ -3,6 +3,7 @@ package com.oss.abraakadabraaapp.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -34,6 +35,8 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.BuildConfig
@@ -54,7 +57,7 @@ import java.util.*
 import java.util.regex.Pattern
 
 
-abstract class BaseActivity : AppCompatActivity(),LocationListener {
+abstract class BaseActivity : AppCompatActivity(), LocationListener {
     override fun onLocationChanged(p0: Location) {
         TODO("Not yet implemented")
     }
@@ -78,6 +81,7 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
     private var sTracker: Tracker? = null
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
+    val db = FirebaseFirestore.getInstance()
 
     @get:Synchronized
     val defaultTracker: Tracker?
@@ -88,6 +92,7 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
             }
             return sTracker
         }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -124,9 +129,31 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
             )*//*
         }*/
         setUpObserver()
+
+        registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+                // App is in the foreground
+                setUserOnline()
+            }
+
+            override fun onActivityStarted(activity: Activity) {}
+
+            override fun onActivityResumed(activity: Activity) {}
+
+            override fun onActivityPaused(activity: Activity) {}
+
+            override fun onActivityStopped(activity: Activity) {}
+
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+
+            override fun onActivityDestroyed(activity: Activity) {
+                // App is in the background or closed
+                setUserOffline()
+            }
+        })
     }
 
-    public fun postClick(event_tag: String){
+    public fun postClick(event_tag: String) {
         val bundle = Bundle()
         bundle.putString(event_tag, "1")
         firebaseAnalytics.logEvent(event_tag, bundle)
@@ -136,7 +163,7 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
 
     public fun postEvent(event_tag: String, bundle: Bundle?) {
         // Obtain the FirebaseAnalytics instance.
-        firebaseAnalytics.setCurrentScreen(this,event_tag,null)
+        firebaseAnalytics.setCurrentScreen(this, event_tag, null)
 //        val bundle = Bundle()
 //        bundle.putString(FirebaseAnalytics.Param.METHOD, "Test method")
 
@@ -172,12 +199,12 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
 //            Log.d("getLocationData", "longitude $longitude")
 //            saveLocation()
 
-           /* val tag = "$latitude,$longitude"
-            val url =
-                ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" + resources.getString(
-                    R.string.akd
-                )
-            mainViewModel.getAddress(url)*/
+            /* val tag = "$latitude,$longitude"
+             val url =
+                 ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" + resources.getString(
+                     R.string.akd
+                 )
+             mainViewModel.getAddress(url)*/
 
             /*if (PreferencesManagement.getUserLocation(this@BaseActivity) != null) {
                 val userLocation = PreferencesManagement.getUserLocation(this@BaseActivity)
@@ -199,7 +226,8 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
 
         }
     }
-    fun getAddress(lat: Double, lng: Double) :String{
+
+    fun getAddress(lat: Double, lng: Double): String {
         val geocoder = Geocoder(this, Locale.getDefault())
 
         try {
@@ -207,10 +235,10 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
             val obj = addresses!![0]
             var add = obj.getAddressLine(0)
             var string = ""
-            if(obj.subLocality != null){
+            if (obj.subLocality != null) {
                 string = "${obj.subLocality},${obj.locality}"
-            }else{
-                string = obj.locality+","+obj.adminArea
+            } else {
+                string = obj.locality + "," + obj.adminArea
             }
             return add
 
@@ -228,7 +256,7 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
             val data = it.results[0]
             val fullAddress = data.formattedAddress
 
-            Log.e("location_debug", "Location from maps sdk : $fullAddress" )
+            Log.e("location_debug", "Location from maps sdk : $fullAddress")
 
             var area = ""
             var short_name = ""
@@ -254,25 +282,25 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
             var final_str = ""
             Log.e("location_debug", "address $fullAddress")
             val arr = fullAddress.split(",")
-            for(i in 0..arr.size-2){
+            for (i in 0..arr.size - 2) {
                 var s_str_arr = arr[i].trim().split(" ")
                 var s_str = ""
-                for(element in s_str_arr){
-                    if(!p.matcher(element).find()){
+                for (element in s_str_arr) {
+                    if (!p.matcher(element).find()) {
                         s_str = "$s_str$element "
                     }
                 }
-                if(s_str.trim() != ""){
+                if (s_str.trim() != "") {
                     final_str = "$final_str$s_str,"
                 }
             }
-            Log.e("location_debug",final_str.dropLast(1))
+            Log.e("location_debug", final_str.dropLast(1))
             PreferencesManagement.saveUserLocation(
                 this,
                 UserLocation(
                     lat = lat,
                     long = lng,
-                    final_str.dropLast(1) ,
+                    final_str.dropLast(1),
                 )
             )
 
@@ -336,18 +364,21 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
             val loca = addresses[0].locality ?: ""
 
             var f_address = ""
-            if(featurename != ""){
+            if (featurename != "") {
                 f_address = "$f_address$featurename,"
             }
-            if(subloc != ""){
+            if (subloc != "") {
                 f_address = "$f_address$subloc,"
             }
-            if (loca != ""){
+            if (loca != "") {
                 f_address = "$f_address$loca,"
             }
             Log.e("location_update", "${f_address}")
 
-            Log.d("location_update", "$locality\n $city\n $state\n $country\n $pinCode\n $fullAddress")
+            Log.d(
+                "location_update",
+                "$locality\n $city\n $state\n $country\n $pinCode\n $fullAddress"
+            )
 
 
             val address = "$locality, $city, $state"
@@ -359,31 +390,31 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
             var comArr = arr[0].split(",")
             var finalStr = ""
             if (comArr.size > 2) {
-                for(i in 0..comArr.size-2){
+                for (i in 0..comArr.size - 2) {
                     var s_str_arr = comArr[i].trim().split(" ")
                     var s_str = ""
-                    for(element in s_str_arr){
-                        if(!p.matcher(element).find()){
+                    for (element in s_str_arr) {
+                        if (!p.matcher(element).find()) {
                             s_str = "$s_str$element "
                         }
                     }
-                    if(s_str.trim() != ""){
+                    if (s_str.trim() != "") {
                         finalStr = "$finalStr$s_str,"
                     }
                 }
             }
             Log.d("location_debug", "Final String ${finalStr.dropLast(1)}")
 
-            if (f_address.dropLast(1).trim() != ""){
+            if (f_address.dropLast(1).trim() != "") {
                 PreferencesManagement.saveUserLocation(
                     this,
                     UserLocation(
                         lat = lat,
                         long = lng,
-                        f_address.dropLast(1) ,
+                        f_address.dropLast(1),
                     )
                 )
-            }else{
+            } else {
                 PreferencesManagement.saveUserLocation(
                     this,
                     UserLocation(
@@ -406,7 +437,7 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
         val tag = "$lat,$lng"
         val url =
             ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" +
-                BuildConfig.API_KEY
+                    BuildConfig.API_KEY
 
         mainViewModel.getAddress(url)
     }
@@ -522,13 +553,13 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     ) == PackageManager.PERMISSION_GRANTED
 
-    @SuppressLint("HardwareIds")
+    /*@SuppressLint("HardwareIds")
     fun getDeviceId(): String {
         return Settings.Secure.getString(
             contentResolver,
             Settings.Secure.ANDROID_ID
         )
-    }
+    }*/
 
     fun backToLogIn() {
         PreferencesManagement.saveUserData(this, null)
@@ -652,7 +683,7 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
         Log.d("GA4", "debugLog: $eventTag")
     }
 
-    fun generateAuthToken():String{
+    fun generateAuthToken(): String {
         val mUser = FirebaseAuth.getInstance().currentUser
         mUser!!.getIdToken(true)
             .addOnCompleteListener {
@@ -664,8 +695,7 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
                         getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     val clip = ClipData.newPlainText(android.R.attr.label.toString(), idToken)
 //                    clipboard.setPrimaryClip(clip)
-                    if(PreferencesManagement.saveAuthToken(this@BaseActivity,auth))
-                    {
+                    if (PreferencesManagement.saveAuthToken(this@BaseActivity, auth)) {
                         Log.d("akd_debug", "generateAuthToken: Data saved in preferences.")
                     }
                 }
@@ -700,13 +730,41 @@ abstract class BaseActivity : AppCompatActivity(),LocationListener {
     fun getFCMToken() {
 
         FirebaseMessaging.getInstance().token.addOnSuccessListener {
-            PreferencesManagement.saveFCMToken(this,it)
+            PreferencesManagement.saveFCMToken(this, it)
         }.addOnFailureListener {
             loader(false)
             if (BuildConfig.DEBUG) showToast("Error Please try again ! ${it.localizedMessage}") else showToast(
                 "Error Please try again !"
             )
         }
+    }
+
+    fun setUserOnline() {
+        if (FirebaseAuth.getInstance().currentUser?.uid != null) {
+            val userRef = db.collection("online_users").document(FirebaseAuth.getInstance().currentUser?.uid.toString())
+
+            userRef
+                .update("isOnline", true)
+                .addOnSuccessListener {
+                    // Update UI or perform other actions
+                }
+        }
+
+    }
+
+    // Set user as offline when the app is in the background or closed
+    fun setUserOffline() {
+        if (FirebaseAuth.getInstance().currentUser?.uid!=null){
+            val userRef =
+                db.collection("online_users").document(FirebaseAuth.getInstance().currentUser?.uid.toString())
+
+            userRef
+                .update("isOnline", false, "lastOnlineTimestamp", FieldValue.serverTimestamp())
+                .addOnSuccessListener {
+                    // Update UI or perform other actions
+                }
+        }
+
     }
 }
 

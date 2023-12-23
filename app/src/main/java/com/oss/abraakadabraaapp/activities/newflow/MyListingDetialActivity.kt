@@ -16,7 +16,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.denzcoskun.imageslider.constants.ScaleTypes
@@ -38,17 +43,29 @@ import com.oss.abraakadabraaapp.activities.newflow.model.AllCategoryResponse
 import com.oss.abraakadabraaapp.activities.newflow.model.CatData
 import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.databinding.ActivityMyListingDetailsBinding
+import com.oss.abraakadabraaapp.datasource.MainFilterViewModel
+import com.oss.abraakadabraaapp.datasource.MainViewModelFactory
+import com.oss.abraakadabraaapp.datasource.ProductAdapter
+import com.oss.abraakadabraaapp.datasource.RequestViewModel
+import com.oss.abraakadabraaapp.datasource.RequestedUsersAdapter
+import com.oss.abraakadabraaapp.datasource.RequestsViewModelFactory
 import com.oss.abraakadabraaapp.response.productRequestResponse.ListingResponse
+import com.oss.abraakadabraaapp.response.productRequestResponse.Requests
+import com.oss.abraakadabraaapp.retrofit.api.APIService
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_MYLISTING_DETAILS
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
+import com.oss.abraakadabraaapp.utils.customView.MarginItemDecoration
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Locale
 
-class MyListingDetialActivity : BaseActivity(), MyRequestedUsersAdapter.OnRequestClicks,
+class MyListingDetialActivity : BaseActivity(), RequestedUsersAdapter.OnRequestClicks,
     CategoryDialogAdapter.CategoryDialogAdapterInterface,
     CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAdapterInterface {
     lateinit var application: BaseActivity
@@ -72,6 +89,7 @@ class MyListingDetialActivity : BaseActivity(), MyRequestedUsersAdapter.OnReques
     private lateinit var placesClient: PlacesClient
 
     lateinit var userCatData: AllCategoryResponse
+    private var requestsAdapter: RequestedUsersAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,6 +107,8 @@ class MyListingDetialActivity : BaseActivity(), MyRequestedUsersAdapter.OnReques
         loadUsedForData()
         loadConditionData()
 
+        setupList()
+        loaddata()
         val apiKey = BuildConfig.API_KEY
 
         if (!Places.isInitialized()) {
@@ -253,7 +273,6 @@ class MyListingDetialActivity : BaseActivity(), MyRequestedUsersAdapter.OnReques
     override fun onResume() {
         super.onResume()
         binding.editMenuDialog.visibility = View.GONE
-        loaddata()
     }
 
     private fun locationPicker() {
@@ -309,10 +328,40 @@ class MyListingDetialActivity : BaseActivity(), MyRequestedUsersAdapter.OnReques
     }
 
     private fun loaddata() {
+
         val map = HashMap<String, String>()
         val token = PreferencesManagement.getAuthToken(this)!!
         map[RequestKeys.authorization] = token
-        mainViewModel.getListingDetails(map, productId)
+
+        mainViewModel.getListingDetailsV2(map, productId)
+
+        val viewModel =
+            ViewModelProvider(
+                this,
+                RequestsViewModelFactory(
+                    APIService.getApiService(),
+                    map,productId)
+            )[RequestViewModel::class.java]
+        requestsAdapter!!.submitData(lifecycle, PagingData.empty())
+        lifecycleScope.launch {
+            viewModel.listRequests.collect{
+                launch(Dispatchers.Main){
+                    requestsAdapter!!.loadStateFlow.collectLatest { loadState->
+                        if (loadState.refresh is LoadState.Loading) {
+//                                    application.loader(true)
+                        } else {
+                            binding.responsesOne.text =
+                                if (requestsAdapter!!.itemCount == 1) "${requestsAdapter!!.itemCount} Response" else "${requestsAdapter!!.itemCount} Responses"
+                            binding.responsesTwo.text =
+                                if (requestsAdapter!!.itemCount == 1) "${requestsAdapter!!.itemCount} Response" else "${requestsAdapter!!.itemCount} Responses"
+
+                        }
+                    }
+                }
+                requestsAdapter!!.submitData(lifecycle,PagingData.empty())
+                requestsAdapter!!.submitData(it)
+            }
+        }
     }
 
     private fun setUpObserver() {
@@ -331,7 +380,7 @@ class MyListingDetialActivity : BaseActivity(), MyRequestedUsersAdapter.OnReques
                 finish()
             }
         }
-        mainViewModel.listingDetailsuccess.observe(this) {
+        mainViewModel.listingDetailV2success.observe(this) {
 //            Log.d("TAG - Product deails", "is it rue : ${productDetails.data.description}")
 
             if (it.code == 200) {
@@ -352,7 +401,16 @@ class MyListingDetialActivity : BaseActivity(), MyRequestedUsersAdapter.OnReques
         mainViewModel.isLoading.observe(this) { loader(it) }
 
     }
+    private fun setupList() {
+        requestsAdapter = RequestedUsersAdapter(this,this)
+        val lm = LinearLayoutManager(this)
+        binding.rvRequestedUsers.apply {
+            //            layoutManager = LinearLayoutManager(requireContext())
+            layoutManager = lm
 
+            adapter = requestsAdapter
+        }
+    }
     private fun setUpProductDetails(it: ListingResponse) {
 //        PROD_CATEGORY = it.product!!.category.toString()
 
@@ -393,14 +451,6 @@ class MyListingDetialActivity : BaseActivity(), MyRequestedUsersAdapter.OnReques
         }.toString())
         binding.locationName.setText(data.locationName.toString())
 
-        binding.responsesOne.text =
-            if (it.requests.size == 1) "${it.requests.size} Response" else "${it.requests.size} Responses"
-        binding.responsesTwo.text =
-            if (it.requests.size == 1) "${it.requests.size} Response" else "${it.requests.size} Responses"
-
-        val adapter = MyRequestedUsersAdapter(this, it.requests, this)
-        binding.rvRequestedUsers.layoutManager = LinearLayoutManager(this)
-        binding.rvRequestedUsers.adapter = adapter
 
         //Alert messages
         when (it.alertMessage.type) {
@@ -479,10 +529,10 @@ class MyListingDetialActivity : BaseActivity(), MyRequestedUsersAdapter.OnReques
         startActivity(Intent.createChooser(i, "Share"))
     }
 
-    override fun onClick(position: Int) {
+    override fun onClick(request: Requests) {
         if (productDetails != null) {
             val intent = Intent(this, RequesterActivity::class.java)
-            intent.putExtra(Constants.productId, productDetails!!.requests[position].requestId)
+            intent.putExtra(Constants.productId, request.requestId)
             intent.putExtra(Constants.productStatus, productDetails!!.product?.status)
             startActivity(intent)
 

@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
-import retrofit2.http.Query
+import com.oss.abraakadabraaapp.retrofit.api.APIService
 
 class SearchViewModel(private val apiService: APIService,
                       private val headers:Map<String,String>,

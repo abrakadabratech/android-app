@@ -8,12 +8,35 @@ import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.retrofit.utils.ApiConstants
 import java.io.File
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 
 object Utility {
     const val EXTRA_PREFIX = BuildConfig.APPLICATION_ID
+
+    fun convertToTimestamp(value: Any): String {
+        val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+        val dateformat: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+        if (value is Timestamp){
+            val date: Date = value.toDate()
+            val formattedDate: String = dateformat.format(date)
+            return formattedDate
+        }else if(value is String){
+            return value
+        }else if(value is Long){
+            val milliseconds = TimeUnit.NANOSECONDS.toMillis(value)
+            val date = Date(milliseconds)
+            return dateformat.format(date).toString()
+        }
+        return ""
+    }
 
     fun getHeaders(context: Context): HashMap<String, String> {
         val map = HashMap<String, String>()
@@ -71,16 +94,29 @@ object Utility {
         return formattedDate
     }
 
-    fun toDateAndTime(timestamp: Timestamp):String {
+    fun toDateAndTime(timestamp: Any): String {
+        val dateFormat = DateTimeFormatter.ofPattern("MMM-dd-yy hh:mm a", Locale.getDefault())
 
-        val date: Date = timestamp.toDate()
+        if (timestamp is Timestamp){
+            val instant: Instant = Instant.ofEpochSecond(timestamp.seconds,timestamp.nanoseconds.toLong())
+            val localDateTime: LocalDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
 
-        val dateFormat = SimpleDateFormat("MMM-dd-yy hh:mm a", Locale.getDefault())
-        val formattedDate: String = dateFormat.format(date)
-        return formattedDate
+            return dateFormat.format(localDateTime)
+        }else if (timestamp is Long){
+            val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+
+            val milliseconds = TimeUnit.NANOSECONDS.toMillis(timestamp)
+            val date = Date(milliseconds)
+            return dateFormat.format(date).toString()
+        }else{
+            return ""
+        }
+
+        // Using java.time API
+
     }
 
-    var array = listOf<String>(
+    var array = listOf(
         "2 girls 1 cup",
         "2g1c",
         "4r5e",

@@ -1,5 +1,8 @@
 package com.oss.abraakadabraaapp.activities.newflow.ui.home
 
+import androidx.compose.foundation.Image
+import androidx.compose.material3.Card
+import androidx.compose.foundation.shape.RoundedCornerShape
 import android.content.Intent
 import android.graphics.Color
 import android.location.Location
@@ -11,11 +14,31 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role.Companion.Image
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.compose.rememberAsyncImagePainter
+import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
 import com.devs.readmoreoption.ReadMoreOption
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.google.accompanist.pager.rememberPagerState
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.PlacesClient
@@ -31,6 +54,7 @@ import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.MyNewProfileActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewNotificationActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.BannerAdapter
+import com.oss.abraakadabraaapp.activities.newflow.apimodels.BannerData
 import com.oss.abraakadabraaapp.databinding.FragmentHomeBinding
 import com.oss.abraakadabraaapp.model.UserLocation
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
@@ -40,6 +64,8 @@ import com.oss.abraakadabraaapp.utils.Constants.BUTTON_NOTIFICATION
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SHARE
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.yield
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -103,6 +129,8 @@ class HomeFragment : Fragment(), LocationListener {
 
         placesClient = Places.createClient(requireContext())
 
+        //Option removed
+/*
         binding.submitProfile.setOnClickListener {
             val intent = Intent(requireContext(), MyNewProfileActivity::class.java)
             intent.putExtra("from", "activity")
@@ -119,6 +147,7 @@ class HomeFragment : Fragment(), LocationListener {
                 .commit()
             EventBus.getDefault().post(1)
         }
+*/
 
 
         binding.locationOnActionbar.setOnClickListener {
@@ -126,6 +155,7 @@ class HomeFragment : Fragment(), LocationListener {
         }
 
         binding.receiveBtn.setOnClickListener {
+            binding.imageSliderLayout.visibility = View.VISIBLE
             application.postClick(Constants.BUTTON_RECEIVE)
             binding.receiveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
             binding.receiveBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
@@ -138,6 +168,7 @@ class HomeFragment : Fragment(), LocationListener {
             EventBus.getDefault().post(1)
         }
         binding.giveBtn.setOnClickListener {
+            binding.imageSliderLayout.visibility = View.GONE
             application.postClick(BUTTON_GIVE)
             EventBus.getDefault().post(0)
             binding.receiveBtn.background = null
@@ -165,36 +196,100 @@ class HomeFragment : Fragment(), LocationListener {
         return root
     }
 
+    @OptIn(ExperimentalPagerApi::class)
+    @Composable
+    fun BannerSlider(list:ArrayList<BannerData>){
+        val pagerState = rememberPagerState(initialPage = 0)
+
+        LaunchedEffect(Unit) {
+            while (true) {
+                yield()
+                delay(2600)
+                pagerState.animateScrollToPage(
+                    page = (pagerState.currentPage + 1) % (pagerState.pageCount)
+                )
+            }
+        }
+
+
+        Column {
+            HorizontalPager(
+                count = list.size,
+                state = pagerState,
+                contentPadding = PaddingValues(horizontal = 4.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            ) { page ->
+                Card(
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                    /*.graphicsLayer {
+                        val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
+
+                        lerp(
+                            start = 0.85f,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        ).also { scale ->
+                            scaleX = scale
+                            scaleY = scale
+                        }
+
+                        alpha = lerp(
+                            start = 0.5f,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        )
+                    }*/
+                ) {
+                    val banner = rememberAsyncImagePainter(model = list[page].imageUrl)
+                    Image(
+                        painter = banner,
+                        contentDescription = stringResource(R.string.image_slider),
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.height(list[page].height!!.dp)
+                            .width(list[page].width!!.dp)
+                    )
+                }
+            }
+
+            HorizontalPagerIndicator(
+                pagerState = pagerState,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 4.dp)
+            )
+        }
+    }
     private fun setUpObserver() {
         mainViewModel.bannerSuccess.observe(requireActivity()){
-
-            binding.imageSliderRV.layoutManager = LinearLayoutManager(requireContext(),
-                LinearLayoutManager.HORIZONTAL,false)
-            binding.imageSliderRV.adapter = BannerAdapter(requireContext(),it.data)
-            /*application.showToast(it.toString())
+            /*binding.composeView.setContent {
+                BannerSlider(it.data)
+            }*/
             Log.d(TAG, "setUpObserver: $it")
             val imageList = ArrayList<SlideModel>()
             if(it.data.size > 0){
-               *//* for (i in it.data) {
-                    imageList.add(SlideModel(i.imageUrl, i.title, ScaleTypes.FIT))
-                }*//*
+                for (i in it.data) {
+                    imageList.add(SlideModel(i.imageUrl, "", ScaleTypes.FIT))
+                }
                 binding.imageSlider.setImageList(imageList)
                 binding.imageSliderLayout.visibility = View.VISIBLE
-                
-                *//*val params = binding.cardView5.layoutParams
+
+               /* val params = binding.cardView5.layoutParams
                 if (params is ViewGroup.MarginLayoutParams) {
                     params.topMargin = 10
                     view?.layoutParams = binding.cardView5.layoutParams
-                }*//*
+                }*/
                 
             }else{
                 binding.imageSliderLayout.visibility = View.GONE
-                *//*val params = binding.cardView5.layoutParams
+                /*val params = binding.cardView5.layoutParams
                 if (params is ViewGroup.MarginLayoutParams) {
                     params.topMargin = 18
                     view?.layoutParams = binding.cardView5.layoutParams
-                }*//*
-            }*/
+                }*/
+            }
         }
     }
 

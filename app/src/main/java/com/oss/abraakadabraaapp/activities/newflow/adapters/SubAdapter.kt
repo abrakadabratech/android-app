@@ -14,6 +14,7 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatListModel
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.Utility.convertToTimestamp
 import com.oss.abraakadabraaapp.utils.Utility.toDate
 
 class SubAdapter(val context: Context, val i: List<ChatListModel>,val currentUserId: String?) :
@@ -47,7 +48,7 @@ class SubAdapter(val context: Context, val i: List<ChatListModel>,val currentUse
         }else{
             holder.userName.text = i[position].sender_name
         }
-        holder.time.text = toDate(i[position].time_stamp!!)
+        holder.time.text = convertToTimestamp(i[position].time_stamp)
         holder.product.text = i[position].product
         holder.message.text = i[position].last_message.toString()
         holder.itemView.setOnClickListener {

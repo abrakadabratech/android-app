@@ -15,7 +15,9 @@ import com.oss.abraakadabraaapp.activities.newflow.model.CatData
 import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import java.util.Locale
 
-class CategorySelectAdapter(val context: Context, var i: ArrayList<UserCatData>,val onclick:OnCategoryClicked)
+class CategorySelectAdapter(val context: Context,
+                            var i: ArrayList<UserCatData>,
+                            val onclick:OnCategoryClicked)
     : RecyclerView.Adapter<CategorySelectAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View):

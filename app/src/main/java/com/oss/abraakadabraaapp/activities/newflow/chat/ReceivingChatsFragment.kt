@@ -28,6 +28,7 @@ import com.oss.abraakadabraaapp.activities.newflow.customeview.WrapContentLinear
 import com.oss.abraakadabraaapp.databinding.ChatRowBinding
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
+import com.oss.abraakadabraaapp.utils.Utility.convertToTimestamp
 import com.oss.abraakadabraaapp.utils.Utility.toDate
 import java.text.SimpleDateFormat
 import java.util.*
@@ -37,37 +38,21 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
     lateinit var application: BaseActivity
     private lateinit var rvChats: RecyclerView
     private lateinit var  nodata : TextView
+    private lateinit var oldChatText: TextView
+    private lateinit var oldChats: RecyclerView
+
     private val TAG = "ReceivingChatsFragment"
     private lateinit var firestoreUserAdapter: FirestoreRecyclerAdapter<ChatListModel, UsersViewholder>
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-
-        val view = inflater.inflate(R.layout.fragment_receiving_chats, container, false)
-        rvChats = view.findViewById(R.id.rvChats)
-        nodata = view.findViewById(R.id.nodata3)
-
-        setUpRecyclerview()
-        application = (activity as BaseActivity)
-
-        application.postEvent(Constants.PAGE_RECEIVER_CHAT,null)
-
-        return view
+    override fun onResume() {
+        super.onResume()
+        loadGroupedChats()
     }
-    private fun setUpRecyclerview() {
+
+    private fun loadGroupedChats() {
         val db = Firebase.firestore
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
-        val docRef = db.collection("chats").whereEqualTo("product_receiver",currentUserId)
-        docRef.get().addOnSuccessListener { snap ->
-            if(snap.isEmpty){
-                nodata.visibility = View.VISIBLE
-            }else{
-                nodata.visibility = View.GONE
-            }
-        }
 
         val collectionRef = db.collection("chats").whereEqualTo("product_receiver", currentUserId)
             .orderBy("status", Query.Direction.ASCENDING)
@@ -77,8 +62,15 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
             .get()
             .addOnSuccessListener { querySnapshot ->
                 if (querySnapshot.isEmpty){
-                    nodata.visibility = View.VISIBLE
-                }else{
+                    val docRef = db.collection("chats").whereEqualTo("product_receiver",currentUserId)
+                    docRef.get().addOnSuccessListener { snap ->
+                        if(snap.isEmpty){
+                            nodata.visibility = View.VISIBLE
+                            oldChats.visibility = View.GONE
+                        }else{
+                            nodata.visibility = View.GONE
+                        }
+                    }                }else{
                     nodata.visibility = View.GONE
                     var groupChats = mutableListOf<GroupedChatListModel>()
                     val groupedItems = mutableMapOf<String, List<ChatListModel>>()
@@ -124,6 +116,31 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
             .addOnFailureListener { exception ->
                 // Handle errors
             }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+
+        val view = inflater.inflate(R.layout.fragment_receiving_chats, container, false)
+        rvChats = view.findViewById(R.id.rvChats)
+        nodata = view.findViewById(R.id.nodata3)
+        oldChats = view.findViewById(R.id.oldChats)
+        oldChatText = view.findViewById(R.id.oldChatsTxt)
+
+        setUpRecyclerview()
+        application = (activity as BaseActivity)
+
+        application.postEvent(Constants.PAGE_RECEIVER_CHAT,null)
+
+        return view
+    }
+    private fun setUpRecyclerview() {
+        val db = Firebase.firestore
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+
+        val docRef = db.collection("chats").whereEqualTo("product_receiver",currentUserId)
         val options: FirestoreRecyclerOptions<ChatListModel> = FirestoreRecyclerOptions.Builder<ChatListModel>()
             .setQuery(docRef,ChatListModel::class.java)
             .build()
@@ -140,7 +157,7 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
                 holder.bind(model)
                 holder.binding.productName.text = model.product
                 holder.binding.message.text = model.last_message
-                holder.binding.time.text = toDate(model.time_stamp!!)
+                holder.binding.time.text = convertToTimestamp(model.time_stamp)
                 holder.binding.userName.text = model.sender_name
                 Glide.with(requireContext()).load(model.sender_avatar)
                     .placeholder(resources.getDrawable(R.drawable.ic_profile))
@@ -162,8 +179,8 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
             }
         }
         val layoutManager = WrapContentLinearLayoutManager(requireContext())
-        rvChats.layoutManager = layoutManager
-        rvChats.adapter = firestoreUserAdapter
+        oldChats.layoutManager = layoutManager
+        oldChats.adapter = firestoreUserAdapter
     }
     private fun navigateToChats(model: ChatListModel) {
 

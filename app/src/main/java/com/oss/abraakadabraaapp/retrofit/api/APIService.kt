@@ -1,13 +1,13 @@
-package com.oss.abraakadabraaapp.datasource
+package com.oss.abraakadabraaapp.retrofit.api
 
-import SearchModel
 import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.datasource.products.GetProducts
-import retrofit2.Response
+import com.oss.abraakadabraaapp.response.productRequestResponse.RequestsResponse
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.HeaderMap
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface APIService {
@@ -33,6 +33,13 @@ interface APIService {
         @Query("query") page:String,
         @Query("sortBy") sortBy:String
     ): GetProducts
+
+    @GET("product/v2/requests/product/{id}")
+    suspend fun getProductRequests(
+        @HeaderMap header: Map<String, String>,
+        @Path("id") id: String,
+        @Query("pageNumber") page:Int
+    ): RequestsResponse
 
     companion object {
 

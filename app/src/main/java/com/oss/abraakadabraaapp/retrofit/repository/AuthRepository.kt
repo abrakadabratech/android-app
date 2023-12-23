@@ -48,7 +48,7 @@ class AuthRepository(private val apiHelper: APIs) {
 
     suspend fun updateUserV2(
         map: HashMap<String, String>,
-        params: DataClass
+        params: Map<String, String>
     ) = apiHelper.updateUserV2(map, params)
 
     suspend fun postFCMToken(
@@ -85,6 +85,11 @@ class AuthRepository(private val apiHelper: APIs) {
         map: HashMap<String, String>,
         id: String
     ) = apiHelper.getListingDetails(map, id)
+
+    suspend fun getListingDetailsV2(
+        map: HashMap<String, String>,
+        id: String
+    ) = apiHelper.getListingDetailsV2(map, id)
 
     suspend fun deleteProduct(
         map: HashMap<String, String>,

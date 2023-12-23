@@ -227,7 +227,7 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
     }
 
     fun updateUserV2(
-        headerMap: HashMap<String, String>, bodyMap: DataClass
+        headerMap: HashMap<String, String>, bodyMap: Map<String, String>
     ) {
         viewModelScope.launch {
 
@@ -443,6 +443,29 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
             callApi(::call, object : CallHelper<ListingResponse>{
                 override fun onSuccessful(data: ListingResponse) {
                     listingDetailsuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+
+            })
+            isLoading.value = false
+
+        }
+    }
+    var listingDetailV2success = MutableLiveData<ListingResponse>()
+    fun getListingDetailsV2(
+        headerMap: HashMap<String, String>,
+        id: String
+    ) {
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.getListingDetailsV2(headerMap,id)
+            callApi(::call, object : CallHelper<ListingResponse>{
+                override fun onSuccessful(data: ListingResponse) {
+                    listingDetailV2success.value = data
                 }
 
                 override fun onError(errorResponse: HttpErrorResponse) {

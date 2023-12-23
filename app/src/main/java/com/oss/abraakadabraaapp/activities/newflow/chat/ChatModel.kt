@@ -9,6 +9,6 @@ data class ChatModel(
     @SerializedName("text"       ) var text       : String? = null,
     @SerializedName("from"       ) var from       : String? = null,
     @SerializedName("read"       ) var read       : Boolean = false,
-    @SerializedName("timestamp"  ) var timeStamp  : Timestamp? = Timestamp.now()
+    @SerializedName("timestamp"  ) var timestamp  : Any
 
-){constructor():this("","","","")}
+){constructor():this("","","","",false,"")}
