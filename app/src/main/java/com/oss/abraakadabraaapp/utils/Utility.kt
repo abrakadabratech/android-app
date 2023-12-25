@@ -103,16 +103,15 @@ object Utility {
 
             return dateFormat.format(localDateTime)
         }else if (timestamp is Long){
-            val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-
-            val milliseconds = TimeUnit.NANOSECONDS.toMillis(timestamp)
-            val date = Date(milliseconds)
-            return dateFormat.format(date).toString()
+            val dateFormat = SimpleDateFormat("MMM-dd-yy hh:mm a", Locale.getDefault())
+            val date = Date(timestamp)
+            return dateFormat.format(date)
         }else{
             return ""
         }
 
         // Using java.time API
+
 
     }
 

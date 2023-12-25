@@ -312,7 +312,7 @@ class MyRequestDetailsActivity : BaseActivity() {
         }
 
         mainViewModel.errorMessage.observe(this) {
-            if (it.isNotBlank()) showToast(it)
+           // if (it.isNotBlank()) showToast(it)
         }
 
         mainViewModel.isLoading.observe(this) {

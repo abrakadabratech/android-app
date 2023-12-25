@@ -39,6 +39,8 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
+import com.microsoft.clarity.Clarity
+import com.microsoft.clarity.ClarityConfig
 import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.auth.LoginActivity
@@ -68,8 +70,8 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
 
     private val networkHelper: NetworkHelper by inject()
 
-    lateinit var lat: String
-    lateinit var lng: String
+    var lat: String = "12.9716"
+    var lng: String = "77.5946"
 
     lateinit var mFusedLocationClient: FusedLocationProviderClient
 
@@ -102,6 +104,9 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
         sAnalytics = GoogleAnalytics.getInstance(this);
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
+        val config = ClarityConfig("kax2omk86t")
+        Clarity.initialize(applicationContext, config)
+
         mFusedLocationClient =
             LocationServices.getFusedLocationProviderClient(this)
 
@@ -130,6 +135,7 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
         }*/
         setUpObserver()
 
+/*
         registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
                 // App is in the foreground
@@ -151,6 +157,7 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
                 setUserOffline()
             }
         })
+*/
     }
 
     public fun postClick(event_tag: String) {

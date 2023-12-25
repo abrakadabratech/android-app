@@ -156,7 +156,7 @@ class ReceiverFragment : Fragment(), DefaultLifecycleObserver,
 
         mainViewModel.errorMessage.observe(this@ReceiverFragment) {
             if (it.isNotEmpty()) {
-                baseAct.showToast(it)
+//                baseAct.showToast(it)
                 isLoading = false
                 isLastPage = false
                 binding.llProgress.visibility = View.GONE

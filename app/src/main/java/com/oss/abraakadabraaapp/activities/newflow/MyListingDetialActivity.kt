@@ -229,6 +229,7 @@ class MyListingDetialActivity : BaseActivity(), RequestedUsersAdapter.OnRequestC
         binding.deleteProduct.setOnClickListener {
             postClick(Constants.BUTTON_DELETE_PRODUCT)
 
+
             if (productDetails?.product?.status == "given") {
                 binding.editMenuDialog.visibility = View.GONE
                 showToast("Your product is given")
@@ -397,7 +398,7 @@ class MyListingDetialActivity : BaseActivity(), RequestedUsersAdapter.OnRequestC
                 showToast(it.responseMessage.toString())
             }
         }
-        mainViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
+        mainViewModel.errorMessage.observe(this) { /*if (it.isNotBlank()) showToast(it)*/ }
         mainViewModel.isLoading.observe(this) { loader(it) }
 
     }

@@ -298,7 +298,7 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
                 showToast(it.responseMessage.toString())
             }
         }
-        mainViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
+        mainViewModel.errorMessage.observe(this) {/* if (it.isNotBlank()) showToast(it)*/ }
         mainViewModel.isLoading.observe(this) { loader(it) }
 
     }

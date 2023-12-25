@@ -75,7 +75,7 @@ class ChatDetailActivity : BaseActivity() {
         setContentView(binding.root)
         postEvent(PAGE_CHATS_DETAILS, null)
 
-        showOnlineOrOffline()
+//        showOnlineOrOffline()
 
         if (intent.hasExtra(Constants.hasNotificationData)) {
             generateAuthToken()
@@ -233,7 +233,7 @@ class ChatDetailActivity : BaseActivity() {
         }
 
         mainViewModel.errorMessage.observe(this) {
-            if (it.isNotBlank()) showToast(it)
+//            if (it.isNotBlank()) showToast(it)
         }
 
         mainViewModel.isLoading.observe(this) {
@@ -272,7 +272,7 @@ class ChatDetailActivity : BaseActivity() {
 
         binding.sendMessage.setOnClickListener {
             postClick(BUTTON_CHAT_SEND_MESSAGE)
-            if (chatData?.status == "cancelled") {
+            if (chatData?.enabled == false) {
                 Toast.makeText(this, "Product Cancelled", Toast.LENGTH_SHORT).show()
                 binding.messageBox.setText("")
             } else {

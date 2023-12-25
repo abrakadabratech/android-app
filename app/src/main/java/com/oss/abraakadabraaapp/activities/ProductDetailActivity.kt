@@ -175,7 +175,7 @@ class ProductDetailActivity : BaseActivity(), ProductSliderAdapter.ProductSlider
             loader(it)
         }
 
-        mainViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
+        mainViewModel.errorMessage.observe(this) { /*if (it.isNotBlank()) showToast(it)*/ }
 
     }
 

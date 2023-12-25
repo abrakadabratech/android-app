@@ -82,6 +82,8 @@
                     android:layout_marginEnd="16dp"
                     android:fontFamily="@font/montserrat_medium"
                     android:gravity="center"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
                     android:text="Please ensure that none of the below items are uploaded \n\nToxic , Weapons , Alcohol , \nFireworks Narcotics , Medicines , Edibles\n"
                     android:textColor="@color/message_color"
                     android:textSize="16sp"

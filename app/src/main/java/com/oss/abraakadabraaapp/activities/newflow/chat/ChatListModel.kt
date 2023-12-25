@@ -22,9 +22,11 @@ data class ChatListModel(
     @SerializedName("status"  ) var status  : String? = "accepted",
     @SerializedName("Messages") var messages:List<ChatModel>? = null,
     @SerializedName("request_id") var requestId:String = "",
-    @SerializedName("product_image") var product_image:String = ""
+    @SerializedName("product_image") var product_image:String = "",
+    @SerializedName("enabled") var enabled:Boolean = true
 ){ constructor():this("","","","",
-    "","","","","","","","","")}
+    "","","","","",
+    "","","","")}
 
 data class GroupedChatListModel(
     @Transient

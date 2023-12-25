@@ -177,7 +177,7 @@ class FilterActivity : BaseActivity() {
 
         mainViewModel.isLoading.observe(this, { loader(it) })
 
-        mainViewModel.errorMessage.observe(this, { if (it.isNotBlank()) showToast(it) })
+        mainViewModel.errorMessage.observe(this, { /*if (it.isNotBlank()) showToast(it)*/ })
     }
 
     private fun setData() {

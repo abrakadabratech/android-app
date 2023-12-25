@@ -86,7 +86,7 @@ class MyListingActivity : BaseActivity() , MyListingAdapter.OnResponseClick {
                 showToast(it.responseMessage.toString())
             }
         }
-        mainViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
+        mainViewModel.errorMessage.observe(this) { /*if (it.isNotBlank()) showToast(it)*/ }
         mainViewModel.isLoading.observe(this) { loader(it) }
 
     }

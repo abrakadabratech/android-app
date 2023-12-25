@@ -275,9 +275,8 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         }
 
         authViewModel.errorMessage.observe(requireActivity()) {
-            if (it.isNotBlank()) application.showToast(
-                it
-            )
+//            if (it.isNotBlank())
+//                application.showToast(it)
         }
         authViewModel.isLoading.observe(requireActivity()) { application.loader(it) }
 
@@ -287,8 +286,10 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         lifecycleScope.launch {
 
             binding.rvHomeCategory.apply {
-                layoutManager =
-                    LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                val lm = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                layoutManager =lm
+                lm.isAutoMeasureEnabled = true
+
                 adapter = categoryAdapter
                 recycledViewPool.setMaxRecycledViews(1, 0)
                 isNestedScrollingEnabled = false
@@ -304,6 +305,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         binding.rvLatestProduct.apply {
             //            layoutManager = LinearLayoutManager(requireContext())
             layoutManager = lm
+            lm.isAutoMeasureEnabled = true
             addItemDecoration(
                 MarginItemDecoration(18)
             )

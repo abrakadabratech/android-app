@@ -113,7 +113,7 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
 
         val layoutManager = WrapContentLinearLayoutManager(requireContext())
         oldChats.layoutManager = layoutManager
-        oldChats.adapter = firestoreUserAdapter
+//        oldChats.adapter = firestoreUserAdapter
         application.loader(false)
     }
 

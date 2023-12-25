@@ -763,7 +763,7 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
 
         mainViewModel.errorMessage.observe(
             this,
-            { if (it.isNotBlank()) showToast(it) })
+            { /*if (it.isNotBlank()) showToast(it) */})
 
     }
 

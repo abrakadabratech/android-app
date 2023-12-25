@@ -23,6 +23,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import com.airbnb.lottie.LottieAnimationView
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -615,7 +616,8 @@ class LoginActivity : BaseActivity() {
         }
         authViewModel.createUserSuccess.observe(this) {
             showToast(it.responseMessage.toString())
-            if (it.responseMessage == "User created successfully." || it.responseMessage == "User already exists." || it.responseMessage == "User Login Success.") {
+            if (it.responseMessage == "User created successfully." || it.responseMessage == "User already exists."
+                || it.responseMessage == "User Login Success.") {
                 generateAuthToken()
                 val map = HashMap<String, String>()
                 map[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
@@ -652,6 +654,7 @@ class LoginActivity : BaseActivity() {
                     if (mAuth.currentUser != null) {
                         postFCMtoken()
                         postLocationUpdate()
+                        goHome()
                     }
                 }
                 /*if (it.responseMessage != null) {
@@ -697,7 +700,7 @@ class LoginActivity : BaseActivity() {
             }
 
 
-            authViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
+            authViewModel.errorMessage.observe(this) { /*if (it.isNotBlank()) showToast(it)*/ }
 
             authViewModel.isLoading.observe(this) { loader(it) }
         }
@@ -739,8 +742,8 @@ class LoginActivity : BaseActivity() {
             mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
 
             val body = HashMap<String,String>()
-            body["location_lat"] = lat
-            body["location_lng"] = lng
+            body["location_lat"] = "12.9716"
+            body["location_lng"] = "77.5946"
 
             generateAuthToken()
             val map = java.util.HashMap<String, String>()
@@ -774,6 +777,10 @@ class LoginActivity : BaseActivity() {
         val success_ok_btn = dialogView.findViewById<TextView>(R.id.success_ok_btn)
         val alert_text = dialogView.findViewById<TextView>(R.id.textView81)
         val alert_title = dialogView.findViewById<TextView>(R.id.textView812)
+        val title = dialogView.findViewById<TextView>(R.id.textView40)
+        val animImage = dialogView.findViewById<LottieAnimationView>(R.id.success_anim)
+        title.setText("Login Failed!")
+        animImage.visibility = View.GONE
         alert_title.visibility = View.GONE
         alert_text.setText(errotTxt)
         success_ok_btn.setText("OK")

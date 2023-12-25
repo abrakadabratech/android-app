@@ -158,7 +158,7 @@ class GiverFragment : Fragment(), GiverAdapter.GiverAdapterInterface, DefaultLif
 
         mainViewModel.errorMessage.observe(this@GiverFragment) {
             if (it.isNotEmpty()) {
-                baseAct.showToast(it)
+//                baseAct.showToast(it)
                 isLoading = false
                 isLastPage = false
                 binding.llProgress.visibility = View.GONE

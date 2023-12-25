@@ -98,7 +98,7 @@ class NewMyRequestActivity : BaseActivity() , MyRequestAdapter.OnResponseClick{
                 Log.d("TAG -", "setUpObserver: fail")
             }
         }
-        mainViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
+        mainViewModel.errorMessage.observe(this) { /*if (it.isNotBlank()) showToast(it)*/ }
         mainViewModel.isLoading.observe(this) { loader(it) }
 
     }

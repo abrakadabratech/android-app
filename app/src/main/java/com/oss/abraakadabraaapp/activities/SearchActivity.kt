@@ -284,7 +284,7 @@ class SearchActivity : BaseActivity(), SearchAdapter.SearchAdapterInterface {
 
         mainViewModel.errorMessage.observe(this, {
             if (it.isNotBlank()) {
-                showToast(it)
+//                showToast(it)
                 binding.sRLHome.isRefreshing = false
             }
         })

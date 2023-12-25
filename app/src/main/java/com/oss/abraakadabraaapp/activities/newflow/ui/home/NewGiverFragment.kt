@@ -731,7 +731,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
 
             mainViewModel.errorMessage.observe(
                 requireActivity(),
-                { if (it.isNotBlank()) showToast(it) })
+                { /*if (it.isNotBlank()) showToast(it) */})
         }
 
     }

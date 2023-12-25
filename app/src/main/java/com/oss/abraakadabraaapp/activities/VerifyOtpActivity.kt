@@ -112,7 +112,7 @@ class VerifyOtpActivity : BaseActivity() {
     private fun setUpObserver() {
         authViewModel.isLoading.observe(this, { loader(it) })
 
-        authViewModel.errorMessage.observe(this, { if (it.isNotBlank()) showToast(it) })
+        authViewModel.errorMessage.observe(this, { /*if (it.isNotBlank()) showToast(it)*/ })
 
         authViewModel.otpVerificationSuccess.observe(this, {
             otpVerification(it!!)

@@ -180,7 +180,7 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
         }
         val layoutManager = WrapContentLinearLayoutManager(requireContext())
         oldChats.layoutManager = layoutManager
-        oldChats.adapter = firestoreUserAdapter
+//        oldChats.adapter = firestoreUserAdapter
     }
     private fun navigateToChats(model: ChatListModel) {
 

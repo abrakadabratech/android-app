@@ -240,7 +240,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                     socialLinkType = socialLinkType,
                     socialLink = profileLink,
                     name = userInfo.data?.name,
-                    userAvatar = it.data,
+                    userAvatar = it.data.userAvatar,
                     email = userInfo.data?.email,
                     uid = userInfo.data?.uid,
                     fcmToken = userInfo.data?.fcmToken,
@@ -256,7 +256,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                 PreferencesManagement.saveUserInfo(this,newUserInfo)
 
 
-//                setUpProfile(it)
+//            setUpProfile(it)
 //            getUserProfileApi()
             }
 

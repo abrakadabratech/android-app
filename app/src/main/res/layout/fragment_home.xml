@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,130 +8,132 @@
     android:fillViewport="true"
     tools:context=".activities.newflow.ui.home.HomeFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
+        android:id="@+id/standard_bottom_sheet"
+        style="?attr/bottomSheetStyle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:visibility="gone"
+        app:layout_anchorGravity="bottom"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <include layout="@layout/share_bottom_sheet" />
+        <!-- Bottom sheet contents. -->
+
+    </FrameLayout>
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp"
+        app:contentInsetStartWithNavigation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:theme="@style/ToolbarColoredBackArrow">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout2"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:contentInsetLeft="0dp"
-            app:contentInsetStart="0dp"
-            app:contentInsetStartWithNavigation="0dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/gradient_theme"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:theme="@style/ToolbarColoredBackArrow">
+            app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/gradient_theme"
-                app:layout_constraintEnd_toEndOf="parent"
+            <ImageView
+                android:id="@+id/imageView14"
+                android:layout_width="11dp"
+                android:layout_height="14dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/ic_location_home"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
-                    android:id="@+id/imageView14"
-                    android:layout_width="11dp"
-                    android:layout_height="14dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:src="@drawable/ic_location_home"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/locationOnActionbar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="4dp"
+                android:fontFamily="@font/montserrat_medium"
+                android:maxLines="2"
+                android:text="HSR Layout, Bengaluru , Karnataka adfa fasdf dfafads fasd  fds f d af adsfad adsf af a"
+                android:textColor="@color/new_action_bar_title_color"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/imageView14"
+                app:layout_constraintEnd_toStartOf="@+id/shareAKD"
+                app:layout_constraintStart_toEndOf="@+id/imageView14"
+                app:layout_constraintTop_toTopOf="@+id/imageView14" />
 
-                <TextView
-                    android:id="@+id/locationOnActionbar"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="4dp"
-                    android:fontFamily="@font/montserrat_medium"
-                    android:maxLines="2"
-                    android:text="HSR Layout, Bengaluru , Karnataka adfa fasdf dfafads fasd  fds f d af adsfad adsf af a"
-                    android:textColor="@color/new_action_bar_title_color"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageView14"
-                    app:layout_constraintEnd_toStartOf="@+id/shareAKD"
-                    app:layout_constraintStart_toEndOf="@+id/imageView14"
-                    app:layout_constraintTop_toTopOf="@+id/imageView14" />
+            <ImageView
+                android:id="@+id/notifications"
+                android:layout_width="@dimen/dp_16"
+                android:layout_height="22dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_bell"
+                app:layout_constraintBottom_toBottomOf="@+id/shareAKD"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/shareAKD"
+                app:layout_constraintVertical_bias="1.0" />
 
-                <ImageView
-                    android:id="@+id/notifications"
-                    android:layout_width="@dimen/dp_16"
-                    android:layout_height="22dp"
-                    android:layout_marginEnd="16dp"
-                    android:src="@drawable/ic_bell"
-                    app:layout_constraintBottom_toBottomOf="@+id/shareAKD"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/shareAKD"
-                    app:layout_constraintVertical_bias="1.0" />
+            <ImageView
+                android:id="@+id/shareAKD"
+                android:layout_width="19dp"
+                android:layout_height="19dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_share_icon"
+                app:layout_constraintBottom_toBottomOf="@+id/locationOnActionbar"
+                app:layout_constraintEnd_toStartOf="@+id/notifications"
+                app:layout_constraintTop_toTopOf="@+id/locationOnActionbar" />
 
-                <ImageView
-                    android:id="@+id/shareAKD"
-                    android:layout_width="19dp"
-                    android:layout_height="19dp"
-                    android:layout_marginEnd="16dp"
-                    android:src="@drawable/ic_share_icon"
-                    app:layout_constraintBottom_toBottomOf="@+id/locationOnActionbar"
-                    app:layout_constraintEnd_toStartOf="@+id/notifications"
-                    app:layout_constraintTop_toTopOf="@+id/locationOnActionbar" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.appcompat.widget.Toolbar>
 
-        </androidx.appcompat.widget.Toolbar>
-
-        <!--    <include layout="@layout/fragment_receiver"/>-->
-
-        <FrameLayout
-            android:id="@+id/standard_bottom_sheet"
-            style="?attr/bottomSheetStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/transparent"
-            android:visibility="gone"
-            app:layout_anchorGravity="bottom"
-            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <include layout="@layout/share_bottom_sheet" />
-            <!-- Bottom sheet contents. -->
-
-        </FrameLayout>
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar"
-            app:layout_constraintVertical_bias="0.0">
+            app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
-            <!--<androidx.compose.ui.platform.ComposeView
-                   android:id="@+id/composeView"
-                   android:layout_width="match_parent"
-                   android:visibility="gone"
-                   android:layout_height="wrap_content"/>-->
+            <!--    <include layout="@layout/fragment_receiver"/>-->
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/imageSliderLayout"
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
                 android:layout_margin="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:visibility="visible"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="4dp"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:layout_editor_absoluteX="10dp">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <com.denzcoskun.imageslider.ImageSlider
                     android:id="@+id/imageSlider"
@@ -146,11 +148,11 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView5"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="32dp"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="10dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -203,14 +205,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="700dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                android:layout_marginBottom="70dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardView5" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
 
-</androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

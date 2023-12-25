@@ -61,6 +61,7 @@ class RequestedUsersAdapter(val context: MyListingDetialActivity, val onClick: O
         }
         when(item.status){
             "accepted" -> holder.status.setTextColor(ContextCompat.getColor(context,R.color.status_accepted))
+            "requested" -> holder.status.setTextColor(ContextCompat.getColor(context,R.color.status_pending))
             else -> holder.status.setTextColor(ContextCompat.getColor(context,R.color.status_declined))
         }
     }

@@ -180,7 +180,7 @@ class MyProductActivity : BaseActivity(), MyProductAdapter.MyProductAdapterInter
             }
         })
 
-        mainViewModel.errorMessage.observe(this, { if (it.isNotBlank()) showToast(it) })
+        mainViewModel.errorMessage.observe(this, { /*if (it.isNotBlank()) showToast(it)*/ })
     }
 
     private fun getMyProductList() {

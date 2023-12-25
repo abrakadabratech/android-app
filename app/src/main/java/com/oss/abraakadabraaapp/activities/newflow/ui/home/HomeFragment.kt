@@ -155,7 +155,6 @@ class HomeFragment : Fragment(), LocationListener {
         }
 
         binding.receiveBtn.setOnClickListener {
-            binding.imageSliderLayout.visibility = View.VISIBLE
             application.postClick(Constants.BUTTON_RECEIVE)
             binding.receiveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
             binding.receiveBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
@@ -165,12 +164,11 @@ class HomeFragment : Fragment(), LocationListener {
                 .replace(R.id.container, NewReceiverFragment::class.java, null)
                 .setReorderingAllowed(true)
                 .commit()
+            binding.imageSliderLayout.visibility = View.VISIBLE
             EventBus.getDefault().post(1)
         }
         binding.giveBtn.setOnClickListener {
-            binding.imageSliderLayout.visibility = View.GONE
             application.postClick(BUTTON_GIVE)
-            EventBus.getDefault().post(0)
             binding.receiveBtn.background = null
             binding.giveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
             binding.receiveBtn.setTextColor(resources.getColor(R.color.hyper_link_text_color))
@@ -179,6 +177,8 @@ class HomeFragment : Fragment(), LocationListener {
                 .replace(R.id.container, NewGiverFragment::class.java, null)
                 .setReorderingAllowed(true)
                 .commit()
+            binding.imageSliderLayout.visibility = View.GONE
+            EventBus.getDefault().post(0)
         }
         binding.shareAKD.setOnClickListener {
             application.postClick(BUTTON_SHARE)

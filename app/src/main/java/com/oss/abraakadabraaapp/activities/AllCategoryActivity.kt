@@ -129,7 +129,7 @@ class AllCategoryActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInter
             }
         })
 
-        mainViewModel.errorMessage.observe(this, { if (it.isNotBlank()) showToast(it) })
+        mainViewModel.errorMessage.observe(this, { /*if (it.isNotBlank()) showToast(it)*/ })
 
     }
 

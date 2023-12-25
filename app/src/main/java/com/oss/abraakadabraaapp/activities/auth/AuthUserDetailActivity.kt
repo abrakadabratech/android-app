@@ -220,7 +220,7 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
             }
         }
 
-        authViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
+        authViewModel.errorMessage.observe(this) { /*if (it.isNotBlank()) showToast(it)*/ }
     }
 
     private fun postFCMtoken() {

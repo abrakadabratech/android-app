@@ -224,7 +224,7 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
 //                sendToRazorPay(it.data?.orderId,it.data?.amount)
 
         }
-        mainViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
+        mainViewModel.errorMessage.observe(this) { /*if (it.isNotBlank()) showToast(it)*/ }
         mainViewModel.isLoading.observe(this) { loader(it) }
     }
 
