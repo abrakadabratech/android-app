@@ -34,6 +34,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
+import com.google.android.play.core.integrity.IntegrityTokenRequest
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -235,6 +236,12 @@ class LoginActivity : BaseActivity() {
             .requestIdToken(getString(R.string.your_web_client_id))
             .requestEmail()
             .build()
+
+        IntegrityTokenRequest.builder()
+            .setCloudProjectNumber(139908621299)
+            .setNonce("nonce")
+            .build()
+
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         binding.signInButton.setOnClickListener {
             loader(true)
@@ -396,7 +403,7 @@ class LoginActivity : BaseActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     clearEditText()
-                    generateAuthToken()
+//                    generateAuthToken()
                     val mUser = FirebaseAuth.getInstance().currentUser
                     mUser!!.getIdToken(true)
                         .addOnCompleteListener {
@@ -445,7 +452,7 @@ class LoginActivity : BaseActivity() {
     }
 
     fun postFCMtoken() {
-        generateAuthToken()
+//        generateAuthToken()
         FirebaseMessaging.getInstance().token.addOnSuccessListener {
             PreferencesManagement.saveFCMToken(this, it)
             val data = FcmRequest(
@@ -618,7 +625,7 @@ class LoginActivity : BaseActivity() {
             showToast(it.responseMessage.toString())
             if (it.responseMessage == "User created successfully." || it.responseMessage == "User already exists."
                 || it.responseMessage == "User Login Success.") {
-                generateAuthToken()
+//                generateAuthToken()
                 val map = HashMap<String, String>()
                 map[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
                 authViewModel.getUser(map)
@@ -720,7 +727,7 @@ class LoginActivity : BaseActivity() {
             val body = HashMap<String,String>()
             body["name"] = it?.data?.name.toString()
 
-            generateAuthToken()
+//            generateAuthToken()
             val map = java.util.HashMap<String, String>()
             val token = PreferencesManagement.getAuthToken(this)!!
             map[RequestKeys.authorization] = token
@@ -745,7 +752,7 @@ class LoginActivity : BaseActivity() {
             body["location_lat"] = "12.9716"
             body["location_lng"] = "77.5946"
 
-            generateAuthToken()
+//            generateAuthToken()
             val map = java.util.HashMap<String, String>()
             val token = PreferencesManagement.getAuthToken(this)!!
             map[RequestKeys.authorization] = token

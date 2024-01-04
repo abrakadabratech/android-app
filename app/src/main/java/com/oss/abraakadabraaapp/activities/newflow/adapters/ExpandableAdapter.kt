@@ -1,6 +1,7 @@
 package com.oss.abraakadabraaapp.activities.newflow.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.newflow.chat.GroupedChatListModel
 
@@ -18,6 +20,7 @@ class ExpandableAdapter(
     val i: List<GroupedChatListModel>, val currentUserId: String?
 ) :
     RecyclerView.Adapter<ExpandableAdapter.ViewHolder>() {
+    private val TAG = "GivingChatsFragment"
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val productImage = itemView.findViewById<ImageView>(R.id.profilePic)
@@ -37,6 +40,9 @@ class ExpandableAdapter(
         holder.product.text = i[position].product_name
         Glide.with(context).load(i[position].product_url).into(holder.productImage)
         holder.postedByUser.text = "Posted By ${i[position].posted_by}"
+        Log.e(TAG, "setUpRecyclerview: ${Gson().toJson(i[position].chats)}")
+        holder.sublist.layoutManager = LinearLayoutManager(context)
+        holder.sublist.adapter = SubAdapter(context,i[position].chats,currentUserId)
 
         if (i[position].isListShown){
             holder.sublist.visibility = View.VISIBLE
@@ -52,9 +58,9 @@ class ExpandableAdapter(
                     i[position].isListShown = !i[position].isListShown
                 }
             }
-            holder.sublist.visibility = View.VISIBLE
             holder.sublist.layoutManager = LinearLayoutManager(context)
             holder.sublist.adapter = SubAdapter(context,i[position].chats,currentUserId)
+            holder.sublist.visibility = View.VISIBLE
             notifyDataSetChanged()
 
         }

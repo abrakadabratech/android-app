@@ -1,7 +1,5 @@
 package com.oss.abraakadabraaapp.activities
 
-import DataClass
-import UsersUpdateData
 import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -16,9 +14,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.android.installreferrer.api.InstallReferrerClient
 import com.android.installreferrer.api.InstallReferrerStateListener
@@ -30,10 +26,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import com.google.android.play.core.tasks.OnCompleteListener
-import com.google.android.play.core.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GetTokenResult
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import com.karumi.dexter.Dexter
@@ -229,7 +222,7 @@ class StartAppActivity : BaseActivity(), LocationListener {
                 }
             } else {
                 if (mAuth.currentUser != null) {
-                    generateAuthToken()
+//                    generateAuthToken()
                     FirebaseMessaging.getInstance().token.addOnSuccessListener {
                         PreferencesManagement.saveFCMToken(this, it)
                         val data = FcmRequest(
@@ -519,7 +512,7 @@ class StartAppActivity : BaseActivity(), LocationListener {
                             }
                         }
                     }
-                generateAuthToken()
+//                generateAuthToken()
                 FirebaseMessaging.getInstance().token.addOnSuccessListener {
                     PreferencesManagement.saveFCMToken(this, it)
                     val data = FcmRequest(

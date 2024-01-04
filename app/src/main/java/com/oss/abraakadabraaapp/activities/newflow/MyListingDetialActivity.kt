@@ -211,7 +211,7 @@ class MyListingDetialActivity : BaseActivity(), RequestedUsersAdapter.OnRequestC
                 map["description"] = binding.descriptionTxt.text.toString()
                 postClick(Constants.BUTTON_UPDATE_PRODUCT)
                 if (isNetworkAvailable()) {
-                    generateAuthToken()
+//                    generateAuthToken()
 //                    mainViewModel.updateProduct(Utility.getAuthentication(this),product.id.toString(),map)
                 }
             } else {
@@ -241,7 +241,7 @@ class MyListingDetialActivity : BaseActivity(), RequestedUsersAdapter.OnRequestC
                 alertDialog.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, id ->
                     //cancel the request
                     if (isNetworkAvailable()) {
-                        generateAuthToken()
+//                        generateAuthToken()
                         mainViewModel.deleteProduct(Utility.getAuthentication(this), productId)
                     }
                     dialog.dismiss()
@@ -351,10 +351,6 @@ class MyListingDetialActivity : BaseActivity(), RequestedUsersAdapter.OnRequestC
                         if (loadState.refresh is LoadState.Loading) {
 //                                    application.loader(true)
                         } else {
-                            binding.responsesOne.text =
-                                if (requestsAdapter!!.itemCount == 1) "${requestsAdapter!!.itemCount} Response" else "${requestsAdapter!!.itemCount} Responses"
-                            binding.responsesTwo.text =
-                                if (requestsAdapter!!.itemCount == 1) "${requestsAdapter!!.itemCount} Response" else "${requestsAdapter!!.itemCount} Responses"
 
                         }
                     }
@@ -515,6 +511,11 @@ class MyListingDetialActivity : BaseActivity(), RequestedUsersAdapter.OnRequestC
             else -> binding.statusLayout.visibility = View.GONE
 
         }
+        binding.responsesOne.text =
+            if (it.total_requests == 1) "${it.total_requests} Response" else "${it.total_requests} Responses"
+        binding.responsesTwo.text =
+            if (it.total_requests == 1) "${it.total_requests} Response" else "${it.total_requests} Responses"
+
 
     }
 

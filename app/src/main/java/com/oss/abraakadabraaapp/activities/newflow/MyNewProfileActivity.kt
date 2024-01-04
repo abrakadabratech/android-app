@@ -405,12 +405,12 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
 
         if (isUserProfileValidate()) {
             if (isNetworkAvailable()) {
-                generateAuthToken()
+//                generateAuthToken()
                 val mapAuth = HashMap<String, String>()
                 /*if (PreferencesManagement.getAuthToken(this@AuthUserDetailActivity) != null){
                     mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
                 }else{
-                    generateAuthToken()
+//                    generateAuthToken()
                     mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
                 }*/
                 mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
@@ -449,7 +449,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
 
     private fun postUserData() {
         if (isValidate()) {
-            generateAuthToken()
+//            generateAuthToken()
             //getFCMToken
             if (PreferencesManagement.getSignInMethod(this) == SIGN_IN_METHOD_GOOGLE){
 

@@ -68,7 +68,7 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
         mAuth = FirebaseAuth.getInstance()
         setContentView(view)
 
-        generateAuthToken()
+//        generateAuthToken()
         if (PreferencesManagement.getAuthToken(this) != null){
             val map = java.util.HashMap<String, String>()
             map[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
@@ -166,7 +166,7 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
                 }
                 body["signin_method"] = PreferencesManagement.getSignInMethod(this)
 
-                generateAuthToken()
+//                generateAuthToken()
                 val map = java.util.HashMap<String, String>()
                 val token = PreferencesManagement.getAuthToken(this)!!
                 map[RequestKeys.authorization] = token
@@ -224,7 +224,7 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
     }
 
     private fun postFCMtoken() {
-        generateAuthToken()
+//        generateAuthToken()
         FirebaseMessaging.getInstance().token.addOnSuccessListener {
             PreferencesManagement.saveFCMToken(this, it)
             val data = FcmRequest(

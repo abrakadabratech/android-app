@@ -1,11 +1,15 @@
 package com.oss.abraakadabraaapp.retrofit.api
 
+import android.content.Context
+import com.google.android.datatransport.runtime.dagger.Provides
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Singleton
 
 class RetrofitInstance {
+
 
 
     companion object {

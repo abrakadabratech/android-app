@@ -61,6 +61,7 @@ class NewHomeActivity : BaseActivity() {
             )
 
         mAppUpdateManager = AppUpdateManagerFactory.create(this)
+        generateAuthToken()
         checkForUpdate()
         checkNotificationPermission()
 

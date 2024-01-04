@@ -22,20 +22,20 @@ class AuthRepository(private val apiHelper: APIs) {
 
     suspend fun getUser(
         map: HashMap<String, String>
-    ) = apiHelper.getUser(map)
+    ) = apiHelper.getUser()
 
     suspend fun onBoardUser(
         map: HashMap<String, String>,body: HashMap<String, String>
-    ) = apiHelper.onBoardUser(map,body)
+    ) = apiHelper.onBoardUser(body)
 
     suspend fun logoutUser(
         map: HashMap<String, String>
-    ) = apiHelper.logoutUser(map)
+    ) = apiHelper.logoutUser()
 
     suspend fun postUser(
         map: HashMap<String, String>,
         params: HashMap<String, String>
-    ) = apiHelper.postUser(map, params)
+    ) = apiHelper.postUser(params)
 
     suspend fun postUserV2(
         body: CreateUserRequest
@@ -44,57 +44,57 @@ class AuthRepository(private val apiHelper: APIs) {
     suspend fun updateUser(
         map: HashMap<String, String>,
         params: DataClass
-    ) = apiHelper.updateUser(map, params)
+    ) = apiHelper.updateUser(params)
 
     suspend fun updateUserV2(
         map: HashMap<String, String>,
         params: Map<String, String>
-    ) = apiHelper.updateUserV2(map, params)
+    ) = apiHelper.updateUserV2(params)
 
     suspend fun postFCMToken(
         map: HashMap<String, String>,
         params: FcmRequest
-    ) = apiHelper.postFCMToken(map, params)
+    ) = apiHelper.postFCMToken(params)
 
     suspend fun getSocialLink(
         map: HashMap<String, String>
-    ) = apiHelper.getSocialLink(map)
+    ) = apiHelper.getSocialLink()
 
     suspend fun postSocialLink(
         map: HashMap<String, String>,
         params: HashMap<String, String>
-    ) = apiHelper.postSocialLink(map, params)
+    ) = apiHelper.postSocialLink(params)
 
     suspend fun updateProfilePic(
         map: HashMap<String, String>,
         file: MultipartBody.Part
-    ) = apiHelper.updateProfilePic(map, file)
+    ) = apiHelper.updateProfilePic(file)
 
     suspend fun postProduct(
         map: HashMap<String, String>,
         body: Map<String, RequestBody>,
         file: Array<MultipartBody.Part>
-    ) = apiHelper.postProduct(map, body, file)
+    ) = apiHelper.postProduct(body, file)
 
     suspend fun ProductDetails(
         map: HashMap<String, String>,
         id: String
-    ) = apiHelper.getProductDetails(map, id)
+    ) = apiHelper.getProductDetails(id)
 
     suspend fun getListingDetails(
         map: HashMap<String, String>,
         id: String
-    ) = apiHelper.getListingDetails(map, id)
+    ) = apiHelper.getListingDetails(id)
 
     suspend fun getListingDetailsV2(
         map: HashMap<String, String>,
         id: String
-    ) = apiHelper.getListingDetailsV2(map, id)
+    ) = apiHelper.getListingDetailsV2(id)
 
     suspend fun deleteProduct(
         map: HashMap<String, String>,
         id: String
-    ) = apiHelper.deleteProduct(map, id)
+    ) = apiHelper.deleteProduct(id)
 
     suspend fun updateProduct(
         map: HashMap<String, String>,
@@ -102,7 +102,7 @@ class AuthRepository(private val apiHelper: APIs) {
         images: ArrayList<String>,
         body: Map<String, RequestBody>,
         file: Array<MultipartBody.Part>
-    ) = apiHelper.updateProduct(map, id, body, file)
+    ) = apiHelper.updateProduct(id, body, file)
 
     suspend fun updateProductIfImage(
         map: HashMap<String, String>,
@@ -111,157 +111,157 @@ class AuthRepository(private val apiHelper: APIs) {
         body: Map<String, RequestBody>,
         file: Array<MultipartBody.Part>,
         displayImage: MultipartBody.Part
-    ) = apiHelper.updateProductIfImage(map, id, body, file, displayImage)
+    ) = apiHelper.updateProductIfImage(id, body, file, displayImage)
 
     suspend fun getSupportData(
         map: HashMap<String, String>
-    ) = apiHelper.getSupportData(map)
+    ) = apiHelper.getSupportData()
 
     suspend fun getProductsData(
         map: HashMap<String, String>,
         page: Int, maxDistance: Int, lat: Double, lang: Double, category: String, sortBy: String
-    ) = apiHelper.getProductsData(map, page, maxDistance, lat, lang, category, "30", sortBy)
+    ) = apiHelper.getProductsData(page, maxDistance, lat, lang, category, "30", sortBy)
 
 
     suspend fun getAllCategories(
         map: HashMap<String, String>
-    ) = apiHelper.getAllCategories(map)
+    ) = apiHelper.getAllCategories()
 
     suspend fun reportProduct(
         map: HashMap<String, String>,
         body: HashMap<String, String>
-    ) = apiHelper.reportProduct(map, body)
+    ) = apiHelper.reportProduct(body)
 
     suspend fun postRequest(
         map: HashMap<String, String>,
         id: String,
         body: HashMap<String, String>
-    ) = apiHelper.postProductRequest(map, id, body)
+    ) = apiHelper.postProductRequest(id, body)
 
     suspend fun updateProductRequest(
         map: HashMap<String, String>,
         id: String,
         body: String
-    ) = apiHelper.updateProductRequest(map, id, body)
+    ) = apiHelper.updateProductRequest(id, body)
 
     suspend fun cancelProductRequest(
         map: HashMap<String, String>,
         id: String
-    ) = apiHelper.cancelProductRequest(map, id)
+    ) = apiHelper.cancelProductRequest(id)
 
     suspend fun getRequestor(
         map: HashMap<String, String>,
         id: String
-    ) = apiHelper.getRequestor(map, id)
+    ) = apiHelper.getRequestor(id)
 
 
     suspend fun getRequestDetails(
         map: HashMap<String, String>,
         id: String
-    ) = apiHelper.getRequestDetails(map, id)
+    ) = apiHelper.getRequestDetails(id)
 
     suspend fun getProductListing(
         map: HashMap<String, String>,
-    ) = apiHelper.getProductListings(map)
+    ) = apiHelper.getProductListings()
 
     suspend fun getMyRequests(
         map: HashMap<String, String>,
-    ) = apiHelper.getMyRequests(map)
+    ) = apiHelper.getMyRequests()
 
     suspend fun getRazorPay(
         map: HashMap<String, String>
-    ) = apiHelper.getRazorPay(map)
+    ) = apiHelper.getRazorPay()
 
     suspend fun initPayment(
         map: HashMap<String, String>,
         id: HashMap<String, String>
-    ) = apiHelper.initPayment(map, id)
+    ) = apiHelper.initPayment(id)
 
     suspend fun updatePayment(
         map: HashMap<String, String>,
         id: HashMap<String, String>
-    ) = apiHelper.updatePayment(map, id)
+    ) = apiHelper.updatePayment(id)
 
     suspend fun sendFeedback(
         map: HashMap<String, String>,
         id: String,
         body: HashMap<String, String>
-    ) = apiHelper.sendFeedback(map, id, body)
+    ) = apiHelper.sendFeedback(id, body)
 
     suspend fun searchQuery(
         map: HashMap<String, String>,
         page: String,
         lat: Double, long: Double, maxDistance: Int, pageNumber: Int, sortBy: String
-    ) = apiHelper.searchQuery(map, page, lat, long, maxDistance, pageNumber, "30", sortBy)
+    ) = apiHelper.searchQuery(page, lat, long, maxDistance, pageNumber, "30", sortBy)
 
     suspend fun sendNotification(
         map: HashMap<String, String>,
         body: HashMap<String, String>
 
-    ) = apiHelper.sendNotification(map, body)
+    ) = apiHelper.sendNotification(body)
 
     //=================================================================================//
     suspend fun loginWithPhoneNumber(
         map: HashMap<String, String>
-    ) = apiHelper.loginWithPhoneNumber(Utility.getAuthHeaders(), map)
+    ) = apiHelper.loginWithPhoneNumber(Utility.getAuthHeaders())
 
     suspend fun signIn(
         map: HashMap<String, String>
-    ) = apiHelper.signIn(Utility.getAuthHeaders(), map)
+    ) = apiHelper.signIn(Utility.getAuthHeaders())
 
     suspend fun resetPassword(
         map: HashMap<String, String>
-    ) = apiHelper.resetPassword(Utility.getAuthHeaders(), map)
+    ) = apiHelper.resetPassword(Utility.getAuthHeaders())
 
     suspend fun signUp(
         map: HashMap<String, String>
-    ) = apiHelper.signUp(Utility.getAuthHeaders(), map)
+    ) = apiHelper.signUp(Utility.getAuthHeaders())
 
     suspend fun otpVerification(
         map: HashMap<String, String>
-    ) = apiHelper.otpVerification(Utility.getAuthHeaders(), map)
+    ) = apiHelper.otpVerification(Utility.getAuthHeaders())
 
     suspend fun sendOtp(
         map: HashMap<String, String>
-    ) = apiHelper.sendOtp(Utility.getAuthHeaders(), map)
+    ) = apiHelper.sendOtp(Utility.getAuthHeaders())
 
     suspend fun logout(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.logout(headerMap, map)
+    ) = apiHelper.logout(headerMap)
 
     suspend fun updateUserProfile(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.updateUserProfile(headerMap, map)
+    ) = apiHelper.updateUserProfile(headerMap)
 
     suspend fun updateProfileImage(
         headerMap: HashMap<String, String>,
         map: HashMap<String, RequestBody>,
         file: MultipartBody.Part
-    ) = apiHelper.updateProfileImage(headerMap, map, file)
+    ) = apiHelper.updateProfileImage( map, file)
 
     suspend fun getUserProfile(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.getUserProfile(headerMap, map)
+    ) = apiHelper.getUserProfile( map)
 
     suspend fun changePassword(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.changePassword(headerMap, map)
+    ) = apiHelper.changePassword(map)
 
     suspend fun postUPIPayment(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.postUPIPayment(headerMap, map)
+    ) = apiHelper.postUPIPayment(map)
 
     suspend fun getBanners(
         headerMap: HashMap<String, String>
-    ) = apiHelper.getBanners(headerMap)
+    ) = apiHelper.getBanners()
 
     suspend fun reportApi(
         headerMap: HashMap<String, String>,
         map: ReportRequest
-    ) = apiHelper.reportApi(headerMap, map)
+    ) = apiHelper.reportApi(map)
 }

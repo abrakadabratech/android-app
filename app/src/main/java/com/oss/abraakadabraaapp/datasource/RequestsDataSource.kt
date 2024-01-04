@@ -22,7 +22,7 @@ class RequestsDataSource(private val apiService: APIService,
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Requests> {
         try {
             val currentLoadingPageKey = params.key ?: 1
-            val response = apiService.getProductRequests(headers, productId,currentLoadingPageKey)
+            val response = apiService.getProductRequests(productId,currentLoadingPageKey)
             Log.d("TAG - ", "load:response data $response")
             val responseData = mutableListOf<Requests>()
             EventBus.getDefault().post(response.requests.size.toFloat())

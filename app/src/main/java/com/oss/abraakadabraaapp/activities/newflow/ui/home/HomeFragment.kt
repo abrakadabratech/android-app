@@ -294,7 +294,7 @@ class HomeFragment : Fragment(), LocationListener {
     }
 
     private fun loadBanner() {
-        application.generateAuthToken()
+//        application.generateAuthToken()
         val map = HashMap<String, String>()
         val token = PreferencesManagement.getAuthToken(requireContext())!!
         map[RequestKeys.authorization] = token

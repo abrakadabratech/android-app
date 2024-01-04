@@ -4,7 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
 
-//    id 'com.google.firebase.crashlytics'
+    id 'com.google.firebase.crashlytics'
     //    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id 'com.google.gms.google-services'
 
@@ -26,8 +26,8 @@ android {
         minSdk 23
         targetSdk 33
         
-        versionCode 30
-        versionName "1.18.8"
+        versionCode 31
+        versionName "1.19.1"
 //        versionName "test_refresh_product"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -119,7 +119,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx:21.1.0'
     implementation 'androidx.paging:paging-common-ktx:3.1.1'
     implementation 'androidx.paging:paging-runtime-ktx:3.1.1'
-//    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.3.4'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.3.4'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

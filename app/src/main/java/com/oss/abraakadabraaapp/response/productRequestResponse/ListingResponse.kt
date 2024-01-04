@@ -8,7 +8,9 @@ data class ListingResponse (
     @SerializedName("status"   ) var status   : Int?              = null,
     @SerializedName("alert_message"  ) var alertMessage  : AlertMessage          = AlertMessage(),
     @SerializedName("product"  ) var product  : ListingProduct?          = ListingProduct(),
-    @SerializedName("requests" ) var requests : ArrayList<Requests> = arrayListOf()
+    @SerializedName("requests" ) var requests : ArrayList<Requests> = arrayListOf(),
+    @SerializedName("total_requests" ) var total_requests : Int = 0,
+
 
 )
 

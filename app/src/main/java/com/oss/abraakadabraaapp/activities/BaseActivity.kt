@@ -30,11 +30,14 @@ import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.Tracker
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.play.core.tasks.OnCompleteListener
+import com.google.android.play.core.tasks.Task
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GetTokenResult
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
@@ -692,7 +695,7 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
 
     fun generateAuthToken(): String {
         val mUser = FirebaseAuth.getInstance().currentUser
-        mUser!!.getIdToken(true)
+      /*  mUser!!.getIdToken(true)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     val idToken = it.result.token
@@ -706,9 +709,9 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
                         Log.d("akd_debug", "generateAuthToken: Data saved in preferences.")
                     }
                 }
-            }
+            }*/
 
-        /*mUser!!.getIdToken(true)
+        mUser!!.getIdToken(true)
             .addOnCompleteListener(object : OnCompleteListener<GetTokenResult?>,
                 com.google.android.gms.tasks.OnCompleteListener<GetTokenResult> {
                 override fun onComplete(task: Task<GetTokenResult?>) {
@@ -719,17 +722,21 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
                         val idToken: String = task.getResult().getToken()!!
                         val auth = "Bearer "+idToken
 
-                        val clipboard =
+                        if (PreferencesManagement.saveAuthToken(this@BaseActivity, auth)) {
+                            Log.d("akd_debug", "generateAuthToken: Data saved in preferences.")
+                        }
+
+                        /*val clipboard =
                             getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                         val clip = ClipData.newPlainText(android.R.attr.label.toString(), idToken)
-                        clipboard.setPrimaryClip(clip)
+                        clipboard.setPrimaryClip(clip)*/
 
                     } else {
 
                     }
                 }
 
-            })*/
+            })
 
         return "authToken"
     }

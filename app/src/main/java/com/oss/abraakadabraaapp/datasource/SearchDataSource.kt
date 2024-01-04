@@ -23,7 +23,7 @@ class SearchDataSource(private val apiService: APIService,
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Product> {
         try {
             val currentLoadingPageKey = params.key ?: 1
-            val response = apiService.searchQuery(headers,currentLoadingPageKey,maxDistance,lat,long,query,
+            val response = apiService.searchQuery(/*headers,*/currentLoadingPageKey,maxDistance,lat,long,query,
                 sortBy)
             val responseData = mutableListOf<Product>()
             EventBus.getDefault().post(response.data.products)

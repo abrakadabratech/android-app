@@ -29,7 +29,6 @@ data class ChatListModel(
     "","","","")}
 
 data class GroupedChatListModel(
-    @Transient
     var isListShown:Boolean = false,
     var product_id:String,
     var product_name:String,

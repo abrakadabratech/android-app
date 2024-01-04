@@ -26,7 +26,7 @@ class ProductDataSource(private val apiService: APIService,
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Product> {
         try {
             val currentLoadingPageKey = params.key ?: 1
-            val response = apiService.getProductsData(headers, currentLoadingPageKey,maxDistance,lat,long,sortBy)
+            val response = apiService.getProductsData(/*headers,*/ currentLoadingPageKey,maxDistance,lat,long,sortBy)
             Log.d("TAG - ", "load:response data $response")
             val responseData = mutableListOf<Product>()
             EventBus.getDefault().post(response.data.products.size.toFloat())

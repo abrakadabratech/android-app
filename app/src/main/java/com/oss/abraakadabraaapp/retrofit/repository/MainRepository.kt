@@ -36,12 +36,12 @@ class MainRepository(private val apiHelper: APIs) {
     suspend fun logout(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.logout(headerMap, map)
+    ) = apiHelper.logout(headerMap)
 
     suspend fun contentManagementSystem(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.contentManagementSystem(headerMap, map)
+    ) = apiHelper.contentManagementSystem(headerMap)
 
     suspend fun getCategory(
         headerMap: HashMap<String, String>
@@ -50,24 +50,23 @@ class MainRepository(private val apiHelper: APIs) {
     suspend fun getHomeData(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.getHomeData(headerMap,map)
+    ) = apiHelper.getHomeData(headerMap)
 
     suspend fun getAllNotifications(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.getAllNotifications(headerMap, map)
+    ) = apiHelper.getAllNotifications(headerMap)
 
     suspend fun readNotification(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.readNotification(headerMap, map)
+    ) = apiHelper.readNotification(headerMap)
 
     suspend fun manageProduct(
         headerMap: HashMap<String, String>,
         map: HashMap<String, RequestBody>,
         productImages: Array<MultipartBody.Part>
     ) = apiHelper.manageProduct(
-        headerMap,
         map,
         productImages
     )
@@ -75,51 +74,51 @@ class MainRepository(private val apiHelper: APIs) {
     suspend fun getMyProductList(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.getMyProductList(headerMap, map)
+    ) = apiHelper.getMyProductList( map)
 
     suspend fun deleteProduct(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.deleteProduct(headerMap, map)
+    ) = apiHelper.deleteProduct(map)
 
     suspend fun cancelProduct(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.cancelProduct(headerMap, map)
+    ) = apiHelper.cancelProduct(map)
 
     suspend fun getProductDetail(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.getProductDetail(headerMap, map)
+    ) = apiHelper.getProductDetail(map)
 
     suspend fun makeARequest(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.makeARequest(headerMap, map)
+    ) = apiHelper.makeARequest(map)
 
     suspend fun getReceiverList(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.getReceiverList(headerMap, map)
+    ) = apiHelper.getReceiverList(map)
 
     suspend fun getGiverList(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.getGiverList(headerMap, map)
+    ) = apiHelper.getGiverList(map)
 
     suspend fun getSearchList(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.getSearchList(headerMap, map)
+    ) = apiHelper.getSearchList(map)
 
     suspend fun getRequestProductDetail(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.getRequestProductDetail(headerMap, map)
+    ) = apiHelper.getRequestProductDetail(map)
 
     suspend fun requestAction(
         headerMap: HashMap<String, String>,
         map: HashMap<String, String>
-    ) = apiHelper.requestAction(headerMap, map)
+    ) = apiHelper.requestAction(map)
 
 }

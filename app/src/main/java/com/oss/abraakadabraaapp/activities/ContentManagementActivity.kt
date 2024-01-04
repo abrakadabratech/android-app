@@ -70,7 +70,7 @@ class ContentManagementActivity : BaseActivity() {
 
             when(type){
                 Constants.contactUs->{
-                    generateAuthToken()
+//                    generateAuthToken()
 
                     val map = HashMap<String, String>()
                     val token = PreferencesManagement.getAuthToken(this)!!

@@ -11,10 +11,14 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import android.annotation.SuppressLint
+import com.google.android.datatransport.runtime.dagger.Provides
 import com.oss.abraakadabraaapp.BuildConfig
+import com.oss.abraakadabraaapp.retrofit.api.TokenAutheticator
+import com.oss.abraakadabraaapp.retrofit.api.TokenInterceptor
 import java.security.KeyStore
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
+import javax.inject.Singleton
 import javax.net.ssl.*
 import javax.security.cert.CertificateException
 
@@ -23,6 +27,8 @@ val appModule = module {
     single { provideRetrofit(get()) }
     single { provideApiService(get()) }
     single { provideNetworkHelper(androidContext()) }
+    single { provideTokenInterceptor() }
+    single { provideTokenAuthenticator(androidContext()) }
 }
 
 val trustAllCerts = arrayOf<TrustManager>(
@@ -74,6 +80,8 @@ private fun provideOkHttpClient(context: Context) = if (BuildConfig.DEBUG) {
         .hostnameVerifier { _, _ -> true }
         .addInterceptor(loggingInterceptor)
         .addInterceptor(NetworkConnectionInterceptor(context))
+        .addInterceptor(TokenInterceptor())
+        .authenticator(TokenAutheticator(context))
         .build()
 } else {
 
@@ -110,3 +118,9 @@ private fun provideRetrofit(
         .build()
 
 private fun provideApiService(retrofit: Retrofit): APIs = retrofit.create(APIs::class.java)
+
+fun provideTokenInterceptor(): TokenInterceptor = TokenInterceptor()
+
+
+private fun provideTokenAuthenticator(context: Context): TokenAutheticator = TokenAutheticator(context)
+

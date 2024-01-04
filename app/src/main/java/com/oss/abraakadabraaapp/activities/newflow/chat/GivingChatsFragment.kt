@@ -40,7 +40,6 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
 
     override fun onResume() {
         super.onResume()
-        loadGroupedChats()
     }
 
     override fun onCreateView(
@@ -57,6 +56,8 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
 
         application.postEvent(Constants.PAGE_GIVER_CHAT, null)
         setUpRecyclerview()
+        loadGroupedChats()
+
         return view
     }
 
@@ -164,7 +165,7 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
                     Log.d(TAG, "setUpRecyclerview: ${Gson().toJson(groupedItems)}")
                     for ((category, items) in groupedItems) {
                         // Process each category and its items
-                        if (items.size > 0) {
+                        if (items.isNotEmpty()) {
                             groupChats.add(
                                 GroupedChatListModel(
                                     false,
@@ -178,8 +179,8 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
                         }
                     }
                     val adapter = ExpandableAdapter(requireContext(), groupChats, currentUserId)
-                    rvChats.adapter = adapter
                     rvChats.layoutManager = LinearLayoutManager(requireContext())
+                    rvChats.adapter = adapter
                     println("Category: $groupChats,")
                     application.loader(false)
                 }

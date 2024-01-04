@@ -2,6 +2,7 @@ package com.oss.abraakadabraaapp.activities.newflow.adapters
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,7 @@ import com.oss.abraakadabraaapp.utils.Utility.toDate
 
 class SubAdapter(val context: Context, val i: List<ChatListModel>,val currentUserId: String?) :
     RecyclerView.Adapter<SubAdapter.ViewHolder>() {
+    private val TAG = "GivingChatsFragment"
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val userName = itemView.findViewById<TextView>(R.id.userName)
@@ -36,6 +38,7 @@ class SubAdapter(val context: Context, val i: List<ChatListModel>,val currentUse
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        Log.w(TAG, "setUpRecyclerview: ${Gson().toJson(i[position])}")
 
         if (i[position].status == "cancelled") {
             holder.cancelledTxt.setTextColor(ContextCompat.getColor(context,R.color.status_declined))
