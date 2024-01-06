@@ -1,19 +1,14 @@
 package com.oss.abraakadabraaapp.utils
 
 import android.content.Context
-import androidx.appcompat.app.AlertDialog
-import com.google.android.datatransport.runtime.scheduling.jobscheduling.SchedulerConfig.Flag
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.BuildConfig
-import com.oss.abraakadabraaapp.activities.StartAppActivity
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
 import com.oss.abraakadabraaapp.activities.newflow.model.AllCategoryResponse
 import com.oss.abraakadabraaapp.activities.newflow.model.Filters
 import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.model.UserData
 import com.oss.abraakadabraaapp.model.UserLocation
-import com.oss.abraakadabraaapp.retrofit.api.RequestKeys.data
-import kotlin.collections.ArrayList
 
 
 object PreferencesManagement {
@@ -121,13 +116,6 @@ object PreferencesManagement {
         return prefsEditor.commit()
     }
 
-    fun getUserEmail(context: Context): String? {
-
-        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-
-        return pref.getString("userEmail", "")
-
-    }
 
     fun saveUserInfo(context: Context, userData: GetUserResponse?): Boolean {
 
@@ -150,15 +138,6 @@ object PreferencesManagement {
         return prefsEditor.commit()
     }
 
-    fun getUserInfoFlag(context: Context): Boolean? {
-
-        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-
-        val json = pref.getBoolean("userInfoflag", false)
-
-        return json
-
-    }
 
     fun saveUserProfileFlag(context: Context, flag: Boolean): Boolean {
 
@@ -166,16 +145,6 @@ object PreferencesManagement {
         val prefsEditor = pref.edit()
         prefsEditor.putBoolean("userProfileflag", flag)
         return prefsEditor.commit()
-    }
-
-    fun getUserProfileFlag(context: Context): Boolean? {
-
-        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-
-        val json = pref.getBoolean("userProfileflag", false)
-
-        return json
-
     }
 
     fun getUserInfo(context: Context): GetUserResponse? {
@@ -219,12 +188,8 @@ object PreferencesManagement {
 
         val prefsEditor = pref.edit()
 
-        if (data == null) {
-            prefsEditor.putString("userCategories", null)
-        } else {
-            val json = Gson().toJson(data)
-            prefsEditor.putString("userCategories", json)
-        }
+        val json = Gson().toJson(data)
+        prefsEditor.putString("userCategories", json)
         return prefsEditor.commit()
     }
 
@@ -249,11 +214,25 @@ object PreferencesManagement {
         return pref.getBoolean("IS_FIRST_OPEN",true)
     }
 
+    fun isNotificationEnabled(context: Context): Boolean {
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        return pref.getBoolean("IS_NOTIFICATION_ENABLED",false)
+    }
+
     fun setFistOpen(context: Context,boolean: Boolean): Boolean {
         val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
         val prefsEditor = pref.edit()
         prefsEditor.putBoolean("IS_FIRST_OPEN", boolean)
+
+        return prefsEditor.commit()
+    }
+    fun setisNotificationEnabled(context: Context,boolean: Boolean): Boolean {
+        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+        val prefsEditor = pref.edit()
+        prefsEditor.putBoolean("IS_NOTIFICATION_ENABLED", boolean)
 
         return prefsEditor.commit()
     }
@@ -275,37 +254,9 @@ object PreferencesManagement {
 
         val prefsEditor = pref.edit()
 
-        if (data == null) {
-            prefsEditor.putString("Filters_key", null)
-        } else {
-            val json = Gson().toJson(data)
-            prefsEditor.putString("Filters_key", json)
-        }
+        val json = Gson().toJson(data)
+        prefsEditor.putString("Filters_key", json)
         return prefsEditor.commit()
-    }
-
-    fun saveTempBaseUrl(context: Context,toString: String): Boolean {
-        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-
-        val prefsEditor = pref.edit()
-
-        if (toString == "") {
-            prefsEditor.putString("Base_url", BuildConfig.BASE_URL)
-        } else {
-//            val json = Gson().toJson(data)
-            prefsEditor.putString("Base_url", toString)
-        }
-        return prefsEditor.commit()
-    }
-    fun getTempBaseUrl(context: Context): String {
-        val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-
-        val json = pref.getString("Base_url", BuildConfig.BASE_URL)
-
-        return if (json == "")
-            BuildConfig.BASE_URL
-        else
-            json.toString()
     }
 
     fun isTooltipShown(context: Context): Boolean {

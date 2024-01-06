@@ -1,8 +1,11 @@
 package com.oss.abraakadabraaapp.activities.newflow
 
+import android.Manifest
 import android.app.Activity
-import android.content.*
 import android.content.ContentValues.TAG
+import android.content.Context
+import android.content.Intent
+import android.content.IntentSender
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
@@ -14,7 +17,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.gms.analytics.Tracker
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -26,14 +28,14 @@ import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.databinding.ActivityNewHomeBinding
-import com.oss.abraakadabraaapp.localdb.NotificationEntity
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -139,20 +141,42 @@ class NewHomeActivity : BaseActivity() {
     }
 
     private fun checkNotificationPermission() {
-        if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
-            // Notifications are already enabled
-            val builder = AlertDialog.Builder(this)
-            builder.setTitle(getString(R.string.dialog_permission_title))
-            builder.setMessage(getString(R.string.dialog_notification_permission_message))
-            builder.setPositiveButton(getString(R.string.go_to_settings)) { dialog, _ ->
-                dialog.cancel()
-                val intent = Intent()
-                intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
-                intent.putExtra("android.provider.extra.APP_PACKAGE", packageName)
-                startActivity(intent)
+        if (!PreferencesManagement.isNotificationEnabled(this)) {
+
+            if (!NotificationManagerCompat.from(this).areNotificationsEnabled()){
+
+                PreferencesManagement.setisNotificationEnabled(this,true)
+
+                val listener = object : MultiplePermissionsListener {
+                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                    }
+
+                    override fun onPermissionRationaleShouldBeShown(
+                        permissions: List<PermissionRequest>,
+                        token: PermissionToken
+                    ) {
+                        token.continuePermissionRequest()
+                    }
+                }
+                val permissions = arrayListOf(
+                    Manifest.permission.POST_NOTIFICATIONS
+                )
+
+                // Notifications are already enabled
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle(getString(R.string.dialog_permission_title))
+                builder.setMessage(getString(R.string.dialog_notification_permission_message))
+                builder.setPositiveButton(getString(R.string.go_to_settings)) { dialog, _ ->
+                    dialog.cancel()
+                    Dexter.withContext(this)
+                        .withPermissions(permissions)
+                        .withListener(listener)
+                        .check()
+                }
+                builder.setNegativeButton(getString(android.R.string.cancel)) { dialog, _ -> dialog.cancel() }
+                builder.show()
             }
-            builder.setNegativeButton(getString(android.R.string.cancel)) { dialog, _ -> dialog.cancel() }
-            builder.show()
+
         }
     }
 
@@ -261,7 +285,7 @@ class NewHomeActivity : BaseActivity() {
             Snackbar.LENGTH_INDEFINITE
         ).apply {
             setAction("INSTALL") { mAppUpdateManager.completeUpdate() }
-            setActionTextColor(resources.getColor(R.color.btn_color))
+            setActionTextColor(ContextCompat.getColor(this@NewHomeActivity,R.color.btn_color))
             show()
         }
     }
