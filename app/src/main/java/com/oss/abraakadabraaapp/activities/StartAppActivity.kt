@@ -570,19 +570,4 @@ class StartAppActivity : BaseActivity(), LocationListener {
 //        }, 2000)
     }
 
-    /*private fun getLocationAddress() {
-        if (BuildConfig.DEBUG) {
-            showToast("lat $lat,long $lng")
-        }
-
-        val apiKey = getString(R.string.akd)
-        if (apiKey.isEmpty()) {
-            return
-        }
-
-        val tag = "$lat,$lng"
-        val url =
-            ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" + apiKey
-        mainViewModel.getAddress(url)
-    }*/
 }
