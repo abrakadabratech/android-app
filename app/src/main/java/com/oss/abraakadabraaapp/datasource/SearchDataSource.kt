@@ -26,8 +26,8 @@ class SearchDataSource(private val apiService: APIService,
             val response = apiService.searchQuery(/*headers,*/currentLoadingPageKey,maxDistance,lat,long,query,
                 sortBy)
             val responseData = mutableListOf<Product>()
-            EventBus.getDefault().post(response.data.products)
-            val data = response.data.products ?: emptyList()
+            EventBus.getDefault().post(response.body()!!.data.products)
+            val data = response.body()!!.data.products
             responseData.addAll(data)
             Log.d("TAG - ", "load: ${Gson().toJson(responseData)}")
             val prevKey = if (currentLoadingPageKey == 1) null else currentLoadingPageKey - 1
@@ -35,7 +35,7 @@ class SearchDataSource(private val apiService: APIService,
             return LoadResult.Page(
                 data = responseData,
                 prevKey = prevKey,
-                nextKey = if (response.data.products.isEmpty()) null else currentLoadingPageKey + 1
+                nextKey = if (response.body()!!.data.products.isEmpty()) null else currentLoadingPageKey + 1
             )
         }catch (e: Exception) {
             return LoadResult.Error(e)

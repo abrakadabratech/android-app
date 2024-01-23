@@ -18,6 +18,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.gson.Gson
+import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.MyRequestActivity
@@ -56,7 +57,7 @@ class PostedUserActivity : BaseActivity() {
 
         productDetails =
             Gson().fromJson(intent.extras?.getString(Constants.PRODUCT, ""), ProductDetailsData::class.java)
-//        isResuestAllowed = intent.extras?.getBoolean(REQUEST_ALLOWED,true)!!
+        isResuestAllowed = intent.extras?.getBoolean(REQUEST_ALLOWED,true)!!
         if(productDetails !=null){
             setData(productDetails!!)
         }
@@ -74,7 +75,7 @@ class PostedUserActivity : BaseActivity() {
                 if (binding.requestMsg.text.isNotEmpty()) {
                     val userInfo = PreferencesManagement.getUserInfo(this)
                     if (userInfo?.data?.status == "active") {
-                        mainViewModel.postProductRequest(
+                        mainViewModel.postProductRequest(BuildConfig.VERSION_CODE,
                             productDetails?.data?.id.toString(), body
                         )
                     } else {

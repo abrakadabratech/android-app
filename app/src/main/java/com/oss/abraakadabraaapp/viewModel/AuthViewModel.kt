@@ -16,6 +16,7 @@ import com.oss.abraakadabraaapp.activities.newflow.model.*
 import com.oss.abraakadabraaapp.activities.newflow.requests.CancelRequestReponse
 import com.oss.abraakadabraaapp.activities.newflow.requests.ReportProductRequest
 import com.oss.abraakadabraaapp.datasource.products.GetProducts
+import com.oss.abraakadabraaapp.model.AccountDeleteResponse
 import com.oss.abraakadabraaapp.response.authResponse.*
 import com.oss.abraakadabraaapp.response.commonResponse.CommonResponse
 import com.oss.abraakadabraaapp.response.commonResponse.HttpErrorResponse
@@ -569,14 +570,14 @@ fun getRequestDetails(
         }
     }
 
-    fun postProductRequest(
+    fun postProductRequest(version : Int,
         id: String,
         body:HashMap<String, String>
     ) {
         viewModelScope.launch {
             isLoading.value = true
 
-            suspend fun call() = repository.postRequest(id,body)
+            suspend fun call() = repository.postRequest(version,id,body)
             callApi(::call, object : CallHelper<ProductDeleteResponse>{
                 override fun onSuccessful(data: ProductDeleteResponse) {
                     requstProductSuccess.value = data
@@ -1255,12 +1256,12 @@ fun getRequestDetails(
 
 
     var requestsRemainSuccess = MutableLiveData<RequestsRemain>()
-    fun requestRemains() {
+    fun requestRemains(version: Int) {
         viewModelScope.launch {
 
 //            isLoading.value = true
 
-            suspend fun call() = repository.requestsRemain()
+            suspend fun call() = repository.requestsRemain(version)
 
             callApi(::call, object : CallHelper<RequestsRemain> {
                 override fun onSuccessful(data: RequestsRemain) {
@@ -1274,6 +1275,29 @@ fun getRequestDetails(
 
 //            isLoading.value = false
 
+        }
+    }
+
+
+    var userAccountDeletionSuccess = MutableLiveData<AccountDeleteResponse>()
+    fun userAccountDelete() {
+
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.userAccountDelete()
+
+            callApi(::call, object : CallHelper<AccountDeleteResponse> {
+                override fun onSuccessful(data: AccountDeleteResponse) {
+                    userAccountDeletionSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
         }
     }
 }

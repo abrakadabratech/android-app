@@ -43,8 +43,10 @@ import com.oss.abraakadabraaapp.activities.newflow.NewSearchActivity
 import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.adapter.CategoryAdapter
 import com.oss.abraakadabraaapp.databinding.NewReceiverFlowBinding
+import com.oss.abraakadabraaapp.datasource.LoaderStateAdapter
 import com.oss.abraakadabraaapp.retrofit.api.APIService
 import com.oss.abraakadabraaapp.datasource.MainFilterViewModel
+import com.oss.abraakadabraaapp.datasource.MainFilterViewModelFactory
 import com.oss.abraakadabraaapp.datasource.MainViewModel
 import com.oss.abraakadabraaapp.datasource.MainViewModelFactory
 import com.oss.abraakadabraaapp.datasource.ProductAdapter
@@ -296,6 +298,8 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
 
     private fun setupList() {
+        binding.rvLatestProduct.isNestedScrollingEnabled = true
+        binding.rvHomeCategory.isNestedScrollingEnabled = true
         mainListAdapter = ProductAdapter(this)
         val lm = GridLayoutManager(requireContext(), 2)
         lm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -380,16 +384,16 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                 val viewModel =
                     ViewModelProvider(
                         this,
-                        MainViewModelFactory(
+                        MainFilterViewModelFactory(
                             APIService.getApiService(),
-                            map,
                             50,
                             userLocation!!.lat.toDouble(),
-                            userLocation.long.toDouble(), "", sortBy
+                            userLocation.long.toDouble(),  sortBy
                         )
                     )[MainFilterViewModel::class.java]
 
 //                mainListAdapter!!.submitData(lifecycle,PagingData.empty())
+
                 lifecycleScope.launch {
 
                     viewModel.listData2.collectLatest {
@@ -412,11 +416,16 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                                 }
                             }
                         }
-//                        mainListAdapter!!.submitData(lifecycle,PagingData.empty())
+                        mainListAdapter!!.submitData(lifecycle,PagingData.empty())
                         mainListAdapter!!.submitData(it)
                     }
 
                 }
+                binding.rvLatestProduct.adapter = mainListAdapter?.withLoadStateFooter(
+                    LoaderStateAdapter {
+                        mainListAdapter?.retry()
+                    }
+                )
             }
         }else{
             application.showToast(getString(R.string.no_internet_connection_found))
@@ -437,10 +446,9 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                 this,
                 MainViewModelFactory(
                     APIService.getApiService(),
-                    map,
                     50,
                     userLocation!!.lat.toDouble(),
-                    userLocation.long.toDouble(), "", "latest"
+                    userLocation.long.toDouble(),  "latest"
                 )
             )[MainViewModel::class.java]
 //        mainListAdapter!!.submitData(lifecycle,PagingData.empty())
@@ -469,9 +477,14 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                         }
                     }
                 }
-//                mainListAdapter!!.submitData(lifecycle,PagingData.empty())
+                mainListAdapter!!.submitData(lifecycle,PagingData.empty())
                 mainListAdapter!!.submitData(it)
             }
+            binding.rvLatestProduct.adapter = mainListAdapter?.withLoadStateFooter(
+                LoaderStateAdapter {
+                    mainListAdapter?.retry()
+                }
+            )
 
         }
     }

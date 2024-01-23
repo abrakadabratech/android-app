@@ -13,10 +13,13 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
@@ -28,6 +31,7 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
+import com.oss.abraakadabraaapp.activities.auth.LoginActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.SocialShareAdapter
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.GetUserResponse
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.Timestamp
@@ -76,6 +80,9 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
     private var profileLink = ""
     var from = "fragment"
     var status = ""
+    private lateinit var mGoogleSignInClient: GoogleSignInClient
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMyProfile2Binding.inflate(layoutInflater)
@@ -95,7 +102,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             Log.d("TAG::", "onCreate: $it")
         }
 
-        if (from == "activity"){
+        if (from == "activity") {
             editMode(true)
             userInfo.data?.socialLinkType
             binding.socialProfileLayout.visibility = View.VISIBLE
@@ -108,17 +115,35 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             .document(currentUserId!!).addSnapshotListener { value, error ->
                 status = value?.getString("status").toString()
 
-                Log.d("Log-error", "onCreate: error"+error)
+                Log.d("Log-error", "onCreate: error" + error)
                 setProfileStatus(status)
             }
+
+
+    }
+
+    private fun showAlert() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(getString(R.string.dialog_user_deletion_title))
+        builder.setMessage(getString(R.string.dialog_user_deletion_message))
+        builder.setPositiveButton(getString(R.string.yes_string)) { dialog, _ ->
+            dialog.cancel()
+            callUserDeletionAPI()
+        }
+        builder.setNegativeButton(getString(R.string.no_string)) { dialog, _ -> dialog.cancel() }
+        builder.show()
+    }
+
+    private fun callUserDeletionAPI() {
+        authViewModel.userAccountDelete()
     }
 
     private fun setProfileStatus(status: String) {
         var userInfo = PreferencesManagement.getUserInfo(this)
         userInfo?.data?.status = status
-        PreferencesManagement.saveUserInfo(this,userInfo)
-        with(binding){
-            if (status == "pending" || status == "not verified"){
+        PreferencesManagement.saveUserInfo(this, userInfo)
+        with(binding) {
+            if (status == "pending" || status == "not verified") {
                 profileStatus.setText(status!!.replaceFirstChar {
                     if (it.isLowerCase()) it.titlecase(
                         Locale.getDefault()
@@ -127,7 +152,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                 profileStatus.setTextColor(resources.getColor(R.color.status_pending))
                 profileStatusImage.setImageResource(R.drawable.status_pending)
 
-            }else if (status == "declined"){
+            } else if (status == "declined") {
                 profileStatus.setText(status.replaceFirstChar {
                     if (it.isLowerCase()) it.titlecase(
                         Locale.getDefault()
@@ -135,8 +160,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                 })
                 profileStatus.setTextColor(resources.getColor(R.color.status_declined))
                 profileStatusImage.setImageResource(R.drawable.status_declined)
-            }
-            else if (status == "suspended"){
+            } else if (status == "suspended") {
                 profileStatus.setText(status.replaceFirstChar {
                     if (it.isLowerCase()) it.titlecase(
                         Locale.getDefault()
@@ -144,7 +168,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                 })
                 profileStatus.setTextColor(resources.getColor(R.color.status_declined))
                 profileStatusImage.setImageResource(R.drawable.status_declined)
-            }else{
+            } else {
                 profileStatus.setText(status.replaceFirstChar {
                     if (it.isLowerCase()) it.titlecase(
                         Locale.getDefault()
@@ -164,8 +188,10 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             val userlocation = PreferencesManagement.getUserLocation(this@MyNewProfileActivity)
             locationEdit.setText(userlocation?.address)
 
-            instaEdit.setText(if(userInfo.data?.socialLink == "" ||userInfo.data?.socialLink == null) "No profile submitted"
-            else userInfo.data?.socialLink)
+            instaEdit.setText(
+                if (userInfo.data?.socialLink == "" || userInfo.data?.socialLink == null) "No profile submitted"
+                else userInfo.data?.socialLink
+            )
             Glide.with(this@MyNewProfileActivity)
                 .load(userInfo.data?.userAvatar)
                 .placeholder(resources.getDrawable(R.drawable.user))
@@ -178,24 +204,28 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                     list.add(SocialData(R.drawable.twitter_icon, false))
                     list.add(SocialData(R.drawable.linked_in_icon, false))
                 }
+
                 linkedin -> {
                     list.add(SocialData(R.drawable.fb_icon, false))
                     list.add(SocialData(R.drawable.insta_icon, false))
                     list.add(SocialData(R.drawable.twitter_icon, false))
                     list.add(SocialData(R.drawable.linked_in_icon, true))
                 }
+
                 twitter -> {
                     list.add(SocialData(R.drawable.fb_icon, false))
                     list.add(SocialData(R.drawable.insta_icon, false))
                     list.add(SocialData(R.drawable.twitter_icon, true))
                     list.add(SocialData(R.drawable.linked_in_icon, false))
                 }
+
                 instagram -> {
                     list.add(SocialData(R.drawable.fb_icon, false))
                     list.add(SocialData(R.drawable.insta_icon, true))
                     list.add(SocialData(R.drawable.twitter_icon, false))
                     list.add(SocialData(R.drawable.linked_in_icon, false))
                 }
+
                 else -> {
                     list.add(SocialData(R.drawable.fb_icon, true))
                     list.add(SocialData(R.drawable.insta_icon, false))
@@ -214,16 +244,16 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
     private fun setUpObserver() {
         authViewModel.isLoading.observe(this) { loader(it) }
 
-        authViewModel.getUserSuccess.observe(this){
-            if (it.code == 200){
+        authViewModel.getUserSuccess.observe(this) {
+            if (it.code == 200) {
                 setUpProfile(it)
             }
         }
         authViewModel.updateUserSuccess.observe(this) {
 //            showToast(it.responseMessage.toString())
-            if (it.code == 500){
+            if (it.code == 500) {
                 showToast(it.responseMessage.toString())
-            }else {
+            } else {
                 editMode(false)
                 setUpProfile(it)
                 PreferencesManagement.saveUserInfo(this, it)
@@ -232,11 +262,12 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
         authViewModel.errorMessage.observe(this) { if (it.isNotBlank()) showToast(it) }
         authViewModel.userProfilePicSuccess.observe(this) {
 
-            if (it.code == 200){
+            if (it.code == 200) {
                 showToast(it.responseMessage.toString())
 
                 val userInfo = PreferencesManagement.getUserInfo(this)!!
-                val userData = UsersData(phone = userInfo.data?.phone,
+                val userData = UsersData(
+                    phone = userInfo.data?.phone,
                     socialLinkType = socialLinkType,
                     socialLink = profileLink,
                     name = userInfo.data?.name,
@@ -253,7 +284,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                     status = userInfo.status,
                     data = userData
                 )
-                PreferencesManagement.saveUserInfo(this,newUserInfo)
+                PreferencesManagement.saveUserInfo(this, newUserInfo)
 
 
 //            setUpProfile(it)
@@ -296,9 +327,55 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             editMode(false)
             setProfileStatus(userInfo.data?.status.toString())*/
         }
+
+        authViewModel.userAccountDeletionSuccess.observe(this) {
+            logoutUser()
+        }
+        authViewModel.logoutNewSuccess.observe(this) {
+            PreferencesManagement.saveUserProfileFlag(this, false)
+            PreferencesManagement.saveUserFlag(this, false)
+            PreferencesManagement.saveUserInfo(this, null)
+            PreferencesManagement.saveUserName(this, "")
+            PreferencesManagement.saveUserEmail(this, "")
+
+            Firebase.auth.signOut()
+
+            if (PreferencesManagement.getSignInMethod(this) == SIGN_IN_METHOD_GOOGLE) {
+                mGoogleSignInClient.revokeAccess()
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            // Google access revoked
+                            //logoutUser()
+                        } else {
+                            // Handle error
+                            showToast("Error! Please try again.")
+                        }
+                    }
+            }
+            showToast(it.responseMessage.toString())
+            PreferencesManagement.saveSignInMethod(this, "")
+
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }
+    }
+
+    private fun logoutUser() {
+
+        val mUser = FirebaseAuth.getInstance().currentUser
+        val map = HashMap<String, String>()
+        val token =
+            PreferencesManagement.getAuthToken(this)!!
+        map["Authorization"] = token
+        authViewModel.logoutUser(map)
+        Firebase.auth.signOut()
+
     }
 
     private fun clickeEvents() {
+        binding.deleteAccount.setOnClickListener {
+            showAlert()
+        }
         binding.uploadImage.isEnabled = false
         binding.editProfile.setOnClickListener {
             postClick(Constants.BUTTON_EDIT_PROFILE)
@@ -315,11 +392,11 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
         }
         binding.instaEdit.setOnClickListener {
             postClick(BUTTON_SOCIAL_PROFILE_CHANGE)
-            if (status == "declined" || status == "not verified"){
+            if (status == "declined" || status == "not verified") {
                 userInfo.data?.socialLinkType
                 binding.socialProfileLayout.visibility = View.VISIBLE
-            }else{
-                when(status){
+            } else {
+                when (status) {
                     "active" -> showToast("Profile already verified.")
                     "pending" -> showToast("Profile verification is pending.")
                     "suspended" -> showToast("Your profile is suspended.")
@@ -378,9 +455,9 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
 
         binding.nameEdit.isEnabled = isEditMode
         binding.uploadImage.isEnabled = isEditMode
-        if(PreferencesManagement.getSignInMethod(this) == SIGN_IN_METHOD_PHONE){
+        if (PreferencesManagement.getSignInMethod(this) == SIGN_IN_METHOD_PHONE) {
             binding.emailEdit.isEnabled = isEditMode
-        }else{
+        } else {
             binding.phoneEdit.isEnabled = isEditMode
         }
 //        binding.phoneEdit.isEnabled = isEditMode
@@ -409,9 +486,9 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
 
                 map[RequestKeys.social_link_type] = socialLinkType
 
-                profileLink = binding.socialProfileHeader.text.toString().trim()+
+                profileLink = binding.socialProfileHeader.text.toString().trim() +
                         binding.profileLink.text.toString().trim()
-                map[RequestKeys.social_link] = binding.socialProfileHeader.text.toString().trim()+
+                map[RequestKeys.social_link] = binding.socialProfileHeader.text.toString().trim() +
                         binding.profileLink.text.toString().trim()
 
             }
@@ -438,15 +515,15 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
     private fun postUserData() {
         if (isValidate()) {
             //getFCMToken
-            if (PreferencesManagement.getSignInMethod(this) == SIGN_IN_METHOD_GOOGLE){
+            if (PreferencesManagement.getSignInMethod(this) == SIGN_IN_METHOD_GOOGLE) {
 
-                val body = HashMap<String,String>()
+                val body = HashMap<String, String>()
                 body["name"] = binding.nameEdit.text.toString()
                 body["phone"] = binding.phoneEdit.text.toString()
 
                 authViewModel.updateUserV2(body)
-            }else{
-                val body = HashMap<String,String>()
+            } else {
+                val body = HashMap<String, String>()
                 body["name"] = binding.nameEdit.text.toString()
                 body["email"] = binding.emailEdit.text.toString()
                 authViewModel.updateUserV2(body)
@@ -463,7 +540,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             showToast("Please Enter Valid Email Address")
             return false
         }
-        if (binding.nameEdit.text.toString().isEmpty()){
+        if (binding.nameEdit.text.toString().isEmpty()) {
             showToast("Enter Name")
             return false
         }
@@ -489,10 +566,12 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                 binding.socialProfileHeader.text = Constants.LINKED_IN_URL
                 socialLinkType = "linkedin"
             }
+
             2 -> {
                 binding.socialProfileHeader.text = Constants.TWITTER_URL
                 socialLinkType = "twitter"
             }
+
             1 -> {
                 binding.socialProfileHeader.text = Constants.INSTA_URL
                 socialLinkType = "instagram"
@@ -508,12 +587,14 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
 
     private fun selectImage() {
         postEvent(Constants.BUTTON_UPLOAD_IMAGE, null)
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             Dexter.withContext(this)
-                .withPermissions(Manifest.permission.READ_MEDIA_IMAGES,
+                .withPermissions(
+                    Manifest.permission.READ_MEDIA_IMAGES,
                     Manifest.permission.CAMERA,
                     Manifest.permission.READ_MEDIA_AUDIO,
-                    Manifest.permission.READ_MEDIA_VIDEO)
+                    Manifest.permission.READ_MEDIA_VIDEO
+                )
                 .withListener(object : MultiplePermissionsListener {
                     override fun onPermissionsChecked(report: MultiplePermissionsReport) {
                         if (report.areAllPermissionsGranted()) {
@@ -531,10 +612,12 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                         token.continuePermissionRequest()
                     }
                 }).check()
-        }else{
+        } else {
             Dexter.withContext(this)
-                .withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.CAMERA)
+                .withPermissions(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.CAMERA
+                )
                 .withListener(object : MultiplePermissionsListener {
                     override fun onPermissionsChecked(report: MultiplePermissionsReport) {
                         if (report.areAllPermissionsGranted()) {
@@ -608,14 +691,19 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val data: Intent? = result.data
             if (result.resultCode == Activity.RESULT_OK) {
-                val uriList = data!!.getParcelableArrayListExtra<Uri>("imagesList") as ArrayList<Uri>
+                val uriList =
+                    data!!.getParcelableArrayListExtra<Uri>("imagesList") as ArrayList<Uri>
 
                 try {
-                    if (uriList.size != 0){
+                    if (uriList.size != 0) {
                         val bitmap = ImageUtils.uriToBitMap(uriList[0], this@MyNewProfileActivity)
 
                         val imageFile =
-                            ImageUtils.bitmapToFile(bitmap, this@MyNewProfileActivity, "profile.jpg")
+                            ImageUtils.bitmapToFile(
+                                bitmap,
+                                this@MyNewProfileActivity,
+                                "profile.jpg"
+                            )
 
                         lifecycleScope.launch {
                             val compressedImageFile =
@@ -648,13 +736,18 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
 
         Log.d(
             API_TAG,
-            "updatePhoto: ${JavaUtils.profileImagePrepareFilePart1(path.absolutePath,"image")} \n ${
+            "updatePhoto: ${
+                JavaUtils.profileImagePrepareFilePart1(
+                    path.absolutePath,
+                    "image"
+                )
+            } \n ${
                 Gson().toJson(authMap)
             }"
         )
         authViewModel.updateProfilePic(
             authMap,
-            JavaUtils.profileImagePrepareFilePart1(path.absolutePath,"image")
+            JavaUtils.profileImagePrepareFilePart1(path.absolutePath, "image")
         )
     }
 

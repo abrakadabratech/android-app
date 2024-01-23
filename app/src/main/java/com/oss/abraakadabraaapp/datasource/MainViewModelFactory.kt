@@ -5,19 +5,19 @@ import androidx.lifecycle.ViewModelProvider
 import com.oss.abraakadabraaapp.retrofit.api.APIService
 
 class MainViewModelFactory(private val apiService: APIService,
-                           private val headers:Map<String,String>,
                            private val maxDistance:Int,
                            private val lat:Double,
                            private val long:Double,
-                           private val categories:String,
                            private val sortBy:String) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel(apiService,headers,maxDistance,lat,long,categories,sortBy) as T
+            @Suppress("UNCHECKED_CAST")
+            return MainViewModel(apiService,maxDistance,lat,long,sortBy) as T
         }
 
         if (modelClass.isAssignableFrom(MainFilterViewModel::class.java)){
-            return MainFilterViewModel(apiService,headers,maxDistance,lat,long,categories,sortBy) as T
+            @Suppress("UNCHECKED_CAST")
+            return MainFilterViewModel(apiService,maxDistance,lat,long,sortBy) as T
         }
         /*else{
             return SearchViewModel(apiService,headers,maxDistance,lat,long,categories,sortBy) as T

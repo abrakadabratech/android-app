@@ -15,7 +15,7 @@ class SearchViewModel(private val apiService: APIService,
                       private val long:Double,
                       private val query:String,
                       private val sortBy:String) : ViewModel() {
-    val listData = Pager(PagingConfig(pageSize = 3, prefetchDistance = 2)) {
+    val listData = Pager(PagingConfig(pageSize = 10, prefetchDistance = 1)) {
         SearchDataSource(apiService,headers,maxDistance,lat,long,query,sortBy)
     }.flow.cachedIn(viewModelScope)
 }

@@ -25,8 +25,8 @@ class RequestsDataSource(private val apiService: APIService,
             val response = apiService.getProductRequests(productId,currentLoadingPageKey)
             Log.d("TAG - ", "load:response data $response")
             val responseData = mutableListOf<Requests>()
-            EventBus.getDefault().post(response.requests.size.toFloat())
-            val data = response.requests ?: emptyList()
+            EventBus.getDefault().post(response.body()!!.requests.size.toFloat())
+            val data = response.body()!!.requests
             responseData.addAll(data)
             Log.d("TAG - ", "load:response data ${responseData.size} ${Gson().toJson(responseData)}")
             val prevKey = if (currentLoadingPageKey == 1) null else currentLoadingPageKey - 1
@@ -34,7 +34,7 @@ class RequestsDataSource(private val apiService: APIService,
             return LoadResult.Page(
                 data = responseData,
                 prevKey = prevKey,
-                nextKey = if (response.requests.isEmpty()) null else currentLoadingPageKey + 1
+                nextKey = if (response.body()!!.requests.isEmpty()) null else currentLoadingPageKey + 1
             )
         }catch (e: Exception) {
             Log.e("TAG - ", "load: ${e.message}", )

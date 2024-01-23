@@ -1,5 +1,8 @@
 package com.oss.abraakadabraaapp.retrofit.repository
 
+import androidx.compose.foundation.pager.PageSize
+import com.oss.abraakadabraaapp.model.DeleteAll
+import com.oss.abraakadabraaapp.model.DeleteMultiple
 import com.oss.abraakadabraaapp.retrofit.api.APIs
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -53,15 +56,19 @@ class MainRepository(private val apiHelper: APIs) {
     ) = apiHelper.getHomeData(headerMap)
 
     suspend fun getAllNotifications(
-        headerMap: HashMap<String, String>,
-        map: HashMap<String, String>
-    ) = apiHelper.getAllNotifications(headerMap)
+        page:Int
+    ) = apiHelper.getAllNotifications(page)
 
-    suspend fun readNotification(
-        headerMap: HashMap<String, String>,
-        map: HashMap<String, String>
-    ) = apiHelper.readNotification(headerMap)
+    suspend fun readAllNotification(
+        map: DeleteAll
+    ) = apiHelper.readAllNotification(map)
 
+    suspend fun readMultipleNotification(
+        map: DeleteMultiple
+    ) = apiHelper.readMultipleNotification(map)
+
+    suspend fun deleteAllNotification(map: DeleteAll) = apiHelper.deleteAllNotification(map)
+    suspend fun deleteMultipleNotification(map:DeleteMultiple) = apiHelper.deleteMultipleNotification(map)
     suspend fun manageProduct(
         headerMap: HashMap<String, String>,
         map: HashMap<String, RequestBody>,

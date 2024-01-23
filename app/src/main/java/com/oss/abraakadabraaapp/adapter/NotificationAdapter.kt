@@ -2,111 +2,313 @@ package com.oss.abraakadabraaapp.adapter
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
+import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.databinding.ObservableArrayList
+import androidx.databinding.ObservableList
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
-import com.oss.abraakadabraaapp.activities.ProductDetailActivity
-import com.oss.abraakadabraaapp.activities.RequestProductDetailActivity
-import com.oss.abraakadabraaapp.databinding.ItemNotificationBinding
-import com.oss.abraakadabraaapp.response.notificationResponse.NotificationResponse
+import com.oss.abraakadabraaapp.activities.newflow.RequesterActivity
+import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
+import com.oss.abraakadabraaapp.activities.newflow.ui.MyRequestDetailsActivity
+import com.oss.abraakadabraaapp.model.Notifications
 import com.oss.abraakadabraaapp.utils.Constants
-import com.oss.abraakadabraaapp.utils.ImageUtils
 
 
 class NotificationAdapter(
-    private val data: ArrayList<NotificationResponse.NotificationData>,
-    var context: Context,
-    private var callback: NotificationAdapterInterface
-) : RecyclerView.Adapter<NotificationAdapter.NotificationAdapterVH>() {
+    var context: Context,val lifecycleOwner: LifecycleOwner,val handleListenr:HandleClicks
+) : PagingDataAdapter<Notifications, NotificationAdapter.NotificationAdapterVH>(ProductDifferntiator) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationAdapterVH {
-        return NotificationAdapterVH(
-            LayoutInflater.from(context).inflate(R.layout.item_notification, parent, false)
-        )
-    }
-
+    val selectedItems = ObservableArrayList<Int>()
+    var isMultiSelectMode: MutableLiveData<Boolean> = MutableLiveData(false)
+    var selectedNotifications = listOf<Notifications>()
+//    private var listData: MutableList<Property> = data as MutableList<Property>
     override fun onBindViewHolder(holder: NotificationAdapterVH, position: Int) {
 
-        /*val item = data[position]
+        holder.bindTo(this, getItem(position))
 
-        with(holder.binding) {
-//product id
-            tvNotificationTitle.text = item.notificationTitle
-            tvNotificationTime.text = item.createdAt
+        /*val model = getItem(position)!!
+        val isSelected = selectedItems.contains(position)
 
-            if (item.userName.isNotEmpty()) {
-                tvUserName.visibility = View.VISIBLE
-                tvUserName.text = item.userName
-            }
 
-            //seenStatus 0-> unread 1-> read
-            if (item.seenStatus == 1) {
-                clMainContent.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+
+        holder.itemView.setOnLongClickListener{
+
+            if (isSelected) {
+                selectedItems.remove(position)
             } else {
-                clMainContent.setBackgroundColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.op_grey_28
-                    )
-                )
+                selectedItems.add(position)
             }
-            ImageUtils.setImage(
-                context,
-                ivImage,
-                item.profileImage,
-                null,
-                R.drawable.home_toolbar_app_logo,
-            )
+            notifyItemChanged(position)
+            isLongClickEnabled = true
+
+            markSelectedItem(position)
+            return@setOnLongClickListener true
         }
-
         holder.itemView.setOnClickListener {
-            if(item.seenStatus != 1){
-                callback.onItemClick(item,position)
-            }else{
-                when (item.module) {
-                    Constants.pendingIntentRequest -> {
-                        var intent = Intent(context, ProductDetailActivity::class.java)
-
-                        if(item.role.toString() == Constants.giver){//role //1-> taker // 2->giver//22
-                            intent = Intent(context, RequestProductDetailActivity::class.java)
-                            intent.putExtra(Constants.productId,item.moduleId.toString())
-                        }else{
-                            intent.putExtra(Constants.productId, item.moduleData2.toString())//product id
-                            intent.putExtra(Constants.titleStatus, item.moduleData.toString())
-                        }
-                        intent.putExtra(Constants.productStatus, item.moduleData.toString())
-                        intent.putExtra(Constants.requestName, item.userName)
-                        context.startActivity(intent)
-                    }
-                    Constants.productDetail -> {
-                        val intent = Intent(context, ProductDetailActivity::class.java)
-                        intent.putExtra(Constants.productId, item.moduleId.toString())
-                        intent.putExtra(Constants.requestName, item.userName)
-                        context.startActivity(intent)
-                    }
-                }
+            deselectItem(position)
+            val dataModel = model.data
+            if (isSelected) {
+                selectedItems.remove(position)
+            } else {
+                selectedItems.add(position)
             }
+            notifyItemChanged(position)
+           *//* *//*
         }*/
-
     }
 
-    override fun getItemCount(): Int {
-        return 4
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationAdapterVH {
+        val layoutInflater = LayoutInflater.from(parent.context)
+        val listItemBinding = layoutInflater.inflate(R.layout.notification_row, parent, false)
+        return NotificationAdapterVH(listItemBinding)
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return 1
-    }
 
     class NotificationAdapterVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val binding = ItemNotificationBinding.bind(itemView)
+        val userName = itemView.findViewById<TextView>(R.id.userName)
+        val productName = itemView.findViewById<TextView>(R.id.productName)
+        val message = itemView.findViewById<TextView>(R.id.message)
+        val rootlayout = itemView.findViewById<CardView>(R.id.rootlayout)
+        val checkBox = itemView.findViewById<CheckBox>(R.id.checkBox2)
+
+        var photo: Notifications? = null
+        private lateinit var adapter: NotificationAdapter
+
+        /**
+         * Binds the parent adapter and the photo to the ViewHolder.
+         */
+        fun bindTo(adapter: NotificationAdapter, model: Notifications?) {
+            this.photo = photo
+            this.adapter = adapter
+
+            if (!model?.deleted!!) {
+                rootlayout.setBackgroundColor(ContextCompat.getColor(adapter.context,R.color.bg_color))
+            } else {
+                rootlayout.setBackgroundColor(ContextCompat.getColor(adapter.context,R.color.white))
+            }
+
+            userName.text = model.body
+            productName.text = model.title
+//        holder.message.text =
+//            SimpleDateFormat("MMM dd,yyyy HH:mm").format(model.timestamp?.toDate())
+
+            rootlayout.setOnClickListener {
+                if (adapter.isMultiSelectMode.value!!) {
+                    // If the item clicked is the last selected item
+                    if (adapter.isLastSelectedItem(layoutPosition)) {
+                        adapter.disableSelection()
+                        return@setOnClickListener
+                    }
+                    // Set checked if not already checked
+                    setItemChecked(!adapter.isItemSelected(layoutPosition))
+                } else {
+                    Log.d("TAG", "bindTo: clicked ${photo?.module}")
+                    model.deleted = true
+                    adapter.notifyItemChanged(layoutPosition)
+                    adapter.viewNotification(layoutPosition,model)
+                }
+            }
+
+            rootlayout.setOnLongClickListener {
+                if (!adapter.isMultiSelectMode.value!!) {
+                    adapter.enableSelection()
+                    setItemChecked(true)
+                    adapter.handleListenr.enableOptions()
+                }
+                true
+            }
+
+            adapter.isMultiSelectMode.observe(adapter.lifecycleOwner) {
+                if (it) { // When selection gets enabled, show the checkbox
+                    checkBox.visibility = View.VISIBLE
+                } else {
+                    checkBox.visibility = View.GONE
+                }
+            }
+
+            adapter.selectedItems.addOnListChangedCallback(onSelectedItemsChanged)
+
+            listChanged()
+//            loadThumbnail()
+        }
+
+        /**
+         * Listener for changes in selected images.
+         * Calls [listChanged] whatever happens.
+         */
+        private val onSelectedItemsChanged =
+            object : ObservableList.OnListChangedCallback<ObservableList<Int>>() {
+
+                override fun onChanged(sender: ObservableList<Int>?) {
+                    listChanged()
+                }
+
+                override fun onItemRangeChanged(
+                    sender: ObservableList<Int>?,
+                    positionStart: Int,
+                    itemCount: Int
+                ) {
+                    listChanged()
+                }
+
+                override fun onItemRangeInserted(
+                    sender: ObservableList<Int>?,
+                    positionStart: Int,
+                    itemCount: Int
+                ) {
+                    listChanged()
+                }
+
+                override fun onItemRangeMoved(
+                    sender: ObservableList<Int>?,
+                    fromPosition: Int,
+                    toPosition: Int,
+                    itemCount: Int
+                ) {
+                    listChanged()
+                }
+
+                override fun onItemRangeRemoved(
+                    sender: ObservableList<Int>?,
+                    positionStart: Int,
+                    itemCount: Int
+                ) {
+                    listChanged()
+                }
+
+            }
+
+        private fun listChanged() {
+            val isSelected = adapter.isItemSelected(layoutPosition)
+
+            checkBox.isChecked = isSelected
+        }
+
+        private fun setItemChecked(checked: Boolean) {
+            layoutPosition.let {
+                if (checked) {
+                    adapter.addItemToSelection(it)
+                } else {
+                    adapter.removeItemFromSelection(it)
+                }
+            }
+        }
+
+        /**
+         * Load the thumbnail for the [photo].
+         */
     }
 
-    interface NotificationAdapterInterface {
-        fun onItemClick(data:NotificationResponse.NotificationData,position:Int)
+    private fun viewNotification(ayoutPosition: Int, model: Notifications?) {
+
+        when (model?.module) {
+            Constants.productListing -> {
+                val intent =
+                    Intent(context, RequesterActivity::class.java)
+                intent.putExtra(Constants.productId, model.data?.requestId)
+                context.startActivity(intent)
+            }
+
+            Constants.productRequestDetails -> {
+                val intent = Intent(
+                    context,
+                    MyRequestDetailsActivity::class.java
+                )
+                intent.putExtra(Constants.productId, model.data?.requestId)
+                context.startActivity(intent)
+            }
+
+            Constants.chatDetails -> {
+                val intent =
+                    Intent(context, ChatDetailActivity::class.java)
+                intent.putExtra(Constants.productId, Gson().toJson(model.data))
+                context.startActivity(intent)
+            }
+        }
+    }
+
+
+    companion object ProductDifferntiator : DiffUtil.ItemCallback<Notifications>() {
+
+        override fun areItemsTheSame(oldItem: Notifications, newItem: Notifications): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Notifications, newItem: Notifications): Boolean {
+            return oldItem == newItem
+        }
+    }
+
+    fun disableSelection() {
+        selectedItems.clear()
+        isMultiSelectMode.postValue(false)
+    }
+
+    fun enableSelection() {
+        isMultiSelectMode.postValue(true)
+    }
+
+    /**
+     * Add an item it the selection.
+     */
+    fun addItemToSelection(position: Int): Boolean = selectedItems.add(position)
+
+    /**
+     * Remove an item to the selection.
+     */
+    fun removeItemFromSelection(position: Int) = selectedItems.remove(position)
+
+    /**
+     * Indicate if an item is already selected.
+     */
+    fun isItemSelected(position: Int) = selectedItems.contains(position)
+
+    /**
+     * Indicate if an item is the last selected.
+     */
+    fun isLastSelectedItem(position: Int) = isItemSelected(position) && selectedItems.size == 1
+
+    /**
+     * Select all items.
+     */
+    fun selectAll() {
+        for (i in 0 until itemCount) {
+            if (!isItemSelected(i)) {
+                addItemToSelection(i)
+            }
+        }
+    }
+
+    /**
+     * Get all items that are selected.
+     */
+    fun getAllSelected(): List<Notifications> {
+        val items = mutableListOf<Notifications>()
+        for(position in selectedItems) {
+            val photo = getItem(position)
+            if (photo != null) {
+                items.add(photo)
+            }
+        }
+        return items
+    }
+    interface HandleClicks{
+        fun enableOptions()
+
+        fun getSelectedItems(notification:List<Notifications>)
+
     }
 
 }

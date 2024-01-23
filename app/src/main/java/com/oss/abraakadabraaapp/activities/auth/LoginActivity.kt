@@ -39,6 +39,8 @@ import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.PhoneAuthProvider.ForceResendingToken
 import com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.BuildConfig
@@ -604,7 +606,10 @@ class LoginActivity : BaseActivity() {
             if (it.responseMessage == "User created successfully." || it.responseMessage == "User already exists."
                 || it.responseMessage == "User Login Success.") {
                 authViewModel.getUser()
-            } else {
+            }else if(it.error){
+                showErrorAlert()
+            }
+            else {
                 FirebaseAuth.getInstance().signOut()
                 mGoogleSignInClient.revokeAccess()
                     .addOnCompleteListener { task ->
@@ -686,6 +691,20 @@ class LoginActivity : BaseActivity() {
 
             authViewModel.isLoading.observe(this) { loader(it) }
         }
+    }
+
+    private fun showErrorAlert() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(getString(R.string.dialog_user_recover_title))
+        builder.setMessage(getString(R.string.dialog_user_recover_message))
+        builder.setPositiveButton(getString(R.string.yes_string)) { dialog, _ ->
+            dialog.cancel()
+            authViewModel.getUser()
+        }
+        builder.setNegativeButton(getString(R.string.no_string)) { dialog, _ ->
+            Firebase.auth.signOut()
+            dialog.cancel() }
+        builder.show()
     }
 
     private fun updateUser(it: GetUserResponse?) {

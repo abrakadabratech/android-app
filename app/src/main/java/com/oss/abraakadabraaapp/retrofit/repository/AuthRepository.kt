@@ -128,9 +128,10 @@ class AuthRepository(private val apiHelper: APIs) {
     ) = apiHelper.reportProduct(body)
 
     suspend fun postRequest(
+        version:Int,
         id: String,
         body: HashMap<String, String>
-    ) = apiHelper.postProductRequest(id, body)
+    ) = apiHelper.postProductRequest(version,id, body)
 
     suspend fun updateProductRequest(
         id: String,
@@ -250,5 +251,8 @@ class AuthRepository(private val apiHelper: APIs) {
         map: ReportRequest
     ) = apiHelper.reportApi(map)
 
-    suspend fun requestsRemain() = apiHelper.requestRemains()
+    suspend fun requestsRemain(version: Int) = apiHelper.requestRemains(version)
+
+    suspend fun userAccountDelete() = apiHelper.deleteUserAccount()
+
 }

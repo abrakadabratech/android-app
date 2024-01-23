@@ -29,7 +29,7 @@ import java.util.Locale
 class ProductAdapter(val onClick: OnProductClicked) :
     PagingDataAdapter<Product, RecyclerView.ViewHolder>(ProductDifferntiator) {
 
-    private val ADS_AFTER: Int = 4 //frequency of ads in list
+    private val ADS_AFTER: Int = 16 //frequency of ads in list
     private val ITEM_VIEW: Int = R.layout.item_product //regular item view layout
     private val AD_VIEW: Int = R.layout.list_ad  //ad view layout
 
@@ -86,7 +86,9 @@ class ProductAdapter(val onClick: OnProductClicked) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (viewType) {
+        return /*ViewHolder(LayoutInflater
+            .from(parent.context)
+            .inflate(R.layout.item_product, parent, false))*/ when (viewType) {
             AD_VIEW -> NativeAdViewHolder(
                 LayoutInflater.from(parent.context).inflate(AD_VIEW, parent, false)
             )
@@ -125,9 +127,9 @@ class ProductAdapter(val onClick: OnProductClicked) :
     }
 
     private fun isAdPosition(position: Int): Boolean {
-        return position > 0 && (position + 1) % 7 == 0
+        return position > 0 && (position + 1) % ADS_AFTER == 0
     }
-    /*override fun getItemCount(): Int {
+   /* override fun getItemCount(): Int {
         //disclaimer: copied from the stackoverflow link below but its working fine for me
         val s = super.getItemCount()
         var t: Int = s + s / ADS_AFTER

@@ -12,12 +12,16 @@ import com.oss.abraakadabraaapp.activities.newflow.menu.SupportResponse
 import com.oss.abraakadabraaapp.activities.newflow.model.*
 import com.oss.abraakadabraaapp.activities.newflow.requests.CancelRequestReponse
 import com.oss.abraakadabraaapp.datasource.products.GetProducts
+import com.oss.abraakadabraaapp.model.AccountDeleteResponse
+import com.oss.abraakadabraaapp.model.DeleteAll
+import com.oss.abraakadabraaapp.model.DeleteMultiple
+import com.oss.abraakadabraaapp.model.NotificationResponse
+import com.oss.abraakadabraaapp.model.ReadNotificationResponse
 import com.oss.abraakadabraaapp.response.authResponse.*
 import com.oss.abraakadabraaapp.response.commonResponse.CommonResponse
 import com.oss.abraakadabraaapp.response.commonResponse.ContentManagementResponse
 import com.oss.abraakadabraaapp.response.locationResponse.LocationAddressResponse
 import com.oss.abraakadabraaapp.response.mainResponse.*
-import com.oss.abraakadabraaapp.response.notificationResponse.NotificationResponse
 import com.oss.abraakadabraaapp.response.productRequestResponse.ListingResponse
 import com.oss.abraakadabraaapp.response.productRequestResponse.MyListingResponse
 import com.oss.abraakadabraaapp.response.productRequestResponse.MyRequestResponse
@@ -181,7 +185,7 @@ interface APIs {
     //Request a product
     @POST("product/request/{id}")
     suspend fun postProductRequest(
-
+        @Header("app_version") app_version:Int,
         @Path("id") id: String,
         @Body body : HashMap<String, String>
     ): Response<ProductDeleteResponse>
@@ -271,10 +275,15 @@ interface APIs {
     companion object {
 
         private const val BASE_URL = "https://api.instantwebtools.net/v1/"
-
+        var okkHttp = OkHttpClient.Builder()
+            .hostnameVerifier { _, _ -> true }
+            .addInterceptor(APIService.loggingInterceptor)
+            .addInterceptor(TokenInterceptor())
+            .build()
         operator fun invoke(): APIs = Retrofit.Builder()
             .baseUrl(if(BuildConfig.DEBUG) BuildConfig.BASE_URL else BuildConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okkHttp)
             .build()
             .create(APIs::class.java)
     }
@@ -364,17 +373,6 @@ interface APIs {
         @QueryMap map: HashMap<String, String>
     ): Response<GetHomeDataResponse>
 
-    @GET("get_all_notifications")
-    suspend fun getAllNotifications(
-
-        @QueryMap map: HashMap<String, String>
-    ): Response<NotificationResponse>
-
-    @GET("read_notification")
-    suspend fun readNotification(
-
-        @QueryMap map: HashMap<String, String>
-    ): Response<CommonResponse>
 
     @Multipart
     @POST("product_manage")
@@ -465,6 +463,25 @@ interface APIs {
     suspend fun reportApi(@Body body:ReportRequest) : Response<ReportResponce>
 
     @GET("product/request/verify")
-    suspend fun requestRemains() : Response<RequestsRemain>
+    suspend fun requestRemains(@Header("app_version") app_version:Int) : Response<RequestsRemain>
+
+    @GET("app/user/notifications")
+    suspend fun getAllNotifications(@Query("page") page: Int) : Response<NotificationResponse>
+
+    @PUT("app/user/notifications/read")
+    suspend fun readAllNotification(@Body body: DeleteAll) : Response<ReadNotificationResponse>
+
+
+    @PUT("app/user/notifications/read")
+    suspend fun readMultipleNotification(@Body body: DeleteMultiple) : Response<ReadNotificationResponse>
+
+    @DELETE("app/user/notifications/delete")
+    suspend fun deleteAllNotification(@Body all: DeleteAll) : Response<ReadNotificationResponse>
+
+    @DELETE("app/user/notifications/delete")
+    suspend fun deleteMultipleNotification(@Body multiple: DeleteMultiple) : Response<ReadNotificationResponse>
+
+    @POST("user/account/delete")
+    suspend fun deleteUserAccount() : Response<AccountDeleteResponse>
 
 }

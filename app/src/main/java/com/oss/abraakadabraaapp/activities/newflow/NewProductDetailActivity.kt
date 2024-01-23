@@ -35,6 +35,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
+import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.ReportRequest
@@ -102,7 +103,7 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
 
         setUpObserver()
 
-        mainViewModel.requestRemains()
+        mainViewModel.requestRemains(BuildConfig.VERSION_CODE)
         loaddata()
 
         binding.requestBtn.setOnClickListener {
@@ -359,7 +360,7 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
     private fun setUpObserver() {
 
         mainViewModel.requestsRemainSuccess.observe(this){
-//            isRequestAllowed = it.requestAllowed
+            isRequestAllowed = it.requestAllowed
         }
 
         mainViewModel.deleteProductSuccess.observe(this){
