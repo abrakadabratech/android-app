@@ -17,6 +17,9 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.initialization.InitializationStatus
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -90,6 +93,7 @@ class NewHomeActivity : BaseActivity() {
             Log.d("NavigationActivity", "Navigated to $dest")
         }
 
+
     }
 
     private fun getUnreadMessageCount() {
@@ -111,6 +115,27 @@ class NewHomeActivity : BaseActivity() {
 
 
                         collectionReference.document(data).collection("Messages")
+                            .whereEqualTo("receiverId",targetSubstring)
+                            .whereEqualTo("read", false).get().addOnSuccessListener { records ->
+                                val unreadCount = records.size()
+                                synchronized(lock) {
+                                    count += unreadCount
+                                }
+                                if (count > 0) {
+                                    badge.isVisible = true
+                                    badge.number = count
+                                } else {
+                                    badge.isVisible = false
+                                }
+                                println("Number of unread messages in sub-collection: $count")
+
+                            }.addOnFailureListener { e ->
+                                // Handle errors
+                                println("Error getting unread messages in subcollection: $e")
+                            }
+
+                        collectionReference.document(data).collection("Messages")
+                            .whereEqualTo("senderId",targetSubstring)
                             .whereEqualTo("read", false).get().addOnSuccessListener { records ->
                                 val unreadCount = records.size()
                                 synchronized(lock) {
@@ -238,7 +263,18 @@ class NewHomeActivity : BaseActivity() {
                 } catch (e: IntentSender.SendIntentException) {
                     Log.d("MYT", e.localizedMessage!!)
                 }
-            } else {
+            }
+            if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                && it.updatePriority() >= 4 /* high priority */
+                && it.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                // Request an immediate update.
+                mAppUpdateManager.startUpdateFlowForResult(
+                    it,
+                    AppUpdateType.IMMEDIATE,
+                    this,
+                    RC_APP_UPDATE
+                )
+            }else {
                 mAppUpdateManager.unregisterListener(listener)
             }
         }

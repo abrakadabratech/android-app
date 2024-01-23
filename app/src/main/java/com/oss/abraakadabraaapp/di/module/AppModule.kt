@@ -100,10 +100,14 @@ private fun provideOkHttpClient(context: Context) = if (BuildConfig.DEBUG) {
     val trustManager =
         trustManagers[0] as X509TrustManager
 
+    val loggingInterceptor = HttpLoggingInterceptor()
+    loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
     OkHttpClient
         .Builder()
         .sslSocketFactory(  sslContext.socketFactory, trustManager)
         .hostnameVerifier { _, _ -> true }
+        .addInterceptor(TokenInterceptor())
+        .authenticator(TokenAutheticator(context))
         .addInterceptor(NetworkConnectionInterceptor(context))
         .build()
 }

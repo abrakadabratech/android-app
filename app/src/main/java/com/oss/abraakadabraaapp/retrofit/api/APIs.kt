@@ -465,6 +465,7 @@ interface APIs {
     @POST("app/reports")
     suspend fun reportApi(@Body body:ReportRequest) : Response<ReportResponce>
 
-
+    @GET("product/request/verify")
+    suspend fun requestRemains() : Response<RequestsRemain>
 
 }

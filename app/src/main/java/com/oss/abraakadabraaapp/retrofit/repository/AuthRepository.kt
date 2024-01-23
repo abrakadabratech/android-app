@@ -261,7 +261,8 @@ class AuthRepository(private val apiHelper: APIs) {
     ) = apiHelper.getBanners()
 
     suspend fun reportApi(
-        headerMap: HashMap<String, String>,
         map: ReportRequest
     ) = apiHelper.reportApi(map)
+
+    suspend fun requestsRemain() = apiHelper.requestRemains()
 }

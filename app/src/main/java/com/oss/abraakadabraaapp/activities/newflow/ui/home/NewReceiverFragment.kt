@@ -302,6 +302,11 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     private fun setupList() {
         mainListAdapter = ProductAdapter(this)
         val lm = GridLayoutManager(requireContext(), 2)
+        lm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return if (mainListAdapter!!.getItemViewType(position) == R.layout.list_ad) 2 else 1
+            }
+        }
         binding.rvLatestProduct.apply {
             //            layoutManager = LinearLayoutManager(requireContext())
             layoutManager = lm

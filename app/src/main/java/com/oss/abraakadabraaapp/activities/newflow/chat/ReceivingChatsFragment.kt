@@ -54,7 +54,8 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
 
-        val collectionRef = db.collection("chats").whereEqualTo("product_receiver", currentUserId)
+        val collectionRef = db.collection("chats")
+            .whereEqualTo("product_receiver", currentUserId)
             .orderBy("status", Query.Direction.ASCENDING)
             .orderBy("time_stamp", Query.Direction.DESCENDING)
 

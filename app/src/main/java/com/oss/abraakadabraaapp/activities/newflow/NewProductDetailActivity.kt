@@ -21,11 +21,17 @@ import androidx.fragment.app.commit
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.OnUserEarnedRewardListener
+import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
@@ -39,6 +45,7 @@ import com.oss.abraakadabraaapp.activities.newflow.model.NotificationDataModel
 import com.oss.abraakadabraaapp.databinding.ActivityNewProductDetailBinding
 import com.oss.abraakadabraaapp.response.productdetails.ProductDetailsData
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
+import com.oss.abraakadabraaapp.utils.AppSignatureHashHelper.TAG
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_PRODUCT_DETAILS
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_DELETE_PRODUCT
@@ -47,6 +54,7 @@ import com.oss.abraakadabraaapp.utils.Constants.BUTTON_SHARE_PRODUCT
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
+import io.reactivex.rxjava3.annotations.NonNull
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Locale
 
@@ -59,6 +67,7 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
     private val mainViewModel: AuthViewModel by viewModel()
     private var productDetails: ProductDetailsData? = null
     private var reportType = "Inappropriate Content"
+    private var isRequestAllowed = true
 
     var lattitude = ""
     var longitude = ""
@@ -70,6 +79,9 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
         setContentView(view)
 
         postEvent(Constants.PAGE_PRODUCT_DETAILS, null)
+
+        val adRequest = AdRequest.Builder().build();
+        binding.adView.loadAd(adRequest)
 
         if (intent.hasExtra(Constants.productId)) {
             productId = intent.getStringExtra(Constants.productId)!!
@@ -88,24 +100,76 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
             }
         }
 
+
         setUpObserver()
 
+        mainViewModel.requestRemains()
         loaddata()
 
         binding.requestBtn.setOnClickListener {
             postClick(Constants.BUTTON_REQUEST_IN_DETAILS_PAGE)
-            val userInfo = PreferencesManagement.getUserInfo(this)
-            if (userInfo?.data?.status == "not verified"){
-                //Show a pop up that is not verified yet
-                showNotActivePopUp()
-            }else if (userInfo?.data?.status == "pending"){
-                showPendingPopUp()
-            }else{
-                val intent = Intent(this,PostedUserActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                intent.putExtra(Constants.PRODUCT,Gson().toJson(productDetails))
-                startActivity(intent)
-            }
+            loader(true)
+            val adRequest = AdRequest.Builder().build()
+            RewardedAd.load(this,"ca-app-pub-6795450348346297/6589674050",
+                adRequest, object : RewardedAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d("TAG_ADS", adError.toString())
+//                    rewardedAd = null
+                    loader(false)
+                    navigateToNext()
+
+                }
+
+                override fun onAdLoaded(ad: RewardedAd) {
+                    Log.d("TAG", "Ad was loaded.")
+//                    rewardedAd = ad
+                    loader(false)
+
+                    navigateToNext()
+
+                    ad.let { a ->
+                        a.show(this@NewProductDetailActivity,
+                            OnUserEarnedRewardListener { rewardItem ->
+                                // Handle the reward.
+                                val rewardAmount = rewardItem.amount
+                                val rewardType = rewardItem.type
+                                Log.d(TAG, "User earned the reward.")
+                            })
+                    } ?: run {
+                        Log.d(TAG, "The rewarded ad wasn't ready yet.")
+                    }
+                    ad.fullScreenContentCallback = object: FullScreenContentCallback() {
+                        override fun onAdClicked() {
+                            // Called when a click is recorded for an ad.
+                            Log.d(TAG, "Ad was clicked.")
+                        }
+
+                        override fun onAdDismissedFullScreenContent() {
+                            // Called when ad is dismissed.
+                            // Set the ad reference to null so you don't show the ad a second time.
+                            Log.d(TAG, "Ad dismissed fullscreen content.")
+//                            rewardedAd = null
+                        }
+
+                        override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                            // Called when ad fails to show.
+                            Log.e(TAG, "Ad failed to show fullscreen content.")
+//                            rewardedAd = null
+                        }
+
+                        override fun onAdImpression() {
+                            // Called when an impression is recorded for an ad.
+                            Log.d(TAG, "Ad recorded an impression.")
+                        }
+
+                        override fun onAdShowedFullScreenContent() {
+                            // Called when ad is shown.
+                            Log.d(TAG, "Ad showed fullscreen content.")
+                        }
+                    }
+                }
+            })
+
         }
 
         binding.ivMenu.setOnClickListener {
@@ -161,6 +225,26 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
             .registerReceiver(mReceiver, IntentFilter(Constants.notificationReceived))
     }
 
+    private fun navigateToNext() {
+        val userInfo = PreferencesManagement.getUserInfo(this)
+        if (userInfo?.data?.status == "not verified"){
+            //Show a pop up that is not verified yet
+            showNotActivePopUp()
+        }else if (userInfo?.data?.status == "pending"){
+            showPendingPopUp("Your profile is pending for verification please wait till it's get verified, thank you.")
+        }else if(!isRequestAllowed){
+            //show popup ur requests are end for today
+            showPendingPopUp("Oops! It looks like you've reached your daily limit of two product requests. Don't worry, you'll be able to make new requests starting again at 12:00 AM tomorrow. We appreciate your enthusiasm and thank you for using our app! See you tomorrow for more exciting products.")
+        }else{
+            val intent = Intent(this,PostedUserActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent.putExtra(Constants.PRODUCT,Gson().toJson(productDetails))
+            intent.putExtra(Constants.REQUEST_ALLOWED,isRequestAllowed)
+            startActivity(intent)
+        }
+    }
+
+
     override fun onBackPressed() {
         if (intent.hasExtra(Constants.hasNotificationData)) {
             startActivity(NewHomeActivity.createIntent(this@NewProductDetailActivity))
@@ -200,10 +284,10 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
         }
         alertDialog.show()
     }
-    private fun showPendingPopUp() {
-        var alertDialog = AlertDialog.Builder(this)
+    private fun showPendingPopUp(message:String) {
+        val alertDialog = AlertDialog.Builder(this)
         alertDialog.setTitle("Alert!")
-        alertDialog.setMessage("Your profile is pending for verification please wait till it's get verified, thank you.")
+        alertDialog.setMessage(message)
 
         alertDialog.setPositiveButton("Ok") { dialog, id ->
             //cancel the request
@@ -273,6 +357,11 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
     }
 
     private fun setUpObserver() {
+
+        mainViewModel.requestsRemainSuccess.observe(this){
+//            isRequestAllowed = it.requestAllowed
+        }
+
         mainViewModel.deleteProductSuccess.observe(this){
             if (it.code == 200){
                 showToast(it.responseMessage.toString())

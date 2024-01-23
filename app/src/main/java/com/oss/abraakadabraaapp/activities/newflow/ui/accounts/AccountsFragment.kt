@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.gms.ads.AdRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -55,6 +56,9 @@ class AccountsFragment : Fragment(), View.OnClickListener {
 
         application = (activity as BaseActivity)
         application.postEvent(Constants.PAGE_ACCOUNTS,null)
+
+        val adRequest = AdRequest.Builder().build();
+        binding.adView.loadAd(adRequest)
 
         binding.ivBack.setOnClickListener{
             application.postClick(BUTTON_BACK_ON_ACCOUNTS)

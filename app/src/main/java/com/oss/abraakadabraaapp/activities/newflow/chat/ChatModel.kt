@@ -9,6 +9,7 @@ data class ChatModel(
     @SerializedName("text"       ) var text       : String? = null,
     @SerializedName("from"       ) var from       : String? = null,
     @SerializedName("read"       ) var read       : Boolean = false,
+    @SerializedName("delivered"       ) var delivered       : Boolean = false,
     @SerializedName("timestamp"  ) var timestamp  : Any
 
-){constructor():this("","","","",false,"")}
+){constructor():this("","","","",false,false,"")}

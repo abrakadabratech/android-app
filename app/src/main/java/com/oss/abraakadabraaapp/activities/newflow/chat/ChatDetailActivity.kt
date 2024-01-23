@@ -17,9 +17,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.WriteBatch
 import com.google.firebase.firestore.ktx.firestore
@@ -69,6 +72,10 @@ class ChatDetailActivity : BaseActivity() {
     var firestoreUserAdapter: FirestoreRecyclerAdapter<ChatModel, UsersViewholder>? = null
     private val mainViewModel: AuthViewModel by viewModel()
 
+    private lateinit var messageListener: ListenerRegistration
+    private val firestore = FirebaseFirestore.getInstance()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChatDetailBinding.inflate(layoutInflater)
@@ -76,6 +83,9 @@ class ChatDetailActivity : BaseActivity() {
         postEvent(PAGE_CHATS_DETAILS, null)
 
 //        showOnlineOrOffline()
+
+        val adRequest = AdRequest.Builder().build();
+        binding.adView.loadAd(adRequest)
 
         if (intent.hasExtra(Constants.hasNotificationData)) {
             generateAuthToken()
@@ -124,6 +134,20 @@ class ChatDetailActivity : BaseActivity() {
             binding.productName.text = chatData!!.product
         }
 
+        messageListener = firestore.collection("chats")
+            .document(chatNode)
+            .collection("Messages")
+            .addSnapshotListener { querySnapshot, _ ->
+                querySnapshot?.let {
+                    for (documentChange in it.documentChanges) {
+                        val message = documentChange.document.toObject(ChatModel::class.java)
+
+                        // Handle the message status (delivered/read)
+                        handleDoubleTick(message)
+                    }
+                }
+            }
+
         clickEvents()
 
         markAsRead()
@@ -165,15 +189,19 @@ class ChatDetailActivity : BaseActivity() {
     private fun markAsRead() {
         val db = Firebase.firestore
         Log.d(TAG, "onCreate:before get true in chat node $chatNode")
+
+        val user = FirebaseAuth.getInstance().currentUser?.uid
         val read = db.collection("chats").document(chatNode).collection("Messages")
         read.get()
             .addOnSuccessListener { snapshot ->
                 for (doc in snapshot.documents){
                     Log.w(TAG, "onCreate: documents: $doc" )
-                    read.document(doc.id).update("read",true).addOnSuccessListener {
-                        Log.d(TAG, "onCreate: all messages read success")
-                    }.addOnFailureListener {
-                        Log.e(TAG, "onCreate: failed to mark as read")
+                    if (user?.equals(doc.data?.get("receiverId")) == true || user?.equals(doc.data?.get("senderId")) == true){
+                        read.document(doc.id).update("read",true).addOnSuccessListener {
+                            Log.d(TAG, "onCreate: all messages read success")
+                        }.addOnFailureListener {
+                            Log.e(TAG, "onCreate: failed to mark as read")
+                        }
                     }
                 }
             }.addOnFailureListener {
@@ -502,6 +530,19 @@ class ChatDetailActivity : BaseActivity() {
         super.onStop()
         firestoreUserAdapter?.stopListening()
         //      EventBus.getDefault().unregister(this)
+    }
+
+    private fun handleDoubleTick(message: ChatModel) {
+        // Check if the message is delivered and/or read
+        if (message.delivered) {
+            // Update UI to show delivered status (single tick)
+            // ...
+        }
+
+        if (message.read) {
+            // Update UI to show read status (double tick)
+            // ...
+        }
     }
 
 

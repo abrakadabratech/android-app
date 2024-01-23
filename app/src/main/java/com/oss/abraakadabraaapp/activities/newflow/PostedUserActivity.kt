@@ -5,8 +5,18 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.OnUserEarnedRewardListener
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
@@ -17,6 +27,7 @@ import com.oss.abraakadabraaapp.datasource.products.Product
 import com.oss.abraakadabraaapp.response.productdetails.ProductDetailsData
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_POSTED_USER
+import com.oss.abraakadabraaapp.utils.Constants.REQUEST_ALLOWED
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility.getAuthentication
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
@@ -28,7 +39,10 @@ class PostedUserActivity : BaseActivity() {
 
     private lateinit var binding : ActivityPostedUserBinding
     private var productDetails: ProductDetailsData? = null
+    private var isResuestAllowed = true
     private val mainViewModel: AuthViewModel by viewModel()
+    private lateinit var interstitialAd: InterstitialAd
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,35 +57,39 @@ class PostedUserActivity : BaseActivity() {
 
         productDetails =
             Gson().fromJson(intent.extras?.getString(Constants.PRODUCT, ""), ProductDetailsData::class.java)
-
+//        isResuestAllowed = intent.extras?.getBoolean(REQUEST_ALLOWED,true)!!
         if(productDetails !=null){
             setData(productDetails!!)
         }
         Log.d("TAG - ", "onCreate: ${Gson().toJson(productDetails)}")
         binding.submitBtn.setOnClickListener {
             postClick(Constants.BUTTON_SEND_IN_POSTED_USERS_PAGE)
-            generateAuthToken()
+            if (isResuestAllowed) {
+                generateAuthToken()
 //            if(generateAuthToken())
 
 
+                val useLocation = PreferencesManagement.getUserLocation(this)
+                val body = HashMap<String, String>()
+                body["message"] = binding.requestMsg.text.toString()
+                body["latitude"] = useLocation?.lat.toString()
+                body["longitude"] = useLocation?.long.toString()
 
-            val useLocation = PreferencesManagement.getUserLocation(this)
-            val body = HashMap<String,String>()
-            body["message"] = binding.requestMsg.text.toString()
-            body["latitude"] = useLocation?.lat.toString()
-            body["longitude"] = useLocation?.long.toString()
-
-            if (binding.requestMsg.text.isNotEmpty()){
-                val userInfo = PreferencesManagement.getUserInfo(this)
-                if(userInfo?.data?.status == "active"){
-                    mainViewModel.postProductRequest(getAuthentication(this),
-                        productDetails?.data?.id.toString(),body
-                    )
-                }else{
-                    showToast("Your profile not verified yet.")
+                if (binding.requestMsg.text.isNotEmpty()) {
+                    val userInfo = PreferencesManagement.getUserInfo(this)
+                    if (userInfo?.data?.status == "active") {
+                        mainViewModel.postProductRequest(
+                            getAuthentication(this),
+                            productDetails?.data?.id.toString(), body
+                        )
+                    } else {
+                        showToast("Your profile not verified yet.")
+                    }
+                } else {
+                    showToast("Please Enter Message.")
                 }
             }else{
-                showToast("Please Enter Message.")
+                showPendingPopUp("Oops! It looks like you've reached your daily limit of two product requests. Don't worry, you'll be able to make new requests starting again at 12:00 AM tomorrow. We appreciate your enthusiasm and thank you for using our app! See you tomorrow for more exciting products.")
             }
         }
 
@@ -181,5 +199,16 @@ class PostedUserActivity : BaseActivity() {
             binding.imageView23.adapter = RatingAdapter(this@PostedUserActivity,list)
 
         }
+    }
+    private fun showPendingPopUp(message:String) {
+        val alertDialog = AlertDialog.Builder(this)
+        alertDialog.setTitle("Alert!")
+        alertDialog.setMessage(message)
+
+        alertDialog.setPositiveButton("Ok") { dialog, id ->
+            //cancel the request
+            dialog.dismiss()
+        }
+        alertDialog.show()
     }
 }

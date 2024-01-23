@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -130,6 +131,9 @@ class MenuFragment : Fragment() {
 
         setUpObserver()
 
+        val adRequest = AdRequest.Builder().build();
+        binding.adView.loadAd(adRequest)
+
         return root
     }
 
@@ -150,7 +154,11 @@ class MenuFragment : Fragment() {
                                     PreferencesManagement.getAuthToken(requireContext())!!
                                 map["Authorization"] = token
                                 authViewModel.logoutUser(map)
-
+                                Firebase.auth.signOut()
+                                requireActivity().startActivity(
+                                    Intent(requireActivity(), LoginActivity::class.java)
+                                )
+                                requireActivity().finish()
 
                             } else {
                                 application.showToast("Error generating the token!")

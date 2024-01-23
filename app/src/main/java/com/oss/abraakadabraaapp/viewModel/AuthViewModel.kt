@@ -125,8 +125,7 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
     }
 
     //NEW
-    fun logoutUser(
-        headerMap: HashMap<String, String>) {
+    fun logoutUser(headerMap: HashMap<String, String>) {
         viewModelScope.launch {
 
             isLoading.value = true
@@ -1251,7 +1250,7 @@ fun getRequestDetails(
 
             isLoading.value = true
 
-            suspend fun call() = repository.reportApi(map,body)
+            suspend fun call() = repository.reportApi(body)
 
             callApi(::call, object : CallHelper<ReportResponce> {
                 override fun onSuccessful(data: ReportResponce) {
@@ -1268,4 +1267,27 @@ fun getRequestDetails(
         }
     }
 
+
+    var requestsRemainSuccess = MutableLiveData<RequestsRemain>()
+    fun requestRemains() {
+        viewModelScope.launch {
+
+            isLoading.value = true
+
+            suspend fun call() = repository.requestsRemain()
+
+            callApi(::call, object : CallHelper<RequestsRemain> {
+                override fun onSuccessful(data: RequestsRemain) {
+                    requestsRemainSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+
+        }
+    }
 }

@@ -26,6 +26,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.initialization.InitializationStatus
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener
 import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.Tracker
 import com.google.android.gms.location.*
@@ -161,6 +164,11 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
             }
         })
 */
+
+        MobileAds.initialize(this, object : OnInitializationCompleteListener {
+            override fun onInitializationComplete(p0: InitializationStatus) {
+            }
+        })
     }
 
     public fun postClick(event_tag: String) {
