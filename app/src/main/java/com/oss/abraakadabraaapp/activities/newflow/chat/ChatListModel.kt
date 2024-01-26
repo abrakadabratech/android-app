@@ -20,7 +20,7 @@ data class ChatListModel(
     @SerializedName("time_stamp"  ) var time_stamp  : Any,
     @SerializedName("date"  ) var date  : String? = "",
     @SerializedName("status"  ) var status  : String? = "accepted",
-    @SerializedName("Messages") var messages:List<ChatModel>? = null,
+    @SerializedName("Messages") var Messages:List<ChatModel>? = null,
     @SerializedName("request_id") var requestId:String = "",
     @SerializedName("product_image") var product_image:String = "",
     @SerializedName("enabled") var enabled:Boolean = true
@@ -34,5 +34,6 @@ data class GroupedChatListModel(
     var product_name:String,
     var posted_by:String,
     var product_url:String,
+    var unread_messages:Int,
     var chats:List<ChatListModel>
 )

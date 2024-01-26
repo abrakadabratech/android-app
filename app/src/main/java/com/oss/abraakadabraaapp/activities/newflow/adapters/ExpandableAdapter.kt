@@ -27,6 +27,7 @@ class ExpandableAdapter(
         val arrow = itemView.findViewById<ImageView>(R.id.arrow)
         val product = itemView.findViewById<TextView>(R.id.userName)
         val postedByUser = itemView.findViewById<TextView>(R.id.postedByUser)
+        val unreadCount = itemView.findViewById<TextView>(R.id.unreadCount)
         val sublist = itemView.findViewById<RecyclerView>(R.id.subRvChats)
     }
 
@@ -38,6 +39,8 @@ class ExpandableAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.product.text = i[position].product_name
+        holder.unreadCount.text = i[position].unread_messages.toString()
+        Log.d(TAG, "onBindViewHolder: ${i[position].unread_messages}")
         Glide.with(context).load(i[position].product_url).into(holder.productImage)
         holder.postedByUser.text = "Posted By ${i[position].posted_by}"
         Log.e(TAG, "setUpRecyclerview: ${Gson().toJson(i[position].chats)}")

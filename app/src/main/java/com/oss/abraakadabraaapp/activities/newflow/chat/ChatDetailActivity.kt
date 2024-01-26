@@ -152,6 +152,7 @@ class ChatDetailActivity : BaseActivity() {
 
         markAsRead()
 
+
     }
 
     private fun showOnlineOrOffline() {
@@ -196,7 +197,7 @@ class ChatDetailActivity : BaseActivity() {
             .addOnSuccessListener { snapshot ->
                 for (doc in snapshot.documents){
                     Log.w(TAG, "onCreate: documents: $doc" )
-                    if (user?.equals(doc.data?.get("receiverId")) == true || user?.equals(doc.data?.get("senderId")) == true){
+                    if (user?.equals(doc.data?.get("from")) != true){
                         read.document(doc.id).update("read",true).addOnSuccessListener {
                             Log.d(TAG, "onCreate: all messages read success")
                         }.addOnFailureListener {
@@ -444,7 +445,6 @@ class ChatDetailActivity : BaseActivity() {
 
         val query = db.collection("chats")
             .document(
-
                 chatNode
             )
             .collection("Messages")
@@ -487,7 +487,11 @@ class ChatDetailActivity : BaseActivity() {
                         holder.binding.fromMessageTime.text = toDateAndTime(model.timestamp)
                         holder.binding.fromMessage.setTextIsSelectable(true)
                     }
-                    var a = GsonBuilder().create().toJson(model)
+
+                    var id = getSnapshots().getSnapshot(position).id
+                    markMessageAsRead(id)
+                    Log.d(TAG, "onBindViewHolder doc id: $id")
+//                    var a = GsonBuilder().create().toJson(model)
                 }
             }
 
@@ -504,11 +508,11 @@ class ChatDetailActivity : BaseActivity() {
         ))
 
 // Scroll to the last item if it was already at the bottom, else show a new message indicator
-        if (!isScrolledToBottom) {
-            binding.rvChats.scrollToPosition(firestoreUserAdapter?.itemCount?.minus(1)!!)
-        } else {
-            // Show a new message indicator or any visual cue
-        }
+//        if (!isScrolledToBottom) {
+//            binding.rvChats.scrollToPosition(firestoreUserAdapter?.itemCount?.minus(1)!!)
+//        } else {
+//            // Show a new message indicator or any visual cue
+//        }
         firestoreUserAdapter?.notifyDataSetChanged()
 //        val adapter = ChatMessageAdapter
     }
@@ -520,6 +524,21 @@ class ChatDetailActivity : BaseActivity() {
         }
     }
 
+    private fun markMessageAsRead(messageId: String) {
+        val firestore = FirebaseFirestore.getInstance()
+        val messagesCollection = firestore.collection("chats").document(chatNode)
+            .collection("Messages")
+
+        // Update the 'read' field to true
+        messagesCollection.document(messageId)
+            .update("read", true)
+            .addOnSuccessListener {
+                Log.d(TAG, "Message marked as read successfully")
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "Error marking message as read: $e")
+            }
+    }
     override fun onStart() {
         super.onStart()
         firestoreUserAdapter?.startListening()
@@ -545,5 +564,9 @@ class ChatDetailActivity : BaseActivity() {
         }
     }
 
-
+    private fun updateRecycler(){
+        val recyclerViewState = binding.rvChats.layoutManager?.onSaveInstanceState()
+        binding.rvChats.adapter?.notifyDataSetChanged()
+        binding.rvChats.layoutManager?.onRestoreInstanceState(recyclerViewState)
+    }
 }

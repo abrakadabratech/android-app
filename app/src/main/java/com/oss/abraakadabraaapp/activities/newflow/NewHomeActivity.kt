@@ -115,27 +115,7 @@ class NewHomeActivity : BaseActivity() {
 
 
                         collectionReference.document(data).collection("Messages")
-                            .whereEqualTo("receiverId",targetSubstring)
-                            .whereEqualTo("read", false).get().addOnSuccessListener { records ->
-                                val unreadCount = records.size()
-                                synchronized(lock) {
-                                    count += unreadCount
-                                }
-                                if (count > 0) {
-                                    badge.isVisible = true
-                                    badge.number = count
-                                } else {
-                                    badge.isVisible = false
-                                }
-                                println("Number of unread messages in sub-collection: $count")
-
-                            }.addOnFailureListener { e ->
-                                // Handle errors
-                                println("Error getting unread messages in subcollection: $e")
-                            }
-
-                        collectionReference.document(data).collection("Messages")
-                            .whereEqualTo("senderId",targetSubstring)
+                            .whereNotEqualTo("from",targetSubstring)
                             .whereEqualTo("read", false).get().addOnSuccessListener { records ->
                                 val unreadCount = records.size()
                                 synchronized(lock) {

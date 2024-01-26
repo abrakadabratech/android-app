@@ -102,6 +102,7 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
                                     items[0].product.toString(),
                                     items[0].sender_name.toString(),
                                     items[0].product_image,
+                                    0,
                                     items
                                 )
                             )

@@ -25,6 +25,7 @@ import com.oss.abraakadabraaapp.activities.newflow.adapters.ExpandableAdapter
 import com.oss.abraakadabraaapp.activities.newflow.customeview.WrapContentLinearLayoutManager
 import com.oss.abraakadabraaapp.databinding.ChatRowBinding
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.utils.Utility.convertToTimestamp
 import com.oss.abraakadabraaapp.utils.Utility.toDate
 
@@ -165,7 +166,26 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
                     Log.d(TAG, "setUpRecyclerview: ${Gson().toJson(groupedItems)}")
                     for ((category, items) in groupedItems) {
                         // Process each category and its items
+//                        val countCategory1 = items.count { it. == "Category1" }
+
                         if (items.isNotEmpty()) {
+                            var count = 0
+                            val lock = Object()
+                           db.collection("chats").document(items[0].product_id
+                                   + Utility.setOneToOneChat(
+                               items[0].sender_id.toString(),
+                               items[0].receiver_id.toString()
+                           )).collection("Messages")
+                               .whereNotEqualTo("from",currentUserId)
+                               .whereEqualTo("read",false).get().addOnSuccessListener {querySnapshot ->
+
+                                   synchronized(lock) {
+                                       count = querySnapshot.size()
+                                   }
+
+                                   Log.e(TAG, "loadGroupedChats: data ${count}", )}
+                               .addOnFailureListener { Log.e(TAG, "loadGroupedChats: error $it", ) }
+                            Log.e(TAG, "loadGroupedChats: data after ${count}", )
                             groupChats.add(
                                 GroupedChatListModel(
                                     false,
@@ -173,6 +193,7 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
                                     items[0].product.toString(),
                                     "Me",
                                     items[0].product_image,
+                                    count,
                                     items
                                 )
                             )
