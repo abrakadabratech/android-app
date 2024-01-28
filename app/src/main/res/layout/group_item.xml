@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
 
     xmlns:tools="http://schemas.android.com/tools"
@@ -73,7 +74,7 @@
                 android:fontFamily="@font/montserrat_bold"
                 android:text="Jane"
                 android:textColor="@color/title_color"
-                android:textSize="20sp"
+                android:textSize="@dimen/sp_16"
                 app:layout_constraintBottom_toTopOf="@+id/postedByUser"
                 app:layout_constraintEnd_toStartOf="@+id/arrow"
                 app:layout_constraintStart_toStartOf="parent"
@@ -95,7 +96,7 @@
 
             <ImageView
                 android:id="@+id/arrow"
-                android:layout_width="34dp"
+                android:layout_width="40dp"
                 android:layout_height="20dp"
                 android:layout_marginEnd="8dp"
                 android:src="@drawable/ic_drop_down"

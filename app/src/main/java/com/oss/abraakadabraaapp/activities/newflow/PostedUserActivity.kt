@@ -29,7 +29,6 @@ import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_POSTED_USER
 import com.oss.abraakadabraaapp.utils.Constants.REQUEST_ALLOWED
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
-import com.oss.abraakadabraaapp.utils.Utility.getAuthentication
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.greenrobot.eventbus.EventBus
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -65,9 +64,6 @@ class PostedUserActivity : BaseActivity() {
         binding.submitBtn.setOnClickListener {
             postClick(Constants.BUTTON_SEND_IN_POSTED_USERS_PAGE)
             if (isResuestAllowed) {
-                generateAuthToken()
-//            if(generateAuthToken())
-
 
                 val useLocation = PreferencesManagement.getUserLocation(this)
                 val body = HashMap<String, String>()
@@ -79,7 +75,6 @@ class PostedUserActivity : BaseActivity() {
                     val userInfo = PreferencesManagement.getUserInfo(this)
                     if (userInfo?.data?.status == "active") {
                         mainViewModel.postProductRequest(
-                            getAuthentication(this),
                             productDetails?.data?.id.toString(), body
                         )
                     } else {

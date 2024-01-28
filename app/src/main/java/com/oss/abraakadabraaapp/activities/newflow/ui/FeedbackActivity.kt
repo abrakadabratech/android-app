@@ -95,8 +95,7 @@ class FeedbackActivity : BaseActivity() {
                     map["submitted_for"] = user_id
                     map["feedback_type"] = "giver"
 
-                    generateAuthToken()
-                    mainViewModel.sendFeedback(Utility.getAuthentication(this),product_id,map)
+                    mainViewModel.sendFeedback(product_id,map)
                 }else{
                     val map = HashMap<String,String>()
                     map["delivery_convenience"] = (binding.seekbar.progress).div(20).toString()
@@ -106,8 +105,7 @@ class FeedbackActivity : BaseActivity() {
                     map["submitted_for"] = user_id
                     map["feedback_type"] = "reciever"
 
-                    generateAuthToken()
-                    mainViewModel.sendFeedback(Utility.getAuthentication(this),product_id,map)
+                    mainViewModel.sendFeedback(product_id,map)
                 }
             }
 

@@ -119,6 +119,7 @@ class HomeFragment : Fragment(), LocationListener {
         fragmentManager.beginTransaction()
             .replace(R.id.container, NewReceiverFragment::class.java, null)
             .setReorderingAllowed(true)
+            .addToBackStack(null)
             .commit()
 
         val apiKey = BuildConfig.API_KEY
@@ -128,26 +129,6 @@ class HomeFragment : Fragment(), LocationListener {
         }
 
         placesClient = Places.createClient(requireContext())
-
-        //Option removed
-/*
-        binding.submitProfile.setOnClickListener {
-            val intent = Intent(requireContext(), MyNewProfileActivity::class.java)
-            intent.putExtra("from", "activity")
-            startActivity(intent)
-            binding.profileLayout.visibility = View.GONE
-            binding.receiveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
-            binding.receiveBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
-            binding.giveBtn.setTextColor(resources.getColor(R.color.hyper_link_text_color))
-            binding.giveBtn.background = null
-
-            fragmentManager.beginTransaction()
-                .replace(R.id.container, NewReceiverFragment::class.java, null)
-                .setReorderingAllowed(true)
-                .commit()
-            EventBus.getDefault().post(1)
-        }
-*/
 
 
         binding.locationOnActionbar.setOnClickListener {
@@ -294,7 +275,6 @@ class HomeFragment : Fragment(), LocationListener {
     }
 
     private fun loadBanner() {
-//        application.generateAuthToken()
         val map = HashMap<String, String>()
         val token = PreferencesManagement.getAuthToken(requireContext())!!
         map[RequestKeys.authorization] = token

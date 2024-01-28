@@ -178,7 +178,6 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
                            )).collection("Messages")
                                .whereNotEqualTo("from",currentUserId)
                                .whereEqualTo("read",false).get().addOnSuccessListener {querySnapshot ->
-
                                    synchronized(lock) {
                                        count = querySnapshot.size()
                                    }

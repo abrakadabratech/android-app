@@ -405,16 +405,6 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
 
         if (isUserProfileValidate()) {
             if (isNetworkAvailable()) {
-//                generateAuthToken()
-                val mapAuth = HashMap<String, String>()
-                /*if (PreferencesManagement.getAuthToken(this@AuthUserDetailActivity) != null){
-                    mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
-                }else{
-//                    generateAuthToken()
-                    mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
-                }*/
-                mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
-
                 val map = HashMap<String, String>()
 
                 map[RequestKeys.social_link_type] = socialLinkType
@@ -424,8 +414,6 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                 map[RequestKeys.social_link] = binding.socialProfileHeader.text.toString().trim()+
                         binding.profileLink.text.toString().trim()
 
-
-//                authViewModel.postUserSocialProfile(mapAuth, map)
             }
         }
 
@@ -449,7 +437,6 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
 
     private fun postUserData() {
         if (isValidate()) {
-//            generateAuthToken()
             //getFCMToken
             if (PreferencesManagement.getSignInMethod(this) == SIGN_IN_METHOD_GOOGLE){
 
@@ -457,21 +444,12 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
                 body["name"] = binding.nameEdit.text.toString()
                 body["phone"] = binding.phoneEdit.text.toString()
 
-                val map = HashMap<String, String>()
-                val token = PreferencesManagement.getAuthToken(this)!!
-                map[RequestKeys.authorization] = token
-
-                authViewModel.updateUserV2(map, body)
+                authViewModel.updateUserV2(body)
             }else{
                 val body = HashMap<String,String>()
                 body["name"] = binding.nameEdit.text.toString()
                 body["email"] = binding.emailEdit.text.toString()
-
-                val map = HashMap<String, String>()
-                val token = PreferencesManagement.getAuthToken(this)!!
-                map[RequestKeys.authorization] = token
-
-                authViewModel.updateUserV2(map, body)
+                authViewModel.updateUserV2(body)
             }
         }
     }

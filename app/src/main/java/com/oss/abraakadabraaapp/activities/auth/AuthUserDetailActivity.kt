@@ -68,11 +68,8 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
         mAuth = FirebaseAuth.getInstance()
         setContentView(view)
 
-//        generateAuthToken()
         if (PreferencesManagement.getAuthToken(this) != null){
-            val map = java.util.HashMap<String, String>()
-            map[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
-            authViewModel.getUser(map)
+           authViewModel.getUser()
         }
 
         postEvent(Constants.PAGE_ADD_USER_PROFILE_ONBOARDING, null)
@@ -166,7 +163,6 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
                 }
                 body["signin_method"] = PreferencesManagement.getSignInMethod(this)
 
-//                generateAuthToken()
                 val map = java.util.HashMap<String, String>()
                 val token = PreferencesManagement.getAuthToken(this)!!
                 map[RequestKeys.authorization] = token
@@ -187,9 +183,7 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
 
         authViewModel.onBoardingResponse.observe(this){
             if (it.code == 200){
-                val map = java.util.HashMap<String, String>()
-                map[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
-                authViewModel.getUser(map)
+                authViewModel.getUser()
             }
         }
         authViewModel.getUserSuccess.observe(this) {
@@ -224,7 +218,6 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
     }
 
     private fun postFCMtoken() {
-//        generateAuthToken()
         FirebaseMessaging.getInstance().token.addOnSuccessListener {
             PreferencesManagement.saveFCMToken(this, it)
             val data = FcmRequest(
@@ -233,11 +226,8 @@ class AuthUserDetailActivity : BaseActivity(), SocialShareAdapter.OnSocialProfil
                 )
             )
 
-            val map = java.util.HashMap<String, String>()
-            val token = PreferencesManagement.getAuthToken(this)!!
-            map[RequestKeys.authorization] = token
 
-            authViewModel.postFCMToken(map, data)
+            authViewModel.postFCMToken(data)
 
         }.addOnFailureListener {
             loader(false)

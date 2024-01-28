@@ -3,13 +3,11 @@ package com.oss.abraakadabraaapp.retrofit.api
 import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.datasource.products.GetProducts
 import com.oss.abraakadabraaapp.response.productRequestResponse.RequestsResponse
-import com.oss.abraakadabraaapp.retrofit.interceptor.NetworkConnectionInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
-import retrofit2.http.HeaderMap
 import retrofit2.http.Path
 import retrofit2.http.Query
 

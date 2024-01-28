@@ -158,6 +158,8 @@ class MyListingDetialActivity : BaseActivity(), RequestedUsersAdapter.OnRequestC
             } else if (productDetails?.product?.status == "given") {
                 binding.editMenuDialog.visibility = View.GONE
                 showToast("Your product is given")
+            }else{
+                showToast("Edit not allowed!")
             }
         }
 
@@ -202,23 +204,6 @@ class MyListingDetialActivity : BaseActivity(), RequestedUsersAdapter.OnRequestC
             binding.editMenuDialog.visibility = View.VISIBLE
         }
 
-        binding.updateBtn.setOnClickListener {
-            if (binding.productName.text.toString().isNotEmpty() &&
-                binding.descriptionTxt.text.toString().isNotEmpty()
-            ) {
-                val map = HashMap<String, String>()
-                map["name"] = binding.productName.text.toString()
-                map["description"] = binding.descriptionTxt.text.toString()
-                postClick(Constants.BUTTON_UPDATE_PRODUCT)
-                if (isNetworkAvailable()) {
-//                    generateAuthToken()
-//                    mainViewModel.updateProduct(Utility.getAuthentication(this),product.id.toString(),map)
-                }
-            } else {
-                showToast("Please enter Product Name and description")
-            }
-
-        }
 
         binding.shareProduct.setOnClickListener {
             postClick(Constants.BUTTON_SHARE_PRODUCT)
@@ -239,10 +224,8 @@ class MyListingDetialActivity : BaseActivity(), RequestedUsersAdapter.OnRequestC
                 alertDialog.setMessage("Are you sure you want to delete your listing?")
 
                 alertDialog.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, id ->
-                    //cancel the request
                     if (isNetworkAvailable()) {
-//                        generateAuthToken()
-                        mainViewModel.deleteProduct(Utility.getAuthentication(this), productId)
+                        mainViewModel.deleteProduct(productId)
                     }
                     dialog.dismiss()
                 })
@@ -369,7 +352,6 @@ class MyListingDetialActivity : BaseActivity(), RequestedUsersAdapter.OnRequestC
                 binding.descriptionTxt.setText(it.data?.description)
 //                binding.productName.isEnabled = false
 //                binding.descriptionTxt.isEnabled = false
-                binding.updateBtn.visibility = View.GONE
             }
         }
         mainViewModel.deleteProductSuccess.observe(this) {

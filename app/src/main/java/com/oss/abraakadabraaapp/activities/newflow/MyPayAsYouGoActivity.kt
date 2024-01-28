@@ -132,17 +132,11 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
 
     }
 
-    private fun getRazorPay() {
-        generateAuthToken()
-        val authMap = Utility.getAuthentication(this)
-        mainViewModel.getRazorPay(authMap)
-    }
-
     private fun takeToPayment(amount: String) {
         if (amount == "") {
             showToast("Please enter some amount")
         } else {
-            /*generateAuthToken()
+            /*
             val map = HashMap<String,String>()
             map["amount"] = (s).toString()
             map["productId"] = productId
@@ -249,29 +243,22 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
 
     override fun onPaymentSuccess(p0: String?) {
         Log.d("Razorpay - ", "onPaymentSuccess: $p0")
-        generateAuthToken()
         val map = HashMap<String, String>()
         map["orderId"] = orderId
         map["transactionId"] = p0.toString()
         map["status"] = "success"
-
-        val authMap = Utility.getAuthentication(this)
-        authMap["logging"] = "true"
-        mainViewModel.updatePayment(authMap, map)
+        mainViewModel.updatePayment(map)
     }
 
     override fun onPaymentError(p0: Int, p1: String?) {
         Log.d("Razorpay - ", "Failed: $p0  : $p1")
         showToast("Payment Failed!")
-        generateAuthToken()
         val map = HashMap<String, String>()
         map["orderId"] = orderId
         map["transactionId"] = "null"
         map["status"] = "failed"
 
-        val authMap = Utility.getAuthentication(this)
-        authMap["logging"] = "true"
-        mainViewModel.updatePayment(authMap, map)
+        mainViewModel.updatePayment( map)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -329,22 +316,19 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
                     paymentCancel = "Payment cancelled by user."
                 }
             }
-
-            generateAuthToken()
-            val authMap = Utility.getAuthentication(this)
             if (status == "success") {
                 //Code to handle successful transaction here.
                 map["status"] = status
                 map["transactionId"] = approvalRefNo
 
-                mainViewModel.postUPIPayment(authMap, map)
+                mainViewModel.postUPIPayment(map)
                 Log.d("UPI", "responseStr: $approvalRefNo")
             } else if ("Payment cancelled by user." == paymentCancel) {
                 showToast("Payment cancelled")
             } else {
                 map["status"] = "failed"
                 map["transactionId"] = approvalRefNo
-                mainViewModel.postUPIPayment(authMap, map)
+                mainViewModel.postUPIPayment(map)
 
 //                Toast.makeText(this, "Transaction failed.Please try again", Toast.LENGTH_SHORT).show()
             }

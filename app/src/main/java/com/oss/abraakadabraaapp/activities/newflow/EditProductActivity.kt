@@ -681,7 +681,6 @@ class EditProductActivity : BaseActivity(), ImageAdapter.ImageAdapterInterface,
         if (isValidate()) {
             addImage()
             if (isNetworkAvailable()) {
-                generateAuthToken()
                 if (userLocation != null) {
                     val map = HashMap<String, RequestBody>()
                     map["name"] =

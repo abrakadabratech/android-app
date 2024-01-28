@@ -87,10 +87,6 @@ class ChatDetailActivity : BaseActivity() {
         val adRequest = AdRequest.Builder().build();
         binding.adView.loadAd(adRequest)
 
-        if (intent.hasExtra(Constants.hasNotificationData)) {
-            generateAuthToken()
-        }
-
         if (intent.hasExtra(Constants.productId)) {
             val bundle = Gson().fromJson(
                 intent.extras?.getString(Constants.productId),
@@ -101,7 +97,6 @@ class ChatDetailActivity : BaseActivity() {
             db.collection("notifications")
                 .document(bundle.notificationDoc.toString())
                 .update("deleted", true)
-
 
             loaddata()
         }
@@ -415,8 +410,6 @@ class ChatDetailActivity : BaseActivity() {
                 .collection("Messages")
                 .add(chats)
                 .addOnSuccessListener {
-                    generateAuthToken()
-
                     val notification_user =
                         if (sender_id == chatData!!.sender_id.toString()) chatData!!.receiver_id.toString() else chatData!!.sender_id.toString()
                     val map = HashMap<String, String>()
@@ -424,7 +417,7 @@ class ChatDetailActivity : BaseActivity() {
                     map["message"] = message
                     map["chatNode"] = chatNode
                     map["productId"] = chatData?.product_id.toString()
-                    mainViewModel.sendNotification(Utility.getAuthentication(this), map)
+                    mainViewModel.sendNotification(map)
                     Log.d("TAG - ", "sendToChat: chat posted")
                     /*val intent = Intent(this,ChatDetailActivity::class.java)
                     intent.putExtra(Constants.CHATS_DATA,chat_room)
@@ -491,30 +484,17 @@ class ChatDetailActivity : BaseActivity() {
                     var id = getSnapshots().getSnapshot(position).id
                     markMessageAsRead(id)
                     Log.d(TAG, "onBindViewHolder doc id: $id")
-//                    var a = GsonBuilder().create().toJson(model)
                 }
             }
 
+
         val layoutManager = WrapContentLinearLayoutManager(this)
-        layoutManager.reverseLayout = true
         layoutManager.stackFromEnd = true
+        layoutManager.reverseLayout = true
 
         binding.rvChats.layoutManager = layoutManager
         binding.rvChats.adapter = firestoreUserAdapter
 
-        val isScrolledToBottom = (binding.rvChats.layoutManager as LinearLayoutManager)
-            .findLastCompletelyVisibleItemPosition() == (firestoreUserAdapter?.itemCount?.minus(
-            2
-        ))
-
-// Scroll to the last item if it was already at the bottom, else show a new message indicator
-//        if (!isScrolledToBottom) {
-//            binding.rvChats.scrollToPosition(firestoreUserAdapter?.itemCount?.minus(1)!!)
-//        } else {
-//            // Show a new message indicator or any visual cue
-//        }
-        firestoreUserAdapter?.notifyDataSetChanged()
-//        val adapter = ChatMessageAdapter
     }
 
     class UsersViewholder(val binding: ChatMessageRowBinding) :

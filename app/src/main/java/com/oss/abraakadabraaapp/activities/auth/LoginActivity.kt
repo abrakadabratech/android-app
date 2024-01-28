@@ -1,12 +1,8 @@
 package com.oss.abraakadabraaapp.activities.auth
 
-import DataClass
-import Location
-import UsersUpdateData
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -16,11 +12,9 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.util.Log
 import android.view.View
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.airbnb.lottie.LottieAnimationView
@@ -60,7 +54,6 @@ import com.oss.abraakadabraaapp.databinding.ActiviyLogin2Binding
 import com.oss.abraakadabraaapp.retrofit.api.RequestKeys
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.SIGN_IN_METHOD_GOOGLE
-import com.oss.abraakadabraaapp.utils.Constants.USER_NOT_FOUND
 import com.oss.abraakadabraaapp.utils.DateTimeUtils
 import com.oss.abraakadabraaapp.utils.GenericKeyEvent
 import com.oss.abraakadabraaapp.utils.GenericTextWatcher
@@ -70,7 +63,6 @@ import com.oss.abraakadabraaapp.utils.customView.CustomTypefaceSpan
 import com.oss.abraakadabraaapp.utils.makeLinks
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import io.reactivex.rxjava3.annotations.NonNull
-import org.json.JSONObject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.concurrent.TimeUnit
 
@@ -403,7 +395,6 @@ class LoginActivity : BaseActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     clearEditText()
-//                    generateAuthToken()
                     val mUser = FirebaseAuth.getInstance().currentUser
                     mUser!!.getIdToken(true)
                         .addOnCompleteListener {
@@ -452,7 +443,6 @@ class LoginActivity : BaseActivity() {
     }
 
     fun postFCMtoken() {
-//        generateAuthToken()
         FirebaseMessaging.getInstance().token.addOnSuccessListener {
             PreferencesManagement.saveFCMToken(this, it)
             val data = FcmRequest(
@@ -461,11 +451,7 @@ class LoginActivity : BaseActivity() {
                 )
             )
 
-            val map = java.util.HashMap<String, String>()
-            val token = PreferencesManagement.getAuthToken(this)!!
-            map[RequestKeys.authorization] = token
-
-            authViewModel.postFCMToken(map, data)
+            authViewModel.postFCMToken( data)
 
         }.addOnFailureListener {
             loader(false)
@@ -520,15 +506,7 @@ class LoginActivity : BaseActivity() {
 
                     hideSoftKeyboard()
                     verifyOtp(otp)
-                    // if the code is not null then
-                    // we are setting that code to
-                    // our OTP edittext field.
-//                    edtOTP.setText(code)
 
-                    // after setting this code
-                    // to OTP edittext field we
-                    // are calling our verifycode method.
-//                    verifyCode(code)
                 }
             }
 
@@ -625,10 +603,7 @@ class LoginActivity : BaseActivity() {
             showToast(it.responseMessage.toString())
             if (it.responseMessage == "User created successfully." || it.responseMessage == "User already exists."
                 || it.responseMessage == "User Login Success.") {
-//                generateAuthToken()
-                val map = HashMap<String, String>()
-                map[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this).toString()
-                authViewModel.getUser(map)
+                authViewModel.getUser()
             } else {
                 FirebaseAuth.getInstance().signOut()
                 mGoogleSignInClient.revokeAccess()
@@ -717,22 +692,9 @@ class LoginActivity : BaseActivity() {
         if (isNetworkAvailable()) {
             if (isLocationEnabled()) getLastLocation()
 
-            val mapAuth = HashMap<String, String>()
-            mapAuth[RequestKeys.authorization] = PreferencesManagement.getAuthToken(this)!!
-
-            getLastLocation()
-            val data = UsersUpdateData(
-                name = it?.data?.name
-            )
             val body = HashMap<String,String>()
             body["name"] = it?.data?.name.toString()
-
-//            generateAuthToken()
-            val map = java.util.HashMap<String, String>()
-            val token = PreferencesManagement.getAuthToken(this)!!
-            map[RequestKeys.authorization] = token
-
-            authViewModel.updateUserV2(map, body)
+            authViewModel.updateUserV2(body)
 
         } else {
             showToast(
@@ -752,12 +714,7 @@ class LoginActivity : BaseActivity() {
             body["location_lat"] = "12.9716"
             body["location_lng"] = "77.5946"
 
-//            generateAuthToken()
-            val map = java.util.HashMap<String, String>()
-            val token = PreferencesManagement.getAuthToken(this)!!
-            map[RequestKeys.authorization] = token
-
-            authViewModel.updateUserV2(map, body)
+            authViewModel.updateUserV2(body)
 
         } else {
             showToast(

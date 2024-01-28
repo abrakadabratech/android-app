@@ -55,7 +55,6 @@ class MyRequestDetailsActivity : BaseActivity() {
             productId = intent.getStringExtra(Constants.productId)!!
         }
         if (intent.hasExtra(Constants.hasNotificationData)) {
-            generateAuthToken()
             var bundle  = Gson().fromJson(intent.getStringExtra(Constants.productId).toString(),
                 NotificationDataModel::class.java)
             productId = bundle.requestId.toString()
@@ -151,8 +150,7 @@ class MyRequestDetailsActivity : BaseActivity() {
 
                 alertDialog.setPositiveButton("Yes", DialogInterface.OnClickListener{dialog, id ->
                     //cancel the request
-                    mainViewModel.cancelProductRequest(Utility.getAuthentication(this),
-                        productId
+                    mainViewModel.cancelProductRequest(productId
                     )
                     dialog.dismiss()
                 })
@@ -172,9 +170,7 @@ class MyRequestDetailsActivity : BaseActivity() {
             else /*if(status == "Mark As\\nReceived"){*/
             //send mark as delivered
             {
-                generateAuthToken()
                 mainViewModel.updateProductRequest(
-                    Utility.getAuthentication(this),
                     productDetial?.data?.request_id.toString(),
                     "received"
                 )

@@ -222,7 +222,6 @@ class StartAppActivity : BaseActivity(), LocationListener {
                 }
             } else {
                 if (mAuth.currentUser != null) {
-//                    generateAuthToken()
                     FirebaseMessaging.getInstance().token.addOnSuccessListener {
                         PreferencesManagement.saveFCMToken(this, it)
                         val data = FcmRequest(
@@ -235,7 +234,7 @@ class StartAppActivity : BaseActivity(), LocationListener {
                         val token = PreferencesManagement.getAuthToken(this)!!
                         map[RequestKeys.authorization] = token
 
-                        authViewModel.postFCMToken(map, data)
+                        authViewModel.postFCMToken(data)
 
                     }.addOnFailureListener {
                         loader(false)
@@ -500,7 +499,7 @@ class StartAppActivity : BaseActivity(), LocationListener {
 
                             map[RequestKeys.authorization] = auth
 
-                             authViewModel.getUser(map)
+                             authViewModel.getUser()
 
                             val clipboard =
                                 getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -527,7 +526,7 @@ class StartAppActivity : BaseActivity(), LocationListener {
                         "TAG",
                         "Token in Accounts fragment: ${JSONObject(Gson().toJson(data))}"
                     )
-                    authViewModel.postFCMToken(map, data)
+                    authViewModel.postFCMToken(data)
 
                 }.addOnFailureListener {
                     loader(false)

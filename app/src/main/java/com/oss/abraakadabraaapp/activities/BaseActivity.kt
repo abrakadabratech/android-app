@@ -1,9 +1,7 @@
 package com.oss.abraakadabraaapp.activities
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -27,8 +25,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.initialization.InitializationStatus
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener
 import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.Tracker
 import com.google.android.gms.location.*
@@ -55,7 +51,6 @@ import com.oss.abraakadabraaapp.location.livedata.LocationViewModel
 import com.oss.abraakadabraaapp.model.UserLocation
 import com.oss.abraakadabraaapp.retrofit.utils.ApiConstants
 import com.oss.abraakadabraaapp.retrofit.utils.NetworkHelper
-import com.oss.abraakadabraaapp.utils.AppSignatureHashHelper
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.viewModel.MainViewModel
 import org.koin.android.ext.android.inject
@@ -118,60 +113,22 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
 
         progressDialog = ProgressDialog(this)
 
-        val appSignatureHashHelper = AppSignatureHashHelper(this)
-        smsToken = appSignatureHashHelper.appSignatures[0]
-
         FirebaseApp.initializeApp(this)
         val firebaseAppCheck = FirebaseAppCheck.getInstance()
         firebaseAppCheck.installAppCheckProviderFactory(
             PlayIntegrityAppCheckProviderFactory.getInstance()
         )
 
-        /*if (BuildConfig.DEBUG){
-            FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
-                DebugAppCheckProviderFactory.getInstance(),
-            )
-        }else{
-
-
-            *//*val firebaseAppCheck = FirebaseAppCheck.getInstance()
-            firebaseAppCheck.installAppCheckProviderFactory(
-              //  CustomAppCheckProviderFactory()
-            )*//*
-        }*/
         setUpObserver()
 
-/*
-        registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
-            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-                // App is in the foreground
-                setUserOnline()
-            }
+        MobileAds.initialize(
+            this
+        ) { }
 
-            override fun onActivityStarted(activity: Activity) {}
-
-            override fun onActivityResumed(activity: Activity) {}
-
-            override fun onActivityPaused(activity: Activity) {}
-
-            override fun onActivityStopped(activity: Activity) {}
-
-            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
-
-            override fun onActivityDestroyed(activity: Activity) {
-                // App is in the background or closed
-                setUserOffline()
-            }
-        })
-*/
-
-        MobileAds.initialize(this, object : OnInitializationCompleteListener {
-            override fun onInitializationComplete(p0: InitializationStatus) {
-            }
-        })
+        generateAuthToken()
     }
 
-    public fun postClick(event_tag: String) {
+    fun postClick(event_tag: String) {
         val bundle = Bundle()
         bundle.putString(event_tag, "1")
         firebaseAnalytics.logEvent(event_tag, bundle)
@@ -179,70 +136,11 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
 
     }
 
-    public fun postEvent(event_tag: String, bundle: Bundle?) {
-        // Obtain the FirebaseAnalytics instance.
+    fun postEvent(event_tag: String, bundle: Bundle?) {
         firebaseAnalytics.setCurrentScreen(this, event_tag, null)
-//        val bundle = Bundle()
-//        bundle.putString(FirebaseAnalytics.Param.METHOD, "Test method")
-
         firebaseAnalytics.logEvent(event_tag, bundle)
-
-        //init analytics
-        /*  mTracker = application.defaultTracker
-          mTracker!!.setScreenName(event_tag)
-          mTracker!!.send(HitBuilders.ScreenViewBuilder().build())*/
         debugLog(event_tag)
 
-    }
-
-    override fun onStart() {
-        super.onStart()
-        //startLocationUpdates()
-    }
-
-    private fun startLocationUpdates() {
-        when {
-            isLocationEnabled() -> observeLocationUpdates()
-            isPermissionGranted() -> observeLocationUpdates()
-            else -> askLocationPermission()
-        }
-    }
-
-    private fun observeLocationUpdates() {
-        locationViewModel.getLocationData.observe(this) {
-            val latitude = it.latitude.toString()
-            val longitude = it.longitude.toString()
-
-            Log.d("getLocationData", "latitude $latitude")
-//            Log.d("getLocationData", "longitude $longitude")
-//            saveLocation()
-
-            /* val tag = "$latitude,$longitude"
-             val url =
-                 ApiConstants.geocodeUrl + "json?latlng=" + tag + "&language=en&sensor=true&key=" + resources.getString(
-                     R.string.akd
-                 )
-             mainViewModel.getAddress(url)*/
-
-            /*if (PreferencesManagement.getUserLocation(this@BaseActivity) != null) {
-                val userLocation = PreferencesManagement.getUserLocation(this@BaseActivity)
-
-                PreferencesManagement.saveUserLocation(
-                    this@BaseActivity,
-                    UserLocation(
-                        latitude, longitude, getAddress(latitude.toDouble(),longitude.toDouble()),
-                    )
-                )
-            } else {
-                PreferencesManagement.saveUserLocation(
-                    this@BaseActivity,
-                    UserLocation(
-                        latitude, longitude, getAddress(latitude.toDouble(),longitude.toDouble()),
-                    )
-                )
-            }*/
-
-        }
     }
 
     fun getAddress(lat: Double, lng: Double): String {
@@ -251,17 +149,9 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
         try {
             val addresses = geocoder.getFromLocation(lat, lng, 1)
             val obj = addresses!![0]
-            var add = obj.getAddressLine(0)
-            var string = ""
-            if (obj.subLocality != null) {
-                string = "${obj.subLocality},${obj.locality}"
-            } else {
-                string = obj.locality + "," + obj.adminArea
-            }
-            return add
+            return obj.getAddressLine(0)
 
         } catch (e: IOException) {
-            // TODO Auto-generated catch block
             e.printStackTrace()
             Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
         }
@@ -275,26 +165,6 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
             val fullAddress = data.formattedAddress
 
             Log.e("location_debug", "Location from maps sdk : $fullAddress")
-
-            var area = ""
-            var short_name = ""
-            var state = ""
-            var city = ""
-            var locality = ""
-
-            val addressComponents = it.results[0].addressComponents
-
-            for (item in addressComponents) {
-                for (i in item.types) {
-                    when (i) {
-                        "long_name" -> area = item.longName
-                        "short_name" -> short_name = item.shortName
-                        "administrative_area_level_1" -> state = item.longName
-                        "administrative_area_level_2" -> city = item.longName
-                        "sublocality" -> locality = item.longName
-                    }
-                }
-            }
 
             val p = Pattern.compile("[^a-zA-Z ]", Pattern.CASE_INSENSITIVE)
             var final_str = ""
@@ -345,13 +215,14 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
                 lat = location.latitude.toString()
                 lng = location.longitude.toString()
 
-                saveLocation()
+//                saveLocation()
+                getLocationAddress()
             }
         }
 
     }
 
-    fun saveLocation() {
+    /*fun saveLocation() {
 
         val latD = lat //String.format("%.6f", lat.toDouble())
         val lngD = lng //String.format("%.6f", lng.toDouble())
@@ -445,9 +316,9 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
         } else {
             getLocationAddress()
         }
-    }
+    }*/
 
-    fun getLocationAddress() {
+    private fun getLocationAddress() {
 
         if (BuildConfig.DEBUG) {
             showToast("lat $lat,long $lng")
@@ -494,7 +365,8 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
             if (location != null) {
                 lat = location.latitude.toString()
                 lng = location.longitude.toString()
-                saveLocation()
+//                saveLocation()
+                getLocationAddress()
             }
         }
     }
@@ -525,60 +397,12 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
             }
         }
 
-    fun askLocationPermission() {}
-
-    fun showPermanentlyDeniedDialog() {
-        val dialog = AlertDialog.Builder(this)
-        dialog.setTitle(getString(R.string.title_permission_permanently_denied))
-        dialog.setMessage(getString(R.string.message_permission_permanently_denied))
-        dialog.setNegativeButton(getString(R.string.not_now)) { _, _ -> }
-        dialog.setPositiveButton(getString(R.string.settings)) { _, _ ->
-            locationPermissionIntent()
-        }
-        dialog.setOnCancelListener { } //important
-        dialog.show()
-    }
-
-    fun requestCameraPermissions() {
-        requestMultiplePermissionLauncher.launch(
-            arrayOf(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.CAMERA
-            )
-        )
-    }
-
     private val requestMultiplePermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { resultsMap ->
             resultsMap.forEach {
                 Log.d("MYT", "Permission: ${it.key}, granted: ${it.value}")
             }
         }
-
-    fun hasCameraPermission() = ContextCompat.checkSelfPermission(
-        this,
-        Manifest.permission.CAMERA
-    ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-        this,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
-    ) == PackageManager.PERMISSION_GRANTED
-
-    fun hasContactPermission() = ContextCompat.checkSelfPermission(
-        this,
-        Manifest.permission.READ_CONTACTS
-    ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-        this,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
-    ) == PackageManager.PERMISSION_GRANTED
-
-    /*@SuppressLint("HardwareIds")
-    fun getDeviceId(): String {
-        return Settings.Secure.getString(
-            contentResolver,
-            Settings.Secure.ANDROID_ID
-        )
-    }*/
-
     fun backToLogIn() {
         PreferencesManagement.saveUserData(this, null)
 
@@ -590,11 +414,6 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
         intent.putExtra("EXIT", true)
         startActivity(intent)
     }
-
-    /*fun loginInUser(userData: UserData) {
-        PreferencesManagement.saveUserData(this, userData)
-        startActivity(HomeActivity.createIntent(this))
-    }*/
 
     fun showPermissionSnackBar(view: View) {
         val snack = Snackbar.make(
@@ -701,23 +520,54 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
         Log.d("GA4", "debugLog: $eventTag")
     }
 
+
+    fun setUserOnline() {
+        if (FirebaseAuth.getInstance().currentUser?.uid != null) {
+            val userRef = db.collection("online_users")
+                .document(FirebaseAuth.getInstance().currentUser?.uid.toString())
+
+            userRef
+                .update("isOnline", true)
+                .addOnSuccessListener {
+                    // Update UI or perform other actions
+                }
+        }
+
+    }
+
+    // Set user as offline when the app is in the background or closed
+    fun setUserOffline() {
+        if (FirebaseAuth.getInstance().currentUser?.uid != null) {
+            val userRef =
+                db.collection("online_users")
+                    .document(FirebaseAuth.getInstance().currentUser?.uid.toString())
+
+            userRef
+                .update("isOnline", false, "lastOnlineTimestamp", FieldValue.serverTimestamp())
+                .addOnSuccessListener {
+                    // Update UI or perform other actions
+                }
+        }
+
+    }
+
     fun generateAuthToken(): String {
         val mUser = FirebaseAuth.getInstance().currentUser
-      /*  mUser!!.getIdToken(true)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    val idToken = it.result.token
-                    val auth = "Bearer $idToken"
+        /*  mUser!!.getIdToken(true)
+              .addOnCompleteListener {
+                  if (it.isSuccessful) {
+                      val idToken = it.result.token
+                      val auth = "Bearer $idToken"
 
-                    val clipboard =
-                        getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val clip = ClipData.newPlainText(android.R.attr.label.toString(), idToken)
-//                    clipboard.setPrimaryClip(clip)
-                    if (PreferencesManagement.saveAuthToken(this@BaseActivity, auth)) {
-                        Log.d("akd_debug", "generateAuthToken: Data saved in preferences.")
-                    }
-                }
-            }*/
+                      val clipboard =
+                          getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                      val clip = ClipData.newPlainText(android.R.attr.label.toString(), idToken)
+  //                    clipboard.setPrimaryClip(clip)
+                      if (PreferencesManagement.saveAuthToken(this@BaseActivity, auth)) {
+                          Log.d("akd_debug", "generateAuthToken: Data saved in preferences.")
+                      }
+                  }
+              }*/
 
         mUser!!.getIdToken(true)
             .addOnCompleteListener(object : OnCompleteListener<GetTokenResult?>,
@@ -734,10 +584,10 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
                             Log.d("akd_debug", "generateAuthToken: Data saved in preferences.")
                         }
 
-                        /*val clipboard =
+                        val clipboard =
                             getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                         val clip = ClipData.newPlainText(android.R.attr.label.toString(), idToken)
-                        clipboard.setPrimaryClip(clip)*/
+                        clipboard.setPrimaryClip(clip)
 
                     } else {
 
@@ -747,46 +597,6 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
             })
 
         return "authToken"
-    }
-
-    fun getFCMToken() {
-
-        FirebaseMessaging.getInstance().token.addOnSuccessListener {
-            PreferencesManagement.saveFCMToken(this, it)
-        }.addOnFailureListener {
-            loader(false)
-            if (BuildConfig.DEBUG) showToast("Error Please try again ! ${it.localizedMessage}") else showToast(
-                "Error Please try again !"
-            )
-        }
-    }
-
-    fun setUserOnline() {
-        if (FirebaseAuth.getInstance().currentUser?.uid != null) {
-            val userRef = db.collection("online_users").document(FirebaseAuth.getInstance().currentUser?.uid.toString())
-
-            userRef
-                .update("isOnline", true)
-                .addOnSuccessListener {
-                    // Update UI or perform other actions
-                }
-        }
-
-    }
-
-    // Set user as offline when the app is in the background or closed
-    fun setUserOffline() {
-        if (FirebaseAuth.getInstance().currentUser?.uid!=null){
-            val userRef =
-                db.collection("online_users").document(FirebaseAuth.getInstance().currentUser?.uid.toString())
-
-            userRef
-                .update("isOnline", false, "lastOnlineTimestamp", FieldValue.serverTimestamp())
-                .addOnSuccessListener {
-                    // Update UI or perform other actions
-                }
-        }
-
     }
 }
 

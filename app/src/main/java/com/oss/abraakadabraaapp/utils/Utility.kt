@@ -58,14 +58,6 @@ object Utility {
         return map
     }
 
-    fun getAuthentication(context: Context): HashMap<String, String> {
-        val map = HashMap<String, String>()
-        val token = PreferencesManagement.getAuthToken(context)!!
-        map[RequestKeys.authorization] = token
-
-        return map
-    }
-
     fun deleteRecursive(fileOrDirectory: File) {
         if (fileOrDirectory.isDirectory) {
             for (child in fileOrDirectory.listFiles()) {

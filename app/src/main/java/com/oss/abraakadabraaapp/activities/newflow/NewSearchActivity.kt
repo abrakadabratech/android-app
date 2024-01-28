@@ -95,24 +95,7 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
         searchQuery = string
         Log.d("TAG - ", "searchCategories: $string")
         if (isNetworkAvailable()) {
-            generateAuthToken()
-            val mUser = FirebaseAuth.getInstance().currentUser
-            mUser!!.getIdToken(true)
-                .addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        val idToken = it.result.token
-                        val auth = "Bearer $idToken"
-
-                        if (PreferencesManagement.saveAuthToken(this, auth)) {
-
-                            getProductFromServer("latest")
-
-                        } else {
-                            showToast("Error generating the token!")
-                        }
-                    }
-                }
-
+            getProductFromServer("latest")
         }
     }
 
@@ -169,11 +152,9 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
         setUpRecyclerView()
         searchQuery = query
         currentPage = 1
-        generateAuthToken()
         val userLocation = PreferencesManagement.getUserLocation(this)
         if (userLocation != null) {
             authViewModel.searchQuery(
-                Utility.getAuthentication(this),
                 query,
                 userLocation.lat.toDouble(),
                 userLocation.long.toDouble(),

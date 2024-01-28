@@ -42,7 +42,6 @@ import com.oss.abraakadabraaapp.activities.newflow.NewProductDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewSearchActivity
 import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
 import com.oss.abraakadabraaapp.adapter.CategoryAdapter
-import com.oss.abraakadabraaapp.adapter.LatestProductAdapter
 import com.oss.abraakadabraaapp.databinding.NewReceiverFlowBinding
 import com.oss.abraakadabraaapp.retrofit.api.APIService
 import com.oss.abraakadabraaapp.datasource.MainFilterViewModel
@@ -66,8 +65,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface,
-    LatestProductAdapter.LatestProductAdapterInterface, ProductAdapter.OnProductClicked {
-    private val MY_PERMISSIONS_REQUEST_FINE_LOCATION: Int = 1001
+    ProductAdapter.OnProductClicked {
     lateinit var application: BaseActivity
 
     private lateinit var binding: NewReceiverFlowBinding
@@ -84,12 +82,10 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     private var isLoading = false
     private var isLastPage = false
     lateinit var mFusedLocationClient: FusedLocationProviderClient
-    private lateinit var latestProductAdapter: LatestProductAdapter
 
     private var latestProductList: ArrayList<Product> = ArrayList()
     //Pagination
 
-    //    private lateinit var latestProductAdapter: LatestProductAdapter
     private var mainListAdapter: ProductAdapter? = null
     private val TAG = "NewReceiverFragment"
     private val authViewModel: AuthViewModel by viewModel()
@@ -118,6 +114,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                 categoryList.clear()
                 noMoreData = false
                 currentPage = pageStart
+                setupViewModel()
                 checkPermissions()
             }
         }
@@ -131,6 +128,8 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         }
         setupList()
         setUpCategories()
+
+        setupViewModel()
 
         setUpObserver()
 
@@ -189,7 +188,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         if (application.checkPermission()) {
             if (application.isLocationEnabled()) {
                 if (PreferencesManagement.getUserLocation(requireContext()) != null) {
-                    setupViewModel()
+
                 } else {
                     application.showToast("Please restart your app to get products")
                     application.getLastLocation()
@@ -236,9 +235,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     private fun setUpObserver() {
         authViewModel.getAllcategoriesSuccess.observe(requireActivity()) {
             if (it.code == 200) {
-
-
-                PreferencesManagement.saveCategories(requireActivity(), it)
+                                PreferencesManagement.saveCategories(requireActivity(), it)
                 categoryList = it.data
                 categoryList.add(UserCatData("", "More", ""))
                 categoryAdapter.setData(categoryList)
@@ -250,12 +247,8 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         }
         authViewModel.allproductsSuccess.observe(requireActivity()) {
 
-//            latestProductAdapter.setData(it.data.products)
-//            binding.textView75.text = "${it.data.products.size} Items"
-//            latestProductAdapter.notifyDataSetChanged()
             if (currentPage == pageStart) latestProductList.clear()
             latestProductList.addAll(it.data.products)
-            latestProductAdapter.notifyDataSetChanged()
 //                noDataBinding.clNoData.visibility = View.GONE
 
             val lastPosition = latestProductList.size - it.data.products.size
@@ -320,13 +313,9 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
     private fun setupViewModel() {
         if (application.isNetworkAvailable()) {
-            application.generateAuthToken()
 
-            val map = HashMap<String, String>()
-            val token = PreferencesManagement.getAuthToken(requireContext())!!
-            map["Authorization"] = token
-            if (application.isNetworkAvailable()){
-                authViewModel.getAllCategoriesData(map)
+           if (application.isNetworkAvailable()){
+                authViewModel.getAllCategoriesData()
             }else{
                 application.showToast(getString(R.string.no_internet_connection_found))
             }
@@ -610,23 +599,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
     }
 
-
-    private fun sort() {
-        latestProductList.sortByDescending { list -> list.timestamp }
-        latestProductAdapter.notifyDataSetChanged()
-    }
-
-    override fun onStop() {
-        super.onStop()
-    }
-
-    override fun onItemDetail(data: Product, position: Int) {
-        val intent = Intent(requireContext(), NewProductDetailActivity::class.java)
-        intent.putExtra(productId, data.id)
-        startActivity(intent)
-    }
-
-    override fun onProductClicked(product: Product?, position: Int) {
+     override fun onProductClicked(product: Product?, position: Int) {
         Log.d(TAG, "onProductClicked: ${product?.name}")
         if (product?.isSelfProduct!!){
             val intent = Intent(requireContext(), MyListingDetialActivity::class.java)
@@ -642,9 +615,9 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     override fun onResume() {
         super.onResume()
         Log.e("Cycle-TAG", "onResume: RECEIVERFRAGMENT")
-        if (mBundleRecyclerViewState != null) {
-            val listState = mBundleRecyclerViewState!!.getParcelable<Parcelable>(KEY_RECYCLER_STATE)
-            binding.rvLatestProduct.layoutManager?.onRestoreInstanceState(listState)
-        }
+//        if (mBundleRecyclerViewState != null) {
+//            val listState = mBundleRecyclerViewState!!.getParcelable<Parcelable>(KEY_RECYCLER_STATE)
+//            binding.rvLatestProduct.layoutManager?.onRestoreInstanceState(listState)
+//        }
     }
 }

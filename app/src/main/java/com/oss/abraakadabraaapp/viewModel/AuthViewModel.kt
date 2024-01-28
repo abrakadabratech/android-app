@@ -77,11 +77,10 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
     var reportProductSuccess  = MutableLiveData<ReportProductResponse>()
 
 
-    fun getUser(
-        headerMap: HashMap<String, String>) {
+    fun getUser() {
         viewModelScope.launch {
 
-            suspend fun call() = repository.getUser(headerMap)
+            suspend fun call() = repository.getUser()
 
             callApi(::call, object : CallHelper<GetUserResponse> {
                 override fun onSuccessful(data: GetUserResponse) {
@@ -225,14 +224,13 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
         }
     }
 
-    fun updateUserV2(
-        headerMap: HashMap<String, String>, bodyMap: Map<String, String>
+    fun updateUserV2( bodyMap: Map<String, String>
     ) {
         viewModelScope.launch {
 
             isLoading.value = true
 
-            suspend fun call() = repository.updateUserV2(headerMap,bodyMap)
+            suspend fun call() = repository.updateUserV2(bodyMap)
 
             callApi(::call, object : CallHelper<GetUserResponse> {
                 override fun onSuccessful(data: GetUserResponse) {
@@ -251,13 +249,12 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
         }
     }
 
-    fun postFCMToken(
-        headerMap: HashMap<String, String>, bodyMap: FcmRequest) {
+    fun postFCMToken(bodyMap: FcmRequest) {
         viewModelScope.launch {
 
             isLoading.value = true
 
-            suspend fun call() = repository.postFCMToken(headerMap,bodyMap)
+            suspend fun call() = repository.postFCMToken(bodyMap)
 
             callApi(::call, object : CallHelper<FcmResponse> {
                 override fun onSuccessful(data: FcmResponse) {
@@ -501,13 +498,12 @@ fun getRequestDetails(
 
     //NEW - Delete product
     fun deleteProduct(
-        headerMap: HashMap<String, String>,
         id: String
     ) {
         viewModelScope.launch {
             isLoading.value = true
 
-            suspend fun call() = repository.deleteProduct(headerMap,id)
+            suspend fun call() = repository.deleteProduct(id)
             callApi(::call, object : CallHelper<ProductDeleteResponse>{
                 override fun onSuccessful(data: ProductDeleteResponse) {
                     deleteProductSuccess.value = data
@@ -574,14 +570,13 @@ fun getRequestDetails(
     }
 
     fun postProductRequest(
-        headerMap: HashMap<String, String>,
         id: String,
         body:HashMap<String, String>
     ) {
         viewModelScope.launch {
             isLoading.value = true
 
-            suspend fun call() = repository.postRequest(headerMap,id,body)
+            suspend fun call() = repository.postRequest(id,body)
             callApi(::call, object : CallHelper<ProductDeleteResponse>{
                 override fun onSuccessful(data: ProductDeleteResponse) {
                     requstProductSuccess.value = data
@@ -597,14 +592,13 @@ fun getRequestDetails(
     }
 
     fun updateProductRequest(
-        headerMap: HashMap<String, String>,
         id: String,
         body:String
     ) {
         viewModelScope.launch {
             isLoading.value = true
 
-            suspend fun call() = repository.updateProductRequest(headerMap,id,body)
+            suspend fun call() = repository.updateProductRequest(id,body)
             callApi(::call, object : CallHelper<ProductDeleteResponse>{
                 override fun onSuccessful(data: ProductDeleteResponse) {
                     updateProductRequest.value = data
@@ -620,13 +614,12 @@ fun getRequestDetails(
     }
 
     fun cancelProductRequest(
-        headerMap: HashMap<String, String>,
         id: String
     ) {
         viewModelScope.launch {
             isLoading.value = true
 
-            suspend fun call() = repository.cancelProductRequest(headerMap,id)
+            suspend fun call() = repository.cancelProductRequest(id)
             callApi(::call, object : CallHelper<CancelRequestReponse>{
                 override fun onSuccessful(data: CancelRequestReponse) {
                     cancelRequestSuccess.value = data
@@ -745,13 +738,12 @@ fun getRequestDetails(
         }
     }
 
-    fun updatePayment(
-        headerMap: HashMap<String, String>,body:HashMap<String, String>
+    fun updatePayment(body:HashMap<String, String>
     ) {
         viewModelScope.launch {
             isLoading.value = true
 
-            suspend fun call() = repository.updatePayment(headerMap,body)
+            suspend fun call() = repository.updatePayment(body)
             callApi(::call, object : CallHelper<UpdatePaymentModel>{
                 override fun onSuccessful(data: UpdatePaymentModel) {
                     updatePaymentSuccess .value = data
@@ -766,13 +758,12 @@ fun getRequestDetails(
     }
 
     fun sendFeedback(
-        headerMap: HashMap<String, String>,
         id: String, body:HashMap<String, String>
     ) {
         viewModelScope.launch {
             isLoading.value = true
 
-            suspend fun call() = repository.sendFeedback(headerMap,id,body)
+            suspend fun call() = repository.sendFeedback(id,body)
             callApi(::call, object : CallHelper<FeedbackModel>{
                 override fun onSuccessful(data: FeedbackModel) {
                     sendFeedbackSuccess .value = data
@@ -787,14 +778,13 @@ fun getRequestDetails(
     }
 
     fun searchQuery(
-        headerMap: HashMap<String, String>,
         page:String,
         lat:Double,long:Double,maxDistance:Int,pageNumber:Int,sortBy: String
     ) {
         viewModelScope.launch {
 //            isLoading.value = true
 
-            suspend fun call() = repository.searchQuery(headerMap,page,lat,long,maxDistance,pageNumber,sortBy)
+            suspend fun call() = repository.searchQuery(page,lat,long,maxDistance,pageNumber,sortBy)
             callApi(::call, object : CallHelper<SearchModel>{
                 override fun onSuccessful(data: SearchModel) {
                     Log.e("okk", "onSuccessful: $data", )
@@ -810,12 +800,11 @@ fun getRequestDetails(
     }
 
     fun sendNotification(
-        headerMap: HashMap<String, String>,
         body: HashMap<String, String>) {
         viewModelScope.launch {
 //            isLoading.value = true
 
-            suspend fun call() = repository.sendNotification(headerMap,body)
+            suspend fun call() = repository.sendNotification(body)
             callApi(::call, object : CallHelper<ChatResponse>{
                 override fun onSuccessful(data: ChatResponse) {
                     chatSuccess .value = data
@@ -874,12 +863,11 @@ fun getRequestDetails(
     }
             //NEW
     fun getAllCategoriesData(
-        headerMap: HashMap<String, String>
     ) {
         viewModelScope.launch {
 //            isLoading.value = true
 
-            suspend fun call() = repository.getAllCategories(headerMap)
+            suspend fun call() = repository.getAllCategories()
             callApi(::call, object : CallHelper<AllCategoryResponse>{
                 override fun onSuccessful(data: AllCategoryResponse) {
                     getAllcategoriesSuccess.value = data
@@ -944,14 +932,13 @@ fun getRequestDetails(
         }
     }
     fun postUPIPayment(
-        headerMap: HashMap<String, String>,
         map: HashMap<String, String>
     ) {
         viewModelScope.launch {
 
             isLoading.value = true
 
-            suspend fun call() = repository.postUPIPayment(headerMap, map)
+            suspend fun call() = repository.postUPIPayment( map)
 
             callApi(::call, object : CallHelper<UPIModel> {
                 override fun onSuccessful(data: UPIModel) {
@@ -1245,7 +1232,7 @@ fun getRequestDetails(
         }
     }
     var reportSuccess = MutableLiveData<ReportResponce>()
-    fun reportApi(map: HashMap<String, String>,body:ReportRequest) {
+    fun reportApi(body:ReportRequest) {
         viewModelScope.launch {
 
             isLoading.value = true

@@ -88,7 +88,6 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
         }
 
         if (intent.hasExtra(Constants.hasNotificationData)){
-            generateAuthToken()
             val bundle = Gson().fromJson(intent.extras?.getString(Constants.productId),NotificationDataModel::class.java)
             productId = bundle.product_id.toString()
             val db = Firebase.firestore
@@ -190,8 +189,7 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
         binding.deleteProduct.setOnClickListener {
             postClick(BUTTON_DELETE_PRODUCT)
             if (isNetworkAvailable()){
-                generateAuthToken()
-                mainViewModel.deleteProduct(Utility.getAuthentication(this),productDetails!!.data.id.toString())
+                mainViewModel.deleteProduct(productDetails!!.data.id.toString())
             }
         }
 
@@ -575,12 +573,6 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
             if (reportEdt.text.toString() == ""){
                 showToast("Please enter some text")
             }else{
-                generateAuthToken()
-
-                val map = HashMap<String, String>()
-                val token = PreferencesManagement.getAuthToken(this)!!
-                map[RequestKeys.authorization] = token
-
                 if (productDetails!=null){
                     if (isNetworkAvailable()){
 //                    val request = ReportProductRequest(productDetails!!.data.id,reportType,reportEdt.text.toString())
@@ -601,7 +593,7 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
                             message = reportEdt.text.toString()
                         )
 
-                        mainViewModel.reportApi(map, body)
+                        mainViewModel.reportApi(body)
                     }
                 }
                 alertDialog.dismiss()

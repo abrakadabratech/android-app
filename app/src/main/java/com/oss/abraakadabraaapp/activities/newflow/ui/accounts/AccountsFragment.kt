@@ -126,9 +126,7 @@ class AccountsFragment : Fragment(), View.OnClickListener {
 
     }
     private fun callUser() {
-        application.generateAuthToken()
-
-        authViewModel.getUser(Utility.getAuthentication(requireContext()))
+        authViewModel.getUser()
     }
 
     private fun setUpObserver() {

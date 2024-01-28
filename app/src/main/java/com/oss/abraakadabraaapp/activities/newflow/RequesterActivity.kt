@@ -68,7 +68,6 @@ class RequesterActivity : BaseActivity() {
             loaddata()
         }
         if (intent.hasExtra(Constants.hasNotificationData)){
-            generateAuthToken()
             val bundle = Gson().fromJson(intent.extras?.getString(Constants.productId),
                 NotificationDataModel::class.java)
             requestor_id = bundle.requestId.toString()
@@ -107,9 +106,7 @@ class RequesterActivity : BaseActivity() {
                 if (productStatus == "hold"){
                     showToast(getString(R.string.on_hold_product_message))
                 }else{
-                    generateAuthToken()
                     mainViewModel.updateProductRequest(
-                        Utility.getAuthentication(this),
                         productDetails?.data?.requestId.toString(),
                         "accepted"
                     )
@@ -126,9 +123,7 @@ class RequesterActivity : BaseActivity() {
 
                 alertDialog.setPositiveButton("Yes") { dialog, id ->
                     //cancel the request
-                    generateAuthToken()
                     mainViewModel.updateProductRequest(
-                        Utility.getAuthentication(this),
                         productDetails?.data?.requestId.toString(),
                         "rejected"
                     )
@@ -151,9 +146,7 @@ class RequesterActivity : BaseActivity() {
 //            i.putExtra("receiver_data", Gson().toJson(productDetailData))
                 startActivity(i)
             } else {
-                generateAuthToken()
                 mainViewModel.updateProductRequest(
-                    Utility.getAuthentication(this),
                     productDetails?.data?.requestId.toString(),
                     "delivered"
                 )
@@ -169,9 +162,7 @@ class RequesterActivity : BaseActivity() {
                 alertDialog.setPositiveButton("Yes") { dialog, _ ->
                     //cancel the request
 
-                    generateAuthToken()
                     mainViewModel.updateProductRequest(
-                        Utility.getAuthentication(this),
                         productDetails?.data?.requestId.toString(),
                         "cancelled"
                     )

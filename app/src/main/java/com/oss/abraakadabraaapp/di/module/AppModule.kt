@@ -11,14 +11,12 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import android.annotation.SuppressLint
-import com.google.android.datatransport.runtime.dagger.Provides
 import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.retrofit.api.TokenAutheticator
 import com.oss.abraakadabraaapp.retrofit.api.TokenInterceptor
 import java.security.KeyStore
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
-import javax.inject.Singleton
 import javax.net.ssl.*
 import javax.security.cert.CertificateException
 

@@ -120,7 +120,6 @@ interface APIs {
     //Delete product
     @DELETE("product/{id}")
     suspend fun deleteProduct(
-
         @Path("id") id: String
     ): Response<ProductDeleteResponse>
 

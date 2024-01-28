@@ -219,7 +219,10 @@
         app:layout_constraintBottom_toTopOf="@+id/textView131"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView130" />
+        app:layout_constraintTop_toBottomOf="@+id/textView130"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:stackFromEnd="true"
+        app:reverseLayout="true"/>
 
     <TextView
         android:id="@+id/textView131"

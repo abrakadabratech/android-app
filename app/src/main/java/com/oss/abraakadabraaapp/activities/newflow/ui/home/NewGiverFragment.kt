@@ -672,7 +672,6 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
             }
             addImage()
             if (application.isNetworkAvailable()) {
-                application.generateAuthToken()
 
                 Log.d("ok", "postNewProduct: $lattitude")
                 Log.d("ok", "postNewProduct: $longitude")

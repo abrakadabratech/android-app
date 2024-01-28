@@ -21,7 +21,6 @@ class AuthRepository(private val apiHelper: APIs) {
     //=================================================================================//
 
     suspend fun getUser(
-        map: HashMap<String, String>
     ) = apiHelper.getUser()
 
     suspend fun onBoardUser(
@@ -47,12 +46,10 @@ class AuthRepository(private val apiHelper: APIs) {
     ) = apiHelper.updateUser(params)
 
     suspend fun updateUserV2(
-        map: HashMap<String, String>,
         params: Map<String, String>
     ) = apiHelper.updateUserV2(params)
 
     suspend fun postFCMToken(
-        map: HashMap<String, String>,
         params: FcmRequest
     ) = apiHelper.postFCMToken(params)
 
@@ -92,7 +89,6 @@ class AuthRepository(private val apiHelper: APIs) {
     ) = apiHelper.getListingDetailsV2(id)
 
     suspend fun deleteProduct(
-        map: HashMap<String, String>,
         id: String
     ) = apiHelper.deleteProduct(id)
 
@@ -124,7 +120,6 @@ class AuthRepository(private val apiHelper: APIs) {
 
 
     suspend fun getAllCategories(
-        map: HashMap<String, String>
     ) = apiHelper.getAllCategories()
 
     suspend fun reportProduct(
@@ -133,19 +128,16 @@ class AuthRepository(private val apiHelper: APIs) {
     ) = apiHelper.reportProduct(body)
 
     suspend fun postRequest(
-        map: HashMap<String, String>,
         id: String,
         body: HashMap<String, String>
     ) = apiHelper.postProductRequest(id, body)
 
     suspend fun updateProductRequest(
-        map: HashMap<String, String>,
         id: String,
         body: String
     ) = apiHelper.updateProductRequest(id, body)
 
     suspend fun cancelProductRequest(
-        map: HashMap<String, String>,
         id: String
     ) = apiHelper.cancelProductRequest(id)
 
@@ -178,24 +170,20 @@ class AuthRepository(private val apiHelper: APIs) {
     ) = apiHelper.initPayment(id)
 
     suspend fun updatePayment(
-        map: HashMap<String, String>,
         id: HashMap<String, String>
     ) = apiHelper.updatePayment(id)
 
     suspend fun sendFeedback(
-        map: HashMap<String, String>,
         id: String,
         body: HashMap<String, String>
     ) = apiHelper.sendFeedback(id, body)
 
     suspend fun searchQuery(
-        map: HashMap<String, String>,
         page: String,
         lat: Double, long: Double, maxDistance: Int, pageNumber: Int, sortBy: String
     ) = apiHelper.searchQuery(page, lat, long, maxDistance, pageNumber, "30", sortBy)
 
     suspend fun sendNotification(
-        map: HashMap<String, String>,
         body: HashMap<String, String>
 
     ) = apiHelper.sendNotification(body)
@@ -252,7 +240,6 @@ class AuthRepository(private val apiHelper: APIs) {
     ) = apiHelper.changePassword(map)
 
     suspend fun postUPIPayment(
-        headerMap: HashMap<String, String>,
         map: HashMap<String, String>
     ) = apiHelper.postUPIPayment(map)
 
