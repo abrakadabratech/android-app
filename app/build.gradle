@@ -136,7 +136,7 @@ dependencies {
     implementation 'id.zelory:compressor:3.0.1'
 
     //location
-    implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation 'com.google.android.gms:play-services-location:21.1.0'
 
     //places
     implementation 'com.google.android.libraries.places:places:3.0.0'
@@ -186,7 +186,7 @@ dependencies {
     implementation 'com.github.codersrouteandroid:flexible-switch:1.0'
 
     //Google Analytics
-    implementation 'com.google.android.gms:play-services-analytics:18.0.3'
+    implementation 'com.google.android.gms:play-services-analytics:18.0.4'
 
     // Add the dependency for the Analytics library
     // When using the BoM, you don't specify versions in Firebase library dependencies
@@ -298,5 +298,7 @@ dependencies {
 
     //Addmob sdk
     implementation 'com.google.android.gms:play-services-ads:22.6.0'
+
+
 
 }

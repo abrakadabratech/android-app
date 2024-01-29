@@ -152,9 +152,9 @@ class ChatDetailActivity : BaseActivity() {
 
     private fun showOnlineOrOffline() {
         var document = ""
-        if (FirebaseAuth.getInstance().currentUser?.uid.toString() == chatData?.receiver_id){
+        if (FirebaseAuth.getInstance().currentUser?.uid.toString() == chatData?.receiver_id) {
             document = chatData?.sender_id.toString()
-        }else document = chatData?.receiver_id.toString()
+        } else document = chatData?.receiver_id.toString()
 
         val userRef =
             db.collection("online_users").document(document)
@@ -168,12 +168,22 @@ class ChatDetailActivity : BaseActivity() {
             if (snapshot != null && snapshot.exists()) {
                 val isOnline = snapshot.getBoolean("isOnline") ?: false
                 // Update UI to reflect user presence (e.g., show a green dot if online)
-                if (isOnline){
+                if (isOnline) {
                     binding.onlineStatus.text = "online"
-                    binding.onlineStatus.setTextColor(ContextCompat.getColor(this@ChatDetailActivity,R.color.status_accepted))
-                }else{
+                    binding.onlineStatus.setTextColor(
+                        ContextCompat.getColor(
+                            this@ChatDetailActivity,
+                            R.color.status_accepted
+                        )
+                    )
+                } else {
                     binding.onlineStatus.text = "offline"
-                    binding.onlineStatus.setTextColor(ContextCompat.getColor(this,R.color.status_declined))
+                    binding.onlineStatus.setTextColor(
+                        ContextCompat.getColor(
+                            this,
+                            R.color.status_declined
+                        )
+                    )
                 }
 //                updateUi(isOnline)
             }
@@ -190,10 +200,10 @@ class ChatDetailActivity : BaseActivity() {
         val read = db.collection("chats").document(chatNode).collection("Messages")
         read.get()
             .addOnSuccessListener { snapshot ->
-                for (doc in snapshot.documents){
-                    Log.w(TAG, "onCreate: documents: $doc" )
-                    if (user?.equals(doc.data?.get("from")) != true){
-                        read.document(doc.id).update("read",true).addOnSuccessListener {
+                for (doc in snapshot.documents) {
+                    Log.w(TAG, "onCreate: documents: $doc")
+                    if (user?.equals(doc.data?.get("from")) != true) {
+                        read.document(doc.id).update("read", true).addOnSuccessListener {
                             Log.d(TAG, "onCreate: all messages read success")
                         }.addOnFailureListener {
                             Log.e(TAG, "onCreate: failed to mark as read")
@@ -508,17 +518,23 @@ class ChatDetailActivity : BaseActivity() {
         val firestore = FirebaseFirestore.getInstance()
         val messagesCollection = firestore.collection("chats").document(chatNode)
             .collection("Messages")
+        val user = FirebaseAuth.getInstance().currentUser?.uid
 
         // Update the 'read' field to true
         messagesCollection.document(messageId)
-            .update("read", true)
-            .addOnSuccessListener {
+            .get()
+            .addOnSuccessListener { snapshot ->
+                if (snapshot.get("from") != user) {
+                    messagesCollection.document(messageId).update("read", true)
+                        .addOnSuccessListener { }.addOnFailureListener { }
+                }
                 Log.d(TAG, "Message marked as read successfully")
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, "Error marking message as read: $e")
             }
     }
+
     override fun onStart() {
         super.onStart()
         firestoreUserAdapter?.startListening()
@@ -544,7 +560,7 @@ class ChatDetailActivity : BaseActivity() {
         }
     }
 
-    private fun updateRecycler(){
+    private fun updateRecycler() {
         val recyclerViewState = binding.rvChats.layoutManager?.onSaveInstanceState()
         binding.rvChats.adapter?.notifyDataSetChanged()
         binding.rvChats.layoutManager?.onRestoreInstanceState(recyclerViewState)

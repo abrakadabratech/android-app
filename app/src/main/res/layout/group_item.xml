@@ -126,6 +126,7 @@
                 android:textSize="10sp"
                 android:gravity="center"
                 android:textColor="@color/white"
+                android:visibility="gone"
                 android:fontFamily="@font/montserrat_semi_bold"
                 android:background="@drawable/circle_for_unread_count"
                 app:layout_constraintEnd_toEndOf="parent"

@@ -125,7 +125,6 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
             this
         ) { }
 
-        generateAuthToken()
     }
 
     fun postClick(event_tag: String) {
@@ -551,9 +550,10 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
 
     }
 
-    fun generateAuthToken(): String {
+   /* fun generateAuthToken(): String {
         val mUser = FirebaseAuth.getInstance().currentUser
-        /*  mUser!!.getIdToken(true)
+        */
+/*  mUser!!.getIdToken(true)
               .addOnCompleteListener {
                   if (it.isSuccessful) {
                       val idToken = it.result.token
@@ -567,7 +567,7 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
                           Log.d("akd_debug", "generateAuthToken: Data saved in preferences.")
                       }
                   }
-              }*/
+              }*//*
 
         mUser!!.getIdToken(true)
             .addOnCompleteListener(object : OnCompleteListener<GetTokenResult?>,
@@ -597,7 +597,7 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
             })
 
         return "authToken"
-    }
+    }*/
 }
 
 

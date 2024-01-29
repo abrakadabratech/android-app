@@ -75,9 +75,10 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="8dp"
-            android:fontFamily="@font/montserrat_regular"
+            android:fontFamily="@font/montserrat_semi_bold"
             android:maxLines="1"
             android:text="Hi... When can you collect"
+            android:textColor="@color/hint_color"
             android:textSize="@dimen/_12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -111,6 +112,28 @@
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="8dp"
+            app:layout_constraintEnd_toEndOf="@+id/cardView6"
+            app:layout_constraintHorizontal_bias="0.97"
+            app:layout_constraintStart_toStartOf="@+id/cardView6"
+            app:layout_constraintTop_toTopOf="@+id/cardView6">
+
+            <TextView
+                android:id="@+id/unreadCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/circle_for_unread_count"
+                android:textSize="10sp"
+                android:visibility="gone"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:fontFamily="@font/montserrat_semi_bold"
+                android:text="0" />
+        </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

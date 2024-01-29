@@ -7,30 +7,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ChatAdapter
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ExpandableAdapter
-import com.oss.abraakadabraaapp.activities.newflow.customeview.WrapContentLinearLayoutManager
 import com.oss.abraakadabraaapp.databinding.ChatRowBinding
 import com.oss.abraakadabraaapp.utils.Constants
-import com.oss.abraakadabraaapp.utils.PreferencesManagement
-import com.oss.abraakadabraaapp.utils.Utility.convertToTimestamp
-import com.oss.abraakadabraaapp.utils.Utility.toDate
-import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -42,7 +32,7 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
     private lateinit var oldChats: RecyclerView
 
     private val TAG = "ReceivingChatsFragment"
-    private lateinit var firestoreUserAdapter: FirestoreRecyclerAdapter<ChatListModel, UsersViewholder>
+//    private lateinit var firestoreUserAdapter: FirestoreRecyclerAdapter<ChatListModel, UsersViewholder>
 
     override fun onResume() {
         super.onResume()
@@ -75,10 +65,10 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
                     nodata.visibility = View.GONE
                     var groupChats = mutableListOf<GroupedChatListModel>()
                     val groupedItems = mutableMapOf<String, List<ChatListModel>>()
-
+                    val chatNodes = mutableListOf<String>()
                     for (document in querySnapshot.documents) {
                         val item = document.toObject(ChatListModel::class.java)
-
+                        chatNodes.add(document.id)
                         if (item != null) {
                             val category = item.product_id.toString()
 
@@ -108,7 +98,12 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
                             )
                         }
                     }
-                    val adapter = ExpandableAdapter(requireContext(),groupChats,currentUserId)
+                    val adapter = ExpandableAdapter(
+                        requireContext(),
+                        groupChats,
+                        currentUserId,
+                        chatNodes
+                    )
                     rvChats.adapter = adapter
                     rvChats.layoutManager = LinearLayoutManager(requireContext())
                     println("Category: $groupChats,")
@@ -131,13 +126,13 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
         oldChats = view.findViewById(R.id.oldChats)
         oldChatText = view.findViewById(R.id.oldChatsTxt)
 
-        setUpRecyclerview()
         application = (activity as BaseActivity)
 
         application.postEvent(Constants.PAGE_RECEIVER_CHAT,null)
 
         return view
     }
+/*
     private fun setUpRecyclerview() {
         val db = Firebase.firestore
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
@@ -184,6 +179,7 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
         oldChats.layoutManager = layoutManager
 //        oldChats.adapter = firestoreUserAdapter
     }
+*/
     private fun navigateToChats(model: ChatListModel) {
 
         val intent = Intent(requireContext(),ChatDetailActivity::class.java)
@@ -200,14 +196,5 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
         fun bind(documentSnapshot: ChatListModel) {
 
         }
-    }
-    override fun onStart() {
-        super.onStart()
-        firestoreUserAdapter.startListening()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        firestoreUserAdapter.stopListening()
     }
 }

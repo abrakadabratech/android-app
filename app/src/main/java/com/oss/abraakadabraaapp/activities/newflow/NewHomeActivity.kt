@@ -91,17 +91,16 @@ class NewHomeActivity : BaseActivity() {
 
             Log.d("NavigationActivity", "Navigated to $dest")
         }
-
-
     }
 
     private fun getUnreadMessageCount() {
         val db = FirebaseFirestore.getInstance()
 
-        val collectionReference = db.collection("chats")
         val targetSubstring = FirebaseAuth.getInstance().currentUser?.uid
         val badge = navView.getOrCreateBadge(R.id.navigation_community)
         badge.isVisible = false
+        val collectionReference = db.collection("chats")
+
         collectionReference.get()
             .addOnSuccessListener { querySnapshot ->
                 var count = 0
@@ -170,7 +169,7 @@ class NewHomeActivity : BaseActivity() {
                 val builder = AlertDialog.Builder(this)
                 builder.setTitle(getString(R.string.dialog_permission_title))
                 builder.setMessage(getString(R.string.dialog_notification_permission_message))
-                builder.setPositiveButton(getString(R.string.go_to_settings)) { dialog, _ ->
+                builder.setPositiveButton("OK") { dialog, _ ->
                     dialog.cancel()
                     Dexter.withContext(this)
                         .withPermissions(permissions)

@@ -10,9 +10,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -22,12 +19,8 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ChatAdapter
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ExpandableAdapter
-import com.oss.abraakadabraaapp.activities.newflow.customeview.WrapContentLinearLayoutManager
 import com.oss.abraakadabraaapp.databinding.ChatRowBinding
 import com.oss.abraakadabraaapp.utils.Constants
-import com.oss.abraakadabraaapp.utils.Utility
-import com.oss.abraakadabraaapp.utils.Utility.convertToTimestamp
-import com.oss.abraakadabraaapp.utils.Utility.toDate
 
 class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
     lateinit var application: BaseActivity
@@ -35,12 +28,11 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
     private lateinit var rvChats: RecyclerView
     private lateinit var oldChatText: TextView
     private lateinit var oldChats: RecyclerView
-    private lateinit var firestoreUserAdapter: FirestoreRecyclerAdapter<ChatListModel, UsersViewholder>
-
     private val TAG = "GivingChatsFragment"
 
     override fun onResume() {
         super.onResume()
+        loadGroupedChats()
     }
 
     override fun onCreateView(
@@ -56,68 +48,69 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
         application = (activity as BaseActivity)
 
         application.postEvent(Constants.PAGE_GIVER_CHAT, null)
-        setUpRecyclerview()
-        loadGroupedChats()
+//        setUpRecyclerview()
 
         return view
     }
 
-    private fun setUpRecyclerview() {
-        application.loader(true)
-        val db = Firebase.firestore
-        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+    /*
+        private fun setUpRecyclerview() {
+            application.loader(true)
+            val db = Firebase.firestore
+            val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
-        val docRef = db.collection("chats").whereEqualTo("product_giver", currentUserId)
+            val docRef = db.collection("chats").whereEqualTo("product_giver", currentUserId)
 
-        val options: FirestoreRecyclerOptions<ChatListModel> =
-            FirestoreRecyclerOptions.Builder<ChatListModel>()
-                .setQuery(docRef, ChatListModel::class.java)
-                .build()
+            val options: FirestoreRecyclerOptions<ChatListModel> =
+                FirestoreRecyclerOptions.Builder<ChatListModel>()
+                    .setQuery(docRef, ChatListModel::class.java)
+                    .build()
 
-        firestoreUserAdapter =
-            object : FirestoreRecyclerAdapter<ChatListModel, UsersViewholder>(options) {
-                override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UsersViewholder {
-                    val layoutInflater = LayoutInflater.from(parent.context)
-                    val listItemBinding = ChatRowBinding.inflate(layoutInflater, parent, false)
-                    return UsersViewholder(listItemBinding)
-                }
-
-                override fun onBindViewHolder(
-                    holder: UsersViewholder,
-                    position: Int,
-                    model: ChatListModel
-                ) {
-                    holder.bind(model)
-                    Log.e(TAG, "onBindViewHolder: ${model.toString()}")
-
-                    holder.binding.userName.text = model.receiver_name
-                    Glide.with(requireContext()).load(model.receiver_avatar)
-                        .placeholder(resources.getDrawable(R.drawable.ic_profile))
-                        .into(holder.binding.profilePic)
-
-                    holder.binding.productName.text = model.product
-                    holder.binding.message.text = model.last_message
-                    holder.binding.time.text = convertToTimestamp(model.time_stamp)!!
-
-                    if (model.status == "cancelled") {
-                        holder.binding.cancelledTxt.visibility = View.VISIBLE
-                    } else {
-                        holder.binding.cancelledTxt.visibility = View.GONE
-                    }
-                    holder.itemView.setOnClickListener {
-                        navigateToChats(model)
+            firestoreUserAdapter =
+                object : FirestoreRecyclerAdapter<ChatListModel, UsersViewholder>(options) {
+                    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UsersViewholder {
+                        val layoutInflater = LayoutInflater.from(parent.context)
+                        val listItemBinding = ChatRowBinding.inflate(layoutInflater, parent, false)
+                        return UsersViewholder(listItemBinding)
                     }
 
+                    override fun onBindViewHolder(
+                        holder: UsersViewholder,
+                        position: Int,
+                        model: ChatListModel
+                    ) {
+                        holder.bind(model)
+                        Log.e(TAG, "onBindViewHolder: ${model.toString()}")
+
+                        holder.binding.userName.text = model.receiver_name
+                        Glide.with(requireContext()).load(model.receiver_avatar)
+                            .placeholder(resources.getDrawable(R.drawable.ic_profile))
+                            .into(holder.binding.profilePic)
+
+                        holder.binding.productName.text = model.product
+                        holder.binding.message.text = model.last_message
+                        holder.binding.time.text = convertToTimestamp(model.time_stamp)!!
+
+                        if (model.status == "cancelled") {
+                            holder.binding.cancelledTxt.visibility = View.VISIBLE
+                        } else {
+                            holder.binding.cancelledTxt.visibility = View.GONE
+                        }
+                        holder.itemView.setOnClickListener {
+                            navigateToChats(model)
+                        }
+
+                    }
+
                 }
 
-            }
 
-
-        val layoutManager = WrapContentLinearLayoutManager(requireContext())
-        oldChats.layoutManager = layoutManager
-//        oldChats.adapter = firestoreUserAdapter
-        application.loader(false)
-    }
+            val layoutManager = WrapContentLinearLayoutManager(requireContext())
+            oldChats.layoutManager = layoutManager
+    //        oldChats.adapter = firestoreUserAdapter
+            application.loader(false)
+        }
+    */
 
     private fun loadGroupedChats() {
         //Grouping the messages by ProductID
@@ -146,8 +139,10 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
                     nodata.visibility = View.GONE
                     val groupChats = mutableListOf<GroupedChatListModel>()
                     val groupedItems = mutableMapOf<String, List<ChatListModel>>()
+                    val chatNodes = mutableListOf<String>()
 
                     for (document in querySnapshot.documents) {
+                        chatNodes.add(document.id)
                         val item = document.toObject(ChatListModel::class.java)
 
                         if (item != null) {
@@ -159,6 +154,7 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
                                 groupedItems[category] = listOf(item)
                             }
                         }
+
                     }
 
                     // Now 'groupedItems' contains items grouped by category
@@ -169,22 +165,6 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
 //                        val countCategory1 = items.count { it. == "Category1" }
 
                         if (items.isNotEmpty()) {
-                            var count = 0
-                            val lock = Object()
-                           db.collection("chats").document(items[0].product_id
-                                   + Utility.setOneToOneChat(
-                               items[0].sender_id.toString(),
-                               items[0].receiver_id.toString()
-                           )).collection("Messages")
-                               .whereNotEqualTo("from",currentUserId)
-                               .whereEqualTo("read",false).get().addOnSuccessListener {querySnapshot ->
-                                   synchronized(lock) {
-                                       count = querySnapshot.size()
-                                   }
-
-                                   Log.e(TAG, "loadGroupedChats: data ${count}", )}
-                               .addOnFailureListener { Log.e(TAG, "loadGroupedChats: error $it", ) }
-                            Log.e(TAG, "loadGroupedChats: data after ${count}", )
                             groupChats.add(
                                 GroupedChatListModel(
                                     false,
@@ -192,13 +172,13 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
                                     items[0].product.toString(),
                                     "Me",
                                     items[0].product_image,
-                                    count,
+                                    items[0].count,
                                     items
                                 )
                             )
                         }
                     }
-                    val adapter = ExpandableAdapter(requireContext(), groupChats, currentUserId)
+                    val adapter = ExpandableAdapter(requireContext(), groupChats, currentUserId,chatNodes)
                     rvChats.layoutManager = LinearLayoutManager(requireContext())
                     rvChats.adapter = adapter
                     println("Category: $groupChats,")
@@ -233,15 +213,5 @@ class GivingChatsFragment : Fragment(), ChatAdapter.onChatClicked {
         fun bind(documentSnapshot: ChatListModel) {
 
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        firestoreUserAdapter.startListening()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        firestoreUserAdapter.stopListening()
     }
 }

@@ -55,7 +55,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AbraaKaDabraa.App"
         android:usesCleartextTraffic="true"
-        android:enableOnBackInvokedCallback="true"
         tools:ignore="HardcodedDebugMode,LockedOrientationActivity">
         <activity
             android:name=".activities.newflow.CropActivity"

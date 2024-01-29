@@ -119,7 +119,6 @@ class HomeFragment : Fragment(), LocationListener {
         fragmentManager.beginTransaction()
             .replace(R.id.container, NewReceiverFragment::class.java, null)
             .setReorderingAllowed(true)
-            .addToBackStack(null)
             .commit()
 
         val apiKey = BuildConfig.API_KEY
