@@ -348,6 +348,8 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
     }
 
     private fun loaddata() {
+        binding.shimmerLayout.visibility = View.VISIBLE
+        binding.shimmerLayout.startShimmer()
         val map = HashMap<String, String>()
         val token = PreferencesManagement.getAuthToken(this)!!
         map[RequestKeys.authorization] = token
@@ -369,7 +371,10 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
         }
         mainViewModel.productDetailsData.observe(this) {
 //            Log.d("TAG - Product deails", "is it rue : ${productDetails.data.description}")
-
+            binding.shimmerLayout.visibility = View.GONE
+            binding.shimmerLayout.stopShimmer()
+            binding.root.visibility = View.VISIBLE
+            binding.constraintLayout3.visibility = View.VISIBLE
             if (it.code == 200) {
                 productDetails = it!!
                 setUpProductDetails(it)

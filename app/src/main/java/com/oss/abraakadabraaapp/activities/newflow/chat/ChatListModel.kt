@@ -23,6 +23,7 @@ data class ChatListModel(
     @SerializedName("Messages") var Messages:List<ChatModel>? = null,
     @SerializedName("request_id") var requestId:String = "",
     @SerializedName("product_image") var product_image:String = "",
+    @SerializedName("count") var count:Int = 0,
     @SerializedName("enabled") var enabled:Boolean = true
 ){ constructor():this("","","","",
     "","","","","",

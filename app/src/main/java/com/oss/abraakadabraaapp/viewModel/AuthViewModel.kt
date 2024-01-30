@@ -410,7 +410,7 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
         id: String
     ) {
         viewModelScope.launch {
-            isLoading.value = true
+//            isLoading.value = true
 
             suspend fun call() = repository.ProductDetails(headerMap,id)
             callApi(::call, object : CallHelper<ProductDetailsData>{
@@ -423,7 +423,7 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
                 }
 
             })
-            isLoading.value = false
+//            isLoading.value = false
 
         }
     }
@@ -1259,7 +1259,7 @@ fun getRequestDetails(
     fun requestRemains() {
         viewModelScope.launch {
 
-            isLoading.value = true
+//            isLoading.value = true
 
             suspend fun call() = repository.requestsRemain()
 
@@ -1273,7 +1273,7 @@ fun getRequestDetails(
                 }
             })
 
-            isLoading.value = false
+//            isLoading.value = false
 
         }
     }
