@@ -29,7 +29,6 @@ class ProductDataSource(private val apiService: APIService,
             val response = apiService.getProductsData(/*headers,*/ currentLoadingPageKey,maxDistance,lat,long,sortBy)
             Log.d("TAG - ", "load:response data $response")
             val responseData = mutableListOf<Product>()
-            EventBus.getDefault().post(response.data.products.size.toFloat())
             val data = response.data.products ?: emptyList()
             responseData.addAll(data)
             Log.d("TAG - ", "load:response data ${responseData.size} ${Gson().toJson(responseData)}")

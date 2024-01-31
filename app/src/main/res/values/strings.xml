@@ -211,9 +211,10 @@
     <string name="done">Done</string>
     <string name="on_hold_product_message">Only one request can be accepted at a time.\n Please cancel the previous request to accept this.</string>
 
-    <string name="your_web_client_id">323424345844-ja1qdgtpmfbssfik9qhaduh3nevggmst.apps.googleusercontent.com</string>
+    <string name="your_web_client_id">323424345844-ej5dklsq6r7nam5r9rii1ol81vn855hm.apps.googleusercontent.com</string>
 
 <!--    <string name="your_web_client_id">139908621299-0jqdduvapnnguu410bms15enm4gpt8qb.apps.googleusercontent.com</string>-->
+<!--    <string name="your_web_client_id">139908621299-hjrutdkbfeojlbaij2b0ndomigfamj72.apps.googleusercontent.com</string>-->
 
     <string name="image_slider">banner title\n</string>
 

@@ -312,7 +312,8 @@ class MyListingDetialActivity : BaseActivity(), RequestedUsersAdapter.OnRequestC
     }
 
     private fun loaddata() {
-
+        binding.shimmerLayout.visibility = View.VISIBLE
+        binding.shimmerLayout.startShimmer()
         val map = HashMap<String, String>()
         val token = PreferencesManagement.getAuthToken(this)!!
         map[RequestKeys.authorization] = token
@@ -333,8 +334,11 @@ class MyListingDetialActivity : BaseActivity(), RequestedUsersAdapter.OnRequestC
                     requestsAdapter!!.loadStateFlow.collectLatest { loadState->
                         if (loadState.refresh is LoadState.Loading) {
 //                                    application.loader(true)
+                            binding.shimmerLayout.visibility = View.VISIBLE
+                            binding.shimmerLayout.startShimmer()
                         } else {
-
+                            binding.shimmerLayout.visibility = View.GONE
+                            binding.shimmerLayout.stopShimmer()
                         }
                     }
                 }

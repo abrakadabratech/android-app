@@ -10,8 +10,6 @@ import javax.inject.Singleton
 
 class RetrofitInstance {
 
-
-
     companion object {
 
         private const val BASE_URL = "https://api.instantwebtools.net/v1/"

@@ -456,7 +456,7 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
         id: String
     ) {
         viewModelScope.launch {
-            isLoading.value = true
+//            isLoading.value = true
 
             suspend fun call() = repository.getListingDetailsV2(headerMap,id)
             callApi(::call, object : CallHelper<ListingResponse>{
@@ -469,7 +469,7 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
                 }
 
             })
-            isLoading.value = false
+//            isLoading.value = false
 
         }
     }

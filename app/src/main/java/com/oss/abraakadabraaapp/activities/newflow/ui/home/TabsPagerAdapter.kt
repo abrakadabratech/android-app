@@ -2,14 +2,15 @@ package com.oss.abraakadabraaapp.activities.newflow.ui.home
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentPagerAdapter
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
-class TabsPagerAdapter(fm: FragmentManager?) : FragmentStatePagerAdapter(fm!!) {
+class TabsPagerAdapter(fm: FragmentManager?) : FragmentPagerAdapter(fm!!,BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
     override fun getItem(position: Int): Fragment {
         when(position){
-            1 -> return NewReceiverFragment()
-            2 -> return NewGiverFragment()
+            0 -> return NewReceiverFragment()
+            1 -> return NewGiverFragment()
         }
         return NewReceiverFragment()
     }
