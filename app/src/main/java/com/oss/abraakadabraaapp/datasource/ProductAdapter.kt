@@ -105,7 +105,7 @@ class ProductAdapter(val onClick: OnProductClicked) :
         }
     }
 
-    object ProductDifferntiator : DiffUtil.ItemCallback<Product>() {
+    companion object ProductDifferntiator : DiffUtil.ItemCallback<Product>() {
 
         override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
             return oldItem.id == newItem.id
@@ -159,7 +159,7 @@ class ProductAdapter(val onClick: OnProductClicked) :
                 .build()
             adLoader.loadAd(AdRequest.Builder().build())
         }
-        
+
         private fun populateUnifiedNativeAdView(nativeAd: NativeAd, adView: NativeAdView) {
             // Set the media view.
             adView.mediaView = adView.findViewById(R.id.ad_media)

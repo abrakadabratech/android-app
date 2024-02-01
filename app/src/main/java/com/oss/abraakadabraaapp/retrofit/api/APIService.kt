@@ -14,12 +14,10 @@ import retrofit2.http.Query
 interface APIService {
     @GET("products")
     suspend fun getProductsData(
-//        @HeaderMap header: Map<String, String>,
         @Query("page") page:Int,
         @Query("maxDistance") maxDistance:Int,
         @Query("lat") lat:Double,
         @Query("long") long:Double,
-        //@Query("category") categories:String,
         @Query("sortBy") sortBy:String
 
         ): GetProducts

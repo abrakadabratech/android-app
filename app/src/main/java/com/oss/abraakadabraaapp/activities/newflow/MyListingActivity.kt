@@ -55,6 +55,8 @@ class MyListingActivity : BaseActivity() , MyListingAdapter.OnResponseClick {
     }
 
     private fun loaddata() {
+        binding.shimmerLayout.visibility = View.VISIBLE
+        binding.shimmerLayout.startShimmer()
         val map = HashMap<String, String>()
         val token = PreferencesManagement.getAuthToken(this)!!
         map[RequestKeys.authorization] = token
@@ -64,7 +66,8 @@ class MyListingActivity : BaseActivity() , MyListingAdapter.OnResponseClick {
     private fun setUpObserver() {
         mainViewModel.getProductListingsSuccess.observe(this) {
             Log.d("TAG - Product deails", "is it rue : ${it}")
-
+            binding.shimmerLayout.visibility = View.GONE
+            binding.shimmerLayout.stopShimmer()
             if (it.code == 200) {
                 if(it.data.isEmpty()){
                     binding.rvMyListing.visibility=View.GONE

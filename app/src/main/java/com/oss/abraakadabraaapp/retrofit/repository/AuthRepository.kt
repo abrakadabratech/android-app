@@ -157,7 +157,6 @@ class AuthRepository(private val apiHelper: APIs) {
     ) = apiHelper.getProductListings()
 
     suspend fun getMyRequests(
-        map: HashMap<String, String>,
     ) = apiHelper.getMyRequests()
 
     suspend fun getRazorPay(

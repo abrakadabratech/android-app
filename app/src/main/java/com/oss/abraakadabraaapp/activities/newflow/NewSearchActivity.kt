@@ -95,6 +95,8 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
         searchQuery = string
         Log.d("TAG - ", "searchCategories: $string")
         if (isNetworkAvailable()) {
+            binding.shimmerLayout.visibility = View.VISIBLE
+            binding.shimmerLayout.startShimmer()
             getProductFromServer("latest")
         }
     }
@@ -169,6 +171,8 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
 
     private fun setUpObserver() {
         authViewModel.searchSuccess.observe(this) {
+            binding.shimmerLayout.visibility = View.GONE
+            binding.shimmerLayout.stopShimmer()
             if (currentPage == pageStart) searchProductList.clear()
             searchProductList.clear()
             latestProductList.clear()
@@ -191,6 +195,8 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
             }
         }
         authViewModel.allproductsSuccess.observe(this) {
+            binding.shimmerLayout.visibility = View.GONE
+            binding.shimmerLayout.stopShimmer()
             Log.d("NewSearchActivity", "setUpObserver: ${it.data.products.size}")
             if (it.data.products.size == 0) {
                 binding.nodata2.visibility = View.VISIBLE

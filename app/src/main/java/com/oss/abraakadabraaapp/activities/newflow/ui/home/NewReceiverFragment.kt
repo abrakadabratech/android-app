@@ -109,6 +109,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
             sRLHome.setOnRefreshListener {
                 application.postClick(BUTTON_SWIPE_REFRESH)
+                PreferencesManagement.saveCategories(requireContext(),null)
                 currentPage = pageStart
                 latestProductList.clear()
                 categoryList.clear()
@@ -235,7 +236,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     private fun setUpObserver() {
         authViewModel.getAllcategoriesSuccess.observe(requireActivity()) {
             if (it.code == 200) {
-                                PreferencesManagement.saveCategories(requireActivity(), it)
+                PreferencesManagement.saveCategories(requireActivity(), it)
                 categoryList = it.data
                 categoryList.add(UserCatData("", "More", ""))
                 categoryAdapter.setData(categoryList)
@@ -264,6 +265,8 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             if (latestProductList.size == 0) {
                 binding.nodata.visibility = View.VISIBLE
             }
+            binding.sRLHome.isRefreshing = false
+
 
         }
 
@@ -315,7 +318,12 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         if (application.isNetworkAvailable()) {
 
            if (application.isNetworkAvailable()){
-                authViewModel.getAllCategoriesData()
+               if (PreferencesManagement.getCategories(requireContext()) == null){
+                   authViewModel.getAllCategoriesData()
+               }else{
+                   categoryAdapter.setData(PreferencesManagement.getCategories(requireContext())?.data!!)
+                   categoryAdapter.notifyDataSetChanged()
+               }
             }else{
                 application.showToast(getString(R.string.no_internet_connection_found))
             }
@@ -381,7 +389,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                         )
                     )[MainFilterViewModel::class.java]
 
-                mainListAdapter!!.submitData(lifecycle,PagingData.empty())
+//                mainListAdapter!!.submitData(lifecycle,PagingData.empty())
                 lifecycleScope.launch {
 
                     viewModel.listData2.collectLatest {
@@ -389,17 +397,22 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                             mainListAdapter!!.loadStateFlow.collectLatest { loadStates ->
                                 if (loadStates.refresh is LoadState.Loading) {
 //                                    application.loader(true)
+                                    binding.shimmerLayout.visibility = View.VISIBLE
+                                    binding.shimmerLayout.startShimmer()
                                 } else {
+                                    binding.shimmerLayout.visibility = View.GONE
+                                    binding.shimmerLayout.stopShimmer()
                                     if (mainListAdapter!!.itemCount < 1) {
                                         binding.nodata.visibility = View.VISIBLE
                                     } else {
                                         binding.nodata.visibility = View.GONE
                                     }
+                                    binding.sRLHome.isRefreshing = false
 //                                    application.loader(false)
                                 }
                             }
                         }
-                        mainListAdapter!!.submitData(lifecycle,PagingData.empty())
+//                        mainListAdapter!!.submitData(lifecycle,PagingData.empty())
                         mainListAdapter!!.submitData(it)
                     }
 
@@ -430,7 +443,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                     userLocation.long.toDouble(), "", "latest"
                 )
             )[MainViewModel::class.java]
-        mainListAdapter!!.submitData(lifecycle,PagingData.empty())
+//        mainListAdapter!!.submitData(lifecycle,PagingData.empty())
         lifecycleScope.launchWhenCreated {
 
             viewModel.listData.collectLatest {
@@ -450,11 +463,13 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                             } else {
                                 binding.nodata.visibility = View.GONE
                             }
+                            binding.sRLHome.isRefreshing = false
+
 //                                    application.loader(false)
                         }
                     }
                 }
-                mainListAdapter!!.submitData(lifecycle,PagingData.empty())
+//                mainListAdapter!!.submitData(lifecycle,PagingData.empty())
                 mainListAdapter!!.submitData(it)
             }
 

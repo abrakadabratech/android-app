@@ -478,7 +478,7 @@ fun getRequestDetails(
         id: String
     ) {
         viewModelScope.launch {
-            isLoading.value = true
+//            isLoading.value = true
 
             suspend fun call() = repository.getRequestDetails(headerMap,id)
             callApi(::call, object : CallHelper<RequestDetails>{
@@ -491,7 +491,7 @@ fun getRequestDetails(
                 }
 
             })
-            isLoading.value = false
+//            isLoading.value = false
 
         }
     }
@@ -661,7 +661,7 @@ fun getRequestDetails(
         headerMap: HashMap<String, String>
     ) {
         viewModelScope.launch {
-            isLoading.value = true
+//            isLoading.value = true
 
             suspend fun call() = repository.getProductListing(headerMap)
             callApi(::call, object : CallHelper<MyListingResponse>{
@@ -674,17 +674,16 @@ fun getRequestDetails(
                 }
 
             })
-            isLoading.value = false
+//            isLoading.value = false
         }
     }
 
     fun getMyRequests(
-        headerMap: HashMap<String, String>
     ) {
         viewModelScope.launch {
-            isLoading.value = true
+//            isLoading.value = true
 
-            suspend fun call() = repository.getMyRequests(headerMap)
+            suspend fun call() = repository.getMyRequests()
             callApi(::call, object : CallHelper<MyRequestResponse>{
                 override fun onSuccessful(data: MyRequestResponse) {
                     getMyRequestsSuccess .value = data
@@ -694,7 +693,7 @@ fun getRequestDetails(
                     errorMessage.value = errorResponse.responseMessage
                 }
             })
-            isLoading.value = false
+//            isLoading.value = false
         }
     }
 
@@ -843,7 +842,7 @@ fun getRequestDetails(
         headerMap: HashMap<String, String>,page:Int,maxDistance:Int,lat:Double,lang:Double,category:String,sortBy:String
     ) {
         viewModelScope.launch {
-            isLoading.value = true
+//            isLoading.value = true
 
             suspend fun call() =
                 repository.getProductsData(headerMap, page, maxDistance, lat, lang, category.dropLast(1),sortBy)
@@ -857,7 +856,7 @@ fun getRequestDetails(
                 }
 
             })
-            isLoading.value = false
+//            isLoading.value = false
 
         }
     }

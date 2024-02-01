@@ -229,7 +229,8 @@ class MyRequestDetailsActivity : BaseActivity() {
                 if (it.isSuccessful) {
                     val idToken = it.result.token
                     val auth = "Bearer $idToken"
-
+                    binding.shimmerLayout.visibility = View.VISIBLE
+                    binding.shimmerLayout.startShimmer()
                     val map = HashMap<String, String>()
                     map[RequestKeys.authorization] = auth
                     mainViewModel.getRequestDetails(map,productId)
@@ -285,7 +286,8 @@ class MyRequestDetailsActivity : BaseActivity() {
             }
         }
         mainViewModel.requestDetailsuccess.observe(this) {
-
+            binding.shimmerLayout.visibility = View.GONE
+            binding.shimmerLayout.stopShimmer()
             if (it.code == 200) {
                 setUpProductDetails(it)
                 productDetial = it

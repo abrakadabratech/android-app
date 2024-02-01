@@ -183,7 +183,7 @@ object PreferencesManagement {
 
     }
 
-    fun saveCategories(context: Context, data: AllCategoryResponse):Boolean {
+    fun saveCategories(context: Context, data: AllCategoryResponse?):Boolean {
         val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
         val prefsEditor = pref.edit()
