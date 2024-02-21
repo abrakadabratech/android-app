@@ -20,17 +20,14 @@ import com.google.firebase.ktx.Firebase
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.ContentManagementActivity
-import com.oss.abraakadabraaapp.activities.auth.LoginActivity
 import com.oss.abraakadabraaapp.activities.newflow.TermsAndConditionsActivity
 import com.oss.abraakadabraaapp.databinding.NewMenuScreenBinding
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.SIGN_IN_METHOD_GOOGLE
-import com.oss.abraakadabraaapp.utils.Constants.SIGN_IN_METHOD_PHONE
 import com.oss.abraakadabraaapp.utils.Constants.aboutUs
 import com.oss.abraakadabraaapp.utils.Constants.privacyPolicy
 import com.oss.abraakadabraaapp.utils.Constants.termsConditions
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
-import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -155,10 +152,6 @@ class MenuFragment : Fragment() {
                                 map["Authorization"] = token
                                 authViewModel.logoutUser(map)
                                 Firebase.auth.signOut()
-                                requireActivity().startActivity(
-                                    Intent(requireActivity(), LoginActivity::class.java)
-                                )
-                                requireActivity().finish()
 
                             } else {
                                 application.showToast("Error generating the token!")
@@ -167,11 +160,7 @@ class MenuFragment : Fragment() {
                         }
                     }
             } else {
-                Firebase.auth.signOut()
-                requireActivity().startActivity(
-                    Intent(requireActivity(), LoginActivity::class.java)
-                )
-                requireActivity().finish()
+                application.backToLogIn()
             }
         }
 
@@ -196,7 +185,7 @@ class MenuFragment : Fragment() {
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     // Google access revoked
-                                    signoutFromFirebase()
+                                   // signoutFromFirebase()
                                 } else {
                                     // Handle error
                                     application.showToast("Error! Please try again.")
@@ -206,10 +195,7 @@ class MenuFragment : Fragment() {
                     application.showToast(it.responseMessage.toString())
                     PreferencesManagement.saveSignInMethod(requireContext(), "")
 
-                    activity.startActivity(
-                        Intent(requireActivity(), LoginActivity::class.java)
-                    )
-                    activity.finish()
+                    application.backToLogIn()
                 }
             }
 

@@ -25,22 +25,23 @@ data class Data(
 
 data class Notifications(
 
-    @SerializedName("id") var id: String? = null,
-    @SerializedName("deleted") var deleted: Boolean? = null,
+    @SerializedName("id") var id: String? = "",
+    @SerializedName("deleted") var deleted: Boolean? = false,
     @SerializedName("data") var data: Data? = Data(),
-    @SerializedName("docId") var docId: String? = null,
-    @SerializedName("module") var module: String? = null,
-    @SerializedName("title") var title: String? = null,
-    @SerializedName("body") var body: String? = null,
-    @SerializedName("userId") var userId: String? = null,
+    @SerializedName("docId") var docId: String? = "",
+    @SerializedName("module") var module: String? = "",
+    @SerializedName("title") var title: String? = "",
+    @SerializedName("body") var body: String? = "",
+    @SerializedName("userId") var userId: String? = "",
+    @SerializedName("timestamp" ) var timestamp : TimeStamp? = TimeStamp(),
     @SerializedName("isSelect") var isSelect:Boolean = false
 
 )
 
 data class ReadNotificationResponse(
-    @SerializedName("code"    ) var code    : Int?    = null,
-    @SerializedName("status"  ) var status  : Int?    = null,
-    @SerializedName("message" ) var message : String? = null
+    @SerializedName("code"    ) var code    : Int?    = 0,
+    @SerializedName("status"  ) var status  : Int?    = 0,
+    @SerializedName("message" ) var message : String? = ""
 )
 
 data class DeleteAll(
@@ -49,4 +50,9 @@ data class DeleteAll(
 
 data class DeleteMultiple(
     @SerializedName("notifications") var notifications:List<String>
+)
+
+data class TimeStamp(
+    @SerializedName("_seconds"     ) var Seconds     : Int? = 0,
+    @SerializedName("_nanoseconds" ) var Nanoseconds : Int? = 0
 )

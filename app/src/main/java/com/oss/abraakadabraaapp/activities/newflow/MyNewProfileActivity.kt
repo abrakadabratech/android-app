@@ -17,7 +17,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
@@ -88,6 +90,11 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
         binding = ActivityMyProfile2Binding.inflate(layoutInflater)
         setContentView(binding.root)
         postEvent(Constants.PAGE_PROFILE, null)
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.your_web_client_id))
+            .requestEmail()
+            .build()
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         from = intent.extras?.getString("from")!!
         userInfo = PreferencesManagement.getUserInfo(this)!!
@@ -355,8 +362,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             showToast(it.responseMessage.toString())
             PreferencesManagement.saveSignInMethod(this, "")
 
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+            backToLogIn()
         }
     }
 
@@ -368,7 +374,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
             PreferencesManagement.getAuthToken(this)!!
         map["Authorization"] = token
         authViewModel.logoutUser(map)
-        Firebase.auth.signOut()
+
 
     }
 

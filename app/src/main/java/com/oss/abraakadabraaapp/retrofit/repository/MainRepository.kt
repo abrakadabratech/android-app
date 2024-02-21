@@ -9,29 +9,6 @@ import okhttp3.RequestBody
 
 class MainRepository(private val apiHelper: APIs) {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     suspend fun getAddress(
         url: String
     ) = apiHelper.getAddress(url)
@@ -59,16 +36,7 @@ class MainRepository(private val apiHelper: APIs) {
         page:Int
     ) = apiHelper.getAllNotifications(page)
 
-    suspend fun readAllNotification(
-        map: DeleteAll
-    ) = apiHelper.readAllNotification(map)
 
-    suspend fun readMultipleNotification(
-        map: DeleteMultiple
-    ) = apiHelper.readMultipleNotification(map)
-
-    suspend fun deleteAllNotification(map: DeleteAll) = apiHelper.deleteAllNotification(map)
-    suspend fun deleteMultipleNotification(map:DeleteMultiple) = apiHelper.deleteMultipleNotification(map)
     suspend fun manageProduct(
         headerMap: HashMap<String, String>,
         map: HashMap<String, RequestBody>,

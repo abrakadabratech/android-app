@@ -170,9 +170,7 @@ interface APIs {
     //Report product
     @POST("product/report")
     suspend fun reportProduct(
-
-        @Body body: HashMap<String, String>
-    ): Response<ReportProductResponse>
+        @Body body: HashMap<String, String>): Response<ReportProductResponse>
 
     //My listings
     @GET("product/mylistings")

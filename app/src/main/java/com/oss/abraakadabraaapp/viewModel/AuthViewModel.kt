@@ -17,6 +17,9 @@ import com.oss.abraakadabraaapp.activities.newflow.requests.CancelRequestReponse
 import com.oss.abraakadabraaapp.activities.newflow.requests.ReportProductRequest
 import com.oss.abraakadabraaapp.datasource.products.GetProducts
 import com.oss.abraakadabraaapp.model.AccountDeleteResponse
+import com.oss.abraakadabraaapp.model.DeleteAll
+import com.oss.abraakadabraaapp.model.DeleteMultiple
+import com.oss.abraakadabraaapp.model.ReadNotificationResponse
 import com.oss.abraakadabraaapp.response.authResponse.*
 import com.oss.abraakadabraaapp.response.commonResponse.CommonResponse
 import com.oss.abraakadabraaapp.response.commonResponse.HttpErrorResponse
@@ -1290,6 +1293,97 @@ fun getRequestDetails(
             callApi(::call, object : CallHelper<AccountDeleteResponse> {
                 override fun onSuccessful(data: AccountDeleteResponse) {
                     userAccountDeletionSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+        }
+    }
+    var readNotificationSuccess = MutableLiveData<ReadNotificationResponse>()
+
+    fun readAllNotification(map: DeleteAll) {
+
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.readAllNotification(map)
+
+            callApi(::call, object : CallHelper<ReadNotificationResponse> {
+                override fun onSuccessful(data: ReadNotificationResponse) {
+                    readNotificationSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+        }
+    }
+
+    var readMultipleNotificationSuccess = MutableLiveData<ReadNotificationResponse>()
+
+    fun readMultipleNotification(map: DeleteMultiple) {
+
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.readMultipleNotification(map)
+
+            callApi(::call, object : CallHelper<ReadNotificationResponse> {
+                override fun onSuccessful(data: ReadNotificationResponse) {
+                    readMultipleNotificationSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+        }
+    }
+
+    var deleteNotificationSuccess = MutableLiveData<ReadNotificationResponse>()
+
+    fun deleteAllNotification(map: DeleteAll) {
+
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.deleteAllNotification(map)
+
+            callApi(::call, object : CallHelper<ReadNotificationResponse> {
+                override fun onSuccessful(data: ReadNotificationResponse) {
+                    deleteNotificationSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+        }
+    }
+
+    var deleteMultipleNotificationSuccess = MutableLiveData<ReadNotificationResponse>()
+
+    fun deleteMultipleNotification(map: DeleteMultiple) {
+
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.deleteMultipleNotification(map)
+
+            callApi(::call, object : CallHelper<ReadNotificationResponse> {
+                override fun onSuccessful(data: ReadNotificationResponse) {
+                    deleteMultipleNotificationSuccess.value = data
                 }
 
                 override fun onError(errorResponse: HttpErrorResponse) {

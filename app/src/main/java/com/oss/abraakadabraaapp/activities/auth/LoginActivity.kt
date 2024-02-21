@@ -190,7 +190,7 @@ class LoginActivity : BaseActivity() {
 
 //            firebaseAuthWithGoogle(account)
         } catch (e: ApiException) {
-            Log.e("TAG_Google_sigxnin", "signInResult:failed code=" + e.statusCode)
+            Log.e("TAG_Google_sigxnin", "signInResult:failed code= ${Gson().toJson(e)}" + e)
 //            updateUI(null)
         }
     }
@@ -701,9 +701,15 @@ class LoginActivity : BaseActivity() {
             dialog.cancel()
             authViewModel.getUser()
         }
+        builder.setCancelable(false)
         builder.setNegativeButton(getString(R.string.no_string)) { dialog, _ ->
             Firebase.auth.signOut()
-            dialog.cancel() }
+            dialog.cancel()
+            loader(false)
+            binding.otpLayout.visibility = View.GONE
+            binding.loginLayout.visibility = View.VISIBLE
+            binding.etPhoneNumber.setText("")
+        }
         builder.show()
     }
 

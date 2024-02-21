@@ -46,6 +46,7 @@ import com.oss.abraakadabraaapp.datasource.ProductAdapter
 import com.oss.abraakadabraaapp.datasource.products.Product
 import com.oss.abraakadabraaapp.localdb.NotificationEntity
 import com.oss.abraakadabraaapp.model.DeleteAll
+import com.oss.abraakadabraaapp.model.DeleteMultiple
 import com.oss.abraakadabraaapp.model.Notifications
 import com.oss.abraakadabraaapp.retrofit.api.APIService
 import com.oss.abraakadabraaapp.retrofit.api.APIs
@@ -68,30 +69,17 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
     private lateinit var binding: ActivityNewNotificationBinding
     private lateinit var adapter:NotificationAdapter
 
-    private var actionMode: ActionMode? = null
-
-    private val LIST_STATE_KEY = "recycler_state"
-    private var recyclerViewState: Parcelable? = null
-
     private lateinit var viewModel: NotificationViewModel
 
-    private val authViewModel: MainViewModel by viewModel()
-    private var mainListAdapter: ProductAdapter? = null
-    private lateinit var nearestViewModel:MainFilterViewModel
-    private var mainMenu: Menu? = null
-
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        recyclerViewState = binding.rvNotification.layoutManager?.onSaveInstanceState()
-        outState.putParcelable(LIST_STATE_KEY, recyclerViewState)
-    }
-
+    private val authViewModel: AuthViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNewNotificationBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        setupObserver()
+
         postEvent(Constants.PAGE_NOTIFICATIONS, null)
         actionBar?.hide()
 
@@ -107,8 +95,6 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
             layoutManager = LinearLayoutManager(this@NewNotificationActivity)
             adapter = this@NewNotificationActivity.adapter
         }
-        val userLocation = PreferencesManagement.getUserLocation(this)
-
 
         viewModel = ViewModelProvider(
             this,
@@ -123,9 +109,11 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
 
         }
 
-//        binding.rvNotification.layoutManager = LinearLayoutManager(this)
-        //binding.rvNotification.adapter = NewNotificationAdapter(this,4)
+        clickEvents()
 
+    }
+
+    private fun clickEvents() {
         binding.ivBack.setOnClickListener {
             postClick(BUTTON_BACK_IN_NOTIFICATIONS)
             onBackPressed()
@@ -133,9 +121,14 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
 
         binding.deleteBtn.setOnClickListener {
             //Delete Logic
+            showToast("Delete button")
+            authViewModel.deleteMultipleNotification(DeleteMultiple(notifications = adapter.getAllSelected()))
+            Log.d("TAG", "onCreate: ${DeleteMultiple(notifications = adapter.getAllSelected())}")
         }
         binding.markRead.setOnClickListener {
             //Mark Read Logic
+            Log.d("TAG", "onCreate: ${adapter.getAllSelected()}")
+            authViewModel.readMultipleNotification(DeleteMultiple(notifications = adapter.getAllSelected()))
         }
         binding.optionMenu.setOnClickListener {
             binding.editMenuDialog.visibility = View.VISIBLE
@@ -145,6 +138,7 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
             adapter.selectAll()
         }
         binding.deleteAll.setOnClickListener {
+            showToast("Delete all button")
             binding.editMenuDialog.visibility = View.GONE
             authViewModel.deleteAllNotification(DeleteAll(all = true))
         }
@@ -155,54 +149,6 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
         binding.editMenuDialog.setOnClickListener {
             binding.editMenuDialog.visibility = View.GONE
         }
-//        binding.editCardview.setOnClickListener {
-//            binding.editMenuDialog.visibility = View.VISIBLE
-//        }
-    }
-
-    private fun setupObserver() {
-        authViewModel.isLoading.observe(this) { loader(it) }
-        authViewModel.deleteNotificationSuccess.observe(this) {
-            if (it.code == 200) {
-                showToast("All Notifications Deleted")
-                viewModel.refresh()
-            }
-        }
-        authViewModel.deleteMultipleNotificationSuccess.observe(this) {
-            if (it.code == 200) {
-                showToast("Selected Notifications are Deleted")
-                viewModel.refresh()
-            }
-        }
-        authViewModel.readNotificationSuccess.observe(this) {
-            if (it.code == 200) {
-                showToast("All Notifications Marked As Read")
-                viewModel.refresh()
-            }
-        }
-        authViewModel.deleteMultipleNotificationSuccess.observe(this) {
-            if (it.code == 200) {
-                showToast("Selected Notifications are Marked as read")
-                viewModel.refresh()
-            }
-        }
-        authViewModel.deleteNotificationSuccess.observe(this) {
-            if (it.code == 200) {
-                showToast("All Notifications Deleted")
-                viewModel.refresh()
-            }
-        }
-
-        setupObserver()
-    }
-
-    override fun onRestoreInstanceState(
-        savedInstanceState: Bundle?,
-        persistentState: PersistableBundle?
-    ) {
-        super.onRestoreInstanceState(savedInstanceState, persistentState)
-        recyclerViewState = savedInstanceState?.getParcelable(LIST_STATE_KEY)
-
     }
 
 
@@ -216,25 +162,71 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
             return e.toString()
         }
     }
-    fun showHideDelete(show: Boolean){
+    private fun showHideDelete(show: Boolean){
        binding.deleteBtn.visibility = if(show) View.VISIBLE else View.GONE
-    }
-
-
-    private fun deleteItem() {
-        //function for delete items
-    }
-
-    private fun markAsReadAll(){
-
     }
 
     override fun enableOptions() {
         showHideDelete(true)
     }
 
-    override fun getSelectedItems(notification: List<Notifications>) {
+    override fun onItemClick(model: Notifications) {
+        authViewModel.deleteMultipleNotification(DeleteMultiple(notifications = arrayListOf(model.id.toString())))
+        when (model.module) {
+            Constants.productListing -> {
+                val intent =
+                    Intent(this, RequesterActivity::class.java)
+                intent.putExtra(Constants.productId, model.data?.requestId)
+                startActivity(intent)
+            }
 
+            Constants.productRequestDetails -> {
+                val intent = Intent(
+                    this,
+                    MyRequestDetailsActivity::class.java
+                )
+                intent.putExtra(Constants.productId, model.data?.requestId)
+                startActivity(intent)
+            }
+
+            Constants.chatDetails -> {
+                val intent =
+                    Intent(this, ChatDetailActivity::class.java)
+                intent.putExtra(Constants.productId, Gson().toJson(model.data))
+                startActivity(intent)
+            }
+        }
+    }
+
+    private fun setupObserver() {
+        authViewModel.isLoading.observe(this) { loader(it) }
+
+        authViewModel.deleteNotificationSuccess.observe(this) {
+            if (it.code == 200) {
+                showToast("All Notifications Deleted")
+                viewModel.refresh()
+            }
+        }
+
+        authViewModel.deleteMultipleNotificationSuccess.observe(this) {
+            if (it.code == 200) {
+                showToast("Selected Notifications are Deleted")
+                viewModel.refresh()
+            }
+        }
+
+        authViewModel.readNotificationSuccess.observe(this) {
+            if (it.code == 200) {
+                showToast("All Notifications Marked As Read")
+                viewModel.refresh()
+            }
+        }
+
+        authViewModel.readMultipleNotificationSuccess.observe(this){
+            if (it.code == 200){
+                Log.d("TAG", "setupObserver: $it")
+            }
+        }
     }
 
 }

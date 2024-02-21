@@ -29,7 +29,7 @@ import java.util.Locale
 class ProductAdapter(val onClick: OnProductClicked) :
     PagingDataAdapter<Product, RecyclerView.ViewHolder>(ProductDifferntiator) {
 
-    private val ADS_AFTER: Int = 16 //frequency of ads in list
+    private val ADS_AFTER: Int = 17 //frequency of ads in list
     private val ITEM_VIEW: Int = R.layout.item_product //regular item view layout
     private val AD_VIEW: Int = R.layout.list_ad  //ad view layout
 

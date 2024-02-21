@@ -13,6 +13,9 @@ plugins {
 android {
     compileSdk 34
 
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
     buildFeatures {
         compose = true
     }
@@ -26,8 +29,8 @@ android {
         minSdk 23
         targetSdk 33
         
-        versionCode 36
-        versionName "1.19.6"
+        versionCode 37
+        versionName "1.20"
 //        versionName "test_refresh_product"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -59,9 +62,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             //NEW_PROD_URL
-            buildConfigField("String", "BASE_URL", "\"https://api.abrakadabraapp.app/\"")
-            buildConfigField("String", "BASE_DEMO", "\"https://api.abrakadabraapp.app/\"")
-            
+//            buildConfigField("String", "BASE_URL", "\"https://api.abrakadabraapp.app/\"")
+//            buildConfigField("String", "BASE_DEMO", "\"https://api.abrakadabraapp.app/\"")
+
+            buildConfigField("String", "BASE_URL", "\"https://api.abra-ka-dabra.com/\"")
+            buildConfigField("String", "BASE_DEMO", "\"https://api.abra-ka-dabra.com/\"")
+
             buildConfigField "String", "API_KEY", "\"${project.property('API_KEY')}\""
             signingConfig signingConfigs.release
 

@@ -1,7 +1,7 @@
 package com.oss.abraakadabraaapp.adapter
 
 import android.content.Context
-import android.content.Intent
+import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,23 +17,21 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
-import com.oss.abraakadabraaapp.activities.newflow.RequesterActivity
-import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
-import com.oss.abraakadabraaapp.activities.newflow.ui.MyRequestDetailsActivity
 import com.oss.abraakadabraaapp.model.Notifications
-import com.oss.abraakadabraaapp.utils.Constants
+import java.text.SimpleDateFormat
+import java.util.Calendar
 
 
 class NotificationAdapter(
-    var context: Context,val lifecycleOwner: LifecycleOwner,val handleListenr:HandleClicks
+    var context: Context, val lifecycleOwner: LifecycleOwner, val handleListenr: HandleClicks
 ) : PagingDataAdapter<Notifications, NotificationAdapter.NotificationAdapterVH>(ProductDifferntiator) {
 
     val selectedItems = ObservableArrayList<Int>()
     var isMultiSelectMode: MutableLiveData<Boolean> = MutableLiveData(false)
     var selectedNotifications = listOf<Notifications>()
-//    private var listData: MutableList<Property> = data as MutableList<Property>
+
+    //    private var listData: MutableList<Property> = data as MutableList<Property>
     override fun onBindViewHolder(holder: NotificationAdapterVH, position: Int) {
 
         holder.bindTo(this, getItem(position))
@@ -90,19 +88,35 @@ class NotificationAdapter(
          * Binds the parent adapter and the photo to the ViewHolder.
          */
         fun bindTo(adapter: NotificationAdapter, model: Notifications?) {
-            this.photo = photo
             this.adapter = adapter
 
             if (!model?.deleted!!) {
-                rootlayout.setBackgroundColor(ContextCompat.getColor(adapter.context,R.color.bg_color))
+                rootlayout.setBackgroundColor(
+                    ContextCompat.getColor(
+                        adapter.context,
+                        R.color.bg_color
+                    )
+                )
             } else {
-                rootlayout.setBackgroundColor(ContextCompat.getColor(adapter.context,R.color.white))
+                rootlayout.setBackgroundColor(
+                    ContextCompat.getColor(
+                        adapter.context,
+                        R.color.white
+                    )
+                )
             }
 
             userName.text = model.body
             productName.text = model.title
-//        holder.message.text =
-//            SimpleDateFormat("MMM dd,yyyy HH:mm").format(model.timestamp?.toDate())
+
+            val formatter = SimpleDateFormat("MMM dd,yyyy HH:mm")
+
+            val calendar: Calendar = Calendar.getInstance()
+            calendar.timeInMillis = model.timestamp?.Seconds?.toLong()!!
+//            message.text =
+//                DateFormat.format("MMM dd,yyyy HH:mm", model.timestamp?.Nanoseconds?.toLong()!!).toString()
+
+//            formatter.format(calendar.time)
 
             rootlayout.setOnClickListener {
                 if (adapter.isMultiSelectMode.value!!) {
@@ -113,11 +127,14 @@ class NotificationAdapter(
                     }
                     // Set checked if not already checked
                     setItemChecked(!adapter.isItemSelected(layoutPosition))
+                    if (adapter.getAllSelected().isEmpty()) {
+                        adapter.disableSelection()
+                    }
                 } else {
                     Log.d("TAG", "bindTo: clicked ${photo?.module}")
                     model.deleted = true
                     adapter.notifyItemChanged(layoutPosition)
-                    adapter.viewNotification(layoutPosition,model)
+                    adapter.viewNotification(layoutPosition, model)
                 }
             }
 
@@ -212,31 +229,7 @@ class NotificationAdapter(
     }
 
     private fun viewNotification(ayoutPosition: Int, model: Notifications?) {
-
-        when (model?.module) {
-            Constants.productListing -> {
-                val intent =
-                    Intent(context, RequesterActivity::class.java)
-                intent.putExtra(Constants.productId, model.data?.requestId)
-                context.startActivity(intent)
-            }
-
-            Constants.productRequestDetails -> {
-                val intent = Intent(
-                    context,
-                    MyRequestDetailsActivity::class.java
-                )
-                intent.putExtra(Constants.productId, model.data?.requestId)
-                context.startActivity(intent)
-            }
-
-            Constants.chatDetails -> {
-                val intent =
-                    Intent(context, ChatDetailActivity::class.java)
-                intent.putExtra(Constants.productId, Gson().toJson(model.data))
-                context.startActivity(intent)
-            }
-        }
+        handleListenr.onItemClick(model!!)
     }
 
 
@@ -289,25 +282,29 @@ class NotificationAdapter(
                 addItemToSelection(i)
             }
         }
+        enableSelection()
+
+        notifyDataSetChanged()
     }
 
     /**
      * Get all items that are selected.
      */
-    fun getAllSelected(): List<Notifications> {
-        val items = mutableListOf<Notifications>()
-        for(position in selectedItems) {
+    fun getAllSelected(): ArrayList<String> {
+        val items = arrayListOf<String>()
+        for (position in selectedItems) {
             val photo = getItem(position)
             if (photo != null) {
-                items.add(photo)
+                items.add(photo.id!!)
             }
         }
         return items
     }
-    interface HandleClicks{
+
+    interface HandleClicks {
         fun enableOptions()
 
-        fun getSelectedItems(notification:List<Notifications>)
+        fun onItemClick(notification: Notifications)
 
     }
 

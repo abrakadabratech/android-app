@@ -8,6 +8,8 @@ import com.oss.abraakadabraaapp.activities.newflow.apimodels.ProductRequest
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.ReportRequest
 import com.oss.abraakadabraaapp.activities.newflow.apimodels.UsersData
 import com.oss.abraakadabraaapp.activities.newflow.requests.ReportProductRequest
+import com.oss.abraakadabraaapp.model.DeleteAll
+import com.oss.abraakadabraaapp.model.DeleteMultiple
 import com.oss.abraakadabraaapp.retrofit.api.APIs
 import com.oss.abraakadabraaapp.utils.Utility
 import okhttp3.MultipartBody
@@ -255,4 +257,14 @@ class AuthRepository(private val apiHelper: APIs) {
 
     suspend fun userAccountDelete() = apiHelper.deleteUserAccount()
 
+    suspend fun readAllNotification(
+        map: DeleteAll
+    ) = apiHelper.readAllNotification(map)
+
+    suspend fun readMultipleNotification(
+        map: DeleteMultiple
+    ) = apiHelper.readMultipleNotification(map)
+
+    suspend fun deleteAllNotification(map: DeleteAll) = apiHelper.deleteAllNotification(map)
+    suspend fun deleteMultipleNotification(map: DeleteMultiple) = apiHelper.deleteMultipleNotification(map)
 }
