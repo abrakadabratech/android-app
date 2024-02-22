@@ -119,14 +119,13 @@ class LoginActivity : BaseActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         when (requestCode) {
             RC_SIGN_IN -> {
-
                 val task = GoogleSignIn.getSignedInAccountFromIntent(data)
                 handleSignInResult(task)
             }
         }
+        loader(false)
     }
 
     private fun handleSignInResult(task: Task<GoogleSignInAccount>) {
