@@ -14,6 +14,9 @@ data class RequestData (
     @SerializedName("image"      ) var image     : String? = null,
     @SerializedName("status"     ) var status    : String? = null,
     @SerializedName("created_at" ) var createdAt : String? = null,
-    @SerializedName("responses"  ) var responses : Int?    = null
+    @SerializedName("responses"  ) var responses : Int?    = null,
+    @SerializedName("type"    ) var type    : String?           = "free",
+    @SerializedName("price"    ) var price    : Int?           = 0,
+    @SerializedName("currency"    ) var currency    : String?           = "INR"
 
 )

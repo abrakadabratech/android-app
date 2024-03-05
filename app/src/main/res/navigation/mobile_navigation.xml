@@ -9,9 +9,7 @@
         android:id="@+id/navigation_home"
         android:name="com.oss.abraakadabraaapp.activities.newflow.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/new_receiver_flow" >
-
-    </fragment>
+        tools:layout="@layout/new_receiver_flow" />
 
     <fragment
         android:id="@+id/navigation_community"
@@ -31,6 +29,10 @@
         android:name="com.oss.abraakadabraaapp.activities.newflow.ui.menu.MenuFragment"
         android:label="Menu"
          tools:layout="@layout/new_menu_screen"/>
+    <fragment
+        android:id="@+id/newGiverFragment"
+        android:name="com.oss.abraakadabraaapp.activities.newflow.ui.home.NewGiverFragment"
+        android:label="NewGiverFragment" />
 
     <!-- <fragment
          android:id="@+id/navigation_chats"

@@ -131,7 +131,6 @@ interface APIs {
     @Multipart
     @POST("product/new")
     suspend fun postProduct(
-
         @PartMap partMap: Map<String, RequestBody>,
         @Part filePart: Array<MultipartBody.Part>,
 //        @Part displayImage: MultipartBody.Part
@@ -481,5 +480,8 @@ interface APIs {
 
     @POST("user/account/delete")
     suspend fun deleteUserAccount() : Response<AccountDeleteResponse>
+
+    @GET("/user/{id}/public-profile")
+    suspend fun viewProfile(@Path("id") id: String) : Response<AccountDeleteResponse>
 
 }

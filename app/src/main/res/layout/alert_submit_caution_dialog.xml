@@ -69,6 +69,7 @@
                     android:text="This product is not being sold."
                     android:textColor="@color/message_color"
                     android:textSize="16sp"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/success_anim" />

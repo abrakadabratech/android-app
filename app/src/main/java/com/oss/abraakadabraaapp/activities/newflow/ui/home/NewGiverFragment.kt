@@ -87,6 +87,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
     private var PROD_CATEGORY: String = ""
     private var PROD_CONDITION: String = ""
     private var PROD_USED_FOR: String = ""
+    private var TYPE = "free"
 
     private var selectedProdCategory:String = ""
     private var selectedCondition:String = ""
@@ -284,6 +285,26 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
             locationPicker()
         }
         Utility.deleteRecursive(application.cacheDir)
+
+        binding.priceEdit.visibility = View.GONE
+        binding.freeBtn.setOnClickListener {
+            binding.freeBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
+            binding.freeBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
+            binding.sellBtn.setTextColor(resources.getColor(R.color.hyper_link_text_color))
+            binding.sellBtn.background = null
+            TYPE = "free"
+            binding.priceEdit.visibility = View.GONE
+
+        }
+        binding.sellBtn.setOnClickListener {
+            binding.freeBtn.background = null
+            binding.sellBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
+            binding.freeBtn.setTextColor(resources.getColor(R.color.hyper_link_text_color))
+            binding.sellBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
+            TYPE = "paid"
+            binding.priceEdit.visibility = View.VISIBLE
+
+        }
     }
 
     private fun locationPicker() {
@@ -688,8 +709,11 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                     Log.d("MYT", "latitude $latitude")
                     Log.d("MYT", "longitude $longitude")
                     Log.d("MYT", "fullAddress $fullAddress")
-                    map["price"] = JavaUtils.toRequestBody("0")
                     map["brand"] = JavaUtils.toRequestBody(binding.etProductBrand.text.toString().trim())
+                    map["type"] = JavaUtils.toRequestBody(TYPE)
+                    if (TYPE == "paid"){
+                        map["price"] = JavaUtils.toRequestBody(binding.etPriceOfTheProduct.text.toString())
+                    }
 
                     manageProduct(map)
                 }else{
@@ -852,9 +876,14 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
 //                    showToast("Please price of the product!")
 //                    false
 //                }
+                TYPE == "paid" && etPriceOfTheProduct.text.toString() == "" ->
+                {
+                    showToast("Please enter price of the product!")
+                    return false
+                }
                 descEdt.text.toString() == "" -> {
 //                    etProductBrand1.error = "Please select used for"
-                    showToast("Please enter decription!")
+                    showToast("Please enter description!")
                     false
                 }
 

@@ -61,7 +61,7 @@ android {
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-            //NEW_PROD_URL
+            //NEW_PROD_UR
 //            buildConfigField("String", "BASE_URL", "\"https://api.abrakadabraapp.app/\"")
 //            buildConfigField("String", "BASE_DEMO", "\"https://api.abrakadabraapp.app/\"")
 
@@ -80,6 +80,7 @@ android {
 
 //            buildConfigField("String", "BASE_URL", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
 //            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
+
             buildConfigField("String", "BASE_URL", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
             buildConfigField("String", "BASE_DEMO", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
 
@@ -183,7 +184,7 @@ dependencies {
     implementation("com.tbuonomo:dotsindicator:4.3")
 
     //auth-api-phone
-    implementation 'com.google.android.gms:play-services-auth-api-phone:18.0.1'
+    implementation 'com.google.android.gms:play-services-auth-api-phone:18.0.2'
 
     //Image Slider
     implementation 'com.github.denzcoskun:ImageSlideshow:0.1.0'
@@ -263,7 +264,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
 
     // Also add the dependency for the Google Play services library and specify its version
-    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
 
 
     //Jetpack compose
@@ -308,5 +309,6 @@ dependencies {
     //Addmob sdk
     implementation 'com.google.android.gms:play-services-ads:22.6.0'
 
+    implementation 'com.google.android.gms:play-services-maps:18.2.0'
 
 }

@@ -29,7 +29,6 @@ import com.google.android.gms.ads.OnUserEarnedRewardListener
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
@@ -60,7 +59,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Locale
 
 
-class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
+class NewProductDetailActivity : BaseActivity() {
     private lateinit var binding: ActivityNewProductDetailBinding
     private lateinit var productId: String
 
@@ -476,14 +475,6 @@ class NewProductDetailActivity : BaseActivity() , OnMapReadyCallback {
 
 
     }
-
-     override fun onMapReady(p0: GoogleMap?) {
-         /*val latLng = LatLng(lattitude.toDouble(), longitude.toDouble())
-         val markerOptions = MarkerOptions().position(latLng).title("I am here!")
-         mMap?.animateCamera(CameraUpdateFactory.newLatLng(latLng))
-         mMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 5f))
-         mMap?.addMarker(markerOptions)*/
-     }
 
     private fun showReportThisDialog() {
         val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)

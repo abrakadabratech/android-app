@@ -13,6 +13,8 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavOptions
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -69,14 +71,17 @@ class NewHomeActivity : BaseActivity() {
         checkForUpdate()
         checkNotificationPermission()
 
-
         val host: NavHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment_activity_new_home) as NavHostFragment?
             ?: return
 
         val navController =
             findNavController(R.id.nav_host_fragment_activity_new_home)/*host.navController*/
+
         navView = binding.navView
+
+        navView.background = null
+        navView.menu.getItem(2).isEnabled = false
 
         val appBarConfiguration = AppBarConfiguration(navController.graph)
 
@@ -90,6 +95,14 @@ class NewHomeActivity : BaseActivity() {
             }
 
             Log.d("NavigationActivity", "Navigated to $dest")
+        }
+
+        binding.fab.setOnClickListener {
+            val navOptions = NavOptions.Builder()
+                .setEnterAnim(R.anim.fade_in)
+                .setExitAnim(R.anim.fade_out)
+                .build()
+            navController.navigate(R.id.newGiverFragment,null,navOptions)
         }
     }
 
@@ -264,21 +277,21 @@ class NewHomeActivity : BaseActivity() {
 
     override fun onStart() {
         super.onStart()
-        EventBus.getDefault().register(this)
+//        EventBus.getDefault().register(this)
     }
 
     override fun onStop() {
-        EventBus.getDefault().unregister(this)
+//        EventBus.getDefault().unregister(this)
         super.onStop()
     }
 
     // Bottom Navigation will be disappear if not Home Tab
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    /*@Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: Int?) {
         if (event == 0) {
             navView.visibility = View.GONE
         } else navView.visibility = View.VISIBLE
-    }
+    }*/
 
     companion object {
         fun createIntent(context: Context): Intent {

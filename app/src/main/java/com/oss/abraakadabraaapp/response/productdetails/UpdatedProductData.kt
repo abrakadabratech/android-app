@@ -23,15 +23,17 @@ data class UpdatedData (
     @SerializedName("status"        ) var status       : String?           = null,
     @SerializedName("condition"     ) var condition    : String?           = null,
     @SerializedName("brand"         ) var brand        : String?           = null,
-    @SerializedName("cost_saving"   ) var costSaving   : Int?              = null,
+    @SerializedName("cost_saving"   ) var costSaving   : Int?              = 0,
     @SerializedName("category"      ) var category     : Categories?         = Categories(),
-    @SerializedName("description"   ) var description  : String?           = null,
+    @SerializedName("description"   ) var description  : String?           = "",
     @SerializedName("images"        ) var images       : ArrayList<String> = arrayListOf(),
-    @SerializedName("name"          ) var name         : String?           = null,
-    @SerializedName("energy_saving" ) var energySaving : Int?              = null,
+    @SerializedName("name"          ) var name         : String?           = "",
+    @SerializedName("energy_saving" ) var energySaving : Int?              = 0,
     @SerializedName("posted_by"     ) var postedBy     : PostedBy?         = PostedBy(),
-    @SerializedName("updated_at"    ) var updatedAt    : String?           = null,
-    @SerializedName("created_at"    ) var createdAt    : String?           = null
+    @SerializedName("updated_at"    ) var updatedAt    : String?           = "",
+    @SerializedName("created_at"    ) var createdAt    : String?           = "",
+    @SerializedName("type"    ) var type    : String?           = "free",
+    @SerializedName("currency"    ) var currency    : String?           = "INR"
 
 )
 data class Categories (

@@ -9,6 +9,9 @@
         android:id="@+id/navigation_community"
         android:icon="@drawable/new_chat"
         android:title="@string/title_chats" />
+    <item
+        android:id="@+id/placeholder"
+        android:title="" />
 
     <item
         android:id="@+id/navigation_account"

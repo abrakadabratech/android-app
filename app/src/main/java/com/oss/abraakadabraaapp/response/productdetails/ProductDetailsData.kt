@@ -30,7 +30,9 @@ data class Products (
     @SerializedName("isReported"    ) var isReported   : Boolean = false,
     @SerializedName("isRequested"   ) var isRequested  : Boolean = false,
     @SerializedName("requestAccepted"   ) var requestedStatus  : Boolean = false,
-    @SerializedName("created_at"    ) var createdAt    : String?           = null
+    @SerializedName("created_at"    ) var createdAt    : String?           = null,
+    @SerializedName("type"    ) var type    : String?           = "free",
+    @SerializedName("currency"    ) var currency    : String?           = "INR"
 
 )
 
