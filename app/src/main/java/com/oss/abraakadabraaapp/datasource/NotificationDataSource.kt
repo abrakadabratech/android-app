@@ -10,7 +10,7 @@ import com.oss.abraakadabraaapp.retrofit.api.APIService
 import com.oss.abraakadabraaapp.retrofit.api.APIs
 import com.oss.abraakadabraaapp.retrofit.api.Movie
 
-class NotificationDataSource(private val api:APIService) : PagingSource<Int,Notifications>() {
+class NotificationDataSource (private val api:APIService) : PagingSource<Int,Notifications>() {
 
     companion object {
         private const val STARTING_PAGE_INDEX = 1

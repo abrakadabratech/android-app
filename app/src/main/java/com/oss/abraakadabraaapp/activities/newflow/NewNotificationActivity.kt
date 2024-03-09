@@ -88,7 +88,7 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
                 this,
                 R.color.blue_status_bar_color
             )
-        adapter = NotificationAdapter(this, lifecycleOwner = this,this)
+        adapter = NotificationAdapter(this, lifecycleOwner = this, this)
 
 
         binding.rvNotification.apply {
@@ -103,8 +103,27 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
 
         lifecycleScope.launch {
             viewModel.notificationList.collectLatest { paginatedData ->
+
+                launch(Dispatchers.Main) {
+                    adapter.loadStateFlow.collectLatest { loadStates ->
+                        if (loadStates.refresh is LoadState.Loading) {
+//                                    application.loader(true)
+                            //shimmer ON
+//                            binding.shimmerLayout.visibility = View.VISIBLE
+//                            binding.shimmerLayout.startShimmer()
+                        } else {
+                            //shimmer OFF
+                            if (adapter.itemCount < 1) {
+                                binding.nodata5.visibility = View.VISIBLE
+                            } else {
+                                binding.nodata5.visibility = View.GONE
+                            }
+                        }
+                    }
+                }
                 adapter.submitData(lifecycle, PagingData.empty())
                 adapter.submitData(paginatedData)
+
             }
 
         }
@@ -119,12 +138,6 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
             onBackPressed()
         }
 
-        binding.deleteBtn.setOnClickListener {
-            //Delete Logic
-            showToast("Delete button")
-            authViewModel.deleteMultipleNotification(DeleteMultiple(notifications = adapter.getAllSelected()))
-            Log.d("TAG", "onCreate: ${DeleteMultiple(notifications = adapter.getAllSelected())}")
-        }
         binding.markRead.setOnClickListener {
             //Mark Read Logic
             Log.d("TAG", "onCreate: ${adapter.getAllSelected()}")
@@ -137,8 +150,12 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
             binding.editMenuDialog.visibility = View.GONE
             adapter.selectAll()
         }
+        binding.deleteBtn.setOnClickListener {
+            //Delete Logic
+            authViewModel.deleteMultipleNotification(DeleteMultiple(notifications = adapter.getAllSelected()))
+            Log.d("TAG", "onCreate: ${DeleteMultiple(notifications = adapter.getAllSelected())}")
+        }
         binding.deleteAll.setOnClickListener {
-            showToast("Delete all button")
             binding.editMenuDialog.visibility = View.GONE
             authViewModel.deleteAllNotification(DeleteAll(all = true))
         }
@@ -162,8 +179,9 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
             return e.toString()
         }
     }
-    private fun showHideDelete(show: Boolean){
-       binding.deleteBtn.visibility = if(show) View.VISIBLE else View.GONE
+
+    private fun showHideDelete(show: Boolean) {
+        binding.deleteBtn.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     override fun enableOptions() {
@@ -203,30 +221,32 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
 
         authViewModel.deleteNotificationSuccess.observe(this) {
             if (it.code == 200) {
-                showToast("All Notifications Deleted")
-                viewModel.refresh()
+                showToast("Notifications are Deleted")
+                adapter.refresh()
+                adapter.disableSelection()
             }
         }
 
         authViewModel.deleteMultipleNotificationSuccess.observe(this) {
             if (it.code == 200) {
-                showToast("Selected Notifications are Deleted")
-                viewModel.refresh()
-                adapter.notifyDataSetChanged()
+                showToast("Notifications are Deleted")
+                adapter.refresh()
+                adapter.disableSelection()
             }
         }
 
         authViewModel.readNotificationSuccess.observe(this) {
             if (it.code == 200) {
-                showToast("All Notifications Marked As Read")
-                viewModel.refresh()
-                adapter.notifyDataSetChanged()
+                adapter.refresh()
+                adapter.disableSelection()
             }
         }
 
-        authViewModel.readMultipleNotificationSuccess.observe(this){
-            if (it.code == 200){
+        authViewModel.readMultipleNotificationSuccess.observe(this) {
+            if (it.code == 200) {
                 Log.d("TAG", "setupObserver: $it")
+                adapter.refresh()
+                adapter.disableSelection()
             }
         }
     }

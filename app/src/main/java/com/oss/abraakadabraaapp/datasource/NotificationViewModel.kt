@@ -8,7 +8,6 @@ import com.oss.abraakadabraaapp.retrofit.api.APIService
 import com.oss.abraakadabraaapp.retrofit.api.APIs
 
 class NotificationViewModel(private val api:APIService) : ViewModel() {
-    private val _dataSource = MutableLiveData<NotificationDataSource>()
 
     val notificationList = Pager(
         PagingConfig(
@@ -16,7 +15,4 @@ class NotificationViewModel(private val api:APIService) : ViewModel() {
         ), pagingSourceFactory = { NotificationDataSource(api)}
     ).flow
 
-    fun refresh() {
-        _dataSource.value?.invalidate()
-    }
 }

@@ -1288,6 +1288,7 @@ fun getRequestDetails(
 
             suspend fun call() = repository.userAccountDelete()
 
+
             callApi(::call, object : CallHelper<AccountDeleteResponse> {
                 override fun onSuccessful(data: AccountDeleteResponse) {
                     userAccountDeletionSuccess.value = data

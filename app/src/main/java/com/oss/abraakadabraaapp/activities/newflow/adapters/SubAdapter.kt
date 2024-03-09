@@ -48,7 +48,7 @@ class SubAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        getUnreadCount(holder.unreadCount,holder.message,chatNode[position])
+//        getUnreadCount(holder.unreadCount,holder.message,chatNode[position])
         if (i[position].status == "cancelled") {
             holder.cancelledTxt.setTextColor(ContextCompat.getColor(context,R.color.status_declined))
         } else {
