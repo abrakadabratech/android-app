@@ -10,7 +10,7 @@ class TabsPagerAdapter(fm: FragmentManager?) : FragmentPagerAdapter(fm!!,BEHAVIO
     override fun getItem(position: Int): Fragment {
         when(position){
             0 -> return NewReceiverFragment()
-            1 -> return NewGiverFragment()
+//            1 -> return NewGiverFragment()
         }
         return NewReceiverFragment()
     }

@@ -171,7 +171,7 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
     }
 
     override fun onItemClick(model: Notifications) {
-        authViewModel.deleteMultipleNotification(DeleteMultiple(notifications = arrayListOf(model.id.toString())))
+        authViewModel.readMultipleNotification(DeleteMultiple(notifications = arrayListOf(model.id.toString())))
         when (model.module) {
             Constants.productListing -> {
                 val intent =
@@ -212,6 +212,7 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
             if (it.code == 200) {
                 showToast("Selected Notifications are Deleted")
                 viewModel.refresh()
+                adapter.notifyDataSetChanged()
             }
         }
 
@@ -219,6 +220,7 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
             if (it.code == 200) {
                 showToast("All Notifications Marked As Read")
                 viewModel.refresh()
+                adapter.notifyDataSetChanged()
             }
         }
 

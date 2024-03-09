@@ -70,7 +70,6 @@ class AuthRepository(private val apiHelper: APIs) {
     ) = apiHelper.updateProfilePic(file)
 
     suspend fun postProduct(
-        map: HashMap<String, String>,
         body: Map<String, RequestBody>,
         file: Array<MultipartBody.Part>
     ) = apiHelper.postProduct(body, file)

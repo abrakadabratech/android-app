@@ -6,6 +6,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <fragment
+        android:id="@+id/nav_host_fragment_activity_new_home"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/mobile_navigation" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/add_product_fab"
+        app:tint="@color/blue_status_bar_color"
+        app:layout_anchor="@id/bottomAppBar" />
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottomAppBar"
         android:layout_width="match_parent"
@@ -19,72 +36,14 @@
             android:id="@+id/nav_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginEnd="8dp"
             app:itemBackground="@drawable/selected_item_bg"
             app:itemIconSize="30dp"
+            android:layout_marginRight="16dp"
             app:itemTextColor="@color/new_text_color"
             app:labelVisibilityMode="labeled"
             app:menu="@menu/bottom_nav_menu" />
 
     </com.google.android.material.bottomappbar.BottomAppBar>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/add_product_fab"
-        app:tint="@color/blue_status_bar_color"
-        app:layout_anchor="@id/bottomAppBar" />
-
-<!--
-
-    &lt;!&ndash;<FrameLayout
-        android:id="@+id/frameLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">&ndash;&gt;
-
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/nav_view"
-            android:layout_width="match_parent"
-            android:layout_height="66dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:visibility="gone"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="2dp"
-            android:background="@drawable/rounded_rect_bottom_naviagtion"
-            app:itemBackground="@drawable/selected_item_bg"
-            app:itemIconSize="30dp"
-            app:itemTextColor="@color/new_text_color"
-            app:labelVisibilityMode="labeled"
-            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
-            app:menu="@menu/bottom_nav_menu" />
-
-   &lt;!&ndash; </FrameLayout>&ndash;&gt;
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/fab"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/ic_add_profile_plus"
-        app:layout_anchor="@id/nav_view"/>
-
-
-
--->
-
-    <fragment
-        android:id="@+id/nav_host_fragment_activity_new_home"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/mobile_navigation" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

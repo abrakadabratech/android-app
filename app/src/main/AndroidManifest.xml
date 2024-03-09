@@ -167,6 +167,12 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
         <activity
+            android:name=".activities.newflow.ui.home.NewGiverFragment"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+
+        <activity
             android:name=".activities.newflow.NewHomeActivity"
             android:exported="true"
             android:label="@string/app_name"

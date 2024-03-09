@@ -40,6 +40,7 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
+import com.oss.abraakadabraaapp.activities.newflow.ui.home.NewGiverFragment
 import com.oss.abraakadabraaapp.databinding.ActivityNewHomeBinding
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import org.greenrobot.eventbus.EventBus
@@ -98,11 +99,7 @@ class NewHomeActivity : BaseActivity() {
         }
 
         binding.fab.setOnClickListener {
-            val navOptions = NavOptions.Builder()
-                .setEnterAnim(R.anim.fade_in)
-                .setExitAnim(R.anim.fade_out)
-                .build()
-            navController.navigate(R.id.newGiverFragment,null,navOptions)
+            startActivity(Intent(this,NewGiverFragment::class.java))
         }
     }
 
@@ -319,6 +316,6 @@ class NewHomeActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        getUnreadMessageCount()
+        //getUnreadMessageCount()
     }
 }

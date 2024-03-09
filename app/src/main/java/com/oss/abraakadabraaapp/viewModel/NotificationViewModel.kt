@@ -3,16 +3,12 @@ package com.oss.abraakadabraaapp.viewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.oss.abraakadabraaapp.model.AccountDeleteResponse
 import com.oss.abraakadabraaapp.model.NotificationResponse
-import com.oss.abraakadabraaapp.model.ReadNotificationResponse
-import com.oss.abraakadabraaapp.response.commonResponse.CommonResponse
 import com.oss.abraakadabraaapp.response.commonResponse.HttpErrorResponse
 import com.oss.abraakadabraaapp.retrofit.api.CallHelper
 import com.oss.abraakadabraaapp.retrofit.api.callApi
 import com.oss.abraakadabraaapp.retrofit.repository.MainRepository
 import kotlinx.coroutines.launch
-import java.util.HashMap
 
 class NotificationViewModel (
     private val repository: MainRepository

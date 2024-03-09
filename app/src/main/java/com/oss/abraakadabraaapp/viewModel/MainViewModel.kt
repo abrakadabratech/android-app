@@ -3,9 +3,6 @@ package com.oss.abraakadabraaapp.viewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.oss.abraakadabraaapp.model.DeleteAll
-import com.oss.abraakadabraaapp.model.DeleteMultiple
-import com.oss.abraakadabraaapp.model.ReadNotificationResponse
 import com.oss.abraakadabraaapp.response.commonResponse.CommonResponse
 import com.oss.abraakadabraaapp.response.commonResponse.HttpErrorResponse
 import com.oss.abraakadabraaapp.response.locationResponse.LocationAddressResponse

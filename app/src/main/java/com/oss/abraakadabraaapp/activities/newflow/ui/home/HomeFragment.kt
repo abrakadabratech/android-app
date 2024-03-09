@@ -153,12 +153,8 @@ class HomeFragment : Fragment(), LocationListener {
             binding.giveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
             binding.receiveBtn.setTextColor(resources.getColor(R.color.hyper_link_text_color))
             binding.giveBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
-            fragmentManager.beginTransaction()
-                .replace(R.id.container, NewGiverFragment::class.java, null)
-                .setReorderingAllowed(true)
-                .commit()
+
             binding.imageSliderLayout.visibility = View.GONE
-            EventBus.getDefault().post(0)
         }
         binding.shareAKD.setOnClickListener {
             application.postClick(BUTTON_SHARE)

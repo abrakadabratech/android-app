@@ -244,7 +244,7 @@
                     android:paddingStart="4dp"
                     android:paddingEnd="16dp"
                     android:textColor="@color/title_color"
-                    android:textColorHint="@color/message_color"
+                    android:textColorHint="@color/background"
                     android:textSize="@dimen/sp_16" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -514,9 +514,10 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="8dp"
                     android:visibility="visible"
                     app:cardCornerRadius="8dp"
-                    app:cardElevation="10dp"
+                    app:cardElevation="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/imageSliderLayout">
@@ -524,7 +525,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        >
 
                         <TextView
                             android:id="@+id/free_btn"

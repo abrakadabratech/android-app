@@ -35,6 +35,9 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
+import java.lang.annotation.Documented
+import java.lang.annotation.ElementType
+import java.lang.annotation.RetentionPolicy
 
 
 @JvmSuppressWildcards
@@ -472,10 +475,13 @@ interface APIs {
     @PUT("app/user/notifications/read")
     suspend fun readMultipleNotification(@Body body: DeleteMultiple) : Response<ReadNotificationResponse>
 
-    @DELETE("app/user/notifications/delete")
+//    @DELETE("")
+    @HTTP(method = "DELETE", path = "app/user/notifications/delete", hasBody = true)
     suspend fun deleteAllNotification(@Body all: DeleteAll) : Response<ReadNotificationResponse>
 
-    @DELETE("app/user/notifications/delete")
+
+//    @DELETE("")
+    @HTTP(method = "DELETE", path = "app/user/notifications/delete", hasBody = true)
     suspend fun deleteMultipleNotification(@Body multiple: DeleteMultiple) : Response<ReadNotificationResponse>
 
     @POST("user/account/delete")

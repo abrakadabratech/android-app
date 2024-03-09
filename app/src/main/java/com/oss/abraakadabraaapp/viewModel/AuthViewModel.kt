@@ -14,7 +14,6 @@ import com.oss.abraakadabraaapp.activities.newflow.menu.LogoutResponse
 import com.oss.abraakadabraaapp.activities.newflow.menu.SupportResponse
 import com.oss.abraakadabraaapp.activities.newflow.model.*
 import com.oss.abraakadabraaapp.activities.newflow.requests.CancelRequestReponse
-import com.oss.abraakadabraaapp.activities.newflow.requests.ReportProductRequest
 import com.oss.abraakadabraaapp.datasource.products.GetProducts
 import com.oss.abraakadabraaapp.model.AccountDeleteResponse
 import com.oss.abraakadabraaapp.model.DeleteAll
@@ -382,7 +381,6 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
     }
 
     fun postProduct(
-        headerMap: HashMap<String, String>,
         body: Map<String, RequestBody>,
         file: Array<MultipartBody.Part>
     ) {
@@ -390,7 +388,7 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
 
             isLoading.value = true
 
-            suspend fun call() = repository.postProduct(headerMap,body,file)
+            suspend fun call() = repository.postProduct(body,file)
 
             callApi(::call, object : CallHelper<PostProductResponse> {
                 override fun onSuccessful(data: PostProductResponse) {

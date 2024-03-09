@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
@@ -24,6 +25,7 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.codersroute.flexiblewidgets.FlexibleSwitch
 import com.codersroute.flexiblewidgets.FlexibleSwitch.OnStatusChangedListener
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -111,7 +113,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
             sRLHome.setOnRefreshListener {
                 application.postClick(BUTTON_SWIPE_REFRESH)
-                PreferencesManagement.saveCategories(requireContext(),null)
+                PreferencesManagement.saveCategories(requireContext(), null)
                 currentPage = pageStart
                 latestProductList.clear()
                 categoryList.clear()
@@ -149,6 +151,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         val listState: Parcelable = binding.rvLatestProduct.layoutManager?.onSaveInstanceState()!!
         mBundleRecyclerViewState!!.putParcelable(KEY_RECYCLER_STATE, listState)
     }
+
     override fun onStart() {
         super.onStart()
         checkPermissions()
@@ -284,8 +287,9 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         lifecycleScope.launch {
 
             binding.rvHomeCategory.apply {
-                val lm = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-                layoutManager =lm
+                val lm =
+                    LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                layoutManager = lm
                 lm.isAutoMeasureEnabled = true
 
                 adapter = categoryAdapter
@@ -298,6 +302,11 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
 
     private fun setupList() {
+        val bottomSpacing = resources.getDimensionPixelSize(R.dimen.dp_30)
+
+        val itemDecoration = BottomSpacingItemDecoration(bottomSpacing)
+        binding.rvLatestProduct.addItemDecoration(itemDecoration)
+
         binding.rvLatestProduct.isNestedScrollingEnabled = true
         binding.rvHomeCategory.isNestedScrollingEnabled = true
         mainListAdapter = ProductAdapter(this)
@@ -321,14 +330,14 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     private fun setupViewModel() {
         if (application.isNetworkAvailable()) {
 
-           if (application.isNetworkAvailable()){
-               if (PreferencesManagement.getCategories(requireContext()) == null){
-                   authViewModel.getAllCategoriesData()
-               }else{
-                   categoryAdapter.setData(PreferencesManagement.getCategories(requireContext())?.data!!)
-                   categoryAdapter.notifyDataSetChanged()
-               }
-            }else{
+            if (application.isNetworkAvailable()) {
+                if (PreferencesManagement.getCategories(requireContext()) == null) {
+                    authViewModel.getAllCategoriesData()
+                } else {
+                    categoryAdapter.setData(PreferencesManagement.getCategories(requireContext())?.data!!)
+                    categoryAdapter.notifyDataSetChanged()
+                }
+            } else {
                 application.showToast(getString(R.string.no_internet_connection_found))
             }
             if (PreferencesManagement.getFilters(requireContext())!!.nearest)
@@ -361,7 +370,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
                     }
                 }*/
-        }else{
+        } else {
             application.showToast(getString(R.string.no_internet_connection_found))
             binding.sRLHome.isRefreshing = false
         }
@@ -369,7 +378,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
     private fun getProductFromServer(sortBy: String) {
 
-        if (application.isNetworkAvailable()){
+        if (application.isNetworkAvailable()) {
             val userLocation = PreferencesManagement.getUserLocation(requireContext())
 
             val map = HashMap<String, String>()
@@ -388,7 +397,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                             APIService.getApiService(),
                             50,
                             userLocation!!.lat.toDouble(),
-                            userLocation.long.toDouble(),  sortBy
+                            userLocation.long.toDouble(), sortBy
                         )
                     )[MainFilterViewModel::class.java]
 
@@ -416,7 +425,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                                 }
                             }
                         }
-                        mainListAdapter!!.submitData(lifecycle,PagingData.empty())
+                        mainListAdapter!!.submitData(lifecycle, PagingData.empty())
                         mainListAdapter!!.submitData(it)
                     }
 
@@ -427,7 +436,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                     }
                 )
             }
-        }else{
+        } else {
             application.showToast(getString(R.string.no_internet_connection_found))
         }
 
@@ -448,7 +457,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                     APIService.getApiService(),
                     50,
                     userLocation!!.lat.toDouble(),
-                    userLocation.long.toDouble(),  "latest"
+                    userLocation.long.toDouble(), "latest"
                 )
             )[MainViewModel::class.java]
 //        mainListAdapter!!.submitData(lifecycle,PagingData.empty())
@@ -477,7 +486,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                         }
                     }
                 }
-                mainListAdapter!!.submitData(lifecycle,PagingData.empty())
+                mainListAdapter!!.submitData(lifecycle, PagingData.empty())
                 mainListAdapter!!.submitData(it)
             }
             binding.rvLatestProduct.adapter = mainListAdapter?.withLoadStateFooter(
@@ -627,13 +636,13 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
     }
 
-     override fun onProductClicked(product: Product?, position: Int) {
+    override fun onProductClicked(product: Product?, position: Int) {
         Log.d(TAG, "onProductClicked: ${product?.name}")
-        if (product?.isSelfProduct!!){
+        if (product?.isSelfProduct!!) {
             val intent = Intent(requireContext(), MyListingDetialActivity::class.java)
             intent.putExtra(productId, product.id)
             startActivity(intent)
-        }else{
+        } else {
             val intent = Intent(requireContext(), NewProductDetailActivity::class.java)
             intent.putExtra(productId, product.id)
             startActivity(intent)
@@ -647,5 +656,21 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 //            val listState = mBundleRecyclerViewState!!.getParcelable<Parcelable>(KEY_RECYCLER_STATE)
 //            binding.rvLatestProduct.layoutManager?.onRestoreInstanceState(listState)
 //        }
+    }
+
+    class BottomSpacingItemDecoration(private val bottomSpacing: Int) : RecyclerView.ItemDecoration() {
+
+        override fun getItemOffsets(
+            outRect: Rect,
+            view: View,
+            parent: RecyclerView,
+            state: RecyclerView.State
+        ) {
+            // Apply bottom spacing only to the last item and when not loading more
+            if (parent.getChildAdapterPosition(view) == parent.adapter!!.itemCount - 1
+            ) {
+                outRect.bottom = bottomSpacing
+            }
+        }
     }
 }
