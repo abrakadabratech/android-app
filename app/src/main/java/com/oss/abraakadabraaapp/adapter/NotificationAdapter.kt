@@ -113,10 +113,10 @@ class NotificationAdapter(
 
             val calendar: Calendar = Calendar.getInstance()
             calendar.timeInMillis = model.timestamp?.Seconds?.toLong()!!
-//            message.text =
-//                DateFormat.format("MMM dd,yyyy HH:mm", model.timestamp?.Nanoseconds?.toLong()!!).toString()
+            message.text =
+                DateFormat.format("MMM dd,yyyy HH:mm", model.timestamp?.Seconds?.toLong()!! *1000).toString()
 
-//            formatter.format(calendar.time)
+            formatter.format(calendar.time)
 
             rootlayout.setOnClickListener {
                 if (adapter.isMultiSelectMode.value!!) {

@@ -29,8 +29,8 @@ android {
         minSdk 23
         targetSdk 33
         
-        versionCode 37
-        versionName "1.20"
+        versionCode 39
+        versionName "1.20.2"
 //        versionName "test_refresh_product"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -80,9 +80,11 @@ android {
 
 //            buildConfigField("String", "BASE_URL", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
 //            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
-            buildConfigField("String", "BASE_URL", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
-            buildConfigField("String", "BASE_DEMO", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
-
+//            buildConfigField("String", "BASE_URL", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
+//            buildConfigField("String", "BASE_DEMO", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
+//
+            buildConfigField("String", "BASE_URL", "\"https://api.abra-ka-dabra.com/\"")
+            buildConfigField("String", "BASE_DEMO", "\"https://api.abra-ka-dabra.com/\"")
 
 
             buildConfigField "String", "API_KEY", "\"${project.property('API_KEY')}\""

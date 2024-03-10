@@ -42,7 +42,7 @@ class ExpandableAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.product.text = i[position].product_name
-        getUnreadCount(holder.unreadCount,chatNodes)
+//        getUnreadCount(holder.unreadCount,chatNodes)
         Glide.with(context).load(i[position].product_url).into(holder.productImage)
         holder.postedByUser.text = "Posted By ${i[position].posted_by}"
         Log.e(TAG, "setUpRecyclerview: ${Gson().toJson(i[position].chats)}")
