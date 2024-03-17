@@ -11,7 +11,7 @@ class ProductDataSource(private val apiService: APIService,
                         private val maxDistance:Int,
                         private val lat:Double,
                         private val long:Double,
-                        private val sortBy:String) : PagingSource<Int, Product>() {
+                        private val sortBy:String,private val type:String) : PagingSource<Int, Product>() {
     companion object {
         private const val STARTING_PAGE_INDEX = 1
     }
@@ -45,7 +45,8 @@ class ProductDataSource(private val apiService: APIService,
                 maxDistance = maxDistance,/*12.9715987&long=77.5945627*/
                 lat = lat,
                 long = long,
-                sortBy = sortBy
+                sortBy = sortBy,
+                type = type
             )
 
             Log.d("TAG - ", "load:response data ${response.body()} ")

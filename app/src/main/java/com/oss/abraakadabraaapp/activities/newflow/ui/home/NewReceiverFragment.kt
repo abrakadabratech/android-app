@@ -18,6 +18,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -93,6 +94,8 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
     private var mainListAdapter: ProductAdapter? = null
     private val TAG = "NewReceiverFragment"
     private val authViewModel: AuthViewModel by viewModel()
+    private var TYPE = "free"
+    private var FILTER = "latest"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -308,7 +311,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         binding.rvLatestProduct.addItemDecoration(itemDecoration)
 
         binding.rvLatestProduct.isNestedScrollingEnabled = true
-        binding.rvHomeCategory.isNestedScrollingEnabled = true
+//        binding.rvHomeCategory.isNestedScrollingEnabled = true
         mainListAdapter = ProductAdapter(this)
         val lm = GridLayoutManager(requireContext(), 2)
         lm.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -340,10 +343,11 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             } else {
                 application.showToast(getString(R.string.no_internet_connection_found))
             }
-            if (PreferencesManagement.getFilters(requireContext())!!.nearest)
-                getProductFromServer("nearest")
+            val filters = PreferencesManagement.getFilters(requireContext())!!
+            if (filters.filter == "nearest")
+                getProductFromServer("nearest",filters.type)
             else
-                getProductFromServer("latest")
+                getProductFromServer("latest",filters.type)
 
 //            lateinit var viewModel: MainViewModel
 
@@ -376,7 +380,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         }
     }
 
-    private fun getProductFromServer(sortBy: String) {
+    private fun getProductFromServer(sortBy: String,type: String) {
 
         if (application.isNetworkAvailable()) {
             val userLocation = PreferencesManagement.getUserLocation(requireContext())
@@ -387,7 +391,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
             // Pagination Library
             if (sortBy == "latest") {
-                loadLatest()
+                loadLatest(type)
             } else {
 
                 val viewModel =
@@ -397,7 +401,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                             APIService.getApiService(),
                             50,
                             userLocation!!.lat.toDouble(),
-                            userLocation.long.toDouble(), sortBy
+                            userLocation.long.toDouble(), sortBy,type
                         )
                     )[MainFilterViewModel::class.java]
 
@@ -443,7 +447,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
     }
 
-    private fun loadLatest() {
+    private fun loadLatest(type:String) {
         val userLocation = PreferencesManagement.getUserLocation(requireContext())
 
         val map = HashMap<String, String>()
@@ -457,7 +461,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                     APIService.getApiService(),
                     50,
                     userLocation!!.lat.toDouble(),
-                    userLocation.long.toDouble(), "latest"
+                    userLocation.long.toDouble(), "latest",type
                 )
             )[MainViewModel::class.java]
 //        mainListAdapter!!.submitData(lifecycle,PagingData.empty())
@@ -545,12 +549,124 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
     //Alert Dialog for show nearby filter
     private fun showNearByFilterDialog() {
-        var filters = PreferencesManagement.getFilters(requireContext())
+        val filters = PreferencesManagement.getFilters(requireContext())
         Log.d("TAG - ", "showNearByFilterDialog: ${Gson().toJson(filters)}")
         val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
         val inflater = this.layoutInflater
         val dialogView: View = inflater.inflate(R.layout.alert_nearby_filter, null)
         dialogBuilder.setView(dialogView)
+
+        val latestBtn = dialogView.findViewById<TextView>(R.id.latest_btn)
+        val nearestBtn = dialogView.findViewById<TextView>(R.id.nearest_btn)
+
+        val freeBtn = dialogView.findViewById<TextView>(R.id.free_btn)
+        val paidBtn = dialogView.findViewById<TextView>(R.id.paid_btn)
+        val allBtn = dialogView.findViewById<TextView>(R.id.all_btn)
+
+        if (filters?.filter == "nearest"){
+            nearestBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.white))
+            nearestBtn.background = ContextCompat.getDrawable(requireContext(),R.drawable.rounded_rect_shape)
+
+            latestBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
+            latestBtn.background = null
+        }else{
+            latestBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.white))
+            latestBtn.background = ContextCompat.getDrawable(requireContext(),R.drawable.rounded_rect_shape)
+
+            nearestBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
+            nearestBtn.background = null
+        }
+
+        when (filters?.type){
+            "free" -> {
+                TYPE = "free"
+                freeBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.white))
+                freeBtn.background = ContextCompat.getDrawable(requireContext(),R.drawable.rounded_rect_shape)
+
+                paidBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
+                paidBtn.background = null
+                allBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
+                allBtn.background = null
+            }
+            "paid" -> {
+                TYPE = "paid"
+                paidBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.white))
+                paidBtn.background = ContextCompat.getDrawable(requireContext(),R.drawable.rounded_rect_shape)
+
+                freeBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
+                freeBtn.background = null
+                allBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
+                allBtn.background = null
+            }
+            "all" -> {
+                TYPE = "all"
+                allBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.white))
+                allBtn.background = ContextCompat.getDrawable(requireContext(),R.drawable.rounded_rect_shape)
+
+                freeBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
+                freeBtn.background = null
+                paidBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
+                paidBtn.background = null
+            }
+        }
+
+        latestBtn.setOnClickListener {
+            FILTER = "latest"
+            latestBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.white))
+            latestBtn.background = ContextCompat.getDrawable(requireContext(),R.drawable.rounded_rect_shape)
+
+            nearestBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
+            nearestBtn.background = null
+
+            filters?.filter = FILTER
+        }
+        nearestBtn.setOnClickListener {
+            FILTER = "nearest"
+            nearestBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.white))
+            nearestBtn.background = ContextCompat.getDrawable(requireContext(),R.drawable.rounded_rect_shape)
+
+            latestBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
+            latestBtn.background = null
+
+            filters?.filter = FILTER
+        }
+
+        freeBtn.setOnClickListener {
+            TYPE = "free"
+            freeBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.white))
+            freeBtn.background = ContextCompat.getDrawable(requireContext(),R.drawable.rounded_rect_shape)
+
+            paidBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
+            paidBtn.background = null
+            allBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
+            allBtn.background = null
+
+            filters?.type = "free"
+        }
+        paidBtn.setOnClickListener {
+            TYPE = "paid"
+            paidBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.white))
+            paidBtn.background = ContextCompat.getDrawable(requireContext(),R.drawable.rounded_rect_shape)
+
+            freeBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
+            freeBtn.background = null
+            allBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
+            allBtn.background = null
+
+            filters?.type = "paid"
+        }
+        allBtn.setOnClickListener {
+            TYPE = "all"
+            allBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.white))
+            allBtn.background = ContextCompat.getDrawable(requireContext(),R.drawable.rounded_rect_shape)
+
+            freeBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
+            freeBtn.background = null
+            paidBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
+            paidBtn.background = null
+
+            filters?.type = "all"
+        }
 
         val nearToMeTxt = dialogView.findViewById<TextView>(R.id.nearToMeTxt)
         val nearToMeSwitch = dialogView.findViewById<FlexibleSwitch>(R.id.nearToMeSwitch)
@@ -561,57 +677,19 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         val applyBtn = dialogView.findViewById<TextView>(R.id.applyBtn)
         val closeBtn = dialogView.findViewById<ImageView>(R.id.closeBtn)
 
-        if (filters?.nearest!!) {
+        if (filters?.filter == "nearest") {
+            FILTER = "nearest"
             nearToMeTxt.setTextColor(resources.getColor(R.color.cat_select_color))
             newestFirstTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
             newestFirstSwitch.isChecked = false
             nearToMeSwitch.isChecked = true
         } else {
+            FILTER = "latest"
             nearToMeTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
             newestFirstTxt.setTextColor(resources.getColor(R.color.cat_select_color))
             newestFirstSwitch.isChecked = true
             nearToMeSwitch.isChecked = false
         }
-
-        nearToMeSwitch.addOnStatusChangedListener(OnStatusChangedListener {
-            if (it) {
-                filters?.newest = false
-                filters?.nearest = true
-
-
-                nearToMeTxt.setTextColor(resources.getColor(R.color.cat_select_color))
-//                nearToMeSwitch.isChecked = true
-                newestFirstSwitch.isChecked = false
-                newestFirstTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
-
-            } else {
-                filters?.newest = true
-                filters?.nearest = false
-
-                nearToMeTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
-                newestFirstTxt.setTextColor(resources.getColor(R.color.cat_select_color))
-                newestFirstSwitch.isChecked = true
-            }
-        })
-
-        newestFirstSwitch.addOnStatusChangedListener(OnStatusChangedListener {
-            if (it) {
-                filters?.newest = true
-                filters?.nearest = false
-
-                newestFirstTxt.setTextColor(resources.getColor(R.color.cat_select_color))
-                nearToMeTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
-                nearToMeSwitch.isChecked = false
-            } else {
-                filters?.newest = false
-                filters?.nearest = true
-
-                newestFirstTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
-                nearToMeTxt.setTextColor(resources.getColor(R.color.cat_select_color))
-                nearToMeSwitch.isChecked = true
-            }
-        })
-
 
         val alertDialog: AlertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -622,14 +700,11 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         }
         applyBtn.setOnClickListener {
             application.postClick(Constants.BUTTON_FILTER_APPLY)
-//            Toast.makeText(context, "Under Development ${newestFirstSwitch.isChecked}", Toast.LENGTH_SHORT).show()
-            if (filters.newest) {
-//                sort()
-                getProductFromServer("latest")
-            } else {
-                getProductFromServer("nearest")
-            }
-            PreferencesManagement.setFilters(requireContext(), filters)
+            filters?.type = TYPE
+            filters?.filter = FILTER
+//            application.showToast("$TYPE  $FILTER")
+            PreferencesManagement.setFilters(requireContext(), filters!!)
+            getProductFromServer(FILTER,TYPE)
             alertDialog.dismiss()
         }
         alertDialog.window?.setLayout(800, 700)

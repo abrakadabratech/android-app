@@ -127,8 +127,10 @@
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -249,8 +251,8 @@
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="4dp"
                         android:fontFamily="@font/montserrat_medium"
-                        android:paddingBottom="15dp"
                         android:paddingTop="15dp"
+                        android:paddingBottom="15dp"
                         android:text="This is an error alert - Check it out!"
                         android:textColor="@color/status_pending"
                         app:layout_constraintBottom_toBottomOf="@+id/status_icon"
@@ -293,9 +295,9 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:background="@color/transparent"
+                android:enabled="false"
                 android:fontFamily="@font/montserrat_bold"
                 android:text=""
-                android:enabled="false"
                 android:textColor="@color/new_action_bar_title_color"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -398,60 +400,58 @@
                 android:textColor="@color/title_color"
                 android:textSize="16sp"
                 android:visibility="gone"
-                app:layout_constraintEnd_toStartOf="@+id/textView21"
+                app:layout_constraintEnd_toStartOf="@+id/priceTxt"
                 app:layout_constraintStart_toStartOf="@+id/conditionTxt"
                 app:layout_constraintTop_toBottomOf="@+id/conditionTxt" />
 
             <TextView
-                android:id="@+id/textView21"
+                android:id="@+id/priceTxt"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserrat_bold"
-                android:text="Energy Saving"
+                android:text="Price"
                 android:textColor="@color/title_color"
                 android:textSize="16sp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/textView20"
+                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView20"
-                app:layout_constraintTop_toTopOf="@+id/textView20" />
+                app:layout_constraintStart_toEndOf="@+id/some111"
+                app:layout_constraintTop_toTopOf="@+id/some111" />
 
             <TextView
                 android:id="@+id/costSavingTxt"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:fontFamily="@font/montserrat_medium"
                 android:text=""
                 android:textColor="@color/sub_text_color"
                 android:textSize="16sp"
                 android:visibility="gone"
-                app:layout_constraintEnd_toStartOf="@+id/textView23"
-                app:layout_constraintStart_toStartOf="@+id/textView20"
-                app:layout_constraintTop_toBottomOf="@+id/textView20" />
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:layout_editor_absoluteY="529dp" />
+
             <TextView
                 android:id="@+id/some111"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/montserrat_bold"
                 android:text="Brand"
                 android:textColor="@color/title_color"
                 android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/costSavingTxt"
-                app:layout_constraintTop_toBottomOf="@+id/costSavingTxt" />
+                app:layout_constraintEnd_toStartOf="@+id/priceTxt"
+                app:layout_constraintStart_toStartOf="@+id/conditionTxt"
+                app:layout_constraintTop_toBottomOf="@+id/usedForTxt" />
 
             <TextView
                 android:id="@+id/brandTxt"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/montserrat_medium"
                 android:text=""
                 android:textColor="@color/sub_text_color"
                 android:textSize="16sp"
+                app:layout_constraintEnd_toStartOf="@+id/priceAmount"
                 app:layout_constraintStart_toStartOf="@+id/some111"
                 app:layout_constraintTop_toBottomOf="@+id/some111" />
 
@@ -478,7 +478,7 @@
                 android:text="Description"
                 android:textColor="@color/title_color"
                 android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="@+id/costSavingTxt"
+                app:layout_constraintStart_toStartOf="@+id/some111"
                 app:layout_constraintTop_toBottomOf="@+id/brandTxt" />
 
             <androidx.cardview.widget.CardView
@@ -508,11 +508,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="5dp"
+                    android:background="@color/transparent"
+                    android:enabled="false"
+                    android:fontFamily="@font/montserrat_regular"
                     android:maxLength="300"
                     android:padding="5dp"
-                    android:enabled="false"
-                    android:background="@color/transparent"
-                    android:fontFamily="@font/montserrat_regular"
                     android:text=""
                     android:textColor="@color/edit_text_color" />
             </androidx.cardview.widget.CardView>
@@ -549,9 +549,19 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/responsesTwo" />
+
+            <TextView
+                android:id="@+id/priceAmount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/brandTxt"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/brandTxt"
+                app:layout_constraintTop_toTopOf="@+id/brandTxt" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

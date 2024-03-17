@@ -9,12 +9,13 @@ class MainFilterViewModelFactory(
     private val maxDistance: Int,
     private val lat: Double,
     private val long: Double,
-    private val sortBy: String
+    private val sortBy: String,
+    private val type:String
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainFilterViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return MainFilterViewModel(apiService, maxDistance, lat, long, sortBy) as T
+            return MainFilterViewModel(apiService, maxDistance, lat, long, sortBy,type) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -32,6 +32,7 @@ data class Products (
     @SerializedName("requestAccepted"   ) var requestedStatus  : Boolean = false,
     @SerializedName("created_at"    ) var createdAt    : String?           = null,
     @SerializedName("type"    ) var type    : String?           = "free",
+    @SerializedName("price"    ) var price    : String?           = "",
     @SerializedName("currency"    ) var currency    : String?           = "INR"
 
 )

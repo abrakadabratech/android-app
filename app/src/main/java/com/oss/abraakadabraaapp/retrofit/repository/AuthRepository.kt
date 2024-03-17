@@ -255,6 +255,7 @@ class AuthRepository(private val apiHelper: APIs) {
     suspend fun requestsRemain(version: Int) = apiHelper.requestRemains(version)
 
     suspend fun userAccountDelete() = apiHelper.deleteUserAccount()
+    suspend fun viewProfile(id:String) = apiHelper.viewProfile(id)
 
     suspend fun readAllNotification(
         map: DeleteAll

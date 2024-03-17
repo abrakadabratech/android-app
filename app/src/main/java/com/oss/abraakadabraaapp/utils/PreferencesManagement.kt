@@ -240,7 +240,7 @@ object PreferencesManagement {
     fun getFilters(context: Context): Filters? {
         val pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
-        val json = pref.getString("Filters_key", Gson().toJson(Filters(true,false)))
+        val json = pref.getString("Filters_key", Gson().toJson(Filters("free","latest")))
 
         return if (json == null)
             null

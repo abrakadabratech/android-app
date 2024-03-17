@@ -22,7 +22,8 @@
         android:contentDescription="@string/app_name"
         android:src="@drawable/add_product_fab"
         app:tint="@color/blue_status_bar_color"
-        app:layout_anchor="@id/bottomAppBar" />
+        app:layout_anchor="@id/bottomAppBar" >
+    </com.google.android.material.floatingactionbutton.FloatingActionButton>
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottomAppBar"
         android:layout_width="match_parent"
@@ -36,10 +37,10 @@
             android:id="@+id/nav_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:itemBackground="@drawable/selected_item_bg"
             app:itemIconSize="30dp"
             android:layout_marginRight="16dp"
-            app:itemTextColor="@color/new_text_color"
+            app:itemIconTint="@drawable/selected_item_bg"
+            app:itemTextColor="@drawable/selected_item_bg"
             app:labelVisibilityMode="labeled"
             app:menu="@menu/bottom_nav_menu" />
 

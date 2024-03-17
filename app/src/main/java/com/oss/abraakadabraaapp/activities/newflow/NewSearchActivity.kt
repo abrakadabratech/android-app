@@ -303,7 +303,7 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
         val applyBtn = dialogView.findViewById<TextView>(R.id.applyBtn)
         val closeBtn = dialogView.findViewById<ImageView>(R.id.closeBtn)
 
-        if (filters?.nearest!!) {
+        if (filters?.filter == "nearest") {
             nearToMeTxt.setTextColor(resources.getColor(R.color.cat_select_color))
             newestFirstTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
             newestFirstSwitch.isChecked = false
@@ -314,46 +314,6 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
             newestFirstSwitch.isChecked = true
             nearToMeSwitch.isChecked = false
         }
-
-        nearToMeSwitch.addOnStatusChangedListener(FlexibleSwitch.OnStatusChangedListener {
-            if (it) {
-                filters.newest = false
-                filters.nearest = true
-
-                nearToMeTxt.setTextColor(resources.getColor(R.color.cat_select_color))
-//                nearToMeSwitch.isChecked = true
-                newestFirstSwitch.isChecked = false
-                newestFirstTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
-
-            } else {
-                filters.newest = true
-                filters.nearest = false
-
-                nearToMeTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
-                newestFirstTxt.setTextColor(resources.getColor(R.color.cat_select_color))
-                newestFirstSwitch.isChecked = true
-            }
-        })
-
-        newestFirstSwitch.addOnStatusChangedListener(FlexibleSwitch.OnStatusChangedListener {
-            if (it) {
-                filters.newest = true
-                filters.nearest = false
-
-                newestFirstTxt.setTextColor(resources.getColor(R.color.cat_select_color))
-                nearToMeTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
-                nearToMeSwitch.isChecked = false
-            } else {
-                filters.newest = false
-                filters.nearest = true
-
-                newestFirstTxt.setTextColor(resources.getColor(R.color.cat_unselect_color))
-                nearToMeTxt.setTextColor(resources.getColor(R.color.cat_select_color))
-                nearToMeSwitch.isChecked = true
-            }
-        })
-
-
         val alertDialog: AlertDialog = dialogBuilder.create()
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         alertDialog.show()
@@ -365,20 +325,20 @@ class NewSearchActivity : BaseActivity(), CategoryAdapter.CategoryAdapterInterfa
             postClick(Constants.BUTTON_FILTER_APPLY)
 //            Toast.makeText(this, "Under Development ${newestFirstSwitch.isChecked}", Toast.LENGTH_SHORT).show()
             if (from == "category") {
-                if (filters.newest) {
+                if (filters?.filter == "latest") {
                     getProductFromServer("latest")
                 } else {
                     getProductFromServer("nearest")
                 }
             } else {
-                if (filters.newest) {
+                if (filters?.filter == "latest") {
                     searchProducts(searchQuery, "latest")
                 } else {
                     searchProducts(searchQuery, "nearest")
                 }
             }
 
-            PreferencesManagement.setFilters(this, filters)
+            PreferencesManagement.setFilters(this, filters!!)
             alertDialog.dismiss()
         }
         alertDialog.window?.setLayout(800, 700)

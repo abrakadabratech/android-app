@@ -13,9 +13,9 @@ class MainFilterViewModel(private val apiService: APIService,
                           private val maxDistance:Int,
                           private val lat:Double,
                           private val long:Double,
-                          private val sortBy:String) : ViewModel() {
+                          private val sortBy:String,private val type:String) : ViewModel() {
     val listData2 = Pager(
         PagingConfig(pageSize = PAZE_SIZE, initialLoadSize = 20)) {
-        ProductDataSource(apiService,maxDistance,lat,long,sortBy)
+        ProductDataSource(apiService,maxDistance,lat,long,sortBy,type)
     }.flow
 }

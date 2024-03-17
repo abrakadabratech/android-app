@@ -8,17 +8,15 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.formats.UnifiedNativeAd
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.google.android.gms.ads.nativead.NativeAdView
@@ -38,16 +36,16 @@ class ProductAdapter(val onClick: OnProductClicked) :
         var tv_product_distance = itemView.rootView.findViewById<TextView>(R.id.tv_product_distance)
         var tv_product_location = itemView.rootView.findViewById<TextView>(R.id.tv_product_location)
         var iv = itemView.rootView.findViewById<ImageView>(R.id.iv_product)
+        var free_tag = itemView.rootView.findViewById<CardView>(R.id.free_tag)
         var my_product: ConstraintLayout =
-            itemView.rootView.findViewById<ConstraintLayout>(R.id.iv_given)
+            itemView.rootView.findViewById(R.id.iv_given)
 
         fun bind(item: Product?) {
             tv.text =
                 item?.name?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-            Glide.with(itemView.context).load(item?.display_image)
-                .placeholder(R.drawable.image_placeholder).into(iv)
-            tv_product_distance.setText("${(item?.distance?.div(1000))} KM")
-            tv_product_location.setText("${item?.condition}")
+            Glide.with(itemView.context).load(item?.display_image).into(iv)
+            tv_product_distance.text = "${(item?.distance?.div(1000))} KM"
+            tv_product_location.text = "${item?.condition}"
 
             if (item!!.isSelfProduct) {
                 my_product.visibility = View.VISIBLE
@@ -55,6 +53,13 @@ class ProductAdapter(val onClick: OnProductClicked) :
                     ContextCompat.getDrawable(itemView.context, R.color.transparent_blur)
             } else {
                 my_product.visibility = View.GONE
+
+            }
+
+            if (item.type == "free"){
+                free_tag.visibility = View.VISIBLE
+            }else{
+                free_tag.visibility = View.GONE
             }
 
         }

@@ -658,6 +658,9 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                     Log.d("MYT", "longitude $longitude")
                     Log.d("MYT", "fullAddress $fullAddress")
                     map["brand"] = JavaUtils.toRequestBody(binding.etProductBrand.text.toString().trim())
+                    val a = mutableListOf<String>()
+                    a.add(TYPE)
+                    Log.d("MYT", "latitude ${Gson().toJson(a)}")
                     map["type"] = JavaUtils.toRequestBody(TYPE)
                     if (TYPE == "paid"){
                         map["price"] = JavaUtils.toRequestBody(binding.etPriceOfTheProduct.text.toString())
@@ -695,6 +698,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                     val intent = Intent(this, MyListingActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     startActivity(intent)
+                    finish()
                 }
 
             }

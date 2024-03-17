@@ -19,6 +19,7 @@ import com.oss.abraakadabraaapp.model.AccountDeleteResponse
 import com.oss.abraakadabraaapp.model.DeleteAll
 import com.oss.abraakadabraaapp.model.DeleteMultiple
 import com.oss.abraakadabraaapp.model.ReadNotificationResponse
+import com.oss.abraakadabraaapp.model.UserProfile
 import com.oss.abraakadabraaapp.response.authResponse.*
 import com.oss.abraakadabraaapp.response.commonResponse.CommonResponse
 import com.oss.abraakadabraaapp.response.commonResponse.HttpErrorResponse
@@ -1302,12 +1303,36 @@ fun getRequestDetails(
             isLoading.value = false
         }
     }
+
+    var userProfileSuccess = MutableLiveData<UserProfile>()
+    fun viewProfile(id:String) {
+
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.viewProfile(id)
+
+
+            callApi(::call, object : CallHelper<UserProfile> {
+                override fun onSuccessful(data: UserProfile) {
+                    userProfileSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+        }
+    }
+
     var readNotificationSuccess = MutableLiveData<ReadNotificationResponse>()
 
     fun readAllNotification(map: DeleteAll) {
 
         viewModelScope.launch {
-            isLoading.value = true
+//            isLoading.value = true
 
             suspend fun call() = repository.readAllNotification(map)
 
@@ -1321,7 +1346,7 @@ fun getRequestDetails(
                 }
             })
 
-            isLoading.value = false
+//            isLoading.value = false
         }
     }
 
@@ -1330,7 +1355,7 @@ fun getRequestDetails(
     fun readMultipleNotification(map: DeleteMultiple) {
 
         viewModelScope.launch {
-            isLoading.value = true
+//            isLoading.value = true
 
             suspend fun call() = repository.readMultipleNotification(map)
 
@@ -1344,7 +1369,7 @@ fun getRequestDetails(
                 }
             })
 
-            isLoading.value = false
+//            isLoading.value = false
         }
     }
 
@@ -1353,7 +1378,7 @@ fun getRequestDetails(
     fun deleteAllNotification(map: DeleteAll) {
 
         viewModelScope.launch {
-            isLoading.value = true
+//            isLoading.value = true
 
             suspend fun call() = repository.deleteAllNotification(map)
 
@@ -1367,7 +1392,7 @@ fun getRequestDetails(
                 }
             })
 
-            isLoading.value = false
+//            isLoading.value = false
         }
     }
 
@@ -1376,7 +1401,7 @@ fun getRequestDetails(
     fun deleteMultipleNotification(map: DeleteMultiple) {
 
         viewModelScope.launch {
-            isLoading.value = true
+//            isLoading.value = true
 
             suspend fun call() = repository.deleteMultipleNotification(map)
 
@@ -1390,7 +1415,7 @@ fun getRequestDetails(
                 }
             })
 
-            isLoading.value = false
+//            isLoading.value = false
         }
     }
 }

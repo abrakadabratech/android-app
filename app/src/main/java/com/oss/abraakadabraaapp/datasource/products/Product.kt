@@ -22,5 +22,7 @@ data class Product(
     val display_image: String,
     @SerializedName("name")
     val name: String,
+    @SerializedName("type")
+    val type: String,
     @SerializedName("location_name" ) var locationName : String? = null
     )

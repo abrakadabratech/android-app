@@ -15,7 +15,10 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/dp_16"
+        android:paddingRight="@dimen/dp_16"
+        >
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView5"
@@ -49,7 +52,7 @@
                     android:paddingTop="6dp"
                     android:paddingBottom="6dp"
                     android:text="Latest"
-                    android:textColor="@color/new_action_bar_title_color"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/dp_17" />
 
 
@@ -103,7 +106,7 @@
                     android:paddingTop="6dp"
                     android:paddingBottom="6dp"
                     android:text="Free"
-                    android:textColor="@color/new_action_bar_title_color"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/dp_17" />
 
 
@@ -143,10 +146,14 @@
 
         <TextView
             android:id="@+id/applyBtn"
-            android:layout_width="111dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:paddingLeft="@dimen/dp_16"
+            android:paddingRight="@dimen/dp_16"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_marginTop="32dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/btn_bg_rounded_rect"
             android:fontFamily="@font/montserrat_semi_bold"
@@ -154,7 +161,7 @@
             android:text="Apply"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="@dimen/sp_16"
+            android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -175,10 +182,10 @@
             android:id="@+id/textView117"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="21dp"
+            android:layout_marginTop="16dp"
             android:fontFamily="@font/montserrat_semi_bold"
             android:text="Filters"
-            android:textSize="24sp"
+            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@+id/closeBtn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

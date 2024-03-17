@@ -10,13 +10,11 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_MEDIA_*"/>
-
+    <uses-permission android:name="android.permission.READ_MEDIA_*" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -57,10 +55,15 @@
         android:usesCleartextTraffic="true"
         tools:ignore="HardcodedDebugMode,LockedOrientationActivity">
         <activity
-            android:name=".activities.newflow.CropActivity"
+            android:name=".activities.newflow.UserProfileActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AbraaKaDabraa.NoActionBar"/>
+        <activity
+            android:name=".activities.newflow.CropActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
         <activity
             android:name=".activities.newflow.EditProductActivity"
             android:exported="false"
@@ -171,7 +174,6 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
-
         <activity
             android:name=".activities.newflow.NewHomeActivity"
             android:exported="true"
@@ -324,18 +326,10 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
-        </provider>
-
-
-        <!-- Dev Ads ID-->
+        </provider> <!-- Dev Ads ID -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-6795450348346297~2427067762"/>
-
-        <!--Test Ads ID-->
-        <!--<meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>-->
+            android:value="ca-app-pub-6795450348346297~2427067762" />
     </application>
 
 </manifest>

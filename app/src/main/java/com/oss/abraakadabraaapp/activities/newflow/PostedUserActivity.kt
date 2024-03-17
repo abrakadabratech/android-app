@@ -129,6 +129,11 @@ class PostedUserActivity : BaseActivity() {
             postClick(BUTTON_BACK_IN_POSTED_USER)
             onBackPressed()
         }
+        binding.cardView8.setOnClickListener {
+            val i = Intent(this,UserProfileActivity::class.java)
+            i.putExtra("UserProfile",productDetails!!.data.postedBy?.uid)
+            startActivity(i)
+        }
     }
 
     private fun setUpObserver() {

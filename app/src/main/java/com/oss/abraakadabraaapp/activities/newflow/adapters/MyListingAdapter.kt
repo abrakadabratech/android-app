@@ -28,6 +28,7 @@ class MyListingAdapter(val newMyRequestActivity: Context,
         var statusTxt = itemView.findViewById<TextView>(R.id.textView59)
         var responsed = itemView.findViewById<TextView>(R.id.textView115)
         var image = itemView.findViewById<ImageView>(R.id.imageView24)
+        var freeTag = itemView.findViewById<CardView>(R.id.free_tag)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -47,6 +48,10 @@ class MyListingAdapter(val newMyRequestActivity: Context,
             ) else it.toString()
         })
         holder.listedOnTxt.setText("Listed on "+data.get(position).createdAt)
+        if (data.get(position).type == "free"){
+            holder.freeTag.visibility = View.VISIBLE
+        }else
+            holder.freeTag.visibility = View.GONE
         if (data.get(position).status == "hold"){
             holder.statusTxt.setText("Status - On Hold")
         }else{

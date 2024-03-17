@@ -17,6 +17,7 @@ import com.oss.abraakadabraaapp.model.DeleteAll
 import com.oss.abraakadabraaapp.model.DeleteMultiple
 import com.oss.abraakadabraaapp.model.NotificationResponse
 import com.oss.abraakadabraaapp.model.ReadNotificationResponse
+import com.oss.abraakadabraaapp.model.UserProfile
 import com.oss.abraakadabraaapp.response.authResponse.*
 import com.oss.abraakadabraaapp.response.commonResponse.CommonResponse
 import com.oss.abraakadabraaapp.response.commonResponse.ContentManagementResponse
@@ -487,7 +488,7 @@ interface APIs {
     @POST("user/account/delete")
     suspend fun deleteUserAccount() : Response<AccountDeleteResponse>
 
-    @GET("/user/{id}/public-profile")
-    suspend fun viewProfile(@Path("id") id: String) : Response<AccountDeleteResponse>
+    @GET("/user/public-profile/{id}")
+    suspend fun viewProfile(@Path("id") id: String) : Response<UserProfile>
 
 }

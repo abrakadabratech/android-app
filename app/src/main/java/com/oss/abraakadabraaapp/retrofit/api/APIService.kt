@@ -21,9 +21,10 @@ interface APIService {
         @Query("maxDistance") maxDistance:Int,
         @Query("lat") lat:Double,
         @Query("long") long:Double,
-        @Query("sortBy") sortBy:String
+        @Query("sortBy") sortBy:String,
+        @Query("type") type:String
 
-        ): Response<GetProducts>
+    ): Response<GetProducts>
 
     @GET("products/search")
     suspend fun searchQuery(

@@ -434,7 +434,14 @@ class MyListingDetialActivity : BaseActivity(), RequestedUsersAdapter.OnRequestC
         }.toString())
         binding.locationName.setText(data.locationName.toString())
 
-
+        if (it.product!!.type == "free"){
+            binding.priceAmount.visibility = View.GONE
+            binding.priceTxt.visibility = View.GONE
+        }else{
+            binding.priceAmount.visibility = View.VISIBLE
+            binding.priceTxt.visibility = View.VISIBLE
+            binding.priceAmount.text = it.product!!.price.toString()
+        }
         //Alert messages
         when (it.alertMessage.type) {
             Constants.WARNING -> {

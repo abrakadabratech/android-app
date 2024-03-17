@@ -13,10 +13,11 @@ class MainViewModel(
     private val maxDistance: Int,
     private val lat: Double,
     private val long: Double,
-    private val sortBy: String
+    private val sortBy: String,
+    private val type:String
 ) : ViewModel() {
     val listData =
         Pager(PagingConfig(pageSize = PAZE_SIZE ), pagingSourceFactory = {
-            ProductDataSource(apiService,  maxDistance, lat, long, sortBy)
+            ProductDataSource(apiService,  maxDistance, lat, long, sortBy,type)
         }).flow
 }

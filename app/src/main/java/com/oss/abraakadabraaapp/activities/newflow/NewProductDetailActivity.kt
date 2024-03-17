@@ -107,8 +107,9 @@ class NewProductDetailActivity : BaseActivity() {
 
         binding.requestBtn.setOnClickListener {
             postClick(Constants.BUTTON_REQUEST_IN_DETAILS_PAGE)
-            loader(true)
-            val adRequest = AdRequest.Builder().build()
+            navigateToNext()
+//            loader(true)
+           /* val adRequest = AdRequest.Builder().build()
             RewardedAd.load(this,"ca-app-pub-6795450348346297/6589674050",
                 adRequest, object : RewardedAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -168,7 +169,8 @@ class NewProductDetailActivity : BaseActivity() {
                     }
                 }
             })
-
+*/
+            showToast("Will take us to the Chat screen")
         }
 
         binding.ivMenu.setOnClickListener {
@@ -447,7 +449,16 @@ class NewProductDetailActivity : BaseActivity() {
             add<LocationFragment>(R.id.maps_view, args = bundle)
         }
 
-        if (it.data.isRequested!!) {
+        if (it.data.type == "free"){
+            binding.priceAmount.visibility = View.GONE
+            binding.priceTxt.visibility = View.GONE
+        }else{
+            binding.priceAmount.visibility = View.VISIBLE
+            binding.priceTxt.visibility = View.VISIBLE
+            binding.priceAmount.text = it.data.price.toString()
+        }
+
+        if (it.data.isRequested) {
             binding.requestBtn.setText("Requested")
             binding.requestBtn.isEnabled = false
             //binding.chatBtn.isEnabled = true
