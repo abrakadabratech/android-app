@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName
 import com.oss.abraakadabraaapp.response.mainResponse.CategoryData
 
 data class AllCategoryResponse(
-
     @SerializedName("code"   ) var code   : Int?            = null,
     @SerializedName("status" ) var status : Int?            = null,
     @SerializedName("data"   ) var data   : ArrayList<UserCatData> = arrayListOf()

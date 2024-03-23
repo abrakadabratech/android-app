@@ -11,7 +11,7 @@
         android:title="@string/title_chats" />
     <item
         android:id="@+id/placeholder"
-        android:title="" />
+        android:title="@string/sell" />
 
     <item
         android:id="@+id/navigation_account"

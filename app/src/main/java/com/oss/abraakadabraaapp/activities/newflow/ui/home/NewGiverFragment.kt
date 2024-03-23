@@ -20,6 +20,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -126,6 +128,8 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
     lateinit var userInfo : GetUserResponse
     var touchHelper: ItemTouchHelper? = null
 
+    var items = listOf("Footwear", "Fashion", "Furniture", "Books")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -171,11 +175,23 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                 showPendingPopUp()
             }
             loadUsedForData()
+
             loadConditionData()
+
             setUpObserver()
+
             clickEvents()
 
             getUserLocation()
+
+            val items1 = listOf("Almost New", "Good", "Average", "Needs Repair")
+            val items2 = listOf("Less Than 6 Months", "6 Months to 1 Year", "1 Year to 3 Years", "More than 3 Years")
+            val adapter = ArrayAdapter(this, R.layout.list_item, items)
+            val adapter1 = ArrayAdapter(this, R.layout.list_item, items1)
+            val adapter2 = ArrayAdapter(this, R.layout.list_item, items2)
+            binding.catActv.setAdapter(adapter)
+            binding.conditionActv.setAdapter(adapter1)
+            binding.usedforActv.setAdapter(adapter2)
 
             val callback: ItemTouchHelper.Callback = ItemMoveCallback(imageAdapter)
             touchHelper = ItemTouchHelper(callback)
@@ -204,8 +220,9 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
 
         binding.catgoryLinearLayout.setOnClickListener {
             application.postClick(Constants.BUTTON_CATEGORY_SELECT)
-            showCategoryFilterDialog()
-        }
+
+//            showCategoryFilterDialog()
+        }/*
         binding.conditionLinearLayout.setOnClickListener {
             application.postClick(Constants.BUTTON_CONDITION_OF_PRODUCT_SELECT)
             showConditionDialog()
@@ -213,7 +230,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         binding.usedForLinearLayout.setOnClickListener {
             application.postClick(Constants.BUTTON_USED_FOR_SELECT)
             showUsedForDialog()
-        }
+        }*/
         binding.submitProfile.setOnClickListener {
             application.postClick(Constants.BUTTON_ALERT_NOT_FOR_SELL)
             val userInfo = PreferencesManagement.getUserInfo(this)
@@ -647,10 +664,10 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                 if (userLocation != null){
                     val map = HashMap<String, RequestBody>()
                     map["name"] = JavaUtils.toRequestBody(binding.etProductName.text.toString().trim())
-                    map["category"] = JavaUtils.toRequestBody(PROD_CATEGORY)
+                    map["category"] = JavaUtils.toRequestBody(binding.catActv.text.toString())
                     map["description"] = JavaUtils.toRequestBody(binding.descEdt.text.toString().trim())
-                    map["condition"] = JavaUtils.toRequestBody(PROD_CONDITION)
-                    map["used_for"] = JavaUtils.toRequestBody(PROD_USED_FOR)
+                    map["condition"] = JavaUtils.toRequestBody(binding.conditionActv.text.toString())
+                    map["used_for"] = JavaUtils.toRequestBody(binding.usedforActv.text.toString())
                     map["location_name"] = JavaUtils.toRequestBody(binding.locationTxt.text.toString())
                     map["latitude"] = JavaUtils.toRequestBody(if(lattitude == 0.0) userLocation.lat else lattitude.toString())
                     map["longitude"] = JavaUtils.toRequestBody(if(longitude == 0.0) userLocation.long else longitude.toString())
@@ -790,38 +807,23 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
     private fun isValidate(): Boolean {
         with(binding) {
 
-          /*  if (etProductName.text!!.toString().trim().isNotBlank()) {
-                textView6.isErrorEnabled = false
-            }*/
-           /* if (PROD_CONDITION == ""){
-                showToast("Please select a condition of product")
-                conditionTxt.error = "Please select a condition of product"
-            }
-*/
             return when {
                 etProductName.text!!.toString().trim().isBlank() -> {
                     application.showToast("Please Enter Product Name")
                     false
                 }
-                PROD_CATEGORY == "" || PROD_CATEGORY == "No Data" -> {
-//                    cateogoryTxt.error = "Please select category of product"
-                    showToast("Please select category of product or refresh it on home page!")
+                conditionActv.text!!.toString().trim().isBlank() -> {
+                    conditionActv.error = "Select Condition of the Product"
                     false
                 }
-                PROD_CONDITION == "" -> {
-//                    conditionTxt.error = "Please Select condition of product"
-                    showToast("Please select condition of product!")
+                catActv.text!!.toString().trim().isBlank() -> {
+                    catActv.error = "Select Category of the Product"
                     false
                 }
-                PROD_USED_FOR == "" -> {
-                    showToast("Please select used for!")
+                usedforActv.text!!.toString().trim().isBlank() -> {
+                    usedforActv.error = "Select Used for"
                     false
                 }
-//                etProductBrand1.text.toString() == "" -> {
-////                    etProductBrand1.error = "Please select used for"
-//                    showToast("Please price of the product!")
-//                    false
-//                }
                 TYPE == "paid" && etPriceOfTheProduct.text.toString() == "" ->
                 {
                     showToast("Please enter price of the product!")
@@ -832,36 +834,6 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                     showToast("Please enter description!")
                     false
                 }
-
-                /*genderSpinner.selectedItem.toString() == resources.getString(R.string.select_gender) -> {
-                    showToast("Please Select Gender")
-                    false
-                }
-                categorySpinner.selectedItem.toString() == resources.getString(R.string.select_category) -> {
-                    showToast("Please Select Category")
-                    false
-                }
-                etBrand.text!!.toString().trim().isBlank() -> {
-                    textInputBrand.error = "Please Enter Brand Name"
-                    false
-                }
-                productAgeSpinner.selectedItem.toString() == resources.getString(R.string.select_age) -> {
-                    showToast("Please Select Age")
-                    false
-                }
-                productConditionSpinner.selectedItem.toString() == resources.getString(R.string.select_condition) -> {
-                    showToast("Please Select Condition")
-                    false
-                }
-                etLocation.text!!.toString().trim().isBlank() -> {
-                    textInputLocation.error = "Please Enter Product Location"
-                    false
-                }
-                etDescription.text!!.toString().trim().isBlank() -> {
-                    textInputDescription.error = "Please Enter Product Description"
-                    false
-                }*/
-
                 descEdt.text!!.toString().trim().length > 300 -> {
 //                    descEdt.error =
                         application.showToast("Please Enter Product Description less than 300 characters")
@@ -899,8 +871,8 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         for (i in 0 until listConditon.size) listConditon[i].isSelect = i == position
         PROD_CONDITION = listConditon[position].name.toString()
 
-        binding.conditionSelectedTxt.text = listConditon[position].name
-        binding.conditionSelectedTxt.visibility = View.VISIBLE
+//        binding.conditionSelectedTxt.text = listConditon[position].name
+//        binding.conditionSelectedTxt.visibility = View.VISIBLE
 
         condtionAdapter.notifyDataSetChanged()
         alertDialog.dismiss()
@@ -910,8 +882,8 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         for (i in 0 until list.size) list[i].isSelect = i == position
         PROD_USED_FOR = list[position].name.toString()
 
-        binding.usedForSelectedTxt.text = PROD_USED_FOR
-        binding.usedForSelectedTxt.visibility = View.VISIBLE
+//        binding.usedForSelectedTxt.text = PROD_USED_FOR
+//        binding.usedForSelectedTxt.visibility = View.VISIBLE
 
         alertAdaper.notifyDataSetChanged()
         alertDialog.dismiss()

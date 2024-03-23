@@ -214,6 +214,7 @@
                 android:text="Add a title for your listing"
                 android:textColor="@color/title_color"
                 android:textSize="@dimen/sp_16"
+                android:visibility="gone"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.12"
@@ -222,27 +223,26 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textView6"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/textView5"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView5">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_product_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
                     android:fontFamily="@font/montserrat_semi_bold"
                     android:hint="@string/new_product_name"
                     android:imeOptions="actionNext"
                     android:inputType="textCapSentences"
                     android:maxLength="40"
                     android:maxLines="1"
-                    android:paddingStart="4dp"
-                    android:paddingEnd="16dp"
                     android:textColor="@color/title_color"
                     android:textColorHint="@color/background"
                     android:textSize="@dimen/sp_16" />
@@ -275,11 +275,11 @@
                 app:layout_constraintEnd_toEndOf="@+id/textView6"
                 app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
+
             <LinearLayout
                 android:id="@+id/catgoryLinearLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:orientation="vertical"
                 android:paddingTop="5dp"
@@ -288,10 +288,69 @@
                 app:layout_constraintStart_toStartOf="@+id/textView6"
                 app:layout_constraintTop_toBottomOf="@+id/textView8">
 
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="Categories"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/catActv"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:inputType="none"
+                        tools:text="Happy" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="Condition of the Product"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView"
+                    >
+
+                    <AutoCompleteTextView
+                        android:id="@+id/conditionActv"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:inputType="none"
+                        tools:text="Happy" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="Used For"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/usedforActv"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:inputType="none"
+                        tools:text="Happy" />
+                </com.google.android.material.textfield.TextInputLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="gone">
 
 
                     <EditText
@@ -326,115 +385,16 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/conditionLinearLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:orientation="vertical"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/catgoryLinearLayout"
-                app:layout_constraintTop_toBottomOf="@+id/catgoryLinearLayout">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <EditText
-                        android:id="@+id/conditionTxt"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="9"
-                        android:background="@color/transparent"
-                        android:editable="false"
-                        android:fontFamily="@font/montserrat_medium"
-                        android:text="Condition of Product"
-                        android:textColor="@color/title_color"
-                        android:textSize="15sp" />
-
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:src="@drawable/ic_drop_down" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/conditionSelectedTxt"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/montserrat_semi_bold"
-                    android:text="Electronics"
-                    android:textColor="@color/title_color"
-                    android:textSize="16sp"
-                    android:visibility="gone" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/usedForLinearLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:orientation="vertical"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/conditionLinearLayout"
-                app:layout_constraintTop_toBottomOf="@+id/conditionLinearLayout">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <EditText
-                        android:id="@+id/usedForTxt"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="9"
-                        android:background="@color/transparent"
-                        android:editable="false"
-                        android:fontFamily="@font/montserrat_medium"
-                        android:text="Used For"
-                        android:textColor="@color/title_color"
-                        android:textSize="15sp" />
-
-                    <ImageView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:src="@drawable/ic_drop_down" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/usedForSelectedTxt"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/montserrat_semi_bold"
-                    android:text="Electronics"
-                    android:textColor="@color/title_color"
-                    android:textSize="16sp"
-                    android:visibility="gone" />
-            </LinearLayout>
-
-            <LinearLayout
                 android:id="@+id/linearLayout5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:orientation="vertical"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/usedForLinearLayout"
-                app:layout_constraintTop_toBottomOf="@+id/usedForLinearLayout">
+                app:layout_constraintStart_toStartOf="@+id/catgoryLinearLayout"
+                app:layout_constraintTop_toBottomOf="@+id/catgoryLinearLayout">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -446,6 +406,7 @@
                     android:textSize="@dimen/sp_16" />
 
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -457,7 +418,6 @@
                         android:id="@+id/et_product_brand"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
                         android:fontFamily="@font/montserrat_semi_bold"
                         android:hint="@string/type_here"
                         android:imeOptions="actionNext"
@@ -482,6 +442,7 @@
                 android:text="Description - Share your story"
                 android:textColor="@color/title_color"
                 android:textSize="@dimen/sp_16"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="@+id/linearLayout5"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout51" />
 
@@ -489,6 +450,7 @@
                 android:id="@+id/linearLayout51"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginTop="2dp"
                 android:layout_weight="9"
                 android:orientation="vertical"
                 android:paddingTop="10dp"
@@ -525,8 +487,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal"
-                        >
+                        android:orientation="horizontal">
 
                         <TextView
                             android:id="@+id/free_btn"
@@ -566,6 +527,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/priceEdit"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -577,7 +539,6 @@
                         android:id="@+id/et_price_of_the_product"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
                         android:fontFamily="@font/montserrat_semi_bold"
                         android:hint="Price of the product"
                         android:imeOptions="actionNext"
@@ -594,38 +555,34 @@
 
             </LinearLayout>
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/cardView3"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toTopOf="@+id/textView10"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/textView9"
+                app:layout_constraintStart_toStartOf="@+id/linearLayout51"
                 app:layout_constraintTop_toBottomOf="@+id/textView9">
 
-                <ScrollView
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/descEdt"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="100dp"
+                    android:fontFamily="@font/montserrat_semi_bold"
+                    android:hint="Desription of the product"
+                    android:imeOptions="actionNext"
+                    android:inputType="textCapSentences"
+                    android:maxLength="300"
+                    android:maxLines="1"
+                    android:textColor="@color/title_color"
+                    android:textColorHint="@color/background"
+                    android:textSize="@dimen/sp_16" />
 
-                    <EditText
-                        android:id="@+id/descEdt"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_margin="8dp"
-                        android:background="@android:color/transparent"
-                        android:fontFamily="@font/montserrat_semi_bold"
-                        android:gravity="top"
-                        android:hint="Eg- Ladies Bag, bought it on my first foreign trip in running condition.\n\nGive close description of the item as possible to increase the response"
-                        android:maxLength="300"
-                        android:textColor="@color/title_color"
-                        android:textSize="16sp" />
-                </ScrollView>
+            </com.google.android.material.textfield.TextInputLayout>
 
-
-            </androidx.cardview.widget.CardView>
 
             <TextView
                 android:id="@+id/textView10"

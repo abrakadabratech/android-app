@@ -15,8 +15,10 @@ import com.oss.abraakadabraaapp.datasource.products.GetProducts
 import com.oss.abraakadabraaapp.model.AccountDeleteResponse
 import com.oss.abraakadabraaapp.model.DeleteAll
 import com.oss.abraakadabraaapp.model.DeleteMultiple
+import com.oss.abraakadabraaapp.model.InitChatResponce
 import com.oss.abraakadabraaapp.model.NotificationResponse
 import com.oss.abraakadabraaapp.model.ReadNotificationResponse
+import com.oss.abraakadabraaapp.model.UserChatBlock
 import com.oss.abraakadabraaapp.model.UserProfile
 import com.oss.abraakadabraaapp.response.authResponse.*
 import com.oss.abraakadabraaapp.response.commonResponse.CommonResponse
@@ -488,7 +490,27 @@ interface APIs {
     @POST("user/account/delete")
     suspend fun deleteUserAccount() : Response<AccountDeleteResponse>
 
-    @GET("/user/public-profile/{id}")
+    @GET("user/public-profile/{id}")
     suspend fun viewProfile(@Path("id") id: String) : Response<UserProfile>
+
+    @POST("user/product/{id}/chat/init")
+    suspend fun initChat(@Path("id") id:String)
+    :Response<InitChatResponce>
+
+    @POST("user/chat/{chat_id}/report")
+    suspend fun reportChat(@Path("chat_id") id:String,@Body body: HashMap<String, String>)
+            :Response<UserChatBlock>
+
+    @POST("user/chat/{chat_id}/close")
+    suspend fun closeChatSession(@Path("chat_id") id:String)
+            :Response<UserChatBlock>
+
+    @POST("user/chats/block")
+    suspend fun userChatBlock(@Body body: HashMap<String, String>)
+    :Response<UserChatBlock>
+
+    @POST("user/chats/un-block")
+    suspend fun userChatUnBlock(@Body body: HashMap<String, String>)
+            :Response<UserChatBlock>
 
 }

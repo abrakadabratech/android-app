@@ -2,7 +2,11 @@ package com.oss.abraakadabraaapp.retrofit.api
 
 import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.datasource.products.GetProducts
+import com.oss.abraakadabraaapp.model.BlockedUsersListResponse
+import com.oss.abraakadabraaapp.model.BuyerListResponse
 import com.oss.abraakadabraaapp.model.NotificationResponse
+import com.oss.abraakadabraaapp.model.SellerChatListResponse
+import com.oss.abraakadabraaapp.model.SellersListReponse
 import com.oss.abraakadabraaapp.response.productRequestResponse.RequestsResponse
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -47,12 +51,22 @@ interface APIService {
     @GET("app/user/notifications")
     suspend fun getAllNotifications(@Query("page") page: Int) : Response<NotificationResponse>
 
-    @GET("/3/discover/movie")
-    suspend fun getMovieListAsync(
-        @Query("sort_by") sort_by: String,
-        @Query("page") page: Int = 1,
-        @Query("api_key") api_key: String = "a3674b222a9813d0520b204500146b8a"
-    ): Response<DiscoverResult>
+
+    @GET("users/giver/chats/products")
+    suspend fun getSellerProductsList(@Query("pageNumber") page: Int,@Query("pageSize") pageSize: Int)
+    : Response<SellersListReponse>
+
+    @GET("users/receiver/chats/list")
+    suspend fun getBuyerProductsList(@Query("pageNumber") page: Int,@Query("pageSize") pageSize: Int)
+            : Response<BuyerListResponse>
+
+    @GET("users/giver/chats/product/{id}")
+    suspend fun getSellerChatList(@Path("id") id:String,@Query("pageNumber") page: Int,@Query("pageSize") pageSize: Int)
+            : Response<SellerChatListResponse>
+
+    @GET("user/list/blocked-users")
+    suspend fun getBlockerUsers(@Query("pageNumber") page: Int,@Query("pageSize") pageSize: Int)
+            : Response<BlockedUsersListResponse>
 
     companion object {
         val loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)

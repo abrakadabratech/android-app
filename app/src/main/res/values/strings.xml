@@ -202,9 +202,10 @@
     <string name="title_account">Account</string>
     <string name="title_menu">Menu</string>
     <string name="title_chats">Chats</string>
+    <string name="sell">Sell</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="new_product_name">For example  - Toys, Shoe , Book</string>
+    <string name="new_product_name">Add a title for your listing</string>
     <string name="type_here">Type here...</string>
     <string name="ensuring_user"><b>Important :</b> Please ensure that none of the below items are uploaded : \n\nToxic, Weapons, Alcohol, Fireworks, Narcotics, Medicines, Edibles"</string>
     <string name="avoid_content">1. Ensure that you take necessary precautions if meeting the giver to receive the product.\n\n2. While receiving the product, verify the content of the package.\n\n3. No money should be charged by giver to give you the product. </string>

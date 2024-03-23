@@ -20,7 +20,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/app_name"
+        android:text="Sell"
+        android:textColor="@color/new_text_color"
+        android:gravity="center"
+        android:fontFamily="@font/montserrat_bold"
         android:src="@drawable/add_product_fab"
+        app:layout_anchorGravity="bottom|right|end"
         app:tint="@color/blue_status_bar_color"
         app:layout_anchor="@id/bottomAppBar" >
     </com.google.android.material.floatingactionbutton.FloatingActionButton>

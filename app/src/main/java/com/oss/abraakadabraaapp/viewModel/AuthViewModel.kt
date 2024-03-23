@@ -18,7 +18,9 @@ import com.oss.abraakadabraaapp.datasource.products.GetProducts
 import com.oss.abraakadabraaapp.model.AccountDeleteResponse
 import com.oss.abraakadabraaapp.model.DeleteAll
 import com.oss.abraakadabraaapp.model.DeleteMultiple
+import com.oss.abraakadabraaapp.model.InitChatResponce
 import com.oss.abraakadabraaapp.model.ReadNotificationResponse
+import com.oss.abraakadabraaapp.model.UserChatBlock
 import com.oss.abraakadabraaapp.model.UserProfile
 import com.oss.abraakadabraaapp.response.authResponse.*
 import com.oss.abraakadabraaapp.response.commonResponse.CommonResponse
@@ -1326,6 +1328,123 @@ fun getRequestDetails(
             isLoading.value = false
         }
     }
+
+    var iniChatSuccess = MutableLiveData<InitChatResponce>()
+    fun iniChat(id:String) {
+
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.iniChat(id)
+
+
+            callApi(::call, object : CallHelper<InitChatResponce> {
+                override fun onSuccessful(data: InitChatResponce) {
+                    iniChatSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+        }
+    }
+
+    var closeChatSessionSuccess = MutableLiveData<UserChatBlock>()
+    fun closeChatSession(id:String) {
+
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.closeChatSession(id)
+
+
+            callApi(::call, object : CallHelper<UserChatBlock> {
+                override fun onSuccessful(data: UserChatBlock) {
+                    closeChatSessionSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+        }
+    }
+
+    var reportChatSuccess = MutableLiveData<UserChatBlock>()
+    fun reportChat(id:String,body: HashMap<String, String>) {
+
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.reportChat(id,body)
+
+
+            callApi(::call, object : CallHelper<UserChatBlock> {
+                override fun onSuccessful(data: UserChatBlock) {
+                    reportChatSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+        }
+    }
+
+    var userChatBlockSuccess = MutableLiveData<UserChatBlock>()
+    fun userChatBlock(body: HashMap<String, String>) {
+
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.userChatBlock(body)
+
+
+            callApi(::call, object : CallHelper<UserChatBlock> {
+                override fun onSuccessful(data: UserChatBlock) {
+                    userChatBlockSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+        }
+    }
+
+    var userChatUnBlockSuccess = MutableLiveData<UserChatBlock>()
+    fun userChatUnBlock(body: HashMap<String, String>) {
+
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.userChatUnBlock(body)
+
+
+            callApi(::call, object : CallHelper<UserChatBlock> {
+                override fun onSuccessful(data: UserChatBlock) {
+                    userChatUnBlockSuccess.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+        }
+    }
+
+
 
     var readNotificationSuccess = MutableLiveData<ReadNotificationResponse>()
 

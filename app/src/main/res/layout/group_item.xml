@@ -22,23 +22,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/subRvChats"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/postedBy" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/postedBy"
             android:layout_width="match_parent"
-            android:layout_height="96dp"
+            android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_medium"
             android:text="Alex M"
             android:textSize="16sp"
@@ -52,8 +39,10 @@
                 android:layout_height="70dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:visibility="gone"
+                android:layout_marginBottom="8dp"
+                android:visibility="visible"
                 app:cardCornerRadius="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -70,51 +59,15 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="16dp"
                 android:fontFamily="@font/montserrat_bold"
                 android:text="Jane"
                 android:textColor="@color/title_color"
                 android:textSize="@dimen/sp_16"
-                app:layout_constraintBottom_toTopOf="@+id/postedByUser"
-                app:layout_constraintEnd_toStartOf="@+id/arrow"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/cancelledTxt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="4dp"
-                android:fontFamily="@font/montserrat_medium"
-                android:text="Cancelled"
-                android:textColor="@color/status_declined"
-                android:textSize="10sp"
-                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/cardView6"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/cardView6"
                 app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/arrow"
-                android:layout_width="40dp"
-                android:layout_height="20dp"
-                android:layout_marginEnd="8dp"
-                android:src="@drawable/ic_drop_down"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/postedByUser"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/montserrat_bold"
-                android:text="Posted By "
-                android:textColor="@color/hint_color"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/userName"
-                app:layout_constraintTop_toBottomOf="@+id/userName" />
 
             <TextView
                 android:id="@+id/unreadCount"
@@ -122,13 +75,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="0"
-                android:textSize="10sp"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:visibility="gone"
-                android:fontFamily="@font/montserrat_semi_bold"
                 android:background="@drawable/circle_for_unread_count"
+                android:fontFamily="@font/montserrat_semi_bold"
+                android:gravity="center"
+                android:text="0"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>

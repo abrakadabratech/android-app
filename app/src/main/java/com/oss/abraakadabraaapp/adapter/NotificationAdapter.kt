@@ -25,7 +25,8 @@ import java.util.Calendar
 
 class NotificationAdapter(
     var context: Context, val lifecycleOwner: LifecycleOwner, val handleListenr: HandleClicks
-) : PagingDataAdapter<Notifications, NotificationAdapter.NotificationAdapterVH>(ProductDifferntiator) {
+) :
+    PagingDataAdapter<Notifications, NotificationAdapter.NotificationAdapterVH>(ProductDifferntiator) {
 
     val selectedItems = ObservableArrayList<Int>()
     var isMultiSelectMode: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -35,36 +36,6 @@ class NotificationAdapter(
     override fun onBindViewHolder(holder: NotificationAdapterVH, position: Int) {
 
         holder.bindTo(this, getItem(position))
-
-        /*val model = getItem(position)!!
-        val isSelected = selectedItems.contains(position)
-
-
-
-        holder.itemView.setOnLongClickListener{
-
-            if (isSelected) {
-                selectedItems.remove(position)
-            } else {
-                selectedItems.add(position)
-            }
-            notifyItemChanged(position)
-            isLongClickEnabled = true
-
-            markSelectedItem(position)
-            return@setOnLongClickListener true
-        }
-        holder.itemView.setOnClickListener {
-            deselectItem(position)
-            val dataModel = model.data
-            if (isSelected) {
-                selectedItems.remove(position)
-            } else {
-                selectedItems.add(position)
-            }
-            notifyItemChanged(position)
-           *//* *//*
-        }*/
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationAdapterVH {
@@ -83,10 +54,6 @@ class NotificationAdapter(
 
         var photo: Notifications? = null
         private lateinit var adapter: NotificationAdapter
-
-        /**
-         * Binds the parent adapter and the photo to the ViewHolder.
-         */
         fun bindTo(adapter: NotificationAdapter, model: Notifications?) {
             this.adapter = adapter
 
@@ -244,6 +211,13 @@ class NotificationAdapter(
         }
     }
 
+    interface HandleClicks {
+        fun enableOptions()
+
+        fun onItemClick(notification: Notifications)
+
+    }
+
     fun disableSelection() {
         selectedItems.clear()
         isMultiSelectMode.postValue(false)
@@ -301,11 +275,5 @@ class NotificationAdapter(
         return items
     }
 
-    interface HandleClicks {
-        fun enableOptions()
-
-        fun onItemClick(notification: Notifications)
-
-    }
 
 }

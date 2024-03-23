@@ -21,6 +21,8 @@ import com.oss.abraakadabraaapp.activities.newflow.adapters.ChatAdapter
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ExpandableAdapter
 import com.oss.abraakadabraaapp.databinding.ChatRowBinding
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.viewModel.SellerProductListViewModel
+import com.oss.abraakadabraaapp.viewmodelfactory.BuyerChatListViewModelFactory
 import java.util.*
 
 
@@ -30,6 +32,9 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
     private lateinit var  nodata : TextView
     private lateinit var oldChatText: TextView
     private lateinit var oldChats: RecyclerView
+
+    private lateinit var viewModel: BuyerChatListViewModelFactory
+    private lateinit var adapter: ExpandableAdapter
 
     private val TAG = "ReceivingChatsFragment"
 //    private lateinit var firestoreUserAdapter: FirestoreRecyclerAdapter<ChatListModel, UsersViewholder>
@@ -82,7 +87,7 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
 
                     // Now 'groupedItems' contains items grouped by category
                     // You can iterate through it and do whatever you need
-                    Log.d(TAG, "setUpRecyclerview: ${Gson().toJson(groupedItems)}")
+                    /*Log.d(TAG, "setUpRecyclerview: ${Gson().toJson(groupedItems)}")
                     for ((category, items) in groupedItems) {
                         // Process each category and its items
                         if (items.size > 0) {
@@ -97,8 +102,8 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
                                 )
                             )
                         }
-                    }
-                    val adapter = ExpandableAdapter(
+                    }*/
+                   /* val adapter = ExpandableAdapter(
                         requireContext(),
                         groupChats,
                         currentUserId,
@@ -106,7 +111,7 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
                     )
                     rvChats.adapter = adapter
                     rvChats.layoutManager = LinearLayoutManager(requireContext())
-                    println("Category: $groupChats,")
+                    println("Category: $groupChats,")*/
                 }
 
             }
