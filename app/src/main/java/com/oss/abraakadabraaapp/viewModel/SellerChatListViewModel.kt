@@ -6,12 +6,12 @@ import androidx.paging.PagingConfig
 import com.oss.abraakadabraaapp.datasource.SellerChatListDataSource
 import com.oss.abraakadabraaapp.retrofit.api.APIService
 
-class SellerChatListViewModel(private val api: APIService) : ViewModel() {
+class SellerChatListViewModel(private val api: APIService,private val id:String) : ViewModel() {
 
     val notificationList = Pager(
         PagingConfig(
             pageSize = 10,
-        ), pagingSourceFactory = { SellerChatListDataSource(api) }
+        ), pagingSourceFactory = { SellerChatListDataSource(api,id) }
     ).flow
 
 }

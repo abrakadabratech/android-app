@@ -18,7 +18,7 @@ data class SellerChatList(
 data class Product1(
     val name: String,
     @SerializedName("posted_at")
-    val postedAt: String,
+    val postedAt: Timestamp1,
     val image: String,
     val description: String,
 )

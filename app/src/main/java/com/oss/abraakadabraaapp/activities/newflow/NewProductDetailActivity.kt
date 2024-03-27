@@ -58,11 +58,9 @@ import io.reactivex.rxjava3.annotations.NonNull
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Locale
 
-
 class NewProductDetailActivity : BaseActivity() {
     private lateinit var binding: ActivityNewProductDetailBinding
     private lateinit var productId: String
-
 
     private val mainViewModel: AuthViewModel by viewModel()
     private var productDetails: ProductDetailsData? = null
@@ -99,7 +97,6 @@ class NewProductDetailActivity : BaseActivity() {
             }
         }
 
-
         setUpObserver()
 
         mainViewModel.requestRemains(BuildConfig.VERSION_CODE)
@@ -107,7 +104,13 @@ class NewProductDetailActivity : BaseActivity() {
 
         binding.requestBtn.setOnClickListener {
             postClick(Constants.BUTTON_REQUEST_IN_DETAILS_PAGE)
-            navigateToNext()
+            if (productDetails?.data?.chatNode != null){
+                val intent = Intent(this,ChatDetailActivity::class.java)
+                intent.putExtra(Constants.CHATS_DATA,productDetails?.data?.chatNode)
+                startActivity(intent)
+            }else{
+                navigateToNext()
+            }
 //            loader(true)
            /* val adRequest = AdRequest.Builder().build()
             RewardedAd.load(this,"ca-app-pub-6795450348346297/6589674050",
@@ -170,7 +173,7 @@ class NewProductDetailActivity : BaseActivity() {
                 }
             })
 */
-            showToast("Will take us to the Chat screen")
+//            showToast("Will take us to the Chat screen")
         }
 
         binding.ivMenu.setOnClickListener {
@@ -227,16 +230,20 @@ class NewProductDetailActivity : BaseActivity() {
 
     private fun navigateToNext() {
         val userInfo = PreferencesManagement.getUserInfo(this)
-        if (userInfo?.data?.status == "not verified"){
+
+        if(userInfo?.data?.status == "not verified"){
             //Show a pop up that is not verified yet
             showNotActivePopUp()
-        }else if (userInfo?.data?.status == "pending"){
+        }
+        else if (userInfo?.data?.status == "pending"){
             showPendingPopUp("Your profile is pending for verification please wait till it's get verified, thank you.")
-        }else if(!isRequestAllowed){
+        }
+        else if(!isRequestAllowed){
             //show popup ur requests are end for today
             showPendingPopUp("Oops! It looks like you've reached your daily limit of two product requests. Don't worry, you'll be able to make new requests starting again at 12:00 AM tomorrow. We appreciate your enthusiasm and thank you for using our app! See you tomorrow for more exciting products.")
-        }else{
-            val intent = Intent(this,PostedUserActivity::class.java)
+        }
+        else{
+            val intent = Intent(this, PostedUserActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             intent.putExtra(Constants.PRODUCT,Gson().toJson(productDetails))
             intent.putExtra(Constants.REQUEST_ALLOWED,isRequestAllowed)
@@ -455,23 +462,14 @@ class NewProductDetailActivity : BaseActivity() {
         }else{
             binding.priceAmount.visibility = View.VISIBLE
             binding.priceTxt.visibility = View.VISIBLE
-            binding.priceAmount.text = it.data.price.toString()
+            binding.priceAmount.text = "Rs ${it.data.price.toString()}"
         }
 
         if (it.data.isRequested) {
-            binding.requestBtn.setText("Requested")
-            binding.requestBtn.isEnabled = false
-            //binding.chatBtn.isEnabled = true
-
-
-//            binding.chatBtn.visibility = View.VISIBLE
+            binding.requestBtn.setText("Chat")
+            binding.requestBtn.isEnabled = true
         }
-        if (it.data.isReported!!) {
-            /* binding.reportThis.setText("Reported")
-            binding.reportThis.setTextColor(resources.getColor(R.color.status_declined))*/
-//            binding.reportThis.isEnabled = false
-//            binding.chatBtn.visibility = View.GONE
-//            binding.chatBtn.isEnabled = false
+        if (it.data.isReported) {
             binding.chatBtn.background = resources.getDrawable(R.drawable.white_chat_disabled_bg)
 
         }

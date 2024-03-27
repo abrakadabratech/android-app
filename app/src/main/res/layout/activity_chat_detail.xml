@@ -158,18 +158,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
-        android:text="online"
-        android:visibility="gone"
         android:fontFamily="@font/montserrat_medium"
-        android:textSize="12sp"
+        android:text="online"
         android:textColor="@color/title_color"
+        android:textSize="12sp"
+        android:visibility="visible"
         app:layout_constraintStart_toStartOf="@+id/chatName"
         app:layout_constraintTop_toBottomOf="@+id/chatName" />
 
     <ImageView
         android:id="@+id/optionMenu"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:layout_marginTop="17dp"
         android:layout_marginEnd="18dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -181,6 +181,7 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginTop="7dp"
+        android:visibility="invisible"
         android:background="#DFDFDF"
         app:layout_constraintEnd_toEndOf="@+id/optionMenu"
         app:layout_constraintStart_toStartOf="@+id/ivBack"
@@ -191,22 +192,40 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Ladies Hand Bag"
-        android:fontFamily="@font/montserrat_medium"
-        android:textSize="16sp"
+        android:fontFamily="@font/montserrat_semi_bold"
+        android:text="Product Name"
         android:textColor="#727C8E"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="@+id/textView128"
         app:layout_constraintTop_toBottomOf="@+id/textView128" />
+
+    <TextView
+        android:id="@+id/markBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/btn_bg_rounded_rect"
+        android:fontFamily="@font/montserrat_semi_bold"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="Mark as Delivered"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="10sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/productName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/productName" />
 
     <TextView
         android:id="@+id/textView130"
         android:layout_width="0dp"
         android:layout_height="2dp"
-        android:layout_marginTop="2dp"
-        android:textColor="#BFBBBB"
+        android:layout_marginTop="8dp"
+        android:background="#BFBBBB"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/productName" />
+        app:layout_constraintTop_toBottomOf="@+id/markBtn" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvChats"
@@ -257,7 +276,7 @@
         <EditText
             android:id="@+id/messageBox"
             android:layout_width="0dp"
-            android:layout_height="24dp"
+            android:layout_height="32dp"
             android:layout_weight="8"
             android:background="@color/transparent"
             android:ems="10"
@@ -278,6 +297,7 @@
         android:id="@+id/adView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:adSize="BANNER"
         app:adUnitId="ca-app-pub-6795450348346297/7631292984"
         app:layout_constraintBottom_toBottomOf="parent"

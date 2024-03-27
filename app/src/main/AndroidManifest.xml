@@ -55,10 +55,15 @@
         android:usesCleartextTraffic="true"
         tools:ignore="HardcodedDebugMode,LockedOrientationActivity">
         <activity
+            android:name=".activities.newflow.chat.SellerChatsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
+        <activity
             android:name=".activities.newflow.UserProfileActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar"/>
+            android:theme="@style/Theme.AbraaKaDabraa.NoActionBar" />
         <activity
             android:name=".activities.newflow.CropActivity"
             android:exported="false"

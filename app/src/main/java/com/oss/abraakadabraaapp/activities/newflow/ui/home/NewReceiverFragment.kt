@@ -142,6 +142,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         setUpObserver()
 
         clickEvents()
+        authViewModel.getAllCategoriesData()
 
         EventBus.getDefault().post(NOTIFICATION_REFRESH_EVENT)
 
@@ -382,6 +383,8 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
 
     private fun getProductFromServer(sortBy: String,type: String) {
 
+        Log.e(TAG, "getProductFromServer: Sort by :$sortBy  Type:$type", )
+
         if (application.isNetworkAvailable()) {
             val userLocation = PreferencesManagement.getUserLocation(requireContext())
 
@@ -389,11 +392,13 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             val token = PreferencesManagement.getAuthToken(requireContext())!!
             map["Authorization"] = token
 
+            val filters = PreferencesManagement.getFilters(requireContext())
+
             // Pagination Library
             if (sortBy == "latest") {
                 loadLatest(type)
             } else {
-
+                //Load nearest viewmodel
                 val viewModel =
                     ViewModelProvider(
                         this,
@@ -401,7 +406,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                             APIService.getApiService(),
                             50,
                             userLocation!!.lat.toDouble(),
-                            userLocation.long.toDouble(), sortBy,type
+                            userLocation.long.toDouble(), sortBy, filters?.type!!
                         )
                     )[MainFilterViewModel::class.java]
 
@@ -641,7 +646,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             allBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
             allBtn.background = null
 
-            filters?.type = "free"
+            filters?.type = TYPE
         }
         paidBtn.setOnClickListener {
             TYPE = "paid"
@@ -653,7 +658,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             allBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
             allBtn.background = null
 
-            filters?.type = "paid"
+            filters?.type = TYPE
         }
         allBtn.setOnClickListener {
             TYPE = "all"
@@ -665,7 +670,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             paidBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
             paidBtn.background = null
 
-            filters?.type = "all"
+            filters?.type = TYPE
         }
 
         val nearToMeTxt = dialogView.findViewById<TextView>(R.id.nearToMeTxt)

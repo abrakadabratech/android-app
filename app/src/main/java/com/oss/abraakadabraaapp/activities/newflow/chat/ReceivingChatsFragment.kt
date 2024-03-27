@@ -8,6 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -19,172 +24,82 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ChatAdapter
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ExpandableAdapter
+import com.oss.abraakadabraaapp.activities.newflow.adapters.SubAdapter
 import com.oss.abraakadabraaapp.databinding.ChatRowBinding
+import com.oss.abraakadabraaapp.databinding.FragmentReceivingChatsBinding
+import com.oss.abraakadabraaapp.retrofit.api.APIService
 import com.oss.abraakadabraaapp.utils.Constants
+import com.oss.abraakadabraaapp.viewModel.BuyerProductViewModel
 import com.oss.abraakadabraaapp.viewModel.SellerProductListViewModel
 import com.oss.abraakadabraaapp.viewmodelfactory.BuyerChatListViewModelFactory
+import com.oss.abraakadabraaapp.viewmodelfactory.SellerProductViewModelFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.util.*
 
 
 class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
     lateinit var application: BaseActivity
-    private lateinit var rvChats: RecyclerView
-    private lateinit var  nodata : TextView
-    private lateinit var oldChatText: TextView
-    private lateinit var oldChats: RecyclerView
+    private lateinit var binding:FragmentReceivingChatsBinding
 
-    private lateinit var viewModel: BuyerChatListViewModelFactory
-    private lateinit var adapter: ExpandableAdapter
+    private lateinit var viewModel: BuyerProductViewModel
+    private lateinit var adapter: SubAdapter
 
     private val TAG = "ReceivingChatsFragment"
-//    private lateinit var firestoreUserAdapter: FirestoreRecyclerAdapter<ChatListModel, UsersViewholder>
-
-    override fun onResume() {
-        super.onResume()
-        loadGroupedChats()
-    }
-
-    private fun loadGroupedChats() {
-        val db = Firebase.firestore
-        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
-
-
-        val collectionRef = db.collection("chats")
-            .whereEqualTo("product_receiver", currentUserId)
-            .orderBy("status", Query.Direction.ASCENDING)
-            .orderBy("time_stamp", Query.Direction.DESCENDING)
-
-        collectionRef
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                if (querySnapshot.isEmpty){
-                    val docRef = db.collection("chats").whereEqualTo("product_receiver",currentUserId)
-                    docRef.get().addOnSuccessListener { snap ->
-                        if(snap.isEmpty){
-                            nodata.visibility = View.VISIBLE
-                            oldChats.visibility = View.GONE
-                        }else{
-                            nodata.visibility = View.GONE
-                        }
-                    }                }else{
-                    nodata.visibility = View.GONE
-                    var groupChats = mutableListOf<GroupedChatListModel>()
-                    val groupedItems = mutableMapOf<String, List<ChatListModel>>()
-                    val chatNodes = mutableListOf<String>()
-                    for (document in querySnapshot.documents) {
-                        val item = document.toObject(ChatListModel::class.java)
-                        chatNodes.add(document.id)
-                        if (item != null) {
-                            val category = item.product_id.toString()
-
-                            if (groupedItems.containsKey(category)) {
-                                groupedItems[category] = groupedItems[category]!! + item
-                            } else {
-                                groupedItems[category] = listOf(item)
-                            }
-                        }
-                    }
-
-                    // Now 'groupedItems' contains items grouped by category
-                    // You can iterate through it and do whatever you need
-                    /*Log.d(TAG, "setUpRecyclerview: ${Gson().toJson(groupedItems)}")
-                    for ((category, items) in groupedItems) {
-                        // Process each category and its items
-                        if (items.size > 0) {
-                            groupChats.add(
-                                GroupedChatListModel(false,
-                                    category,
-                                    items[0].product.toString(),
-                                    items[0].sender_name.toString(),
-                                    items[0].product_image,
-                                    0,
-                                    items
-                                )
-                            )
-                        }
-                    }*/
-                   /* val adapter = ExpandableAdapter(
-                        requireContext(),
-                        groupChats,
-                        currentUserId,
-                        chatNodes
-                    )
-                    rvChats.adapter = adapter
-                    rvChats.layoutManager = LinearLayoutManager(requireContext())
-                    println("Category: $groupChats,")*/
-                }
-
-            }
-            .addOnFailureListener { exception ->
-                // Handle errors
-            }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        binding = FragmentReceivingChatsBinding.inflate(layoutInflater)
 
-        val view = inflater.inflate(R.layout.fragment_receiving_chats, container, false)
-        rvChats = view.findViewById(R.id.rvChats)
-        nodata = view.findViewById(R.id.nodata3)
-        oldChats = view.findViewById(R.id.oldChats)
-        oldChatText = view.findViewById(R.id.oldChatsTxt)
-
+        val view =  binding.root
         application = (activity as BaseActivity)
 
         application.postEvent(Constants.PAGE_RECEIVER_CHAT,null)
 
+        adapter = SubAdapter(requireContext())
+
+        binding.rvChats.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            addItemDecoration(DividerItemDecoration(requireContext(),LinearLayoutManager.VERTICAL))
+            adapter = this@ReceivingChatsFragment.adapter
+        }
+
+        viewModel = ViewModelProvider(
+            this,
+            BuyerChatListViewModelFactory(APIService.getApiService())
+        )[BuyerProductViewModel::class.java]
+
+        lifecycleScope.launch {
+            viewModel.notificationList.collectLatest { paginatedData ->
+
+                launch(Dispatchers.Main) {
+                    adapter.loadStateFlow.collectLatest { loadStates ->
+                        if (loadStates.refresh is LoadState.Loading) {
+                            binding.shimmer.visibility = View.VISIBLE
+                            binding.shimmer.startShimmer()
+                        } else {
+                            //shimmer OFF
+                            binding.shimmer.visibility = View.GONE
+                            binding.shimmer.stopShimmer()
+                            if (adapter.itemCount < 1) {
+                                binding.nodata3.visibility = View.VISIBLE
+                            } else {
+                                binding.nodata3.visibility = View.GONE
+                            }
+                        }
+                    }
+                }
+                adapter.submitData(lifecycle, PagingData.empty())
+                adapter.submitData(paginatedData)
+
+            }
+
+        }
         return view
     }
-/*
-    private fun setUpRecyclerview() {
-        val db = Firebase.firestore
-        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
-
-        val docRef = db.collection("chats").whereEqualTo("product_receiver",currentUserId)
-        val options: FirestoreRecyclerOptions<ChatListModel> = FirestoreRecyclerOptions.Builder<ChatListModel>()
-            .setQuery(docRef,ChatListModel::class.java)
-            .build()
-        val productInfoRef = db.collection("product_requests")
-
-        firestoreUserAdapter=object :FirestoreRecyclerAdapter<ChatListModel, UsersViewholder>(options){
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):UsersViewholder {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val listItemBinding = ChatRowBinding.inflate(layoutInflater, parent, false)
-                return UsersViewholder(listItemBinding)
-            }
-
-            override fun onBindViewHolder(holder: UsersViewholder, position: Int, model: ChatListModel) {
-                holder.bind(model)
-                holder.binding.productName.text = model.product
-                holder.binding.message.text = model.last_message
-                holder.binding.time.text = convertToTimestamp(model.time_stamp)
-                holder.binding.userName.text = model.sender_name
-                Glide.with(requireContext()).load(model.sender_avatar)
-                    .placeholder(resources.getDrawable(R.drawable.ic_profile))
-                    .into(holder.binding.profilePic)
-
-                if(model.status == "cancelled"){
-                    holder.binding.cancelledTxt.visibility = View.VISIBLE
-                }else{
-                    holder.binding.cancelledTxt.visibility = View.GONE
-                }
-                holder.itemView.setOnClickListener {
-                    if(model.status == "cancelled"){
-                        Toast.makeText(context,"Product Cancelled",Toast.LENGTH_SHORT).show()
-                    }else{
-                        navigateToChats(model)
-                    }
-
-                }
-            }
-        }
-        val layoutManager = WrapContentLinearLayoutManager(requireContext())
-        oldChats.layoutManager = layoutManager
-//        oldChats.adapter = firestoreUserAdapter
-    }
-*/
     private fun navigateToChats(model: ChatListModel) {
 
         val intent = Intent(requireContext(),ChatDetailActivity::class.java)

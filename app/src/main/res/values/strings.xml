@@ -208,7 +208,7 @@
     <string name="new_product_name">Add a title for your listing</string>
     <string name="type_here">Type here...</string>
     <string name="ensuring_user"><b>Important :</b> Please ensure that none of the below items are uploaded : \n\nToxic, Weapons, Alcohol, Fireworks, Narcotics, Medicines, Edibles"</string>
-    <string name="avoid_content">1. Ensure that you take necessary precautions if meeting the giver to receive the product.\n\n2. While receiving the product, verify the content of the package.\n\n3. No money should be charged by giver to give you the product. </string>
+    <string name="avoid_content">1. Ensure that you take necessary precautions if meeting the giver to receive the product.\n\n2. While receiving the product, verify the content of the package.\n\n3. No money should be charged by giver to give you the product if it is free. </string>
     <string name="posted_user_message">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</string>
 
     <string name="pay_as_you_go_content">Dear User, \n\n\nAbra Ka Dabra is started with a noble aim of creating a community for sharing with keeping the environment cleaner and saving our personal funds. \n\nWhile growing this community, we would appreciate your support by giving a small one-time or monthly amount which will help us in sustaining the application. \n\nThank you for trusting and supporting us.</string>

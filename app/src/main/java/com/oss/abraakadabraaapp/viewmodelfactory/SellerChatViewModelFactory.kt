@@ -5,12 +5,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.oss.abraakadabraaapp.retrofit.api.APIService
 import com.oss.abraakadabraaapp.viewModel.SellerChatListViewModel
 
-class SellerChatViewModelFactory(private val api: APIService): ViewModelProvider.Factory {
+class SellerChatViewModelFactory(private val api: APIService,private val id:String): ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SellerChatListViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return SellerChatListViewModel(api) as T
+            return SellerChatListViewModel(api,id) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -83,6 +83,7 @@ import okhttp3.RequestBody
 import org.greenrobot.eventbus.EventBus
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
+import kotlin.math.log
 
 
 class NewGiverFragment : BaseActivity(), ImageAdapter.ImageAdapterInterface,
@@ -192,6 +193,11 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
             binding.catActv.setAdapter(adapter)
             binding.conditionActv.setAdapter(adapter1)
             binding.usedforActv.setAdapter(adapter2)
+
+            binding.catActv.setOnItemClickListener { parent, view, position, id -> 
+                PROD_CATEGORY = userCatData.data[position].id.toString()
+                Log.d(TAG, "onCreate: $PROD_CATEGORY")
+            }
 
             val callback: ItemTouchHelper.Callback = ItemMoveCallback(imageAdapter)
             touchHelper = ItemTouchHelper(callback)
@@ -635,7 +641,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         success_ok_btn.setOnClickListener {
             application.postClick(Constants.BUTTON_I_ACCEPT)
-
+            alertDialog.dismiss()
             postNewProduct()
 
         }
@@ -664,7 +670,7 @@ CatMainAdapter.MainCategoryAdapterInterface, ConditionDialogAdapter.ConditionAda
                 if (userLocation != null){
                     val map = HashMap<String, RequestBody>()
                     map["name"] = JavaUtils.toRequestBody(binding.etProductName.text.toString().trim())
-                    map["category"] = JavaUtils.toRequestBody(binding.catActv.text.toString())
+                    map["category"] = JavaUtils.toRequestBody(PROD_CATEGORY)
                     map["description"] = JavaUtils.toRequestBody(binding.descEdt.text.toString().trim())
                     map["condition"] = JavaUtils.toRequestBody(binding.conditionActv.text.toString())
                     map["used_for"] = JavaUtils.toRequestBody(binding.usedforActv.text.toString())

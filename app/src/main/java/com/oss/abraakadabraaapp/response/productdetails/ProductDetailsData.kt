@@ -29,6 +29,7 @@ data class Products (
     @SerializedName("energy_saving" ) var energySaving : Int?              = 0,
     @SerializedName("isReported"    ) var isReported   : Boolean = false,
     @SerializedName("isRequested"   ) var isRequested  : Boolean = false,
+    @SerializedName("chatNode"   ) var chatNode  : String = "",
     @SerializedName("requestAccepted"   ) var requestedStatus  : Boolean = false,
     @SerializedName("created_at"    ) var createdAt    : String?           = null,
     @SerializedName("type"    ) var type    : String?           = "free",

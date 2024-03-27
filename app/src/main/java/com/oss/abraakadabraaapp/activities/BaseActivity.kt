@@ -36,6 +36,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GetTokenResult
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -520,35 +521,6 @@ abstract class BaseActivity : AppCompatActivity(), LocationListener {
     }
 
 
-    fun setUserOnline() {
-        if (FirebaseAuth.getInstance().currentUser?.uid != null) {
-            val userRef = db.collection("online_users")
-                .document(FirebaseAuth.getInstance().currentUser?.uid.toString())
-
-            userRef
-                .update("isOnline", true)
-                .addOnSuccessListener {
-                    // Update UI or perform other actions
-                }
-        }
-
-    }
-
-    // Set user as offline when the app is in the background or closed
-    fun setUserOffline() {
-        if (FirebaseAuth.getInstance().currentUser?.uid != null) {
-            val userRef =
-                db.collection("online_users")
-                    .document(FirebaseAuth.getInstance().currentUser?.uid.toString())
-
-            userRef
-                .update("isOnline", false, "lastOnlineTimestamp", FieldValue.serverTimestamp())
-                .addOnSuccessListener {
-                    // Update UI or perform other actions
-                }
-        }
-
-    }
 
    /* fun generateAuthToken(): String {
         val mUser = FirebaseAuth.getInstance().currentUser

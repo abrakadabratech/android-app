@@ -12,8 +12,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.paging.PagingData
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -25,6 +27,7 @@ import com.oss.abraakadabraaapp.activities.newflow.adapters.ChatAdapter
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ExpandableAdapter
 import com.oss.abraakadabraaapp.adapter.NotificationAdapter
 import com.oss.abraakadabraaapp.databinding.ChatRowBinding
+import com.oss.abraakadabraaapp.databinding.FragmentGivingChatsBinding
 import com.oss.abraakadabraaapp.datasource.NotificationViewModel
 import com.oss.abraakadabraaapp.datasource.NotificationViewModelFactory
 import com.oss.abraakadabraaapp.retrofit.api.APIService
@@ -37,38 +40,29 @@ import kotlinx.coroutines.launch
 
 class GivingChatsFragment : Fragment() {
     lateinit var application: BaseActivity
-    private lateinit var nodata: TextView
-    private lateinit var rvChats: RecyclerView
-    private lateinit var oldChatText: TextView
-    private lateinit var oldChats: RecyclerView
     private val TAG = "GivingChatsFragment"
 
+    private lateinit var binding : FragmentGivingChatsBinding
+
     private lateinit var viewModel: SellerProductListViewModel
-    private lateinit var adapter: ExpandableAdapter
-
-
-    override fun onResume() {
-        super.onResume()
-//        loadGroupedChats()
-    }
+    private lateinit var sellerAdapter: ExpandableAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_giving_chats, container, false)
+        binding = FragmentGivingChatsBinding.inflate(layoutInflater)
+        val view = binding.root
 
-        rvChats = view.findViewById(R.id.rvChats)
-        nodata = view.findViewById(R.id.nodata3)
-        oldChats = view.findViewById(R.id.oldChats)
-        oldChatText = view.findViewById(R.id.oldChatsTxt)
+
         application = (activity as BaseActivity)
 
-        adapter = ExpandableAdapter(requireContext())
+        sellerAdapter = ExpandableAdapter(requireContext())
 
-        rvChats.apply {
+        binding.rvChats.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = this.adapter
+            addItemDecoration(DividerItemDecoration(requireContext(),LinearLayoutManager.VERTICAL))
+            adapter = sellerAdapter
         }
 
         viewModel = ViewModelProvider(
@@ -83,24 +77,24 @@ class GivingChatsFragment : Fragment() {
             viewModel.notificationList.collectLatest { paginatedData ->
 
                 launch(Dispatchers.Main) {
-                    adapter.loadStateFlow.collectLatest { loadStates ->
+                    sellerAdapter.loadStateFlow.collectLatest { loadStates ->
                         if (loadStates.refresh is LoadState.Loading) {
-//                                    application.loader(true)
-                            //shimmer ON
-//                            binding.shimmerLayout.visibility = View.VISIBLE
-//                            binding.shimmerLayout.startShimmer()
+                            binding.shimmer.visibility = View.VISIBLE
+                            binding.shimmer.stopShimmer()
                         } else {
                             //shimmer OFF
-                            if (adapter.itemCount < 1) {
-                                nodata.visibility = View.VISIBLE
+                            binding.shimmer.visibility = View.GONE
+                            binding.shimmer.stopShimmer()
+                            if (sellerAdapter.itemCount < 1) {
+                                binding.nodata3.visibility = View.VISIBLE
                             } else {
-                                nodata.visibility = View.GONE
+                                binding.nodata3.visibility = View.GONE
                             }
                         }
                     }
                 }
-                adapter.submitData(lifecycle, PagingData.empty())
-                adapter.submitData(paginatedData)
+                sellerAdapter.submitData(lifecycle, PagingData.empty())
+                sellerAdapter.submitData(paginatedData)
 
             }
 

@@ -5,11 +5,16 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.ui.text.capitalize
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,16 +26,20 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.WriteBatch
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
+import com.oss.abraakadabraaapp.activities.newflow.MyPayAsYouGoActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
 import com.oss.abraakadabraaapp.activities.newflow.RequesterActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ChatMessageAdapter
@@ -59,6 +68,7 @@ import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
 
 
 class ChatDetailActivity : BaseActivity() {
@@ -66,7 +76,6 @@ class ChatDetailActivity : BaseActivity() {
     private lateinit var adapter: ChatMessageAdapter
     private var list: ArrayList<String> = ArrayList()
     var chatData: ChatListModel? = null
-    var data_from = ""
     var chatNode = ""
     private val TAG = "ChatDetailActivity"
     var firestoreUserAdapter: FirestoreRecyclerAdapter<ChatModel, UsersViewholder>? = null
@@ -74,6 +83,7 @@ class ChatDetailActivity : BaseActivity() {
 
     private lateinit var messageListener: ListenerRegistration
     private val firestore = FirebaseFirestore.getInstance()
+    val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,23 +109,25 @@ class ChatDetailActivity : BaseActivity() {
                 .update("deleted", true)
 
             loaddata()
+
         }
         if (intent.hasExtra(CHATS_DATA)) {
             binding.chatName.text = intent.extras?.getString(DISPLAY_NAME)
             Glide.with(this).load(intent.extras?.getString(DISPLAY_PIC))
                 .placeholder(resources.getDrawable(R.drawable.ic_profile))
                 .into(binding.profilePic)
+            /*
             chatData =
                 Gson().fromJson(intent.extras?.getString(CHATS_DATA, ""), ChatListModel::class.java)
             chatNode = chatData!!.product_id + Utility.setOneToOneChat(
                 chatData!!.sender_id.toString(),
                 chatData!!.receiver_id.toString()
-            )
+            )*/
+
+            chatNode = intent.extras?.getString(Constants.CHATS_DATA, "").toString()
 
             setUpRecycler(chatNode)
-        }
-        if (intent.hasExtra("data_from")) {
-            data_from = intent.getStringExtra("data_from")!!
+            loaddata()
         }
 
         LocalBroadcastManager.getInstance(this@ChatDetailActivity)
@@ -151,43 +163,48 @@ class ChatDetailActivity : BaseActivity() {
     }
 
     private fun showOnlineOrOffline() {
-        var document = ""
-        if (FirebaseAuth.getInstance().currentUser?.uid.toString() == chatData?.receiver_id) {
-            document = chatData?.sender_id.toString()
-        } else document = chatData?.receiver_id.toString()
+        val db = Firebase.firestore
+        val otherUser = if (currentUserId == chatData?.sender_id)  chatData?.receiver_id.toString() else  chatData?.sender_id.toString()
+        db.collection("online_users").document(otherUser)
+            .addSnapshotListener { value, error ->
 
-        val userRef =
-            db.collection("online_users").document(document)
+                Log.d(TAG, "onResume: ${value}")
+                Log.d(TAG, "onResume: ${error}")
 
-        userRef.addSnapshotListener { snapshot, e ->
-            if (e != null) {
-                Log.w(TAG, "Listen failed.", e)
-                return@addSnapshotListener
-            }
-
-            if (snapshot != null && snapshot.exists()) {
-                val isOnline = snapshot.getBoolean("isOnline") ?: false
-                // Update UI to reflect user presence (e.g., show a green dot if online)
-                if (isOnline) {
-                    binding.onlineStatus.text = "online"
-                    binding.onlineStatus.setTextColor(
-                        ContextCompat.getColor(
-                            this@ChatDetailActivity,
-                            R.color.status_accepted
+                if (value?.data != null){
+                    val isOnline: Boolean = value.data?.get("isOnline") as Boolean
+                    val isTyping: Boolean = value.data?.get("isTyping") as Boolean
+//            Log.d(TAG, "onResume: ${Gson().toJson(value)}")
+                    Log.e(TAG, "onResume: $error")
+                    if (isOnline) {
+                        binding.onlineStatus.text = "Online"
+                        binding.onlineStatus.setTextColor(
+                            ContextCompat.getColor(
+                                this,
+                                R.color.teal_200
+                            )
                         )
-                    )
-                } else {
-                    binding.onlineStatus.text = "offline"
-                    binding.onlineStatus.setTextColor(
-                        ContextCompat.getColor(
-                            this,
-                            R.color.status_declined
+                    } else {
+                        binding.onlineStatus.text = "Offline"
+                        binding.onlineStatus.setTextColor(
+                            ContextCompat.getColor(
+                                this,
+                                R.color.un_selected_color
+                            )
                         )
-                    )
+                    }
+
+                    if (isTyping) {
+                        binding.onlineStatus.setTextColor(
+                            ContextCompat.getColor(
+                                this,
+                                R.color.title_color
+                            )
+                        )
+                        binding.onlineStatus.text = "Typing..."
+                    }
                 }
-//                updateUi(isOnline)
             }
-        }
 
 
     }
@@ -233,9 +250,26 @@ class ChatDetailActivity : BaseActivity() {
         }
     }
 
+
+    // Set user as offline when the app is in the background or closed
+    fun setUserOffline() {
+        if (FirebaseAuth.getInstance().currentUser?.uid != null) {
+            val userRef =
+                db.collection("online_users")
+                    .document(FirebaseAuth.getInstance().currentUser?.uid.toString())
+
+            userRef
+                .update("isOnline", false, "lastOnlineTimestamp", FieldValue.serverTimestamp())
+                .addOnSuccessListener {
+                    // Update UI or perform other actions
+                    Log.d("TAG:::>", "setUserOnline: false")
+
+                }
+        }
+
+    }
     private fun loaddata() {
         val db = Firebase.firestore
-//            val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
         Log.d("Notification TAG", "onCreate: $chatNode")
         setUpRecycler(chatNode)
@@ -244,11 +278,35 @@ class ChatDetailActivity : BaseActivity() {
                 Log.d("Notification TAG", "onCreate: $value")
 
                 chatData = value?.toObject(ChatListModel::class.java)
-                binding.chatName.text = chatData!!.receiver_name.toString()
-                Glide.with(applicationContext).load(chatData!!.receiver_avatar)
-                    .placeholder(resources.getDrawable(R.drawable.ic_profile))
-                    .into(binding.profilePic)
-                binding.productName.text = chatData!!.product
+                if (currentUserId == chatData!!.sender_id) {
+                    binding.chatName.text = chatData!!.receiver_name.toString()
+                    Glide.with(applicationContext).load(chatData!!.receiver_avatar)
+                        .placeholder(resources.getDrawable(R.drawable.ic_profile))
+                        .into(binding.profilePic)
+                    binding.markBtn.text = "Mark as Delivered"
+                } else {
+                    binding.chatName.text = chatData!!.sender_name.toString()
+                    Glide.with(applicationContext).load(chatData!!.sender_avatar)
+                        .placeholder(resources.getDrawable(R.drawable.ic_profile))
+                        .into(binding.profilePic)
+                    binding.markBtn.text = "Mark as Received"
+
+                }
+                binding.productName.text = chatData!!.product?.capitalize(Locale.ROOT)
+
+//                if (chatData!!.status != "active" && currentUserId == chatData!!.sender_id){
+//                    binding.markBtn.text = "Delivered"
+//                    binding.markBtn.isEnabled = false
+//                    binding.markBtn.setTextColor(ContextCompat.getColor(this,R.color.text_color))
+//                    binding.markBtn.background =
+//                        resources.getDrawable(R.drawable.rounded_rect_white_gray_stroke)
+//                }else{
+//                    binding.markBtn.text = "Received"
+//                    binding.markBtn.isEnabled = false
+//                    binding.markBtn.setTextColor(ContextCompat.getColor(this,R.color.text_color))
+//                    binding.markBtn.background =
+//                        resources.getDrawable(R.drawable.rounded_rect_white_gray_stroke)
+//                }
 
 //                    application.showToast(info.toString())
             }
@@ -256,6 +314,21 @@ class ChatDetailActivity : BaseActivity() {
     }
 
     private fun setUpObserver() {
+
+        mainViewModel.updateProductRequest.observe(this) {
+//            Log.d("TAG - Product deails", "is it rue : ${productDetails.data.description}")
+
+            if (it.code == 200) {
+                showToast(it.responseMessage.toString())
+
+                if (it.data.request_status == "received") {
+
+                }
+                loaddata()
+            } else {
+                Log.d("TAG -", "setUpObserver: fail")
+            }
+        }
         mainViewModel.chatSuccess.observe(this) {
 
             if (it.code == 200) {
@@ -266,6 +339,12 @@ class ChatDetailActivity : BaseActivity() {
 
         }
 
+        mainViewModel.userChatBlockSuccess.observe(this) {
+            if (it.code == 200) {
+                finish()
+                showToast("User Blocked")
+            }
+        }
         mainViewModel.errorMessage.observe(this) {
 //            if (it.isNotBlank()) showToast(it)
         }
@@ -277,6 +356,19 @@ class ChatDetailActivity : BaseActivity() {
     }
 
     private fun clickEvents() {
+        binding.markBtn.setOnClickListener {
+            if (currentUserId == chatData?.sender_id) {
+                mainViewModel.updateProductRequest(
+                    chatData?.requestId.toString(),
+                    "received"
+                )
+            } else {
+                mainViewModel.updateProductRequest(
+                    chatData?.requestId.toString(),
+                    "delivered"
+                )
+            }
+        }
         binding.ivBack.setOnClickListener {
             postClick(BUTTON_BACK_CHAT_DETAILS)
             onBackPressed()
@@ -316,14 +408,61 @@ class ChatDetailActivity : BaseActivity() {
             }
 
         }
+        val handler = Handler(Looper.getMainLooper())
+
+        binding.messageBox.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                if (s.toString().isNotEmpty()) {
+                    // User started typing
+                    setUserTypingStatus(true)
+                    // Implement debounce mechanism
+                    handler.removeCallbacksAndMessages(null)
+                    handler.postDelayed({ setUserTypingStatus(false) }, 3000)
+                }
+            }
+        })
+    }
+
+    private fun setUserTypingStatus(isTyping: Boolean) {
+        // Update the typing status in Firebase for the current user
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        userId?.let { uid ->
+            val db = Firebase.firestore
+            val data = hashMapOf(
+                "isTyping" to isTyping
+            )
+            val ref = db.collection("online_users").document(currentUserId!!)
+            ref.update(data as Map<String, Any>)
+                .addOnSuccessListener { documentReference ->
+                    Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference}")
+                }
+                .addOnFailureListener { e ->
+                    Log.w(TAG, "Error adding document", e)
+                }
+            val typingRef = FirebaseDatabase.getInstance().getReference("typing").child(uid)
+            typingRef.setValue(isTyping)
+        }
     }
 
     private fun blockUser() {
-        showToast("Please cancel the request to block the user")
-        finish()
-        val intent = Intent(this, RequesterActivity::class.java)
-        intent.putExtra(Constants.productId, chatData?.requestId)
-        startActivity(intent)
+//        showToast("Please cancel the request to block the user")
+//        finish()
+//        val intent = Intent(this, RequesterActivity::class.java)
+//        intent.putExtra(Constants.productId, chatData?.requestId)
+//        startActivity(intent)
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+
+        val map = HashMap<String, String>()
+        if (currentUserId == chatData?.sender_id) {
+            map["block_user"] = chatData?.receiver_id.toString()
+        } else {
+            map["block_user"] = chatData?.sender_id.toString()
+        }
+        map["reason"] = "default"
+        mainViewModel.userChatBlock(map)
     }
 
     private fun deleteChat() {
@@ -378,13 +517,7 @@ class ChatDetailActivity : BaseActivity() {
             val c = Calendar.getInstance().time
             chatData!!.time_stamp = Timestamp.now()
 
-            if (data_from == "activity") {
-
-            }
-            chatNode = chatData!!.product_id!! + Utility.setOneToOneChat(
-                chatData!!.sender_id.toString(),
-                chatData!!.receiver_id.toString()
-            )
+            chatNode = chatNode
 
             db.collection("chats")
                 .document(chatNode)
@@ -398,10 +531,7 @@ class ChatDetailActivity : BaseActivity() {
                 }
 
             val chats = hashMapOf(
-                "chatNode" to Utility.setOneToOneChat(
-                    chatData!!.sender_id.toString(),
-                    chatData!!.receiver_id.toString()
-                ),
+                "chatNode" to chatNode,
                 "receiverId" to chatData!!.receiver_id,
                 "senderId" to sender_id,
                 "text" to message,
@@ -412,16 +542,16 @@ class ChatDetailActivity : BaseActivity() {
 
             db.collection("chats")
                 .document(
-                    chatData!!.product_id + Utility.setOneToOneChat(
-                        chatData!!.sender_id.toString(),
-                        chatData!!.receiver_id.toString()
-                    )
+                    chatNode
+
                 )
                 .collection("Messages")
                 .add(chats)
                 .addOnSuccessListener {
                     val notification_user =
-                        if (sender_id == chatData!!.sender_id.toString()) chatData!!.receiver_id.toString() else chatData!!.sender_id.toString()
+                        if (sender_id == chatData!!.sender_id.toString())
+                            chatData!!.receiver_id.toString()
+                        else chatData!!.sender_id.toString()
                     val map = HashMap<String, String>()
                     map["receiverId"] = notification_user //chatData["receiver_id"].toString()
                     map["message"] = message
@@ -429,10 +559,6 @@ class ChatDetailActivity : BaseActivity() {
                     map["productId"] = chatData?.product_id.toString()
                     mainViewModel.sendNotification(map)
                     Log.d("TAG - ", "sendToChat: chat posted")
-                    /*val intent = Intent(this,ChatDetailActivity::class.java)
-                    intent.putExtra(Constants.CHATS_DATA,chat_room)
-                    startActivity(intent)*/
-
                 }
                 .addOnFailureListener {
 
@@ -537,12 +663,32 @@ class ChatDetailActivity : BaseActivity() {
 
     override fun onStart() {
         super.onStart()
+        setUserOnline()
         firestoreUserAdapter?.startListening()
+
+
 //        EventBus.getDefault().register(this)
     }
 
+    fun setUserOnline() {
+        if (FirebaseAuth.getInstance().currentUser?.uid != null) {
+            val userRef = db.collection("online_users")
+                .document(FirebaseAuth.getInstance().currentUser?.uid.toString())
+
+            userRef
+                .update("isOnline", true)
+                .addOnSuccessListener {
+                    // Update UI or perform other actions
+                    Log.d("TAG:::>", "setUserOnline: true")
+                }
+        }
+
+    }
+
+
     override fun onStop() {
         super.onStop()
+        setUserOffline()
         firestoreUserAdapter?.stopListening()
         //      EventBus.getDefault().unregister(this)
     }
@@ -564,5 +710,10 @@ class ChatDetailActivity : BaseActivity() {
         val recyclerViewState = binding.rvChats.layoutManager?.onSaveInstanceState()
         binding.rvChats.adapter?.notifyDataSetChanged()
         binding.rvChats.layoutManager?.onRestoreInstanceState(recyclerViewState)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        showOnlineOrOffline()
     }
 }

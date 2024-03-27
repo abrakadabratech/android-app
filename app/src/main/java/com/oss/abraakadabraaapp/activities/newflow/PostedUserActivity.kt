@@ -22,6 +22,7 @@ import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.MyRequestActivity
+import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
 import com.oss.abraakadabraaapp.adapter.RatingAdapter
 import com.oss.abraakadabraaapp.databinding.ActivityPostedUserBinding
 import com.oss.abraakadabraaapp.datasource.products.Product
@@ -137,12 +138,22 @@ class PostedUserActivity : BaseActivity() {
     }
 
     private fun setUpObserver() {
+
+        mainViewModel.iniChatSuccess.observe(this){
+            if (it.code == 200){
+                val intent = Intent(this,ChatDetailActivity::class.java)
+                intent.putExtra(Constants.CHATS_DATA,it.data.chatId)
+                intent.putExtra(Constants.MESSAGE,binding.requestMsg.text.toString())
+                startActivity(intent)
+            }
+        }
         mainViewModel.requstProductSuccess.observe(this) {
 //            Log.d("TAG - Product deails", "is it rue : ${productDetails.data.description}")
 
             if (it.code == 200) {
-                showToast(it.responseMessage.toString())
-                binding.successAlertDialog.visibility = View.VISIBLE
+//                showToast(it.responseMessage.toString())
+//                binding.successAlertDialog.visibility = View.VISIBLE
+                mainViewModel.iniChat(productDetails!!.data.id.toString())
 
                 /*if (it.data.product_status == "hold"){
                     binding.textView81.text = getString(R.string.on_hold_product_message)

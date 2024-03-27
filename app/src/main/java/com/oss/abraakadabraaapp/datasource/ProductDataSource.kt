@@ -26,18 +26,6 @@ class ProductDataSource(private val apiService: APIService,
         try {
             Log.d("TAG - ", "load: Starting to load page ${params.key ?: 1}")
 
-            /*val position = params.key ?: STARTING_PAGE_INDEX
-            return when(val result =
-                apiService.getProductsData(position,10,maxDistance,lat,long,sortBy)){
-                is Resource.Failure -> LoadResult.Error(Exception(result.toString()))
-                is Resource.Loading -> LoadResult.Error(Exception())
-                is Resource.Success -> {
-                    LoadResult.Page(data = result.data.products,
-                        prevKey = if(position == STARTING_PAGE_INDEX) null else -1,
-                        nextKey = if (result.data.passengerList.isEmpty()) null else position + 1)
-                }
-
-            }*/
 
             val page = params.key ?: STARTING_PAGE_INDEX
             val response = apiService.getProductsData(

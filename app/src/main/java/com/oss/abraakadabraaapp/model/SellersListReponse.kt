@@ -20,9 +20,15 @@ data class Product(
     val description: String,
     @SerializedName("product_image")
     val productImage: String,
-    val timestamp: String,
+    val timestamp: Timestamp2,
     @SerializedName("chat_count")
     val chatCount: String,
     @SerializedName("unseen_chats")
-    val unseenChats: String,
+    val unseenChats: Int,
+)
+data class Timestamp2 (
+
+    @SerializedName("_seconds"     ) var Seconds     : Int? = null,
+    @SerializedName("_nanoseconds" ) var Nanoseconds : Int? = null
+
 )

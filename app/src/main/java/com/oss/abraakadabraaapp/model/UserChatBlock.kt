@@ -1,7 +1,7 @@
 package com.oss.abraakadabraaapp.model
 
 class UserChatBlock(
-    val code: Long,
-    val status: Long,
+    val code: Int,
+    val status: Int,
     val message: String,
 )

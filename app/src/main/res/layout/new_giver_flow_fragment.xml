@@ -190,7 +190,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="9"
-                    android:fontFamily="@font/montserrat_medium"
+                    android:fontFamily="@font/montserrat_regular"
                     android:text="HSR Layout,Bangaluru India"
                     android:textColor="@color/title_color"
                     android:textSize="14sp" />
@@ -208,16 +208,15 @@
                 android:id="@+id/textView5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:fontFamily="@font/montserrat_medium"
-                android:text="Add a title for your listing"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="Post a Product"
                 android:textColor="@color/title_color"
-                android:textSize="@dimen/sp_16"
-                android:visibility="gone"
+                android:textSize="18sp"
                 android:textStyle="bold"
+                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.12"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -237,7 +236,7 @@
                     android:id="@+id/et_product_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/montserrat_semi_bold"
+                    android:fontFamily="@font/montserrat_regular"
                     android:hint="@string/new_product_name"
                     android:imeOptions="actionNext"
                     android:inputType="textCapSentences"
@@ -303,6 +302,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:fontFamily="@font/montserrat_regular"
                         android:inputType="none"
                         tools:text="Happy" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -323,6 +323,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:fontFamily="@font/montserrat_regular"
                         android:inputType="none"
                         tools:text="Happy" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -341,6 +342,7 @@
                         android:id="@+id/usedforActv"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:fontFamily="@font/montserrat_regular"
                         android:layout_weight="1"
                         android:inputType="none"
                         tools:text="Happy" />
@@ -388,22 +390,13 @@
                 android:id="@+id/linearLayout5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:orientation="vertical"
-                android:paddingTop="10dp"
                 android:paddingBottom="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/catgoryLinearLayout"
                 app:layout_constraintTop_toBottomOf="@+id/catgoryLinearLayout">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="9"
-                    android:fontFamily="@font/montserrat_medium"
-                    android:text="Brands (if any)"
-                    android:textColor="@color/title_color"
-                    android:textSize="@dimen/sp_16" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -418,14 +411,12 @@
                         android:id="@+id/et_product_brand"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/montserrat_semi_bold"
-                        android:hint="@string/type_here"
+                        android:fontFamily="@font/montserrat_regular"
+                        android:hint="Brand (if any)"
                         android:imeOptions="actionNext"
                         android:inputType="textCapSentences"
                         android:maxLength="50"
                         android:maxLines="1"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="16dp"
                         android:textColor="@color/title_color"
                         android:textColorHint="@color/edit_text_color"
                         android:textSize="16sp" />
@@ -479,7 +470,6 @@
                     android:layout_marginBottom="8dp"
                     android:visibility="visible"
                     app:cardCornerRadius="8dp"
-                    app:cardElevation="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/imageSliderLayout">
@@ -539,14 +529,12 @@
                         android:id="@+id/et_price_of_the_product"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/montserrat_semi_bold"
                         android:hint="Price of the product"
                         android:imeOptions="actionNext"
                         android:inputType="number"
+                        android:fontFamily="@font/montserrat_regular"
                         android:maxLength="5"
                         android:maxLines="1"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="16dp"
                         android:textColor="@color/title_color"
                         android:textColorHint="@color/edit_text_color"
                         android:textSize="16sp" />
@@ -571,11 +559,12 @@
                     android:id="@+id/descEdt"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
-                    android:fontFamily="@font/montserrat_semi_bold"
                     android:hint="Desription of the product"
                     android:imeOptions="actionNext"
                     android:inputType="textCapSentences"
                     android:maxLength="300"
+                    android:gravity="top"
+                    android:fontFamily="@font/montserrat_regular"
                     android:maxLines="1"
                     android:textColor="@color/title_color"
                     android:textColorHint="@color/background"

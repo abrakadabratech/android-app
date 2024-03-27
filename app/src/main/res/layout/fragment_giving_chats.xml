@@ -80,4 +80,19 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
+        <include         layout="@layout/shimmer_chats"
+            />
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,37 +2,25 @@ package com.oss.abraakadabraaapp.activities.newflow.adapters
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Paint.Style
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.compose.ui.text.font.Typeface
-import androidx.core.content.ContextCompat
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
-import com.oss.abraakadabraaapp.activities.newflow.chat.ChatListModel
-import com.oss.abraakadabraaapp.activities.newflow.chat.ChatModel
 import com.oss.abraakadabraaapp.model.Chat
-import com.oss.abraakadabraaapp.model.Product
+import com.oss.abraakadabraaapp.model.SellerChat
 import com.oss.abraakadabraaapp.utils.Constants
-import com.oss.abraakadabraaapp.utils.Utility.convertToTimestamp
 
-class SubAdapter(
-    val context: Context
+class SellerChatListAdapter( val context: Context
 ) :
-    PagingDataAdapter<Chat, SubAdapter.ViewHolder>(ProductDifferentiator) {
+PagingDataAdapter<SellerChat, SellerChatListAdapter.ViewHolder>(ProductDifferentiator) {
     private val TAG = "GivingChatsFragment"
-
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val userName = itemView.findViewById<TextView>(R.id.userName)
         val cancelledTxt = itemView.findViewById<TextView>(R.id.cancelledTxt)
@@ -57,21 +45,23 @@ class SubAdapter(
         holder.unreadCount.text = item.unseenMessages.toString()
         holder.message.text = item.lastMessage
 //        getUnreadCount(holder.unreadCount,holder.message,chatNode[position])
-       /* val item = getItem(position)!!
-        if (i[position].status == "cancelled") {
-            holder.cancelledTxt.setTextColor(ContextCompat.getColor(context,R.color.status_declined))
-        } else {
-            holder.cancelledTxt.text = "Accepted"
-            holder.cancelledTxt.setTextColor(ContextCompat.getColor(context,R.color.status_accepted))
-        }
-        if (item.chatId == i[position].product_giver){
-            holder.userName.text = i[position].receiver_name
-        }else{
-            holder.userName.text = i[position].sender_name
-        }
-        holder.time.text = convertToTimestamp(i[position].time_stamp)
-        holder.product.text = i[position].product
-        holder.message.text = i[position].last_message.toString()*/
+
+        /* val item = getItem(position)!!
+         if (i[position].status == "cancelled") {
+             holder.cancelledTxt.setTextColor(ContextCompat.getColor(context,R.color.status_declined))
+         } else {
+             holder.cancelledTxt.text = "Accepted"
+             holder.cancelledTxt.setTextColor(ContextCompat.getColor(context,R.color.status_accepted))
+         }
+         if (item.chatId == i[position].product_giver){
+             holder.userName.text = i[position].receiver_name
+         }else{
+             holder.userName.text = i[position].sender_name
+         }
+         holder.time.text = convertToTimestamp(i[position].time_stamp)
+         holder.product.text = i[position].product
+         holder.message.text = i[position].last_message.toString()*/
+
         holder.itemView.setOnClickListener {
             val intent =
                 Intent(context, ChatDetailActivity::class.java)
@@ -86,13 +76,13 @@ class SubAdapter(
         }
     }
 
-    companion object ProductDifferentiator : DiffUtil.ItemCallback<Chat>() {
+    companion object ProductDifferentiator : DiffUtil.ItemCallback<SellerChat>() {
 
-        override fun areItemsTheSame(oldItem: Chat, newItem: Chat): Boolean {
+        override fun areItemsTheSame(oldItem: SellerChat, newItem: SellerChat): Boolean {
             return oldItem.chatId == newItem.chatId
         }
 
-        override fun areContentsTheSame(oldItem: Chat, newItem: Chat): Boolean {
+        override fun areContentsTheSame(oldItem: SellerChat, newItem: SellerChat): Boolean {
             return oldItem == newItem
         }
     }

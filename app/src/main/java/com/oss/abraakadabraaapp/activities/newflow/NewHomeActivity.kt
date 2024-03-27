@@ -103,56 +103,6 @@ class NewHomeActivity : BaseActivity() {
         }
     }
 
-    private fun getUnreadMessageCount() {
-        val db = FirebaseFirestore.getInstance()
-
-        val targetSubstring = FirebaseAuth.getInstance().currentUser?.uid
-        val badge = navView.getOrCreateBadge(R.id.navigation_community)
-        badge.isVisible = false
-        val collectionReference = db.collection("chats")
-
-        collectionReference.get()
-            .addOnSuccessListener { querySnapshot ->
-                var count = 0
-                val lock = Object()
-                for (document in querySnapshot.documents) {
-                    if (document.id.contains(targetSubstring.toString())) {
-                        // Access data from each document
-                        val data = document.id
-                        println("Number of unread messages in sub-collection: $data")
-
-
-                        collectionReference.document(data).collection("Messages")
-                            .whereNotEqualTo("from",targetSubstring)
-                            .whereEqualTo("read", false).get().addOnSuccessListener { records ->
-                                val unreadCount = records.size()
-                                synchronized(lock) {
-                                    count += unreadCount
-                                }
-                                if (count > 0) {
-                                    badge.isVisible = true
-                                    badge.number = count
-                                } else {
-                                    badge.isVisible = false
-                                }
-                                println("Number of unread messages in sub-collection: $count")
-
-                            }.addOnFailureListener { e ->
-                                // Handle errors
-                                println("Error getting unread messages in subcollection: $e")
-                            }
-                    }
-                }
-                println("total count: $count")
-
-//
-            }
-            .addOnFailureListener { e ->
-                // Handle errors
-                println("Error getting documents: $e")
-            }
-    }
-
     private fun checkNotificationPermission() {
         if (!PreferencesManagement.isNotificationEnabled(this)) {
 
@@ -272,23 +222,6 @@ class NewHomeActivity : BaseActivity() {
         super.onBackPressed()
     }
 
-    override fun onStart() {
-        super.onStart()
-//        EventBus.getDefault().register(this)
-    }
-
-    override fun onStop() {
-//        EventBus.getDefault().unregister(this)
-        super.onStop()
-    }
-
-    // Bottom Navigation will be disappear if not Home Tab
-    /*@Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: Int?) {
-        if (event == 0) {
-            navView.visibility = View.GONE
-        } else navView.visibility = View.VISIBLE
-    }*/
 
     companion object {
         fun createIntent(context: Context): Intent {
@@ -314,8 +247,4 @@ class NewHomeActivity : BaseActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        //getUnreadMessageCount()
-    }
 }

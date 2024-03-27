@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -31,55 +32,70 @@
         app:layout_constraintStart_toEndOf="@+id/ivBack2"
         app:layout_constraintTop_toTopOf="@+id/ivBack2" />
 
-    <ImageView
-        android:id="@+id/profilePic2"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/user"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/username" />
-
-    <TextView
-        android:id="@+id/joinedAt"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:text="Joined at Jan 2024"
-        android:fontFamily="@font/montserrat_bold"
-        android:textSize="@dimen/sp_16"
-        app:layout_constraintEnd_toStartOf="@+id/totalProducts"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profilePic2" />
-
-    <TextView
-        android:id="@+id/totalProducts"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:fontFamily="@font/montserrat_bold"
-        android:text="86 Products Posted"
-        android:textSize="@dimen/sp_16"
-        app:layout_constraintBottom_toBottomOf="@+id/joinedAt"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/joinedAt"
-        app:layout_constraintTop_toTopOf="@+id/joinedAt" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/postedProductsRec"
-        android:layout_width="0dp"
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/joinedAt"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/username">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/profilePic2"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/user"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/username" />
+
+            <TextView
+                android:id="@+id/joinedAt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/montserrat_regular"
+                android:text="Joined at Jan 2024"
+                android:textSize="@dimen/_12sp"
+                app:layout_constraintEnd_toStartOf="@+id/totalProducts"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/profilePic2" />
+
+            <TextView
+                android:id="@+id/totalProducts"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/montserrat_regular"
+                android:text="86 Products Posted"
+                android:textSize="@dimen/sp_16"
+                app:layout_constraintBottom_toBottomOf="@+id/joinedAt"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/joinedAt"
+                app:layout_constraintTop_toTopOf="@+id/joinedAt" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/postedProductsRec"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/joinedAt" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 package com.oss.abraakadabraaapp.activities.newflow.adapters
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +13,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.newflow.chat.GroupedChatListModel
+import com.oss.abraakadabraaapp.activities.newflow.chat.SellerChatsActivity
 import com.oss.abraakadabraaapp.model.Notifications
 import com.oss.abraakadabraaapp.model.Product
+import com.oss.abraakadabraaapp.utils.Constants
+import java.util.Locale
 
 class ExpandableAdapter(
     val context: Context
@@ -30,6 +34,7 @@ class ExpandableAdapter(
         val productImage = itemView.findViewById<ImageView>(R.id.profilePic)!!
         val product = itemView.findViewById<TextView>(R.id.userName)!!
         val unreadCount = itemView.findViewById<TextView>(R.id.unreadCount)!!
+        val noOfChats = itemView.findViewById<TextView>(R.id.noOfChats)!!
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -41,15 +46,24 @@ class ExpandableAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)!!
 
-        holder.product.text = item.name
+        holder.product.text = item.name.capitalize(Locale.getDefault())
         Glide.with(context).load(item.productImage).into(holder.productImage)
-        holder.unreadCount.text = item.chatCount
+        if (item.unseenChats > 0) {
+            holder.unreadCount.visibility = View.VISIBLE
+            holder.unreadCount.text = item.unseenChats.toString()
+        }else holder.unreadCount.visibility = View.GONE
+        holder.noOfChats.text = "No of chats : ${item.chatCount}"
 
         holder.itemView.setOnClickListener {
-
+            val intent = Intent(context,SellerChatsActivity::class.java)
+            intent.putExtra(Constants.productId,item.id)
+            context.startActivity(intent)
         }
     }
 
+    override fun getItemCount(): Int {
+        return super.getItemCount()
+    }
 
     companion object ProductDifferentiator : DiffUtil.ItemCallback<Product>() {
 

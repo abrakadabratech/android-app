@@ -68,6 +68,7 @@ data class Request (
     @SerializedName("coordinates" ) var coordinates : Coordinates1? = Coordinates1(),
     @SerializedName("isDelivered" ) var isDelivered : Boolean?     = null,
     @SerializedName("isReceived"  ) var isReceived  : Boolean?     = null,
-    @SerializedName("message"     ) var message     : String?      = null
+    @SerializedName("message"     ) var message     : String?      = null,
+    @SerializedName("chatNode"     ) var chatNode     : String?      = ""
 
 )

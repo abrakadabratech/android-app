@@ -3,8 +3,8 @@ package com.oss.abraakadabraaapp.model
 import com.google.gson.annotations.SerializedName
 
 class InitChatResponce(
-    val code: Long,
-    val status: Long,
+    val code: Int,
+    val status: Int,
     val data: InitChatData,
 )
 

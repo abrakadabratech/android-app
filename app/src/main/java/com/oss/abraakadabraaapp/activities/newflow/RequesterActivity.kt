@@ -248,6 +248,13 @@ class RequesterActivity : BaseActivity() {
 
     private fun setUpObserver() {
 
+        mainViewModel.iniChatSuccess.observe(this){
+            if (it.code == 200){
+                val intent = Intent(this,ChatDetailActivity::class.java)
+                intent.putExtra(Constants.CHATS_DATA,it.data.chatId)
+                startActivity(intent)
+            }
+        }
         mainViewModel.getRequestorSuccess.observe(this){
             if (it.code == 200) {
 
@@ -322,7 +329,7 @@ class RequesterActivity : BaseActivity() {
                 binding.statusIcon.setImageResource(R.drawable.status_pending)
             }
             "accepted" -> {
-                binding.status.text = "Accepted"
+                /*binding.status.text = "Accepted"
                 binding.status.setTextColor(ContextCompat.getColor(this,R.color.status_accepted))
                 binding.statusIcon.setImageResource(R.drawable.status_accepted)
 
@@ -333,7 +340,7 @@ class RequesterActivity : BaseActivity() {
                 binding.chatIcon.visibility = View.VISIBLE
                 binding.markAsDelivered.isEnabled = true
                 binding.markAsDelivered.setTextColor(ContextCompat.getColor(this, R.color.title_color))
-                binding.markAsDelivered2.visibility = View.VISIBLE
+                binding.markAsDelivered2.visibility = View.VISIBLE*/
 
             }
             "rejected" -> {
@@ -456,7 +463,8 @@ class RequesterActivity : BaseActivity() {
     }
 
     private fun sendToChat() {
-        val receiver_id = productDetails?.data?.request?.userId
+//        mainViewModel.iniChat(productDetails!!.data?.product?.productId.toString())
+        /*val receiver_id = productDetails?.data?.request?.userId
         val product_id = productDetails?.data?.product?.productId
         val sender_id = FirebaseAuth.getInstance().currentUser?.uid
 
@@ -496,6 +504,12 @@ class RequesterActivity : BaseActivity() {
             intent.putExtra(Constants.DISPLAY_NAME,receiver_name)
             intent.putExtra(Constants.DISPLAY_PIC,productDetails?.data?.receiverInfo?.userAvatar)
             startActivity(intent)
-        }
+        }*/
+
+        val intent = Intent(this,ChatDetailActivity::class.java)
+        intent.putExtra(Constants.CHATS_DATA,productDetails?.data?.request?.chatNode)
+        startActivity(intent)
+
+
     }
 }
