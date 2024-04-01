@@ -34,8 +34,8 @@ MyChatsActivity : BaseActivity() {
         ) { tab, position ->
             when (position) {
 //                0 -> tab.text = "All"
-                0 -> tab.text = "Giving"
-                1 -> tab.text = "Receiving"
+                0 -> tab.text = "Selling"
+                1 -> tab.text = "Buying"
             }
         }.attach()
 

@@ -249,10 +249,12 @@ class RequesterActivity : BaseActivity() {
     private fun setUpObserver() {
 
         mainViewModel.iniChatSuccess.observe(this){
-            if (it.code == 200){
+            if (it.code == 200 && it.data.chatId!=""){
                 val intent = Intent(this,ChatDetailActivity::class.java)
                 intent.putExtra(Constants.CHATS_DATA,it.data.chatId)
                 startActivity(intent)
+            }else{
+                showToast("Chat node is empty from the server!")
             }
         }
         mainViewModel.getRequestorSuccess.observe(this){

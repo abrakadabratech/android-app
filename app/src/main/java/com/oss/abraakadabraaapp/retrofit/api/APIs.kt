@@ -225,7 +225,6 @@ interface APIs {
     //Cancel product request
     @GET("product/request/{id}")
     suspend fun getRequestor(
-
         @Path("id") id: String
     ): Response<RequestorResponse>
 
@@ -494,7 +493,7 @@ interface APIs {
     suspend fun viewProfile(@Path("id") id: String) : Response<UserProfile>
 
     @POST("user/product/{id}/chat/init")
-    suspend fun initChat(@Path("id") id:String)
+    suspend fun initChat(@Path("id") id:String,@Body body: HashMap<String, String>)
     :Response<InitChatResponce>
 
     @POST("user/chat/{chat_id}/report")

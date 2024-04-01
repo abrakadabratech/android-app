@@ -10,5 +10,7 @@ data class ProductDeleteResponse(
 )
 data class Dataa(
     @SerializedName("request_status") var request_status:String? = null,
-    @SerializedName("product_status") var product_status:String? = ""
-)
+    @SerializedName("product_status") var product_status:String? = "",
+    @SerializedName("chat_node"   ) var chatNode  : String = "",
+    @SerializedName("request_id"   ) var request_id  : String = "",
+    )

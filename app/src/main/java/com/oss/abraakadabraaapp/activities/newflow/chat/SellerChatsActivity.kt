@@ -39,7 +39,9 @@ class SellerChatsActivity : AppCompatActivity() {
         binding = ActivitySellerChatsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
+        binding.ivBack.setOnClickListener {
+           onBackPressed()
+        }
 
         actionBar?.hide()
 

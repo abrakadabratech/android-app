@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.material3.AlertDialog
 import androidx.compose.ui.text.capitalize
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -37,6 +38,7 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.karumi.dexter.Dexter
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.MyPayAsYouGoActivity
@@ -97,7 +99,7 @@ class ChatDetailActivity : BaseActivity() {
         val adRequest = AdRequest.Builder().build();
         binding.adView.loadAd(adRequest)
 
-        if (intent.hasExtra(Constants.productId)) {
+        /*if (intent.hasExtra(Constants.productId)) {
             val bundle = Gson().fromJson(
                 intent.extras?.getString(Constants.productId),
                 NotificationDataModel::class.java
@@ -110,7 +112,7 @@ class ChatDetailActivity : BaseActivity() {
 
             loaddata()
 
-        }
+        }*/
         if (intent.hasExtra(CHATS_DATA)) {
             binding.chatName.text = intent.extras?.getString(DISPLAY_NAME)
             Glide.with(this).load(intent.extras?.getString(DISPLAY_PIC))
@@ -128,6 +130,10 @@ class ChatDetailActivity : BaseActivity() {
 
             setUpRecycler(chatNode)
             loaddata()
+
+            if (intent.extras?.getString("from","") == "posted_page"){
+                sendMessage(intent.extras?.getString(Constants.MESSAGE,"").toString())
+            }
         }
 
         LocalBroadcastManager.getInstance(this@ChatDetailActivity)
@@ -294,6 +300,15 @@ class ChatDetailActivity : BaseActivity() {
                 }
                 binding.productName.text = chatData!!.product?.capitalize(Locale.ROOT)
 
+                if (chatData!!.isUserBlocked){
+                    binding.blockUserTxt.text = "Unblock User"
+                }else{
+                    binding.blockUserTxt.text = "Block User"
+                }
+                if (chatData!!.isChatClosed){
+
+                }
+
 //                if (chatData!!.status != "active" && currentUserId == chatData!!.sender_id){
 //                    binding.markBtn.text = "Delivered"
 //                    binding.markBtn.isEnabled = false
@@ -314,6 +329,16 @@ class ChatDetailActivity : BaseActivity() {
     }
 
     private fun setUpObserver() {
+        mainViewModel.reportChatSuccess.observe(this){
+            if (it.code == 200){
+                showToast(it.message.toString())
+            }
+        }
+        mainViewModel.closeChatSessionSuccess.observe(this){
+            if (it.code == 200){
+                showToast(it.message.toString())
+            }
+        }
 
         mainViewModel.updateProductRequest.observe(this) {
 //            Log.d("TAG - Product deails", "is it rue : ${productDetails.data.description}")
@@ -360,8 +385,7 @@ class ChatDetailActivity : BaseActivity() {
             if (currentUserId == chatData?.sender_id) {
                 mainViewModel.updateProductRequest(
                     chatData?.requestId.toString(),
-                    "received"
-                )
+                    "received")
             } else {
                 mainViewModel.updateProductRequest(
                     chatData?.requestId.toString(),
@@ -385,15 +409,21 @@ class ChatDetailActivity : BaseActivity() {
         }
         binding.blockUser.setOnClickListener {
             postClick(BUTTON_CHAT_BLOCK_USER)
-            blockUser()
+            blockUser(chatData?.isUserBlocked!!)
         }
         binding.reportUser.setOnClickListener {
             postClick(BUTTON_CHAT_REPORT_USER)
             showToast(UNDER_DEV)
+            val map = HashMap<String, String>()
+            map["reason"] = "default"
+            showToast("User Reported")
+            mainViewModel.reportChat(chatNode,map)
         }
         binding.deleteChat.setOnClickListener {
             postClick(BUTTON_CHAT_DELETE)
-            deleteChat()
+            //Close chat
+//            deleteChat()
+            mainViewModel.closeChatSession(currentUserId.toString())
         }
 
         binding.sendMessage.setOnClickListener {
@@ -426,6 +456,10 @@ class ChatDetailActivity : BaseActivity() {
         })
     }
 
+    private fun showBlockAlert() {
+
+    }
+
     private fun setUserTypingStatus(isTyping: Boolean) {
         // Update the typing status in Firebase for the current user
         val userId = FirebaseAuth.getInstance().currentUser?.uid
@@ -447,12 +481,7 @@ class ChatDetailActivity : BaseActivity() {
         }
     }
 
-    private fun blockUser() {
-//        showToast("Please cancel the request to block the user")
-//        finish()
-//        val intent = Intent(this, RequesterActivity::class.java)
-//        intent.putExtra(Constants.productId, chatData?.requestId)
-//        startActivity(intent)
+    private fun blockUser(isBlock:Boolean) {
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
         val map = HashMap<String, String>()
@@ -462,7 +491,19 @@ class ChatDetailActivity : BaseActivity() {
             map["block_user"] = chatData?.sender_id.toString()
         }
         map["reason"] = "default"
-        mainViewModel.userChatBlock(map)
+        if (isBlock) {
+            mainViewModel.userChatUnBlock(map)
+        }else{
+            val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+            builder.setTitle("Alert!")
+            builder.setMessage("Are you sure you want block the user")
+            builder.setPositiveButton("Yes") { dialog, _ ->
+                dialog.cancel()
+                mainViewModel.userChatBlock(map)
+            }
+            builder.setNegativeButton(getString(android.R.string.cancel)) { dialog, _ -> dialog.cancel() }
+            builder.show()
+        }
     }
 
     private fun deleteChat() {
@@ -532,7 +573,7 @@ class ChatDetailActivity : BaseActivity() {
 
             val chats = hashMapOf(
                 "chatNode" to chatNode,
-                "receiverId" to chatData!!.receiver_id,
+                "receiverId" to if(sender_id == chatData!!.receiver_id) chatData!!.sender_id else chatData?.receiver_id,
                 "senderId" to sender_id,
                 "text" to message,
                 "from" to sender_id,

@@ -36,6 +36,7 @@ data class UserData (
     @SerializedName("product_id"      ) var productId      : String?           = null,
     @SerializedName("request_id"      ) var request_id      : String?           = null,
     @SerializedName("request_message" ) var requestMessage : String?           = null,
+    @SerializedName("chat_node"   ) var chatNode  : String = "",
     @SerializedName("isReceived" ) var isReceived : Boolean?           = false,
     @SerializedName("isDelivered" ) var isDelivered : Boolean?           = false,
     @SerializedName("coordinates"   ) var coordinates  : Coordinates?      = Coordinates()

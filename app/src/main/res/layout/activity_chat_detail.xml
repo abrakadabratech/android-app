@@ -30,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="5dp">
+                android:padding="15dp">
 
                 <LinearLayout
                     android:id="@+id/blockUser"
@@ -38,7 +38,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:padding="5dp">
+                    android:padding="10dp">
 
                     <ImageView
                         android:layout_width="12dp"
@@ -46,6 +46,7 @@
                         android:background="@drawable/block_user" />
 
                     <TextView
+                        android:id="@+id/blockUserTxt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
@@ -60,9 +61,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:visibility="gone"
                     android:orientation="horizontal"
-                    android:padding="5dp">
+                    android:padding="10dp"
+                    android:visibility="visible">
 
                     <ImageView
                         android:layout_width="12dp"
@@ -85,7 +86,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:padding="5dp">
+                    android:padding="10dp">
 
                     <ImageView
                         android:layout_width="12dp"
@@ -97,7 +98,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
                         android:fontFamily="@font/montserrat_medium"
-                        android:text="Delete Chat"
+                        android:text="Close Chat"
                         android:textColor="@color/title_color"
                         android:textSize="12sp" />
                 </LinearLayout>

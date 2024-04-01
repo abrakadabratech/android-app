@@ -143,6 +143,7 @@ class PostedUserActivity : BaseActivity() {
             if (it.code == 200){
                 val intent = Intent(this,ChatDetailActivity::class.java)
                 intent.putExtra(Constants.CHATS_DATA,it.data.chatId)
+                intent.putExtra("from","posted_page")
                 intent.putExtra(Constants.MESSAGE,binding.requestMsg.text.toString())
                 startActivity(intent)
             }
@@ -153,7 +154,9 @@ class PostedUserActivity : BaseActivity() {
             if (it.code == 200) {
 //                showToast(it.responseMessage.toString())
 //                binding.successAlertDialog.visibility = View.VISIBLE
-                mainViewModel.iniChat(productDetails!!.data.id.toString())
+                val map =  HashMap<String, String>()
+                map["request_id"] = it.data.request_id
+                mainViewModel.iniChat(productDetails!!.data.id.toString(),map)
 
                 /*if (it.data.product_status == "hold"){
                     binding.textView81.text = getString(R.string.on_hold_product_message)

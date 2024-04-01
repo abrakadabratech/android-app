@@ -249,6 +249,7 @@
                     android:fontFamily="@font/montserrat_medium"
                     android:textColor="#2D7A76"
                     android:textSize="16sp"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/categoryTxt" />
 
@@ -300,6 +301,7 @@
                 <ImageView
                     android:id="@+id/statusIcon"
                     android:layout_width="15dp"
+                    android:visibility="gone"
                     android:layout_height="15dp"
                     android:layout_marginEnd="8dp"
                     app:layout_constraintBottom_toBottomOf="@+id/status"

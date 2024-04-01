@@ -100,6 +100,11 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
         }
         return view
     }
+
+    override fun onResume() {
+        super.onResume()
+        loadData()
+    }
     private fun navigateToChats(model: ChatListModel) {
 
         val intent = Intent(requireContext(),ChatDetailActivity::class.java)
@@ -116,5 +121,9 @@ class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {
         fun bind(documentSnapshot: ChatListModel) {
 
         }
+    }
+
+    fun loadData(){
+        adapter.refresh()
     }
 }

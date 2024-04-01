@@ -62,6 +62,7 @@ class MyListingAdapter(val newMyRequestActivity: Context,
             })
         }
         if (data.get(position).status == "given"){
+            holder.statusTxt.visibility = View.VISIBLE
             holder.statusTxt.setTextColor(newMyRequestActivity.resources.getColor(R.color.given_color))
         }else{
             holder.statusTxt.setTextColor(newMyRequestActivity.resources.getColor(R.color.cat_select_color))

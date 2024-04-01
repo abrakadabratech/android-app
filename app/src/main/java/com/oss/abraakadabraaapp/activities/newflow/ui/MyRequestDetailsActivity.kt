@@ -42,21 +42,23 @@ class MyRequestDetailsActivity : BaseActivity() {
     private val mainViewModel: AuthViewModel by viewModel()
     private lateinit var productId: String
 
-    private lateinit var binding:ActivityMyRequestingDetailBinding
+    private lateinit var binding: ActivityMyRequestingDetailBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMyRequestingDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         application = (this as BaseActivity)
-        application.postEvent(Constants.PAGE_MY_REQUEST_DETAILS,null)
+        application.postEvent(Constants.PAGE_MY_REQUEST_DETAILS, null)
 
         if (intent.hasExtra(Constants.productId)) {
             productId = intent.getStringExtra(Constants.productId)!!
         }
         if (intent.hasExtra(Constants.hasNotificationData)) {
-            var bundle  = Gson().fromJson(intent.getStringExtra(Constants.productId).toString(),
-                NotificationDataModel::class.java)
+            var bundle = Gson().fromJson(
+                intent.getStringExtra(Constants.productId).toString(),
+                NotificationDataModel::class.java
+            )
             productId = bundle.requestId.toString()
             val db = Firebase.firestore
             db.collection("notifications")
@@ -82,9 +84,15 @@ class MyRequestDetailsActivity : BaseActivity() {
 
     private fun clickEvents() {
 
-        binding.chatBtn.setOnClickListener{
+        binding.chatBtn.setOnClickListener {
 
-            if (productDetial?.data?.requestStatus == "accepted" || productDetial?.data?.requestStatus == "received"
+            if (productDetial?.data?.chatNode != null) {
+                val intent = Intent(this, ChatDetailActivity::class.java)
+                intent.putExtra(Constants.CHATS_DATA, productDetial?.data?.chatNode)
+                startActivity(intent)
+            }
+
+            /*if (productDetial?.data?.requestStatus == "accepted" || productDetial?.data?.requestStatus == "received"
                 || productDetial?.data?.requestStatus == "delivered"){
                 val sender_id = FirebaseAuth.getInstance().currentUser?.uid
 
@@ -129,9 +137,9 @@ class MyRequestDetailsActivity : BaseActivity() {
 
             }else{
                 showToast("Product not accepted yet!")
-            }
-            postClick(Constants.BUTTON_CHAT_IN_REQUEST_DETAILS)
+            }*/
 
+            postClick(Constants.BUTTON_CHAT_IN_REQUEST_DETAILS)
         }
 
         binding.ivBack.setOnClickListener {
@@ -142,32 +150,32 @@ class MyRequestDetailsActivity : BaseActivity() {
             //navigates to feedback pages...
             postClick(Constants.BUTTON_MARK_AS_DELIVERED)
             val status = binding.markAsDelivered.text.toString()
-            if (status == "Cancel"){
+            if (status == "Cancel") {
                 // cancel the request
                 var alertDialog = AlertDialog.Builder(this)
                 alertDialog.setTitle("Cancel")
                 alertDialog.setMessage("Are you sure you want to cancel request on this product ?")
 
-                alertDialog.setPositiveButton("Yes", DialogInterface.OnClickListener{dialog, id ->
+                alertDialog.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, id ->
                     //cancel the request
-                    mainViewModel.cancelProductRequest(productId
+                    mainViewModel.cancelProductRequest(
+                        productId
                     )
                     dialog.dismiss()
                 })
-                alertDialog.setNegativeButton("No", DialogInterface.OnClickListener{dialog, id ->
+                alertDialog.setNegativeButton("No", DialogInterface.OnClickListener { dialog, id ->
                     dialog.dismiss()
                 })
                 alertDialog.show()
-            } else if(status == "Pay\nAs you wish"){
+            } else if (status == "Pay\nAs you wish") {
                 val i = Intent(this, MyPayAsYouGoActivity::class.java)
-                i.putExtra("productId",productDetial?.data?.productId)
+                i.putExtra("productId", productDetial?.data?.productId)
                 i.putExtra("phone", productDetial?.data?.postedBy?.phone)
                 i.putExtra("email", productDetial?.data?.postedBy?.email)
                 i.putExtra("name", productDetial?.data?.postedBy?.name)
-                i.putExtra("product_data",Gson().toJson(productDetial))
+                i.putExtra("product_data", Gson().toJson(productDetial))
                 startActivity(i)
-            }
-            else /*if(status == "Mark As\\nReceived"){*/
+            } else /*if(status == "Mark As\\nReceived"){*/
             //send mark as delivered
             {
                 mainViewModel.updateProductRequest(
@@ -183,23 +191,23 @@ class MyRequestDetailsActivity : BaseActivity() {
             alertDialog.setTitle("Cancel")
             alertDialog.setMessage("Are you sure you want to cancel request on this product ?")
 
-            alertDialog.setPositiveButton("Yes", DialogInterface.OnClickListener{dialog, id ->
+            alertDialog.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, id ->
                 dialog.dismiss()
             })
-            alertDialog.setNegativeButton("No", DialogInterface.OnClickListener{dialog, id ->
+            alertDialog.setNegativeButton("No", DialogInterface.OnClickListener { dialog, id ->
                 dialog.dismiss()
             })
-            if (isChecked){
+            if (isChecked) {
                 alertDialog.show()
-            }else{
+            } else {
 
             }
         })
         binding.payAsYouWish.setOnClickListener {
             postClick(BUTTON_PAY_AS_YOU_WISH)
             val i = Intent(this, MyPayAsYouGoActivity::class.java)
-            i.putExtra("productId",productId)
-            i.putExtra("product_data",Gson().toJson(productDetial))
+            i.putExtra("productId", productId)
+            i.putExtra("product_data", Gson().toJson(productDetial))
 //            i.putExtra("receiver_data", Gson().toJson(productDetailData))
             startActivity(i)
         }
@@ -214,10 +222,11 @@ class MyRequestDetailsActivity : BaseActivity() {
             }
         }
     }
+
     override fun onBackPressed() {
         if (intent.hasExtra(Constants.hasNotificationData)) {
             startActivity(NewHomeActivity.createIntent(this@MyRequestDetailsActivity))
-        }else{
+        } else {
             super.onBackPressed()
         }
     }
@@ -233,7 +242,7 @@ class MyRequestDetailsActivity : BaseActivity() {
                     binding.shimmerLayout.startShimmer()
                     val map = HashMap<String, String>()
                     map[RequestKeys.authorization] = auth
-                    mainViewModel.getRequestDetails(map,productId)
+                    mainViewModel.getRequestDetails(map, productId)
                 }
             }
 
@@ -245,23 +254,23 @@ class MyRequestDetailsActivity : BaseActivity() {
 
             if (it.code == 200) {
 
-                if (it.data.request_status == "received"){
+                if (it.data.request_status == "received") {
 
                     val i = Intent(this, MyPayAsYouGoActivity::class.java)
-                    i.putExtra("from","requesting")
-                    i.putExtra("productId",productDetial?.data?.productId)
+                    i.putExtra("from", "requesting")
+                    i.putExtra("productId", productDetial?.data?.productId)
                     i.putExtra("phone", productDetial?.data?.postedBy?.phone)
                     i.putExtra("email", productDetial?.data?.postedBy?.email)
                     i.putExtra("name", productDetial?.data?.postedBy?.name)
-                    i.putExtra("product_data",Gson().toJson(productDetial))
-                    i.putExtra("receiver_id",productDetial?.data?.postedBy?.id)
+                    i.putExtra("product_data", Gson().toJson(productDetial))
+                    i.putExtra("receiver_id", productDetial?.data?.postedBy?.id)
                     startActivity(i)
 
-                  /*  val intent = Intent(this,FeedbackActivity::class.java)
-                    intent.putExtra("from","requesting")
-                    intent.putExtra("PRODUCT_ID", productDetial?.data?.productId)
-                    intent.putExtra("USER_ID",productDetial?.data?.postedBy?.id)
-                    startActivity(intent)*/
+                    /*  val intent = Intent(this,FeedbackActivity::class.java)
+                      intent.putExtra("from","requesting")
+                      intent.putExtra("PRODUCT_ID", productDetial?.data?.productId)
+                      intent.putExtra("USER_ID",productDetial?.data?.postedBy?.id)
+                      startActivity(intent)*/
                 }
 
 //                productDetails = it!!
@@ -271,13 +280,13 @@ class MyRequestDetailsActivity : BaseActivity() {
                 Log.d("TAG -", "setUpObserver: fail")
             }
         }
-        mainViewModel.initPaymentSuccess.observe(this){
-            if (it.code == 200){
+        mainViewModel.initPaymentSuccess.observe(this) {
+            if (it.code == 200) {
                 showToast("Order generated")
             }
         }
 
-        mainViewModel.cancelRequestSuccess.observe(this){
+        mainViewModel.cancelRequestSuccess.observe(this) {
             if (it.code == 200) {
                 showToast(it.responseMessage.toString())
                 finish()
@@ -299,18 +308,18 @@ class MyRequestDetailsActivity : BaseActivity() {
                 Log.d("TAG -", "setUpObserver: fail")
             }
         }
-        mainViewModel.reportProductSuccess.observe(this){
+        mainViewModel.reportProductSuccess.observe(this) {
 
-            if (it.code == 201){
+            if (it.code == 201) {
                 showToast("Product reported")
-            }else{
+            } else {
                 showToast(it.responseMessage.toString())
             }
 
         }
 
         mainViewModel.errorMessage.observe(this) {
-           // if (it.isNotBlank()) showToast(it)
+            // if (it.isNotBlank()) showToast(it)
         }
 
         mainViewModel.isLoading.observe(this) {

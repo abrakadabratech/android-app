@@ -1330,12 +1330,12 @@ fun getRequestDetails(
     }
 
     var iniChatSuccess = MutableLiveData<InitChatResponce>()
-    fun iniChat(id:String) {
+    fun iniChat(id:String,body: HashMap<String, String>) {
 
         viewModelScope.launch {
             isLoading.value = true
 
-            suspend fun call() = repository.iniChat(id)
+            suspend fun call() = repository.iniChat(id,body)
 
 
             callApi(::call, object : CallHelper<InitChatResponce> {

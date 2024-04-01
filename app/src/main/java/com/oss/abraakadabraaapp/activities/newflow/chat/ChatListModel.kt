@@ -24,7 +24,9 @@ data class ChatListModel(
     @SerializedName("request_id") var requestId:String = "",
     @SerializedName("product_image") var product_image:String = "",
     @SerializedName("count") var count:Int = 0,
-    @SerializedName("enabled") var enabled:Boolean = true
+    @SerializedName("enabled") var enabled:Boolean = true,
+    @SerializedName("is_user_blocked") var isUserBlocked:Boolean = false,
+    @SerializedName("is_chat_closed") var isChatClosed:Boolean = false,
 ){ constructor():this("","","","",
     "","","","","",
     "","","","")}
