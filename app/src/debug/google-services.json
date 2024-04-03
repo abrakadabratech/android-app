@@ -1,49 +1,75 @@
+
 {
   "project_info": {
-    "project_number": "139908621299",
-    "project_id": "akd-prod",
-    "storage_bucket": "akd-prod.appspot.com"
+    "project_number": "323424345844",
+    "firebase_url": "https://abrakadabra-dev-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "abrakadabra-dev",
+    "storage_bucket": "abrakadabra-dev.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:139908621299:android:b392f45854de2e51eaa886",
+        "mobilesdk_app_id": "1:323424345844:android:4ad9ec09704fd68c4908a1",
         "android_client_info": {
           "package_name": "com.oss.abraakadabraaapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "139908621299-hjrutdkbfeojlbaij2b0ndomigfamj72.apps.googleusercontent.com",
+          "client_id": "323424345844-m9s0ld5r5sfbk4b17g28dppmc43ojk06.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.oss.abraakadabraaapp",
-            "certificate_hash": "eed7352c2eb299e8a72259442c5b5d34c924087b"
+            "certificate_hash": "8e0378eefbc50c51205c2d63e97632b4d1bde3dd"
           }
         },
         {
-          "client_id": "139908621299-nm5hb134217q5u6t2q9mr7poje38ctqq.apps.googleusercontent.com",
+          "client_id": "323424345844-morj274i5r2982hh2c509jr4b8vi174f.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.oss.abraakadabraaapp",
-            "certificate_hash": "4f4d7ff3039f32103cf146d9068134b6d0384317"
+            "certificate_hash": "a5bbd2ee252afa0c30e123c3420dd9cc2745c660"
           }
         },
         {
-          "client_id": "139908621299-0jqdduvapnnguu410bms15enm4gpt8qb.apps.googleusercontent.com",
+          "client_id": "323424345844-ru07i3anlnm25r73bujifni5r6vdcsgu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.oss.abraakadabraaapp",
+            "certificate_hash": "98885ccc5cf5530ed72cf06d58f5d9784097a103"
+          }
+        },
+        {
+          "client_id": "323424345844-t0ah9iu8ur9cfdf3ir73ol8ql3qk4m36.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.oss.abraakadabraaapp",
+            "certificate_hash": "e4a0f6b121299ba466f6a7e1e82845964bbf1e8c"
+          }
+        },
+        {
+          "client_id": "323424345844-vip66dhq2e0f0q8qal8i4kak8mtm3esl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.oss.abraakadabraaapp",
+            "certificate_hash": "962a77915c14249572c54cbffa3c255eedeae5be"
+          }
+        },
+        {
+          "client_id": "323424345844-ja1qdgtpmfbssfik9qhaduh3nevggmst.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyB3k0J06tNqysl4bpy-UflboPO9kMTenNU"
+          "current_key": "AIzaSyCYb7ZGBiCo-WtEqL0TFSFGwBsJM9pL46k"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "139908621299-0jqdduvapnnguu410bms15enm4gpt8qb.apps.googleusercontent.com",
+              "client_id": "323424345844-736i1k5jpgknaf978gr3dtpm0qqjld34.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

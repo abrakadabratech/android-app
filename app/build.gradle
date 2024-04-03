@@ -36,18 +36,18 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('D:\\Android\\AndroidProjects\\MY_WORK_PROJECTS\\newJksFiles\\key.jks')
+//            storeFile file('D:\\Android\\AndroidProjects\\MY_WORK_PROJECTS\\newJksFiles\\key.jks')
 //            storeFile file('/Users/hari/Desktop/Freelancing/Code/AKD/akd-app-v2/key/key.jks')
-            storePassword 'akd@123'
-            keyAlias 'key0'
-            keyPassword 'akd@123'
+//            storePassword 'akd@123'
+//            keyAlias 'key0'
+//            keyPassword 'akd@123'
         }
         release {
-            storeFile file("D:\\Android\\AndroidProjects\\MY_WORK_PROJECTS\\newJksFiles\\key.jks")
+//            storeFile file("D:\\Android\\AndroidProjects\\MY_WORK_PROJECTS\\newJksFiles\\key.jks")
 //            storeFile file('/Users/hari/Desktop/Freelancing/Code/AKD/akd-app-v2/key/key.jks')
-            storePassword "akd@123"
-            keyAlias "key0"
-            keyPassword "akd@123"
+//            storePassword "akd@123"
+//            keyAlias "key0"
+//            keyPassword "akd@123"
         }
     }
     buildFeatures {
@@ -80,11 +80,11 @@ android {
 
 //            buildConfigField("String", "BASE_URL", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
 //            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
-//            buildConfigField("String", "BASE_URL", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
-//            buildConfigField("String", "BASE_DEMO", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
+            buildConfigField("String", "BASE_URL", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
+            buildConfigField("String", "BASE_DEMO", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
 //
-            buildConfigField("String", "BASE_URL", "\"https://api.abra-ka-dabra.com/\"")
-            buildConfigField("String", "BASE_DEMO", "\"https://api.abra-ka-dabra.com/\"")
+//            buildConfigField("String", "BASE_URL", "\"https://api.abra-ka-dabra.com/\"")
+//            buildConfigField("String", "BASE_DEMO", "\"https://api.abra-ka-dabra.com/\"")
 
 
             buildConfigField "String", "API_KEY", "\"${project.property('API_KEY')}\""
