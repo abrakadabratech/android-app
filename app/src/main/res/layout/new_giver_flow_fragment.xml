@@ -244,7 +244,7 @@
                     android:maxLines="1"
                     android:textColor="@color/title_color"
                     android:textColorHint="@color/background"
-                    android:textSize="@dimen/sp_16" />
+                    android:textSize="@dimen/_14sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -302,9 +302,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:textSize="@dimen/_14sp"
                         android:fontFamily="@font/montserrat_regular"
-                        android:inputType="none"
-                        tools:text="Happy" />
+                        android:inputType="none" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -325,7 +325,7 @@
                         android:layout_weight="1"
                         android:fontFamily="@font/montserrat_regular"
                         android:inputType="none"
-                        tools:text="Happy" />
+                        android:textSize="@dimen/_14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -345,7 +345,7 @@
                         android:fontFamily="@font/montserrat_regular"
                         android:layout_weight="1"
                         android:inputType="none"
-                        tools:text="Happy" />
+                        android:textSize="@dimen/_14sp"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <LinearLayout
@@ -419,7 +419,7 @@
                         android:maxLines="1"
                         android:textColor="@color/title_color"
                         android:textColorHint="@color/edit_text_color"
-                        android:textSize="16sp" />
+                        android:textSize="@dimen/_14sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -537,7 +537,7 @@
                         android:maxLines="1"
                         android:textColor="@color/title_color"
                         android:textColorHint="@color/edit_text_color"
-                        android:textSize="16sp" />
+                        android:textSize="@dimen/_14sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -568,7 +568,7 @@
                     android:maxLines="1"
                     android:textColor="@color/title_color"
                     android:textColorHint="@color/background"
-                    android:textSize="@dimen/sp_16" />
+                    android:textSize="@dimen/_14sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

@@ -412,6 +412,10 @@
             <TextView
                 android:id="@+id/priceAmount"
                 android:layout_width="0dp"
+                android:fontFamily="@font/montserrat_medium"
+                android:text=""
+                android:textColor="@color/sub_text_color"
+                android:textSize="16sp"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="@+id/brandTxt"
                 app:layout_constraintEnd_toEndOf="parent"
