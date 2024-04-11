@@ -164,6 +164,7 @@ class MyRequestDetailsActivity : BaseActivity() {
                 i.putExtra("phone", productDetial?.data?.postedBy?.phone)
                 i.putExtra("email", productDetial?.data?.postedBy?.email)
                 i.putExtra("name", productDetial?.data?.postedBy?.name)
+                i.putExtra("receiver_id", productDetial?.data?.postedBy?.id)
                 i.putExtra("product_data",Gson().toJson(productDetial))
                 startActivity(i)
             }

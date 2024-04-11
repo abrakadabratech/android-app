@@ -10,7 +10,8 @@ data class InitPaymentModel(
 )
 data class Data (
 
-    @SerializedName("orderId" ) var orderId : String? = null,
-    @SerializedName("amount"  ) var amount  : Int?    = 0
+    @SerializedName("url"           ) var url           : String? = "",
+    @SerializedName("transactionId" ) var transactionId : String? = null,
+    @SerializedName("merchantId"    ) var merchantId    : String? = null
 
 )

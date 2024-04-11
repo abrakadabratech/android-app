@@ -29,21 +29,21 @@ android {
         minSdk 23
         targetSdk 33
         
-        versionCode 39
-        versionName "1.20.2"
+        versionCode 42
+        versionName "1.20.2.3"
 //        versionName "test_refresh_product"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
         debug {
-//            storeFile file('D:\\Android\\AndroidProjects\\MY_WORK_PROJECTS\\newJksFiles\\key.jks')
+//            storeFile file('C:\\Users\\Admin\\Desktop\\MyPracties\\akd-app-v2\\key.jks')
 //            storeFile file('/Users/hari/Desktop/Freelancing/Code/AKD/akd-app-v2/key/key.jks')
 //            storePassword 'akd@123'
 //            keyAlias 'key0'
 //            keyPassword 'akd@123'
         }
         release {
-//            storeFile file("D:\\Android\\AndroidProjects\\MY_WORK_PROJECTS\\newJksFiles\\key.jks")
+//            storeFile file("C:\\Users\\Admin\\Desktop\\MyPracties\\akd-app-v2\\key.jks")
 //            storeFile file('/Users/hari/Desktop/Freelancing/Code/AKD/akd-app-v2/key/key.jks')
 //            storePassword "akd@123"
 //            keyAlias "key0"
@@ -65,8 +65,11 @@ android {
 //            buildConfigField("String", "BASE_URL", "\"https://api.abrakadabraapp.app/\"")
 //            buildConfigField("String", "BASE_DEMO", "\"https://api.abrakadabraapp.app/\"")
 
-            buildConfigField("String", "BASE_URL", "\"https://api.abra-ka-dabra.com/\"")
-            buildConfigField("String", "BASE_DEMO", "\"https://api.abra-ka-dabra.com/\"")
+//            buildConfigField("String", "BASE_URL", "\"https://api.abra-ka-dabra.com/\"")
+//            buildConfigField("String", "BASE_DEMO", "\"https://api.abra-ka-dabra.com/\"")
+
+            buildConfigField("String", "BASE_URL", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
+            buildConfigField("String", "BASE_DEMO", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
 
             buildConfigField "String", "API_KEY", "\"${project.property('API_KEY')}\""
             signingConfig signingConfigs.release

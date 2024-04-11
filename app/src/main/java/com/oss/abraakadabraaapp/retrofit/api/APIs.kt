@@ -238,7 +238,7 @@ interface APIs {
     suspend fun getRazorPay(): Response<RazorPayModel>
 
 
-    @POST("init_payment")
+    @POST("app/payment/init")
     suspend fun initPayment(
         @Body body : HashMap<String, String>
     ): Response<InitPaymentModel>

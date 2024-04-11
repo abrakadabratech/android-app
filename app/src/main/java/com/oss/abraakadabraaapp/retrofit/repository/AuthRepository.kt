@@ -167,7 +167,6 @@ class AuthRepository(private val apiHelper: APIs) {
     ) = apiHelper.getRazorPay()
 
     suspend fun initPayment(
-        map: HashMap<String, String>,
         id: HashMap<String, String>
     ) = apiHelper.initPayment(id)
 
