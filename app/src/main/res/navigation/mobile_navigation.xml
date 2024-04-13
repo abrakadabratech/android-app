@@ -29,12 +29,9 @@
         android:name="com.oss.abraakadabraaapp.activities.newflow.ui.menu.MenuFragment"
         android:label="Menu"
          tools:layout="@layout/new_menu_screen"/>
-    <fragment
-        android:id="@+id/newGiverFragment"
-        android:name="com.oss.abraakadabraaapp.activities.newflow.ui.home.NewGiverFragment"
-        android:label="NewGiverFragment" />
 
-    <!-- <fragment
+    <!--
+   <fragment
          android:id="@+id/navigation_chats"
          android:name="com.oss.abraakadabraaapp.activities.newflow.ui.chats.ChatsFragment"
          android:label="Chats"
