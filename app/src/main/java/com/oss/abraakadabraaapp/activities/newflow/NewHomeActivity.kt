@@ -151,7 +151,7 @@ class NewHomeActivity : BaseActivity() {
         forceUpdateChecker.checkForceUpdateRequired { updateRequiredModel ->
             if (updateRequiredModel != null) {
                 // pop up a non-cancellable dialog for giving information about new version
-                showToast("Force update is available!")
+//                showToast("Force update is available!")
 
                 showForceUpdateAlert()
             }
@@ -165,14 +165,14 @@ class NewHomeActivity : BaseActivity() {
         builder.setPositiveButton("Update") { dialog, _ ->
             dialog.cancel()
             goToPlayStore()
-            mAppUpdateManager.appUpdateInfo.addOnSuccessListener {
+            /*mAppUpdateManager.appUpdateInfo.addOnSuccessListener {
                 mAppUpdateManager.startUpdateFlowForResult(
                     it,
                     AppUpdateType.IMMEDIATE,
                     this,
                     RC_APP_UPDATE
                 )
-            }
+            }*/
 
         }
         builder.setCancelable(false)
@@ -372,7 +372,7 @@ class NewHomeActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-//        updateChecker()
+        updateChecker()
         getUnreadMessageCount()
     }
 }
