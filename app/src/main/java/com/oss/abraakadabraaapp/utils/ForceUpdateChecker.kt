@@ -61,11 +61,11 @@ class ForceUpdateChecker @Inject constructor() {
     companion object {
         const val KEY_UPDATE_REQUIRED = "android_force_update_required"
         const val KEY_REQUIRED_VERSION = "android_force_update_required_version"
-        const val KEY_UPDATE_URL = "android_force_update_store_url"
+        const val KEY_UPDATE_URL = "android_force_update_message"
         const val MINIMUM_FETCH_INTERVAL = 60L
     }
 }
 
 data class UpdateRequiredModel(
-    val updateUrl: String? = null
+    val updateUrl: String = "Please update your app for critical bug fixes and security enhancements."
 )

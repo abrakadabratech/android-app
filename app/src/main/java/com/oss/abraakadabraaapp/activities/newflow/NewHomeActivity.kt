@@ -153,15 +153,15 @@ class NewHomeActivity : BaseActivity() {
                 // pop up a non-cancellable dialog for giving information about new version
 //                showToast("Force update is available!")
 
-                showForceUpdateAlert()
+                showForceUpdateAlert(updateRequiredModel.updateUrl)
             }
         }
     }
 
-    private fun showForceUpdateAlert() {
+    private fun showForceUpdateAlert(message:String) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Require app update!")
-        builder.setMessage("Please update your app for critical bug fixes and security enhancements.")
+        builder.setMessage(message)
         builder.setPositiveButton("Update") { dialog, _ ->
             dialog.cancel()
             goToPlayStore()
