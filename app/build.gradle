@@ -18,7 +18,9 @@ android {
     }
     buildFeatures {
         compose = true
+        dataBinding true
     }
+
 
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.4"
@@ -313,5 +315,7 @@ dependencies {
     //Addmob sdk
     implementation 'com.google.android.gms:play-services-ads:22.6.0'
 
+    //Custom popups
+    implementation 'com.saadahmedev.popup-dialog:popup-dialog:2.0.0'
 
 }

@@ -1,9 +1,9 @@
 package com.oss.abraakadabraaapp.activities.newflow
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
@@ -31,6 +31,8 @@ import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import com.razorpay.Checkout
 import com.razorpay.PayloadHelper
 import com.razorpay.PaymentResultListener
+import com.saadahmedev.popupdialog.PopupDialog
+import com.saadahmedev.popupdialog.listener.StandardDialogActionListener
 import org.json.JSONObject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.BufferedReader
@@ -209,7 +211,7 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
 
                     binding.webview.visibility=View.VISIBLE
                     binding.webview.loadUrl(it.data?.url.toString())
-                    Log.e("WEBVIEW", "setUpObserver: ${it.data?.url.toString()} ", )
+                    Log.e("WEBVIEW", "setUpObserver: ${it.data?.url.toString()} ")
 
                     binding.webview.webViewClient = object : WebViewClient() {
                         override fun shouldOverrideUrlLoading(
@@ -229,7 +231,7 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
 
                         override fun onPageFinished(view: WebView?, url: String?) {
                             super.onPageFinished(view, url)
-                            Log.e("WEBVIEW", "onPageFinished: finished url $url", )
+                            Log.e("WEBVIEW", "onPageFinished: finished url $url")
                             if (url!!.contains("/app/payment/status/")){
                                 FetchJsonTask(this@MyPayAsYouGoActivity,from,receiverId,productId,binding).execute(url)
                             } // Inject JavaScript to extract JSON response
@@ -399,7 +401,7 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
             val urlString = urls[0]
             var result = ""
 
-            val url = URL("http://abrakadabra-dev.el.r.appspot.com/app/payment/status/M1712720281447/n91Enbiou2XDJ3fFVhYqv4Y8If53")
+            val url = URL(urlString)
             val connection = url.openConnection() as HttpURLConnection
             try {
                 connection.requestMethod = "POST"
@@ -419,7 +421,7 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
 
                 } else {
                     // Handle error response
-                    Log.e("WEBVIEW", "doInBackground: error", )
+                    Log.e("WEBVIEW", "doInBackground: error")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -434,20 +436,49 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
             // Process the JSON response here
             Log.e("WEBVIEW","results is $result")
             val res = Gson().fromJson(result, PhonepeResponce::class.java)
-            Toast.makeText(context,res.message,Toast.LENGTH_SHORT).show()
-            if (res.message == "Payment Success"){
-                val intent = Intent(
-                    context,
-                    FeedbackActivity::class.java
-                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                intent.putExtra("from", from)
-                intent.putExtra("PRODUCT_ID", productId)
-                intent.putExtra("USER_ID", receiverId)
-                context.startActivity(intent)
-                context.finish()
+            if (res != null){
+                Toast.makeText(context,res.message,Toast.LENGTH_SHORT).show()
+                if (res.message == "Payment Success"){
+                    binding.webview.visibility = View.GONE
+                    PopupDialog.getInstance(context)
+                        .statusDialogBuilder()
+                        .createSuccessDialog()
+                        .setActionButtonText("Close")
+                        .setHeading("Payment Success")
+                        .setDescription("The payment was successful. " +
+                                "Thank you for contributing to Abra Ka Dabra's mission.")
+                        .build {
+                            val intent = Intent(
+                                context,
+                                FeedbackActivity::class.java
+                            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            intent.putExtra("from", from)
+                            intent.putExtra("PRODUCT_ID", productId)
+                            intent.putExtra("USER_ID", receiverId)
+                            context.startActivity(intent)
+                            context.finish()
+                        }
+                        .show();
+
+                }else{
+                    paymentFailedPopup(context)
+                }
             }else{
-                binding.webview.visibility = View.GONE
+                paymentFailedPopup(context)
             }
+        }
+
+        private fun paymentFailedPopup(applicationContext: Context) {
+            Toast.makeText(context,"Failed",Toast.LENGTH_SHORT).show()
+            PopupDialog.getInstance(applicationContext)
+                .statusDialogBuilder()
+                .createErrorDialog()
+                .setHeading("Payment Failed!")
+                .setDescription("Unexpected error occurred." +
+                        " Please try again")
+                .build(Dialog::dismiss)
+                .show();
+            binding.webview.visibility = View.GONE
         }
     }
 
