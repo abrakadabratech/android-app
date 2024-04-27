@@ -59,7 +59,9 @@ import com.oss.abraakadabraaapp.utils.Constants.BUTTON_CHAT_SEND_MESSAGE
 import com.oss.abraakadabraaapp.utils.Constants.CHATS_DATA
 import com.oss.abraakadabraaapp.utils.Constants.DISPLAY_NAME
 import com.oss.abraakadabraaapp.utils.Constants.DISPLAY_PIC
+import com.oss.abraakadabraaapp.utils.Constants.MESSAGE
 import com.oss.abraakadabraaapp.utils.Constants.PAGE_CHATS_DETAILS
+import com.oss.abraakadabraaapp.utils.Constants.PRODUCT_ID
 import com.oss.abraakadabraaapp.utils.Constants.UNDER_DEV
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
 import com.oss.abraakadabraaapp.utils.Utility
@@ -113,6 +115,13 @@ class ChatDetailActivity : BaseActivity() {
             loaddata()
 
         }*/
+        chatNode = intent.extras?.getString(Constants.CHATS_DATA, "").toString()
+        if (intent.hasExtra(MESSAGE)) {
+            var message = intent.extras?.getString(MESSAGE, "").toString()
+            var productId = intent.extras?.getString(PRODUCT_ID, "").toString()
+            sendMessage(message)
+            setChatMetaData(productId, Timestamp.now())
+        }
         if (intent.hasExtra(CHATS_DATA)) {
             binding.chatName.text = intent.extras?.getString(DISPLAY_NAME)
             Glide.with(this).load(intent.extras?.getString(DISPLAY_PIC))
@@ -126,14 +135,11 @@ class ChatDetailActivity : BaseActivity() {
                 chatData!!.receiver_id.toString()
             )*/
 
-            chatNode = intent.extras?.getString(Constants.CHATS_DATA, "").toString()
+
 
             setUpRecycler(chatNode)
             loaddata()
 
-            if (intent.extras?.getString("from","") == "posted_page"){
-                sendMessage(intent.extras?.getString(Constants.MESSAGE,"").toString())
-            }
         }
 
         LocalBroadcastManager.getInstance(this@ChatDetailActivity)
@@ -168,16 +174,27 @@ class ChatDetailActivity : BaseActivity() {
 
     }
 
+    private fun setChatMetaData(productId: String, now: Timestamp) {
+        val db = Firebase.firestore
+        db.collection("chats-metadata").document(productId).update("last_activity", now)
+            .addOnSuccessListener {
+                Log.d(TAG, "setChatMetaData: success")
+            }.addOnFailureListener {
+                Log.e(TAG, "setChatMetaData: failed")
+            }
+    }
+
     private fun showOnlineOrOffline() {
         val db = Firebase.firestore
-        val otherUser = if (currentUserId == chatData?.sender_id)  chatData?.receiver_id.toString() else  chatData?.sender_id.toString()
+        val otherUser =
+            if (currentUserId == chatData?.sender_id) chatData?.receiver_id.toString() else chatData?.sender_id.toString()
         db.collection("online_users").document(otherUser)
             .addSnapshotListener { value, error ->
 
                 Log.d(TAG, "onResume: ${value}")
                 Log.d(TAG, "onResume: ${error}")
 
-                if (value?.data != null){
+                if (value?.data != null) {
                     val isOnline: Boolean = value.data?.get("isOnline") as Boolean
                     val isTyping: Boolean = value.data?.get("isTyping") as Boolean
 //            Log.d(TAG, "onResume: ${Gson().toJson(value)}")
@@ -263,9 +280,12 @@ class ChatDetailActivity : BaseActivity() {
             val userRef =
                 db.collection("online_users")
                     .document(FirebaseAuth.getInstance().currentUser?.uid.toString())
-
+            val user = hashMapOf(
+                "isOnline" to false,
+                "lastOnlineTimestamp" to FieldValue.serverTimestamp()
+            )
             userRef
-                .update("isOnline", false, "lastOnlineTimestamp", FieldValue.serverTimestamp())
+                .set(user)
                 .addOnSuccessListener {
                     // Update UI or perform other actions
                     Log.d("TAG:::>", "setUserOnline: false")
@@ -274,6 +294,7 @@ class ChatDetailActivity : BaseActivity() {
         }
 
     }
+
     private fun loaddata() {
         val db = Firebase.firestore
 
@@ -300,12 +321,12 @@ class ChatDetailActivity : BaseActivity() {
                 }
                 binding.productName.text = chatData!!.product?.capitalize(Locale.ROOT)
 
-                if (chatData!!.isUserBlocked){
+                if (chatData!!.isUserBlocked) {
                     binding.blockUserTxt.text = "Unblock User"
-                }else{
+                } else {
                     binding.blockUserTxt.text = "Block User"
                 }
-                if (chatData!!.isChatClosed){
+                if (chatData!!.isChatClosed) {
 
                 }
 
@@ -329,13 +350,13 @@ class ChatDetailActivity : BaseActivity() {
     }
 
     private fun setUpObserver() {
-        mainViewModel.reportChatSuccess.observe(this){
-            if (it.code == 200){
+        mainViewModel.reportChatSuccess.observe(this) {
+            if (it.code == 200) {
                 showToast(it.message.toString())
             }
         }
-        mainViewModel.closeChatSessionSuccess.observe(this){
-            if (it.code == 200){
+        mainViewModel.closeChatSessionSuccess.observe(this) {
+            if (it.code == 200) {
                 showToast(it.message.toString())
             }
         }
@@ -385,7 +406,8 @@ class ChatDetailActivity : BaseActivity() {
             if (currentUserId == chatData?.sender_id) {
                 mainViewModel.updateProductRequest(
                     chatData?.requestId.toString(),
-                    "received")
+                    "received"
+                )
             } else {
                 mainViewModel.updateProductRequest(
                     chatData?.requestId.toString(),
@@ -417,7 +439,7 @@ class ChatDetailActivity : BaseActivity() {
             val map = HashMap<String, String>()
             map["reason"] = "default"
             showToast("User Reported")
-            mainViewModel.reportChat(chatNode,map)
+            mainViewModel.reportChat(chatNode, map)
         }
         binding.deleteChat.setOnClickListener {
             postClick(BUTTON_CHAT_DELETE)
@@ -433,6 +455,7 @@ class ChatDetailActivity : BaseActivity() {
                 binding.messageBox.setText("")
             } else {
                 sendMessage(binding.messageBox.text.toString().trim())
+                setChatMetaData(chatData!!.product_id.toString(),Timestamp.now())
                 list.add(binding.messageBox.text.toString().trim())
                 binding.messageBox.setText("")
             }
@@ -481,7 +504,7 @@ class ChatDetailActivity : BaseActivity() {
         }
     }
 
-    private fun blockUser(isBlock:Boolean) {
+    private fun blockUser(isBlock: Boolean) {
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
         val map = HashMap<String, String>()
@@ -493,7 +516,7 @@ class ChatDetailActivity : BaseActivity() {
         map["reason"] = "default"
         if (isBlock) {
             mainViewModel.userChatUnBlock(map)
-        }else{
+        } else {
             val builder = androidx.appcompat.app.AlertDialog.Builder(this)
             builder.setTitle("Alert!")
             builder.setMessage("Are you sure you want block the user")
@@ -551,18 +574,15 @@ class ChatDetailActivity : BaseActivity() {
         } else {
             val db = Firebase.firestore
             val sender_id = FirebaseAuth.getInstance().currentUser?.uid
-            val calendar = Calendar.getInstance()
-            val sdf = SimpleDateFormat("dd MMM yyyy")
-            val currentDate: String = sdf.format(calendar.time)
             chatData!!.last_message = message
-            val c = Calendar.getInstance().time
             chatData!!.time_stamp = Timestamp.now()
-
-            chatNode = chatNode
 
             db.collection("chats")
                 .document(chatNode)
-                .set(chatData!!)
+                .update(mapOf(
+                    "last_message" to message,
+                    "time_stamp" to Timestamp.now(),
+                ))
                 .addOnSuccessListener {
                     Log.d("TAG - ", "sendToChat: chat room created")
 
@@ -573,7 +593,7 @@ class ChatDetailActivity : BaseActivity() {
 
             val chats = hashMapOf(
                 "chatNode" to chatNode,
-                "receiverId" to if(sender_id == chatData!!.receiver_id) chatData!!.sender_id else chatData?.receiver_id,
+                "receiverId" to if (sender_id == chatData!!.receiver_id) chatData!!.sender_id else chatData?.receiver_id,
                 "senderId" to sender_id,
                 "text" to message,
                 "from" to sender_id,
@@ -716,8 +736,12 @@ class ChatDetailActivity : BaseActivity() {
             val userRef = db.collection("online_users")
                 .document(FirebaseAuth.getInstance().currentUser?.uid.toString())
 
+            val user = hashMapOf(
+                "isOnline" to true,
+
+                )
             userRef
-                .update("isOnline", true)
+                .set(user)
                 .addOnSuccessListener {
                     // Update UI or perform other actions
                     Log.d("TAG:::>", "setUserOnline: true")

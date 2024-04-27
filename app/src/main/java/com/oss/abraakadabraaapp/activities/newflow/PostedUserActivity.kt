@@ -43,8 +43,6 @@ class PostedUserActivity : BaseActivity() {
     private var isResuestAllowed = true
     private val mainViewModel: AuthViewModel by viewModel()
     private lateinit var interstitialAd: InterstitialAd
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        setContentView(R.layout.activity_posted_user)
@@ -145,6 +143,7 @@ class PostedUserActivity : BaseActivity() {
                 intent.putExtra(Constants.CHATS_DATA,it.data.chatId)
                 intent.putExtra("from","posted_page")
                 intent.putExtra(Constants.MESSAGE,binding.requestMsg.text.toString())
+                intent.putExtra(Constants.PRODUCT_ID,productDetails!!.data.id)
                 startActivity(intent)
             }
         }
@@ -155,7 +154,7 @@ class PostedUserActivity : BaseActivity() {
 //                showToast(it.responseMessage.toString())
 //                binding.successAlertDialog.visibility = View.VISIBLE
                 val map =  HashMap<String, String>()
-                map["request_id"] = it.data.request_id
+                map["request_id"] =  it.data.request_id
                 mainViewModel.iniChat(productDetails!!.data.id.toString(),map)
 
                 /*if (it.data.product_status == "hold"){

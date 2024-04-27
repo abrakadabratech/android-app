@@ -4,6 +4,7 @@ object Constants {
     //Page tags for GA-4
 
 
+    val PRODUCT_ID: String = "PRODUCT_ID"
     val MESSAGE: String = "MESSAGE"
     val REQUEST_ALLOWED: String = "request_allowed"
     val upiId: String = "asvikritajna@icici"
