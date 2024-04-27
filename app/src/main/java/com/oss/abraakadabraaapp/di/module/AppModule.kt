@@ -14,6 +14,7 @@ import android.annotation.SuppressLint
 import com.oss.abraakadabraaapp.BuildConfig
 import com.oss.abraakadabraaapp.retrofit.api.TokenAutheticator
 import com.oss.abraakadabraaapp.retrofit.api.TokenInterceptor
+import com.oss.abraakadabraaapp.utils.ForceUpdateChecker
 import java.security.KeyStore
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
@@ -27,6 +28,7 @@ val appModule = module {
     single { provideNetworkHelper(androidContext()) }
     single { provideTokenInterceptor() }
     single { provideTokenAuthenticator(androidContext()) }
+    single { provideForceUpdate() }
 }
 
 val trustAllCerts = arrayOf<TrustManager>(
@@ -122,6 +124,8 @@ private fun provideRetrofit(
 private fun provideApiService(retrofit: Retrofit): APIs = retrofit.create(APIs::class.java)
 
 fun provideTokenInterceptor(): TokenInterceptor = TokenInterceptor()
+
+fun provideForceUpdate(): ForceUpdateChecker = ForceUpdateChecker()
 
 
 private fun provideTokenAuthenticator(context: Context): TokenAutheticator = TokenAutheticator(context)

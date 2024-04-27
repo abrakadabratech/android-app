@@ -18,7 +18,9 @@ android {
     }
     buildFeatures {
         compose = true
+        dataBinding true
     }
+
 
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.4"
@@ -29,25 +31,25 @@ android {
         minSdk 23
         targetSdk 33
         
-        versionCode 38
-        versionName "1.20.1"
+        versionCode 45
+        versionName "1.20.5"
 //        versionName "test_refresh_product"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
         debug {
-//            storeFile file('D:\\Android\\AndroidProjects\\MY_WORK_PROJECTS\\newJksFiles\\key.jks')
+            storeFile file('C:\\Users\\Admin\\Desktop\\MyPracties\\akd-app-v2\\key\\key.jks')
 //            storeFile file('/Users/hari/Desktop/Freelancing/Code/AKD/akd-app-v2/key/key.jks')
-//            storePassword 'akd@123'
-//            keyAlias 'key0'
-//            keyPassword 'akd@123'
+            storePassword 'akd@123'
+            keyAlias 'key0'
+            keyPassword 'akd@123'
         }
         release {
-//            storeFile file("D:\\Android\\AndroidProjects\\MY_WORK_PROJECTS\\newJksFiles\\key.jks")
+            storeFile file("C:\\Users\\Admin\\Desktop\\MyPracties\\akd-app-v2\\key\\key.jks")
 //            storeFile file('/Users/hari/Desktop/Freelancing/Code/AKD/akd-app-v2/key/key.jks')
-//            storePassword "akd@123"
-//            keyAlias "key0"
-//            keyPassword "akd@123"
+            storePassword "akd@123"
+            keyAlias "key0"
+            keyPassword "akd@123"
         }
     }
     buildFeatures {
@@ -65,12 +67,11 @@ android {
 //            buildConfigField("String", "BASE_URL", "\"https://api.abrakadabraapp.app/\"")
 //            buildConfigField("String", "BASE_DEMO", "\"https://api.abrakadabraapp.app/\"")
 
-//            buildConfigField("String", "BASE_URL", "\"https://api.abra-ka-dabra.com/\"")
-//            buildConfigField("String", "BASE_DEMO", "\"https://api.abra-ka-dabra.com/\"")
+            buildConfigField("String", "BASE_URL", "\"https://api.abra-ka-dabra.com/\"")
+            buildConfigField("String", "BASE_DEMO", "\"https://api.abra-ka-dabra.com/\"")
 
-            buildConfigField("String", "BASE_URL", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
-            buildConfigField("String", "BASE_DEMO", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
-
+//            buildConfigField("String", "BASE_URL", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
+//            buildConfigField("String", "BASE_DEMO", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
 
             buildConfigField "String", "API_KEY", "\"${project.property('API_KEY')}\""
             signingConfig signingConfigs.release
@@ -86,7 +87,9 @@ android {
 //            buildConfigField("String", "BASE_DEMO", "\"https://asia-south1-abrakadabra-dev.cloudfunctions.net/api/\"")
             buildConfigField("String", "BASE_URL", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
             buildConfigField("String", "BASE_DEMO", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
-
+//
+//            buildConfigField("String", "BASE_URL", "\"https://api.abra-ka-dabra.com/\"")
+//            buildConfigField("String", "BASE_DEMO", "\"https://api.abra-ka-dabra.com/\"")
 
 
             buildConfigField "String", "API_KEY", "\"${project.property('API_KEY')}\""
@@ -96,7 +99,6 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-
     }
     kotlinOptions {
         jvmTarget = '1.8'
@@ -122,7 +124,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics-ktx:18.3.4'
     implementation 'androidx.databinding:databinding-common:8.2.2'
     implementation 'androidx.databinding:databinding-runtime:8.2.2'
-    implementation 'com.google.firebase:firebase-database-ktx:20.3.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
@@ -315,5 +316,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads:22.6.0'
 
     implementation 'com.google.android.gms:play-services-maps:18.2.0'
+    //Custom popups
+    implementation 'com.saadahmedev.popup-dialog:popup-dialog:2.0.0'
 
 }

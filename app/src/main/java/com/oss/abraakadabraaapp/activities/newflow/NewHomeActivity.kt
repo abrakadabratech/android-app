@@ -2,11 +2,13 @@ package com.oss.abraakadabraaapp.activities.newflow
 
 import android.Manifest
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.res.Resources
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -19,9 +21,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.initialization.InitializationStatus
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateManager
@@ -42,7 +41,9 @@ import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.ui.home.NewGiverFragment
 import com.oss.abraakadabraaapp.databinding.ActivityNewHomeBinding
+import com.oss.abraakadabraaapp.utils.ForceUpdateChecker
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
+import com.oss.abraakadabraaapp.utils.Utility
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -103,12 +104,52 @@ class NewHomeActivity : BaseActivity() {
         }
     }
 
+    //    @Inject
+    lateinit var forceUpdateChecker: ForceUpdateChecker
+
+    private fun updateChecker() {
+        forceUpdateChecker = ForceUpdateChecker()
+        forceUpdateChecker.checkForceUpdateRequired { updateRequiredModel ->
+            if (updateRequiredModel != null) {
+                // pop up a non-cancellable dialog for giving information about new version
+//                showToast("Force update is available!")
+
+                showForceUpdateAlert(updateRequiredModel.updateUrl)
+            }
+        }
+    }
+
+    private fun showForceUpdateAlert(message:String) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Require app update!")
+        builder.setMessage(message)
+        builder.setPositiveButton("Update") { dialog, _ ->
+            dialog.cancel()
+            goToPlayStore()
+            /*mAppUpdateManager.appUpdateInfo.addOnSuccessListener {
+                mAppUpdateManager.startUpdateFlowForResult(
+                    it,
+                    AppUpdateType.IMMEDIATE,
+                    this,
+                    RC_APP_UPDATE
+                )
+            }*/
+
+        }
+        builder.setCancelable(false)
+        builder.setNegativeButton(getString(android.R.string.cancel)) { dialog, _ ->
+            dialog.cancel()
+            finish()
+        }
+        builder.show()
+    }
+
     private fun checkNotificationPermission() {
         if (!PreferencesManagement.isNotificationEnabled(this)) {
 
-            if (!NotificationManagerCompat.from(this).areNotificationsEnabled()){
+            if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
 
-                PreferencesManagement.setisNotificationEnabled(this,true)
+                PreferencesManagement.setisNotificationEnabled(this, true)
 
                 val listener = object : MultiplePermissionsListener {
                     override fun onPermissionsChecked(report: MultiplePermissionsReport) {
@@ -204,7 +245,8 @@ class NewHomeActivity : BaseActivity() {
             }
             if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                 && it.updatePriority() >= 4 /* high priority */
-                && it.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                && it.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+            ) {
                 // Request an immediate update.
                 mAppUpdateManager.startUpdateFlowForResult(
                     it,
@@ -212,9 +254,34 @@ class NewHomeActivity : BaseActivity() {
                     this,
                     RC_APP_UPDATE
                 )
-            }else {
+            } else {
                 mAppUpdateManager.unregisterListener(listener)
             }
+        }
+    }
+
+    fun goToPlayStore() {
+        val packageName: String = Utility.getPackageName(this)!!
+        openPlayStore(packageName)
+    }
+
+    private fun openPlayStore(packageName: String) {
+        try {
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW, Uri.parse(
+                        "market://details?id=$packageName"
+                    )
+                )
+            )
+        } catch (e: ActivityNotFoundException) {
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW, Uri.parse(
+                        "https://play.google.com/store/apps/details?id=$packageName"
+                    )
+                )
+            )
         }
     }
 
@@ -242,9 +309,14 @@ class NewHomeActivity : BaseActivity() {
             Snackbar.LENGTH_INDEFINITE
         ).apply {
             setAction("INSTALL") { mAppUpdateManager.completeUpdate() }
-            setActionTextColor(ContextCompat.getColor(this@NewHomeActivity,R.color.btn_color))
+            setActionTextColor(ContextCompat.getColor(this@NewHomeActivity, R.color.btn_color))
             show()
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        updateChecker()
+        getUnreadMessageCount()
+    }
 }

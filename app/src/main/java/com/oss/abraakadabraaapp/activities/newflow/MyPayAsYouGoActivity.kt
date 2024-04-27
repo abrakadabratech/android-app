@@ -1,11 +1,16 @@
 package com.oss.abraakadabraaapp.activities.newflow
 
-import RequestDetails
 import android.app.Activity
+import android.app.Dialog
+import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -13,21 +18,28 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
+import com.oss.abraakadabraaapp.activities.newflow.model.PhonepeResponce
 import com.oss.abraakadabraaapp.activities.newflow.ui.FeedbackActivity
 import com.oss.abraakadabraaapp.databinding.ActivityMyPayAsYouGoBinding
-import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_100
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_200
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_500
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_IN_PAYASWISH
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_CONTRIBUTE
 import com.oss.abraakadabraaapp.utils.PreferencesManagement
-import com.oss.abraakadabraaapp.utils.Utility
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import com.razorpay.Checkout
 import com.razorpay.PayloadHelper
 import com.razorpay.PaymentResultListener
+import com.saadahmedev.popupdialog.PopupDialog
+import com.saadahmedev.popupdialog.listener.StandardDialogActionListener
+import org.json.JSONObject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
+
 
 class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
     var productId = ""
@@ -136,18 +148,17 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
         if (amount == "") {
             showToast("Please enter some amount")
         } else {
-            /*
-            val map = HashMap<String,String>()
-            map["amount"] = (s).toString()
-            map["productId"] = productId
-            val authMap = Utility.getAuthentication(this)
-            authMap["logging"] = "true"
-            mainViewModel.initPayment(authMap,map)*/
-
             val user = PreferencesManagement.getUserName(this)
             val auth = FirebaseAuth.getInstance().currentUser
 
-            if (auth != null){
+            val map = HashMap<String,String>()
+            map["amount"] = amount.toString()
+            map["phone"] = phone
+            map["name"] = name
+            mainViewModel.initPayment(map)
+
+
+           /* if (auth != null){
                 Log.d("TAG_UPI", "takeToPayment: ${auth.displayName}")
                 Log.d("TAG_UPI", "takeToPayment:user ${user}")
                 val uri = Uri.parse("upi://pay").buildUpon()
@@ -180,7 +191,7 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
                 }
             }else{
                 showToast("no user found")
-            }
+            }*/
         }
 
     }
@@ -194,8 +205,55 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
 
         mainViewModel.initPaymentSuccess.observe(this) {
             if (it.code == 200) {
-                orderId = it.data?.orderId.toString()
-                sendToRazorPay(it.data?.orderId, it.data?.amount!!)
+//                showToast(it.data!!.url.toString())
+
+                if (it.data!!.url != ""){
+
+                    binding.webview.visibility=View.VISIBLE
+                    binding.webview.loadUrl(it.data?.url.toString())
+                    Log.e("WEBVIEW", "setUpObserver: ${it.data?.url.toString()} ")
+
+                    binding.webview.webViewClient = object : WebViewClient() {
+                        override fun shouldOverrideUrlLoading(
+                            view: WebView,
+                            request: WebResourceRequest
+                        ): Boolean {
+                            val url = request.url.toString()
+                            Log.d("WEBVIEW", "shouldOverrideUrlLoading: $url")
+
+                            // Check if the URL corresponds to the payment completion page
+                            return if (url.contains("/app/payment/status/")) {
+                                // Payment completed, perform necessary actions
+                                // You might want to notify your activity or handle it here
+                                true // return true to indicate that you've handled the URL loading
+                            } else super.shouldOverrideUrlLoading(view, request)
+                        }
+
+                        override fun onPageFinished(view: WebView?, url: String?) {
+                            super.onPageFinished(view, url)
+                            Log.e("WEBVIEW", "onPageFinished: finished url $url")
+                            if (url!!.contains("/app/payment/status/")){
+                                FetchJsonTask(this@MyPayAsYouGoActivity,from,receiverId,productId,binding).execute(url)
+                            } // Inject JavaScript to extract JSON response
+                            binding.webview.evaluateJavascript("(function() { return JSON.stringify(window.YOUR_JSON_OBJECT); })();") { jsonString ->
+                                // Process JSON response here
+                                if (jsonString != null && jsonString.isNotBlank()) {
+                                    try {
+                                        val jsonObject = JSONObject(jsonString)
+                                        Log.d("WEBVIEW", "onPageFinished: $jsonObject")
+
+                                        // Now you have the JSON object, you can parse and use it as needed
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+//                orderId = it.data?.orderId.toString()
+//                sendToRazorPay(it.data?.orderId, it.data?.amount!!)
             }
         }
 
@@ -335,5 +393,95 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
         } else {
             showToast("Please try again!")
         }
+
     }
+    class FetchJsonTask(val context: MyPayAsYouGoActivity,val from:String,
+                        val receiverId:String,val productId:String,val binding: ActivityMyPayAsYouGoBinding) : AsyncTask<String, Void, String>() {
+        override fun doInBackground(vararg urls: String): String {
+            val urlString = urls[0]
+            var result = ""
+
+            val url = URL(urlString)
+            val connection = url.openConnection() as HttpURLConnection
+            try {
+                connection.requestMethod = "POST"
+                connection.connect()
+                val inputStream = connection.inputStream
+                val bufferedReader = BufferedReader(InputStreamReader(inputStream))
+
+                val stringBuilder = StringBuilder()
+                var line: String?
+                while (bufferedReader.readLine().also { line = it } != null) {
+                    stringBuilder.append(line)
+                }
+
+                result = stringBuilder.toString()
+
+                if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+
+                } else {
+                    // Handle error response
+                    Log.e("WEBVIEW", "doInBackground: error")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                connection.disconnect()
+            }
+
+            return result
+        }
+
+        override fun onPostExecute(result: String) {
+            // Process the JSON response here
+            Log.e("WEBVIEW","results is $result")
+            val res = Gson().fromJson(result, PhonepeResponce::class.java)
+            if (res != null){
+                Toast.makeText(context,res.message,Toast.LENGTH_SHORT).show()
+                if (res.message == "Payment Success"){
+                    binding.webview.visibility = View.GONE
+                    PopupDialog.getInstance(context)
+                        .statusDialogBuilder()
+                        .createSuccessDialog()
+                        .setActionButtonText("Close")
+                        .setHeading("Payment Success")
+                        .setDescription("The payment was successful. " +
+                                "Thank you for contributing to Abra Ka Dabra's mission.")
+                        .build {
+                            val intent = Intent(
+                                context,
+                                FeedbackActivity::class.java
+                            ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            intent.putExtra("from", from)
+                            intent.putExtra("PRODUCT_ID", productId)
+                            intent.putExtra("USER_ID", receiverId)
+                            context.startActivity(intent)
+                            context.finish()
+                        }
+                        .show();
+
+                }else{
+                    paymentFailedPopup(context)
+                }
+            }else{
+                paymentFailedPopup(context)
+            }
+        }
+
+        private fun paymentFailedPopup(applicationContext: Context) {
+            Toast.makeText(context,"Failed",Toast.LENGTH_SHORT).show()
+            PopupDialog.getInstance(applicationContext)
+                .statusDialogBuilder()
+                .createErrorDialog()
+                .setHeading("Payment Failed!")
+                .setDescription("Unexpected error occurred." +
+                        " Please try again")
+                .build(Dialog::dismiss)
+                .show();
+            binding.webview.visibility = View.GONE
+        }
+    }
+
+    // Usage:
+
 }

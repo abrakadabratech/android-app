@@ -20,6 +20,10 @@ import java.util.concurrent.TimeUnit
 object Utility {
     const val EXTRA_PREFIX = BuildConfig.APPLICATION_ID
 
+    fun getPackageName(context: Context): String? {
+        return context.packageName
+    }
+
     fun convertToTimestamp(value: Any): String {
         val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
         val dateformat: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())

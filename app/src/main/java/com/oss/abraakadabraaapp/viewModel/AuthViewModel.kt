@@ -722,13 +722,12 @@ fun getRequestDetails(
         }
     }
 
-    fun initPayment(
-        headerMap: HashMap<String, String>,body:HashMap<String, String>
+    fun initPayment(body:HashMap<String, String>
     ) {
         viewModelScope.launch {
             isLoading.value = true
 
-            suspend fun call() = repository.initPayment(headerMap,body)
+            suspend fun call() = repository.initPayment(body)
             callApi(::call, object : CallHelper<InitPaymentModel>{
                 override fun onSuccessful(data: InitPaymentModel) {
                     initPaymentSuccess .value = data
