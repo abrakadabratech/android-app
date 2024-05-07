@@ -67,7 +67,8 @@ data class Requests (
     @SerializedName("isDelivered" ) var isDelivered : Boolean?           = false,
     @SerializedName("email"        ) var email       : String?      = null,
     @SerializedName("phone"        ) var phone       : String?      = null,
-    @SerializedName("requested_at" ) var requestedAt : String?      = null
+    @SerializedName("requested_at" ) var requestedAt : String?      = null,
+    @SerializedName("chat_id" ) var chatId : String?      = ""
 )
 
 data class Category (

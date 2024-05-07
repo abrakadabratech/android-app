@@ -29,6 +29,8 @@ data class Products (
     @SerializedName("energy_saving" ) var energySaving : Int?              = 0,
     @SerializedName("isReported"    ) var isReported   : Boolean = false,
     @SerializedName("isRequested"   ) var isRequested  : Boolean = false,
+    @SerializedName("is_request_allowed"   ) var isRequestAllowed  : Boolean = true,
+    @SerializedName("requested_blocked_reason"   ) var requestBlockedReason  : String = "You have been blocked.",
     @SerializedName("chat_node"   ) var chatNode  : String = "",
     @SerializedName("requestAccepted"   ) var requestedStatus  : Boolean = false,
     @SerializedName("created_at"    ) var createdAt    : String?           = null,

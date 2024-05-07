@@ -43,6 +43,8 @@ class PostedUserActivity : BaseActivity() {
     private var isResuestAllowed = true
     private val mainViewModel: AuthViewModel by viewModel()
     private lateinit var interstitialAd: InterstitialAd
+    private val TAG = "ChatDetailActivity"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        setContentView(R.layout.activity_posted_user)
@@ -140,11 +142,15 @@ class PostedUserActivity : BaseActivity() {
         mainViewModel.iniChatSuccess.observe(this){
             if (it.code == 200){
                 val intent = Intent(this,ChatDetailActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                 intent.putExtra(Constants.CHATS_DATA,it.data.chatId)
                 intent.putExtra("from","posted_page")
                 intent.putExtra(Constants.MESSAGE,binding.requestMsg.text.toString())
+                Log.d(TAG, "setUpObserver: ${binding.requestMsg.text.toString()}")
                 intent.putExtra(Constants.PRODUCT_ID,productDetails!!.data.id)
                 startActivity(intent)
+                finish()
             }
         }
         mainViewModel.requstProductSuccess.observe(this) {

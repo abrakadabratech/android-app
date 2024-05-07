@@ -11,6 +11,7 @@ class RequestorResponse(
 data class Data1 (
 
     @SerializedName("request_id"    ) var requestId    : String?       = null,
+    @SerializedName("chat_id" ) var chatId : String?      = "",
     @SerializedName("product"       ) var product      : Product1?      = Product1(),
     @SerializedName("receiver_info" ) var receiverInfo : ReceiverInfo? = ReceiverInfo(),
     @SerializedName("request"       ) var request      : Request?      = Request()

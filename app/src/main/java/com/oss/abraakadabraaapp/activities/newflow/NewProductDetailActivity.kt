@@ -482,6 +482,17 @@ class NewProductDetailActivity : BaseActivity() {
 
         }
 
+        if (!it.data.isRequestAllowed){
+            binding.blockView.visibility = View.VISIBLE
+            binding.requestBtn.visibility = View.GONE
+            binding.textView131.visibility = View.GONE
+            binding.isBlockedTxt.text = it.data.requestBlockedReason
+        }else{
+            binding.requestBtn.visibility = View.VISIBLE
+            binding.textView131.visibility = View.VISIBLE
+            binding.blockView.visibility = View.GONE
+        }
+
 
     }
 

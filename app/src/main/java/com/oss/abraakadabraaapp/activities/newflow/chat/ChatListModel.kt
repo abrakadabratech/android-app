@@ -27,6 +27,7 @@ data class ChatListModel(
     @SerializedName("enabled") var enabled:Boolean = true,
     @SerializedName("is_user_blocked") var isUserBlocked:Boolean = false,
     @SerializedName("is_chat_closed") var isChatClosed:Boolean = false,
+    @SerializedName("chat_closed_reason") var chatClosedReason:String = "Chat closed",
 ){ constructor():this("","","","",
     "","","","","",
     "","","","")}

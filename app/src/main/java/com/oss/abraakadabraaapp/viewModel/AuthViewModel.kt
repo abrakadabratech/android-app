@@ -16,6 +16,7 @@ import com.oss.abraakadabraaapp.activities.newflow.model.*
 import com.oss.abraakadabraaapp.activities.newflow.requests.CancelRequestReponse
 import com.oss.abraakadabraaapp.datasource.products.GetProducts
 import com.oss.abraakadabraaapp.model.AccountDeleteResponse
+import com.oss.abraakadabraaapp.model.BlockedResponse
 import com.oss.abraakadabraaapp.model.DeleteAll
 import com.oss.abraakadabraaapp.model.DeleteMultiple
 import com.oss.abraakadabraaapp.model.InitChatResponce
@@ -579,7 +580,7 @@ fun getRequestDetails(
         body:HashMap<String, String>
     ) {
         viewModelScope.launch {
-            isLoading.value = true
+//            isLoading.value = true
 
             suspend fun call() = repository.postRequest(version,id,body)
             callApi(::call, object : CallHelper<ProductDeleteResponse>{
@@ -592,7 +593,7 @@ fun getRequestDetails(
                 }
 
             })
-            isLoading.value = false
+//            isLoading.value = false
         }
     }
 
@@ -1328,11 +1329,34 @@ fun getRequestDetails(
         }
     }
 
+    var isBlockedResponse = MutableLiveData<BlockedResponse>()
+    fun isBlockedUser(body: HashMap<String, String>) {
+
+        viewModelScope.launch {
+            isLoading.value = true
+
+            suspend fun call() = repository.isBlockedUser(body)
+
+
+            callApi(::call, object : CallHelper<BlockedResponse> {
+                override fun onSuccessful(data: BlockedResponse) {
+                    isBlockedResponse.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
+            isLoading.value = false
+        }
+    }
+
     var iniChatSuccess = MutableLiveData<InitChatResponce>()
     fun iniChat(id:String,body: HashMap<String, String>) {
 
         viewModelScope.launch {
-            isLoading.value = true
+//            isLoading.value = true
 
             suspend fun call() = repository.iniChat(id,body)
 
@@ -1347,7 +1371,7 @@ fun getRequestDetails(
                 }
             })
 
-            isLoading.value = false
+//            isLoading.value = false
         }
     }
 

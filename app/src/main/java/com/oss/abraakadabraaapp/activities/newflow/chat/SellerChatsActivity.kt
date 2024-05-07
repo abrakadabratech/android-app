@@ -94,4 +94,9 @@ class SellerChatsActivity : AppCompatActivity() {
 
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        adapter.refresh()
+    }
 }

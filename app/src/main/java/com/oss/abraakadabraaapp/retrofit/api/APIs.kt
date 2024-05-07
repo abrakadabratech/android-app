@@ -13,10 +13,14 @@ import com.oss.abraakadabraaapp.activities.newflow.model.*
 import com.oss.abraakadabraaapp.activities.newflow.requests.CancelRequestReponse
 import com.oss.abraakadabraaapp.datasource.products.GetProducts
 import com.oss.abraakadabraaapp.model.AccountDeleteResponse
+import com.oss.abraakadabraaapp.model.BlockedResponse
 import com.oss.abraakadabraaapp.model.DeleteAll
 import com.oss.abraakadabraaapp.model.DeleteMultiple
+import com.oss.abraakadabraaapp.model.InitChatResponce
 import com.oss.abraakadabraaapp.model.NotificationResponse
 import com.oss.abraakadabraaapp.model.ReadNotificationResponse
+import com.oss.abraakadabraaapp.model.UserChatBlock
+import com.oss.abraakadabraaapp.model.UserProfile
 import com.oss.abraakadabraaapp.response.authResponse.*
 import com.oss.abraakadabraaapp.response.commonResponse.CommonResponse
 import com.oss.abraakadabraaapp.response.commonResponse.ContentManagementResponse
@@ -486,8 +490,6 @@ interface APIs {
     @POST("user/account/delete")
     suspend fun deleteUserAccount() : Response<AccountDeleteResponse>
 
-    @GET("user/public-profile/{id}")
-    suspend fun viewProfile(@Path("id") id: String) : Response<UserProfile>
 
     @POST("user/product/{id}/chat/init")
     suspend fun initChat(@Path("id") id:String,@Body body: HashMap<String, String>)
@@ -509,7 +511,10 @@ interface APIs {
     suspend fun userChatUnBlock(@Body body: HashMap<String, String>)
             :Response<UserChatBlock>
 
-    @GET("/user/{id}/public-profile")
-    suspend fun viewProfile(@Path("id") id: String) : Response<AccountDeleteResponse>
+    @GET("user/{id}/public-profile")
+    suspend fun viewProfile(@Path("id") id: String) : Response<UserProfile>
+
+    @POST("users/chats/allowed")
+    suspend fun isBlocked(@Body body: HashMap<String, String>) : Response<BlockedResponse>
 
 }

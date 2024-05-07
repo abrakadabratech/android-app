@@ -43,6 +43,12 @@ PagingDataAdapter<SellerChat, SellerChatListAdapter.ViewHolder>(ProductDifferent
         Glide.with(context).load(item.productImage).placeholder(R.drawable.ic_person).into(holder.profilePic)
         holder.userName.text = item.userName
         holder.unreadCount.text = item.unseenMessages.toString()
+
+        if (item.unseenMessages > 0){
+            holder.unreadCount.visibility = View.VISIBLE
+        }else{
+            holder.unreadCount.visibility = View.GONE
+        }
         holder.message.text = item.lastMessage
 //        getUnreadCount(holder.unreadCount,holder.message,chatNode[position])
 

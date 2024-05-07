@@ -317,6 +317,5 @@ class NewHomeActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         updateChecker()
-        getUnreadMessageCount()
     }
 }

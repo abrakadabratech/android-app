@@ -27,7 +27,6 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -89,7 +88,6 @@ class ChatDetailActivity : BaseActivity() {
     private val firestore = FirebaseFirestore.getInstance()
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChatDetailBinding.inflate(layoutInflater)
@@ -98,10 +96,10 @@ class ChatDetailActivity : BaseActivity() {
 
 //        showOnlineOrOffline()
 
-        val adRequest = AdRequest.Builder().build();
+        val adRequest = AdRequest.Builder().build()
         binding.adView.loadAd(adRequest)
 
-        /*if (intent.hasExtra(Constants.productId)) {
+        if (intent.hasExtra(Constants.productId)) {
             val bundle = Gson().fromJson(
                 intent.extras?.getString(Constants.productId),
                 NotificationDataModel::class.java
@@ -114,19 +112,32 @@ class ChatDetailActivity : BaseActivity() {
 
             loaddata()
 
-        }*/
-        chatNode = intent.extras?.getString(Constants.CHATS_DATA, "").toString()
+        }
+
         if (intent.hasExtra(MESSAGE)) {
-            var message = intent.extras?.getString(MESSAGE, "").toString()
-            var productId = intent.extras?.getString(PRODUCT_ID, "").toString()
-            sendMessage(message)
-            setChatMetaData(productId, Timestamp.now())
+            chatNode = intent.extras?.getString(CHATS_DATA, "").toString()
+            val message = intent.extras?.getString(MESSAGE, "").toString()
+            val productId = intent.extras?.getString(PRODUCT_ID, "").toString()
+            Log.d(TAG, "onCreate: $message")
+
+            val db = Firebase.firestore
+            db.collection("chats")
+                .document(chatNode)
+                .get()
+                .addOnSuccessListener {
+                    Log.d("TAG - ", "sendToChat: chat room created")
+                    chatData = it?.toObject(ChatListModel::class.java)
+                    sendMessage(message)
+                    setChatMetaData(productId, Timestamp.now())
+                }
+                .addOnFailureListener {
+
+                }
+
         }
         if (intent.hasExtra(CHATS_DATA)) {
-            binding.chatName.text = intent.extras?.getString(DISPLAY_NAME)
-            Glide.with(this).load(intent.extras?.getString(DISPLAY_PIC))
-                .placeholder(resources.getDrawable(R.drawable.ic_profile))
-                .into(binding.profilePic)
+            chatNode = intent.extras?.getString(CHATS_DATA, "").toString()
+
             /*
             chatData =
                 Gson().fromJson(intent.extras?.getString(CHATS_DATA, ""), ChatListModel::class.java)
@@ -135,9 +146,6 @@ class ChatDetailActivity : BaseActivity() {
                 chatData!!.receiver_id.toString()
             )*/
 
-
-
-            setUpRecycler(chatNode)
             loaddata()
 
         }
@@ -147,7 +155,6 @@ class ChatDetailActivity : BaseActivity() {
 
         Log.d("ok", "onCreate: $chatData")
         setUpObserver()
-        var currentUserInfo = PreferencesManagement.getUserInfo(this)
 
         if (chatData != null) {
             binding.productName.text = chatData!!.product
@@ -237,7 +244,8 @@ class ChatDetailActivity : BaseActivity() {
         Log.d(TAG, "onCreate:before get true in chat node $chatNode")
 
         val user = FirebaseAuth.getInstance().currentUser?.uid
-        val read = db.collection("chats").document(chatNode).collection("Messages")
+        val read = db.collection("chats")
+            .document(chatNode).collection("Messages")
         read.get()
             .addOnSuccessListener { snapshot ->
                 for (doc in snapshot.documents) {
@@ -300,11 +308,12 @@ class ChatDetailActivity : BaseActivity() {
 
         Log.d("Notification TAG", "onCreate: $chatNode")
         setUpRecycler(chatNode)
-        val docRef = db.collection("chats")
+        db.collection("chats")
             .document(chatNode).addSnapshotListener { value, error ->
                 Log.d("Notification TAG", "onCreate: $value")
 
                 chatData = value?.toObject(ChatListModel::class.java)
+
                 if (currentUserId == chatData!!.sender_id) {
                     binding.chatName.text = chatData!!.receiver_name.toString()
                     Glide.with(applicationContext).load(chatData!!.receiver_avatar)
@@ -327,29 +336,34 @@ class ChatDetailActivity : BaseActivity() {
                     binding.blockUserTxt.text = "Block User"
                 }
                 if (chatData!!.isChatClosed) {
-
+                    hideBottomLayout(chatData!!.chatClosedReason)
                 }
-
-//                if (chatData!!.status != "active" && currentUserId == chatData!!.sender_id){
-//                    binding.markBtn.text = "Delivered"
-//                    binding.markBtn.isEnabled = false
-//                    binding.markBtn.setTextColor(ContextCompat.getColor(this,R.color.text_color))
-//                    binding.markBtn.background =
-//                        resources.getDrawable(R.drawable.rounded_rect_white_gray_stroke)
-//                }else{
-//                    binding.markBtn.text = "Received"
-//                    binding.markBtn.isEnabled = false
-//                    binding.markBtn.setTextColor(ContextCompat.getColor(this,R.color.text_color))
-//                    binding.markBtn.background =
-//                        resources.getDrawable(R.drawable.rounded_rect_white_gray_stroke)
-//                }
-
-//                    application.showToast(info.toString())
+                val map = HashMap<String, String>()
+                map["receiver_id"] = if (currentUserId == chatData!!.receiver_id.toString())
+                    chatData!!.sender_id.toString()
+                else chatData!!.receiver_id.toString()
+                mainViewModel.isBlockedUser(map)
             }
+    }
 
+    private fun hideBottomLayout(blockedText: String) {
+        binding.linearLayout12.visibility = View.VISIBLE
+        binding.linearLayout.visibility = View.GONE
+        binding.blockUserTxt.text = blockedText
     }
 
     private fun setUpObserver() {
+
+        mainViewModel.isBlockedResponse.observe(this) {
+            if (it.data.is_blocked) {
+                hideBottomLayout("User Blocked")
+                binding.blockUserTxt.text = "Unblock User"
+            } else {
+                binding.blockUserTxt.text = "Block User"
+                binding.linearLayout12.visibility = View.GONE
+                binding.linearLayout.visibility = View.VISIBLE
+            }
+        }
         mainViewModel.reportChatSuccess.observe(this) {
             if (it.code == 200) {
                 showToast(it.message.toString())
@@ -389,6 +403,14 @@ class ChatDetailActivity : BaseActivity() {
             if (it.code == 200) {
                 finish()
                 showToast("User Blocked")
+                loaddata()
+            }
+        }
+        mainViewModel.userChatUnBlockSuccess.observe(this) {
+            if (it.code == 200) {
+                finish()
+                showToast("User Unblocked")
+                loaddata()
             }
         }
         mainViewModel.errorMessage.observe(this) {
@@ -406,12 +428,12 @@ class ChatDetailActivity : BaseActivity() {
             if (currentUserId == chatData?.sender_id) {
                 mainViewModel.updateProductRequest(
                     chatData?.requestId.toString(),
-                    "received"
+                    "delivered"
                 )
             } else {
                 mainViewModel.updateProductRequest(
                     chatData?.requestId.toString(),
-                    "delivered"
+                    "received"
                 )
             }
         }
@@ -431,14 +453,16 @@ class ChatDetailActivity : BaseActivity() {
         }
         binding.blockUser.setOnClickListener {
             postClick(BUTTON_CHAT_BLOCK_USER)
-            blockUser(chatData?.isUserBlocked!!)
+            if (binding.blockUserTxt.text == "Block User") {
+                blockUser(false)
+            } else {
+                blockUser(true)
+            }
         }
         binding.reportUser.setOnClickListener {
             postClick(BUTTON_CHAT_REPORT_USER)
-            showToast(UNDER_DEV)
             val map = HashMap<String, String>()
             map["reason"] = "default"
-            showToast("User Reported")
             mainViewModel.reportChat(chatNode, map)
         }
         binding.deleteChat.setOnClickListener {
@@ -455,7 +479,7 @@ class ChatDetailActivity : BaseActivity() {
                 binding.messageBox.setText("")
             } else {
                 sendMessage(binding.messageBox.text.toString().trim())
-                setChatMetaData(chatData!!.product_id.toString(),Timestamp.now())
+                setChatMetaData(chatData!!.product_id.toString(), Timestamp.now())
                 list.add(binding.messageBox.text.toString().trim())
                 binding.messageBox.setText("")
             }
@@ -499,8 +523,8 @@ class ChatDetailActivity : BaseActivity() {
                 .addOnFailureListener { e ->
                     Log.w(TAG, "Error adding document", e)
                 }
-            val typingRef = FirebaseDatabase.getInstance().getReference("typing").child(uid)
-            typingRef.setValue(isTyping)
+//            val typingRef = FirebaseDatabase.getInstance().getReference("typing").child(uid)
+//            typingRef.setValue(isTyping)
         }
     }
 
@@ -510,6 +534,7 @@ class ChatDetailActivity : BaseActivity() {
         val map = HashMap<String, String>()
         if (currentUserId == chatData?.sender_id) {
             map["block_user"] = chatData?.receiver_id.toString()
+
         } else {
             map["block_user"] = chatData?.sender_id.toString()
         }
@@ -574,15 +599,14 @@ class ChatDetailActivity : BaseActivity() {
         } else {
             val db = Firebase.firestore
             val sender_id = FirebaseAuth.getInstance().currentUser?.uid
-            chatData!!.last_message = message
-            chatData!!.time_stamp = Timestamp.now()
-
             db.collection("chats")
                 .document(chatNode)
-                .update(mapOf(
-                    "last_message" to message,
-                    "time_stamp" to Timestamp.now(),
-                ))
+                .update(
+                    mapOf(
+                        "last_message" to message,
+                        "time_stamp" to Timestamp.now(),
+                    )
+                )
                 .addOnSuccessListener {
                     Log.d("TAG - ", "sendToChat: chat room created")
 
@@ -604,7 +628,6 @@ class ChatDetailActivity : BaseActivity() {
             db.collection("chats")
                 .document(
                     chatNode
-
                 )
                 .collection("Messages")
                 .add(chats)
@@ -618,10 +641,16 @@ class ChatDetailActivity : BaseActivity() {
                     map["message"] = message
                     map["chatNode"] = chatNode
                     map["productId"] = chatData?.product_id.toString()
-                    mainViewModel.sendNotification(map)
+                    map["product_name"] = chatData?.product.toString()
+                    map["chat_id"] = it.id
+                    Log.d(TAG, "sendMessage doc id: ${it.id}")
+                    if(!intent.hasExtra(MESSAGE)){
+                        mainViewModel.sendNotification(map)
+                    }
                     Log.d("TAG - ", "sendToChat: chat posted")
                 }
                 .addOnFailureListener {
+                    Log.e("TAG - ", "sendToChat: ${it}")
 
                 }
         }
