@@ -127,7 +127,7 @@ object Notifications {
             Constants.productListingDetails -> {
                 Log.d("Notification -", "notifyMessage: requesting activity ${map["productId"]}")
                 val intent = Intent(context, MyListingDetialActivity::class.java)
-                intent.putExtra(Constants.productId, Gson().toJson(dataModel))
+                intent.putExtra(Constants.productId, dataModel.product_id)
                 intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
                 val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(context)
                 stackBuilder.addNextIntentWithParentStack(intent)
