@@ -1333,7 +1333,7 @@ fun getRequestDetails(
     fun isBlockedUser(body: HashMap<String, String>) {
 
         viewModelScope.launch {
-            isLoading.value = true
+//            isLoading.value = true
 
             suspend fun call() = repository.isBlockedUser(body)
 
@@ -1348,7 +1348,7 @@ fun getRequestDetails(
                 }
             })
 
-            isLoading.value = false
+//            isLoading.value = false
         }
     }
 

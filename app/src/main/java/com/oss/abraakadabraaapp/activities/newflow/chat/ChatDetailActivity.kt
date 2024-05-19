@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,7 +15,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.compose.material3.AlertDialog
 import androidx.compose.ui.text.capitalize
 import androidx.core.content.ContextCompat
@@ -25,6 +31,8 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -367,6 +375,7 @@ class ChatDetailActivity : BaseActivity() {
         mainViewModel.reportChatSuccess.observe(this) {
             if (it.code == 200) {
                 showToast(it.message.toString())
+                binding.menuLayout.visibility = View.GONE
             }
         }
         mainViewModel.closeChatSessionSuccess.observe(this) {
@@ -408,8 +417,8 @@ class ChatDetailActivity : BaseActivity() {
         }
         mainViewModel.userChatUnBlockSuccess.observe(this) {
             if (it.code == 200) {
-                finish()
                 showToast("User Unblocked")
+                binding.menuLayout.visibility = View.GONE
                 loaddata()
             }
         }
@@ -461,9 +470,12 @@ class ChatDetailActivity : BaseActivity() {
         }
         binding.reportUser.setOnClickListener {
             postClick(BUTTON_CHAT_REPORT_USER)
-            val map = HashMap<String, String>()
-            map["reason"] = "default"
-            mainViewModel.reportChat(chatNode, map)
+            showReportAlert(
+                false,
+                "Report Chat",
+                "Please mention your reason to report the chat",
+                hashMapOf()
+            )
         }
         binding.deleteChat.setOnClickListener {
             postClick(BUTTON_CHAT_DELETE)
@@ -503,6 +515,52 @@ class ChatDetailActivity : BaseActivity() {
         })
     }
 
+    fun showReportAlert(
+        isBlock: Boolean,
+        title: String,
+        subTitle: String,
+        m: HashMap<String, String>
+    ) {
+        binding.menuLayout.visibility = View.GONE
+        val alertDialog: AlertDialog
+        val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
+        val inflater = this.layoutInflater
+        val dialogView: View = inflater.inflate(R.layout.alert_report_user_chat, null)
+        dialogBuilder.setView(dialogView)
+
+
+        // Find views
+        val editTextReport = dialogView.findViewById<EditText>(R.id.editTextReport)
+        val btnSubmitReport = dialogView.findViewById<MaterialButton>(R.id.btnSubmitReport)
+        val titleTxt = dialogView.findViewById<TextView>(R.id.textViewHeading)
+        val sbtitleTxt = dialogView.findViewById<TextView>(R.id.textViewSubheading)
+        titleTxt.text  = title
+        sbtitleTxt.text = subTitle
+
+        // Handle submit button click
+        alertDialog = dialogBuilder.create()
+
+        btnSubmitReport.setOnClickListener {
+            if (isBlock) {
+                //block logic here
+                m["reason"] =
+                    if (editTextReport.text.toString() == "") "" else editTextReport.text.toString()
+                mainViewModel.userChatBlock(m)
+            } else {
+                val reportText = editTextReport.text.toString()
+                // Handle report submission, e.g., send report to server
+                // Dismiss the dialog after submission
+                val map = HashMap<String, String>()
+                map["reason"] =
+                    if (editTextReport.text.toString() == "") "" else editTextReport.text.toString()
+                mainViewModel.reportChat(chatNode, map)
+                alertDialog.dismiss()
+            }
+        }
+        alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        alertDialog.show()
+    }
+
     private fun showBlockAlert() {
 
     }
@@ -538,19 +596,21 @@ class ChatDetailActivity : BaseActivity() {
         } else {
             map["block_user"] = chatData?.sender_id.toString()
         }
-        map["reason"] = "default"
         if (isBlock) {
-            mainViewModel.userChatUnBlock(map)
-        } else {
-            val builder = androidx.appcompat.app.AlertDialog.Builder(this)
-            builder.setTitle("Alert!")
-            builder.setMessage("Are you sure you want block the user")
-            builder.setPositiveButton("Yes") { dialog, _ ->
-                dialog.cancel()
-                mainViewModel.userChatBlock(map)
+            val map1 = HashMap<String, String>()
+            if (currentUserId == chatData?.sender_id) {
+                map1["user_id"] = chatData?.receiver_id.toString()
+            } else {
+                map1["user_id"] = chatData?.sender_id.toString()
             }
-            builder.setNegativeButton(getString(android.R.string.cancel)) { dialog, _ -> dialog.cancel() }
-            builder.show()
+            mainViewModel.userChatUnBlock(map1)
+        } else {
+            showReportAlert(
+                true,
+                "Block User",
+                "Please mention your reason to block the user",
+                map
+            )
         }
     }
 
@@ -642,9 +702,9 @@ class ChatDetailActivity : BaseActivity() {
                     map["chatNode"] = chatNode
                     map["productId"] = chatData?.product_id.toString()
                     map["product_name"] = chatData?.product.toString()
-                    map["chat_id"] = it.id
+                    map["message_id"] = it.id
                     Log.d(TAG, "sendMessage doc id: ${it.id}")
-                    if(!intent.hasExtra(MESSAGE)){
+                    if (!intent.hasExtra(MESSAGE)) {
                         mainViewModel.sendNotification(map)
                     }
                     Log.d("TAG - ", "sendToChat: chat posted")

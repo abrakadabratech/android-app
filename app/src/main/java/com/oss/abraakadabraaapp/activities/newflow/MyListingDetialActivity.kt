@@ -39,6 +39,7 @@ import com.oss.abraakadabraaapp.activities.newflow.adapters.CatMainAdapter
 import com.oss.abraakadabraaapp.activities.newflow.adapters.CategoryDialogAdapter
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ConditionDialogAdapter
 import com.oss.abraakadabraaapp.activities.newflow.adapters.MyRequestedUsersAdapter
+import com.oss.abraakadabraaapp.activities.newflow.chat.ChatDetailActivity
 import com.oss.abraakadabraaapp.activities.newflow.model.AllCategoryResponse
 import com.oss.abraakadabraaapp.activities.newflow.model.CatData
 import com.oss.abraakadabraaapp.activities.newflow.model.UserCatData
@@ -525,11 +526,14 @@ class MyListingDetialActivity : BaseActivity(), RequestedUsersAdapter.OnRequestC
     }
 
     override fun onClick(request: Requests) {
-        if (productDetails != null) {
+        if (request.chatId != null) {
+            val intent = Intent(this, ChatDetailActivity::class.java)
+            intent.putExtra(Constants.CHATS_DATA,request.chatId)
+            startActivity(intent)/*
             val intent = Intent(this, RequesterActivity::class.java)
             intent.putExtra(Constants.productId, request.requestId)
             intent.putExtra(Constants.productStatus, productDetails!!.product?.status)
-            startActivity(intent)
+            startActivity(intent)*/
 
         }
     }

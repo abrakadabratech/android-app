@@ -213,6 +213,12 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
                 intent.putExtra(Constants.productId, Gson().toJson(model.data))
                 startActivity(intent)
             }
+            Constants.productListingDetails -> {
+                val intent =
+                    Intent(this, MyListingDetialActivity::class.java)
+                intent.putExtra(Constants.productId, model.data?.product_id)
+                startActivity(intent)
+            }
         }
     }
 

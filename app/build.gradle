@@ -67,11 +67,11 @@ android {
 //            buildConfigField("String", "BASE_URL", "\"https://api.abrakadabraapp.app/\"")
 //            buildConfigField("String", "BASE_DEMO", "\"https://api.abrakadabraapp.app/\"")
 
-            buildConfigField("String", "BASE_URL", "\"https://api.abra-ka-dabra.com/\"")
-            buildConfigField("String", "BASE_DEMO", "\"https://api.abra-ka-dabra.com/\"")
+//            buildConfigField("String", "BASE_URL", "\"https://api.abra-ka-dabra.com/\"")
+//            buildConfigField("String", "BASE_DEMO", "\"https://api.abra-ka-dabra.com/\"")
 
-//            buildConfigField("String", "BASE_URL", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
-//            buildConfigField("String", "BASE_DEMO", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
+            buildConfigField("String", "BASE_URL", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
+            buildConfigField("String", "BASE_DEMO", "\"https://abrakadabra-dev.el.r.appspot.com/\"")
 
             buildConfigField "String", "API_KEY", "\"${project.property('API_KEY')}\""
             signingConfig signingConfigs.release

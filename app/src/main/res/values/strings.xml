@@ -168,7 +168,7 @@
     <string name="app_contact_number">+91 9008377913</string>
     <string name="cancel">Cancel</string>
     <string name="given">Given</string>
-    <string name="splash_str">Give and Receive, Anything from Anyone, for Free!!!</string>
+    <string name="splash_str">Give and Receive, Anything from Anyone!</string>
 
     <string name="temp">Already have an account? <font color='' face=''>Login</font></string>
     <string name="login_str">Please enter your mobile number to receive a One Time Password</string>
@@ -185,10 +185,10 @@
     <string name="we_would_love_to_know_more_about_you">We would love to know more about you</string>
     <string name="let_s_get_started">Let\'s Get Started</string>
     <string name="skip">Skip</string>
-    <string name="give">Give</string>
-    <string name="on_boarding_1">Experience the joy of sharing by giving second hand items in good condition</string>
-    <string name="receive">Receive</string>
-    <string name="on_boarding_2">Save money by using the second hand items for free</string>
+    <string name="give">Sell</string>
+    <string name="on_boarding_1">Experience the joy of sharing by selling second hand items in good condition</string>
+    <string name="receive">Buy</string>
+    <string name="on_boarding_2">Save money by using the second hand items</string>
     <string name="reuse">Reuse</string>
     <string name="on_boarding_3">Preserve Environment by increasing the reuse of hardly used items</string>
 
