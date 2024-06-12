@@ -277,7 +277,6 @@ interface APIs {
     //For pagination
     companion object {
 
-        private const val BASE_URL = "https://api.instantwebtools.net/v1/"
         var okkHttp = OkHttpClient.Builder()
             .hostnameVerifier { _, _ -> true }
             .addInterceptor(APIService.loggingInterceptor)

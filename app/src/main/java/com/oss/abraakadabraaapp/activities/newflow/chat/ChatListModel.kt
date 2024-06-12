@@ -21,7 +21,7 @@ data class ChatListModel(
     @SerializedName("date"  ) var date  : String? = "",
     @SerializedName("status"  ) var status  : String? = "accepted",
     @SerializedName("Messages") var Messages:List<ChatModel>? = null,
-    @SerializedName("request_id") var requestId:String = "",
+    @SerializedName("requestId") var requestId:String = "",
     @SerializedName("product_image") var product_image:String = "",
     @SerializedName("count") var count:Int = 0,
     @SerializedName("enabled") var enabled:Boolean = true,

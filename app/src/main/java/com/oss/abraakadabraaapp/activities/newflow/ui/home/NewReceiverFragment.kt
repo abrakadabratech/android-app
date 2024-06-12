@@ -145,7 +145,9 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         authViewModel.getAllCategoriesData()
 
         EventBus.getDefault().post(NOTIFICATION_REFRESH_EVENT)
-
+        var pref = PreferencesManagement.getFilters(requireContext())
+        TYPE = pref?.type.toString()
+        FILTER = pref?.filter.toString()
         return root
     }
 
@@ -406,7 +408,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                             APIService.getApiService(),
                             50,
                             userLocation!!.lat.toDouble(),
-                            userLocation.long.toDouble(), sortBy, filters?.type!!
+                            userLocation.long.toDouble(), sortBy, type
                         )
                     )[MainFilterViewModel::class.java]
 
@@ -415,6 +417,8 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                 lifecycleScope.launch {
 
                     viewModel.listData2.collectLatest {
+                        mainListAdapter!!.submitData(lifecycle, PagingData.empty())
+
                         launch(Dispatchers.Main) {
                             mainListAdapter!!.loadStateFlow.collectLatest { loadStates ->
                                 if (loadStates.refresh is LoadState.Loading) {
@@ -434,7 +438,6 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                                 }
                             }
                         }
-                        mainListAdapter!!.submitData(lifecycle, PagingData.empty())
                         mainListAdapter!!.submitData(it)
                     }
 
@@ -448,7 +451,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         } else {
             application.showToast(getString(R.string.no_internet_connection_found))
         }
-
+        mainListAdapter?.refresh()
 
     }
 
@@ -473,6 +476,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
         lifecycleScope.launchWhenCreated {
 
             viewModel.listData.collectLatest {
+                mainListAdapter!!.submitData(lifecycle, PagingData.empty())
                 launch(Dispatchers.Main) {
                     mainListAdapter!!.loadStateFlow.collectLatest { loadStates ->
                         if (loadStates.refresh is LoadState.Loading) {
@@ -495,7 +499,6 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
                         }
                     }
                 }
-                mainListAdapter!!.submitData(lifecycle, PagingData.empty())
                 mainListAdapter!!.submitData(it)
             }
             binding.rvLatestProduct.adapter = mainListAdapter?.withLoadStateFooter(
@@ -623,7 +626,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             nearestBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
             nearestBtn.background = null
 
-            filters?.filter = FILTER
+//            filters?.filter = FILTER
         }
         nearestBtn.setOnClickListener {
             FILTER = "nearest"
@@ -633,7 +636,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             latestBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
             latestBtn.background = null
 
-            filters?.filter = FILTER
+//            filters?.filter = FILTER
         }
 
         freeBtn.setOnClickListener {
@@ -646,7 +649,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             allBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
             allBtn.background = null
 
-            filters?.type = TYPE
+//            filters?.type = TYPE
         }
         paidBtn.setOnClickListener {
             TYPE = "paid"
@@ -658,7 +661,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             allBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
             allBtn.background = null
 
-            filters?.type = TYPE
+//            filters?.type = TYPE
         }
         allBtn.setOnClickListener {
             TYPE = "all"
@@ -670,7 +673,7 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             paidBtn.setTextColor(ContextCompat.getColor(requireContext(),R.color.hyper_link_text_color))
             paidBtn.background = null
 
-            filters?.type = TYPE
+//            filters?.type = TYPE
         }
 
         val nearToMeTxt = dialogView.findViewById<TextView>(R.id.nearToMeTxt)
@@ -709,10 +712,14 @@ class NewReceiverFragment : Fragment(), CategoryAdapter.CategoryAdapterInterface
             filters?.filter = FILTER
 //            application.showToast("$TYPE  $FILTER")
             PreferencesManagement.setFilters(requireContext(), filters!!)
+
             getProductFromServer(FILTER,TYPE)
+
             alertDialog.dismiss()
+            EventBus.getDefault().post("clear")
+
         }
-        alertDialog.window?.setLayout(800, 700)
+//        alertDialog.window?.setLayout(800, 700)
 
     }
 

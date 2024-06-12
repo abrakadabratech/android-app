@@ -22,13 +22,13 @@
 
                 <ImageView
                     android:id="@+id/catFilter"
-                    android:layout_width="26dp"
-                    android:layout_height="18.03dp"
+                    android:layout_width="32dp"
+                    android:layout_height="30dp"
                     android:layout_marginEnd="20dp"
                     app:layout_constraintBottom_toBottomOf="@+id/cardView4"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/cardView4"
-                    app:srcCompat="@drawable/ic_filter_icon" />
+                    app:srcCompat="@drawable/filter" />
 
 
                 <androidx.cardview.widget.CardView
@@ -37,7 +37,7 @@
                     android:layout_height="32dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="4dp"
-                    android:layout_marginEnd="18dp"
+                    android:layout_marginEnd="12dp"
                     app:cardBackgroundColor="@color/white"
                     app:cardCornerRadius="5dp"
                     app:cardElevation="8dp"
@@ -141,8 +141,7 @@
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/rv_home_category">
+                    app:layout_constraintStart_toStartOf="parent">
 
                     <include layout="@layout/shimmer_home_placeholder" />
                 </com.facebook.shimmer.ShimmerFrameLayout>

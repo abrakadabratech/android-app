@@ -89,7 +89,7 @@ object Notifications {
                 Log.d("Notification -", "notifyMessage: requesting activity ${map["data"]}")
                 if (dataModel.requestStatus != "cancelled"){
                     val intent = Intent(context, ChatDetailActivity::class.java)
-                    intent.putExtra(Constants.productId, Gson().toJson(dataModel))
+                    intent.putExtra(Constants.CHATS_DATA, dataModel.chatNode)
                     intent.putExtra(Constants.hasNotificationData, Constants.hasNotificationData)
                     val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(context)
                     stackBuilder.addNextIntentWithParentStack(intent)

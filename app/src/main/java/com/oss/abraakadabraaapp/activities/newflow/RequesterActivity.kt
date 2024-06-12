@@ -507,11 +507,11 @@ class RequesterActivity : BaseActivity() {
             intent.putExtra(Constants.DISPLAY_PIC,productDetails?.data?.receiverInfo?.userAvatar)
             startActivity(intent)
         }*/
-
-        val intent = Intent(this,ChatDetailActivity::class.java)
-        intent.putExtra(Constants.CHATS_DATA,productDetails?.data?.request?.chatNode)
-        startActivity(intent)
-
+        if (productDetails?.data?.chatId != null){
+            val intent = Intent(this,ChatDetailActivity::class.java)
+            intent.putExtra(Constants.CHATS_DATA,productDetails?.data?.chatId)
+            startActivity(intent)
+        }
 
     }
 }

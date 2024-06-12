@@ -131,12 +131,12 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
     }
 
     //NEW
-    fun logoutUser(headerMap: HashMap<String, String>) {
+    fun logoutUser() {
         viewModelScope.launch {
 
             isLoading.value = true
 
-            suspend fun call() = repository.logoutUser(headerMap)
+            suspend fun call() = repository.logoutUser()
 
             callApi(::call, object : CallHelper<LogoutResponse> {
                 override fun onSuccessful(data: LogoutResponse) {

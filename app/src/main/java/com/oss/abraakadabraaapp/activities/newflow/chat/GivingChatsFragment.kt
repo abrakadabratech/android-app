@@ -47,6 +47,13 @@ class GivingChatsFragment : Fragment() {
     private lateinit var viewModel: SellerProductListViewModel
     private lateinit var sellerAdapter: ExpandableAdapter
 
+    override fun onResume() {
+        super.onResume()
+        loadData()
+    }
+    fun loadData(){
+        sellerAdapter.refresh()
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

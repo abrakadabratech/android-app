@@ -2,6 +2,7 @@ package com.oss.abraakadabraaapp.activities.newflow.adapters
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,6 +40,7 @@ PagingDataAdapter<SellerChat, SellerChatListAdapter.ViewHolder>(ProductDifferent
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)!!
+        Log.d(TAG, "onBindViewHolder: $item")
 
         Glide.with(context).load(item.productImage).placeholder(R.drawable.ic_person).into(holder.profilePic)
         holder.userName.text = item.userName
@@ -72,12 +74,6 @@ PagingDataAdapter<SellerChat, SellerChatListAdapter.ViewHolder>(ProductDifferent
             val intent =
                 Intent(context, ChatDetailActivity::class.java)
             intent.putExtra(Constants.CHATS_DATA, item.chatId)
-//            intent.putExtra("data_from", "fragment")
-//            intent.putExtra(Constants.DISPLAY_NAME, i[position].receiver_name)
-//            intent.putExtra(
-//                Constants.DISPLAY_PIC,
-//                i[position].receiver_avatar
-//            )
             context.startActivity(intent)
         }
     }

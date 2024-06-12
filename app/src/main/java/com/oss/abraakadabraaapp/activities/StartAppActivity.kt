@@ -86,7 +86,7 @@ class StartAppActivity : BaseActivity(), LocationListener {
             )
 
         if (PreferencesManagement.isFistOpen(this)) {
-            installReferrer()
+            if (!BuildConfig.DEBUG) installReferrer()
         }
         setUpObserver() // Old Code
         // startApp() //New Code

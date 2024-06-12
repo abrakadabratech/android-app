@@ -279,7 +279,7 @@ class NewProductDetailActivity : BaseActivity() {
     }
 
     private fun showNotActivePopUp() {
-        var alertDialog = AlertDialog.Builder(this)
+        val alertDialog = AlertDialog.Builder(this)
         alertDialog.setTitle("Alert!")
         alertDialog.setMessage("To request products you must be a verified user, please submit your any social profile link to start verification.")
 

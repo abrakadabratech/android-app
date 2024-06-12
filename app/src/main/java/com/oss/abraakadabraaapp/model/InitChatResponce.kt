@@ -10,6 +10,6 @@ class InitChatResponce(
 
 data class InitChatData(
     @SerializedName("chat_id")
-    val chatId: String,
+    val chatId: String = "",
     val message: String,
 )

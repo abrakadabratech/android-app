@@ -242,11 +242,7 @@ object PreferencesManagement {
 
         val json = pref.getString("Filters_key", Gson().toJson(Filters("free","latest")))
 
-        return if (json == null)
-            null
-        else
-            Gson().fromJson(json, Filters::class.java)
-
+        return Gson().fromJson(json, Filters::class.java)
     }
 
     fun setFilters(context: Context, data: Filters):Boolean {

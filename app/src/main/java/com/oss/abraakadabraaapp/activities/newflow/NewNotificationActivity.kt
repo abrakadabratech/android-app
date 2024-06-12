@@ -190,10 +190,11 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
 
     override fun onItemClick(model: Notifications) {
         authViewModel.readMultipleNotification(DeleteMultiple(notifications = arrayListOf(model.id.toString())))
+        Log.d("TAG::NOTI", "onItemClick: ${model.data.toString()}")
         when (model.module) {
             Constants.productListing -> {
                 val intent =
-                    Intent(this, RequesterActivity::class.java)
+                        Intent(this, RequesterActivity::class.java)
                 intent.putExtra(Constants.productId, model.data?.requestId)
                 startActivity(intent)
             }
@@ -209,8 +210,8 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
 
             Constants.chatDetails -> {
                 val intent =
-                    Intent(this, ChatDetailActivity::class.java)
-                intent.putExtra(Constants.productId, Gson().toJson(model.data))
+                            Intent(this, ChatDetailActivity::class.java)
+                intent.putExtra(Constants.CHATS_DATA, model.data?.chatNode)
                 startActivity(intent)
             }
             Constants.productListingDetails -> {
@@ -219,6 +220,8 @@ class NewNotificationActivity : BaseActivity(),NotificationAdapter.HandleClicks 
                 intent.putExtra(Constants.productId, model.data?.product_id)
                 startActivity(intent)
             }
+
+
         }
     }
 

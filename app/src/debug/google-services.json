@@ -39,6 +39,14 @@
           }
         },
         {
+          "client_id": "323424345844-t0ah9iu8ur9cfdf3ir73ol8ql3qk4m36.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.oss.abraakadabraaapp",
+            "certificate_hash": "e4a0f6b121299ba466f6a7e1e82845964bbf1e8c"
+          }
+        },
+        {
           "client_id": "323424345844-vip66dhq2e0f0q8qal8i4kak8mtm3esl.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

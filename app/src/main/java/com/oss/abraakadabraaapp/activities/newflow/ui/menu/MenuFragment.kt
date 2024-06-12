@@ -145,14 +145,9 @@ class MenuFragment : Fragment() {
                             val idToken = it.result.token
                             val auth = "Bearer $idToken"
                             if (PreferencesManagement.saveAuthToken(requireActivity(), auth)) {
-
-                                val map = HashMap<String, String>()
-                                val token =
-                                    PreferencesManagement.getAuthToken(requireContext())!!
-                                map["Authorization"] = token
-                                authViewModel.logoutUser(map)
+                                authViewModel.logoutUser()
                                 Firebase.auth.signOut()
-
+                                application.backToLogIn()
                             } else {
                                 application.showToast("Error generating the token!")
                             }

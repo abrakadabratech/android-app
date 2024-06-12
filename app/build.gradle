@@ -1,5 +1,5 @@
 plugins {
-    id 'com.android.application'
+     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
@@ -38,18 +38,19 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('C:\\Users\\Admin\\Desktop\\MyPracties\\akd-app-v2\\key\\key.jks')
+            storeFile file('C:\\Users\\Welcome\\Desktop\\androidworkshop\\akd-app-v2\\key\\key.jks')
 //            storeFile file('/Users/hari/Desktop/Freelancing/Code/AKD/akd-app-v2/key/key.jks')
             storePassword 'akd@123'
             keyAlias 'key0'
             keyPassword 'akd@123'
         }
         release {
-            storeFile file("C:\\Users\\Admin\\Desktop\\MyPracties\\akd-app-v2\\key\\key.jks")
+            storeFile file("C:\\Users\\Welcome\\Desktop\\androidworkshop\\akd-app-v2\\key\\key.jks")
 //            storeFile file('/Users/hari/Desktop/Freelancing/Code/AKD/akd-app-v2/key/key.jks')
             storePassword "akd@123"
             keyAlias "key0"
             keyPassword "akd@123"
+            //keytool -list -v -keystore C:\Users\Welcome\Desktop\androidworkshop\akd-app-v2\key\key.jks -alias key0
         }
     }
     buildFeatures {

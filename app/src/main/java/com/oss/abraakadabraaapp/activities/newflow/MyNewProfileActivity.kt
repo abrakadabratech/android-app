@@ -367,15 +367,7 @@ class MyNewProfileActivity : BaseActivity(), SocialShareAdapter.OnSocialProfileC
     }
 
     private fun logoutUser() {
-
-        val mUser = FirebaseAuth.getInstance().currentUser
-        val map = HashMap<String, String>()
-        val token =
-            PreferencesManagement.getAuthToken(this)!!
-        map["Authorization"] = token
-        authViewModel.logoutUser(map)
-
-
+        authViewModel.logoutUser()
     }
 
     private fun clickeEvents() {

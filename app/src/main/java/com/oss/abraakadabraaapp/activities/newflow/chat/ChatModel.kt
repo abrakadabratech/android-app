@@ -4,7 +4,7 @@ import com.google.firebase.Timestamp
 import com.google.gson.annotations.SerializedName
 
 data class ChatModel(
-    @SerializedName("senderId"   ) var senderId   : String? = null,
+    @SerializedName("sender_id"   ) var senderId   : String? = null,
     @SerializedName("receiverId" ) var receiverId : String? = null,
     @SerializedName("text"       ) var text       : String? = null,
     @SerializedName("from"       ) var from       : String? = null,

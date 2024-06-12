@@ -359,16 +359,16 @@ class HomeFragment : Fragment(), LocationListener {
     fun onMessageEvent(event: String?) {
         when (event) {
             "clear" -> {
-                binding.receiveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
-                binding.receiveBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
-                binding.giveBtn.setTextColor(resources.getColor(R.color.hyper_link_text_color))
-                binding.giveBtn.background = null
+//                binding.receiveBtn.background = resources.getDrawable(R.drawable.rounded_rect_shape)
+//                binding.receiveBtn.setTextColor(resources.getColor(R.color.new_action_bar_title_color))
+//                binding.giveBtn.setTextColor(resources.getColor(R.color.hyper_link_text_color))
+//                binding.giveBtn.background = null
                 fragmentManager?.beginTransaction()
                     ?.replace(R.id.container, NewReceiverFragment::class.java, null)
                     ?.setReorderingAllowed(true)
 //                .addToBackStack("name") // name can be null
                     ?.commit()
-                EventBus.getDefault().post(1)
+//                EventBus.getDefault().post(1)
             }
         }
     }

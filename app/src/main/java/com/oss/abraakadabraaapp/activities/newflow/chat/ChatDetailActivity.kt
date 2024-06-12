@@ -2,6 +2,7 @@ package com.oss.abraakadabraaapp.activities.newflow.chat
 
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
@@ -107,20 +108,20 @@ class ChatDetailActivity : BaseActivity() {
         val adRequest = AdRequest.Builder().build()
         binding.adView.loadAd(adRequest)
 
-        if (intent.hasExtra(Constants.productId)) {
-            val bundle = Gson().fromJson(
-                intent.extras?.getString(Constants.productId),
-                NotificationDataModel::class.java
-            )
-            chatNode = bundle.chatNode.toString()
-            val db = Firebase.firestore
-            db.collection("notifications")
-                .document(bundle.notificationDoc.toString())
-                .update("deleted", true)
-
-            loaddata()
-
-        }
+//        if (intent.hasExtra(Constants.productId)) {
+//            val bundle = Gson().fromJson(
+//                intent.extras?.getString(Constants.productId),
+//                NotificationDataModel::class.java
+//            )
+//            chatNode = bundle.chatNode.toString()
+//            val db = Firebase.firestore
+//            db.collection("notifications")
+//                .document(bundle.notificationDoc.toString())
+//                .update("deleted", true)
+//
+//            loaddata()
+//
+//        }
 
         if (intent.hasExtra(MESSAGE)) {
             chatNode = intent.extras?.getString(CHATS_DATA, "").toString()
@@ -146,7 +147,9 @@ class ChatDetailActivity : BaseActivity() {
         if (intent.hasExtra(CHATS_DATA)) {
             chatNode = intent.extras?.getString(CHATS_DATA, "").toString()
 
+//            showToast(chatNode)
             /*
+
             chatData =
                 Gson().fromJson(intent.extras?.getString(CHATS_DATA, ""), ChatListModel::class.java)
             chatNode = chatData!!.product_id + Utility.setOneToOneChat(
@@ -318,39 +321,68 @@ class ChatDetailActivity : BaseActivity() {
         setUpRecycler(chatNode)
         db.collection("chats")
             .document(chatNode).addSnapshotListener { value, error ->
-                Log.d("Notification TAG", "onCreate: $value")
+                Log.e("TAG:::>", "loaddata: ${Gson().toJson(value?.toObject(ChatListModel::class.java))}", )
 
+                if (error != null) {
+                    // Handle error
+                    Log.e(TAG, "Error fetching documents: $error")
+                    return@addSnapshotListener
+                }
+
+//                if (value == null || value.exists()) {
+//                    // Handle null value or empty snapshot
+//                    Log.d(TAG, "No data available")
+//                    return@addSnapshotListener
+//                }
                 chatData = value?.toObject(ChatListModel::class.java)
+                Log.e("TAG:::>", "loaddata: ${Gson().toJson(chatData)}")
+                if (chatData != null){
+                    if (currentUserId == chatData!!.sender_id) {
+                        binding.chatName.text = chatData!!.receiver_name.toString()
+                        Glide.with(applicationContext).load(chatData!!.receiver_avatar)
+                            .placeholder(resources.getDrawable(R.drawable.ic_profile))
+                            .into(binding.profilePic)
+                        binding.markBtn.text = "Mark as Delivered"
+                    } else {
+                        binding.chatName.text = chatData!!.sender_name.toString()
+                        Glide.with(applicationContext).load(chatData!!.sender_avatar)
+                            .placeholder(resources.getDrawable(R.drawable.ic_profile))
+                            .into(binding.profilePic)
+                        binding.markBtn.text = "Mark as Received"
 
-                if (currentUserId == chatData!!.sender_id) {
-                    binding.chatName.text = chatData!!.receiver_name.toString()
-                    Glide.with(applicationContext).load(chatData!!.receiver_avatar)
-                        .placeholder(resources.getDrawable(R.drawable.ic_profile))
-                        .into(binding.profilePic)
-                    binding.markBtn.text = "Mark as Delivered"
-                } else {
-                    binding.chatName.text = chatData!!.sender_name.toString()
-                    Glide.with(applicationContext).load(chatData!!.sender_avatar)
-                        .placeholder(resources.getDrawable(R.drawable.ic_profile))
-                        .into(binding.profilePic)
-                    binding.markBtn.text = "Mark as Received"
+                    }
+                    binding.productName.text = chatData!!.product?.capitalize(Locale.ROOT)
 
-                }
-                binding.productName.text = chatData!!.product?.capitalize(Locale.ROOT)
+                    if (chatData!!.isUserBlocked) {
+                        binding.blockUserTxt.text = "Unblock User"
+                    } else {
+                        binding.blockUserTxt.text = "Block User"
+                    }
+                    if (chatData!!.isChatClosed) {
+                        hideBottomLayout(chatData!!.chatClosedReason)
+                    }
+                    val map = HashMap<String, String>()
+                    map["receiver_id"] = if (currentUserId == chatData!!.receiver_id.toString())
+                        chatData!!.sender_id.toString()
+                    else chatData!!.receiver_id.toString()
+                    mainViewModel.isBlockedUser(map)
+                }else{
+                    val dialogBuilder = AlertDialog.Builder(this)
+                    dialogBuilder
+                        .setTitle("Alert")
+                        .setMessage("Your chats are deleted!")
+                        .setCancelable(false)
 
-                if (chatData!!.isUserBlocked) {
-                    binding.blockUserTxt.text = "Unblock User"
-                } else {
-                    binding.blockUserTxt.text = "Block User"
+                    dialogBuilder.setPositiveButton("OK"
+                    ) { _, i ->
+                        finish()
+                    }
+                    dialogBuilder.show()
                 }
-                if (chatData!!.isChatClosed) {
-                    hideBottomLayout(chatData!!.chatClosedReason)
-                }
-                val map = HashMap<String, String>()
-                map["receiver_id"] = if (currentUserId == chatData!!.receiver_id.toString())
-                    chatData!!.sender_id.toString()
-                else chatData!!.receiver_id.toString()
-                mainViewModel.isBlockedUser(map)
+
+                Log.e(TAG, "onCreate: ${Gson().toJson(chatData)}")
+
+
             }
     }
 
@@ -674,7 +706,7 @@ class ChatDetailActivity : BaseActivity() {
                 .addOnFailureListener {
 
                 }
-
+            Log.e(TAG, "sendMessage: ${chatData.toString()}", )
             val chats = hashMapOf(
                 "chatNode" to chatNode,
                 "receiverId" to if (sender_id == chatData!!.receiver_id) chatData!!.sender_id else chatData?.receiver_id,

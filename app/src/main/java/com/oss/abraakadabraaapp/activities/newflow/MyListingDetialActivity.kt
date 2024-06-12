@@ -441,7 +441,7 @@ class MyListingDetialActivity : BaseActivity(), RequestedUsersAdapter.OnRequestC
         }else{
             binding.priceAmount.visibility = View.VISIBLE
             binding.priceTxt.visibility = View.VISIBLE
-            binding.priceAmount.text = it.product!!.price.toString()
+            binding.priceAmount.text = "Rs. ${it.product!!.price.toString()}"
         }
         //Alert messages
         when (it.alertMessage.type) {
@@ -534,7 +534,6 @@ class MyListingDetialActivity : BaseActivity(), RequestedUsersAdapter.OnRequestC
             intent.putExtra(Constants.productId, request.requestId)
             intent.putExtra(Constants.productStatus, productDetails!!.product?.status)
             startActivity(intent)*/
-
         }
     }
 
