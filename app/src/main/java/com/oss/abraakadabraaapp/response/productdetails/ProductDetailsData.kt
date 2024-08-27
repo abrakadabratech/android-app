@@ -32,6 +32,7 @@ data class Products (
     @SerializedName("is_request_allowed"   ) var isRequestAllowed  : Boolean = true,
     @SerializedName("requested_blocked_reason"   ) var requestBlockedReason  : String = "You have been blocked.",
     @SerializedName("chat_node"   ) var chatNode  : String = "",
+    @SerializedName("product_status"   ) var product_status  : String = "",
     @SerializedName("requestAccepted"   ) var requestedStatus  : Boolean = false,
     @SerializedName("created_at"    ) var createdAt    : String?           = null,
     @SerializedName("type"    ) var type    : String?           = "free",

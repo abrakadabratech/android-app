@@ -48,6 +48,8 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
     var razorPayId = ""
     var name = ""
     var email = ""
+    val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+
     var phone = ""
     val map = HashMap<String, String>()
     private val mainViewModel: AuthViewModel by viewModel()
@@ -62,7 +64,6 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
         from = intent.extras?.getString("from", "").toString()
 
         productId = intent.extras?.getString("productId", "")!!
-
         name = intent.extras?.getString("name", "")!!
         email = intent.extras?.getString("email", "")!!
         phone = intent.extras?.getString("phone", "")!!
@@ -82,7 +83,7 @@ class MyPayAsYouGoActivity : BaseActivity(), PaymentResultListener {
                 ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 intent.putExtra("from", from)
                 intent.putExtra("PRODUCT_ID", productId)
-                intent.putExtra("USER_ID", receiverId)
+                intent.putExtra("USER_ID",currentUserId )
                 startActivity(intent)
                 finish()
             } else {

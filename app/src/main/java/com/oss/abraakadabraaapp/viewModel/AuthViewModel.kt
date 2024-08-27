@@ -17,6 +17,7 @@ import com.oss.abraakadabraaapp.activities.newflow.requests.CancelRequestReponse
 import com.oss.abraakadabraaapp.datasource.products.GetProducts
 import com.oss.abraakadabraaapp.model.AccountDeleteResponse
 import com.oss.abraakadabraaapp.model.BlockedResponse
+import com.oss.abraakadabraaapp.model.ChatMetaDataModel
 import com.oss.abraakadabraaapp.model.DeleteAll
 import com.oss.abraakadabraaapp.model.DeleteMultiple
 import com.oss.abraakadabraaapp.model.InitChatResponce
@@ -1349,6 +1350,27 @@ fun getRequestDetails(
             })
 
 //            isLoading.value = false
+        }
+    }
+
+    var chatMetaDataResponse = MutableLiveData<ChatMetaDataModel>()
+    fun chatMetaData(chatId:String) {
+
+        viewModelScope.launch {
+
+            suspend fun call() = repository.chatMetaData(chatId)
+
+
+            callApi(::call, object : CallHelper<ChatMetaDataModel> {
+                override fun onSuccessful(data: ChatMetaDataModel) {
+                    chatMetaDataResponse.value = data
+                }
+
+                override fun onError(errorResponse: HttpErrorResponse) {
+                    errorMessage.value = errorResponse.responseMessage
+                }
+            })
+
         }
     }
 

@@ -14,6 +14,7 @@ import com.oss.abraakadabraaapp.activities.newflow.requests.CancelRequestReponse
 import com.oss.abraakadabraaapp.datasource.products.GetProducts
 import com.oss.abraakadabraaapp.model.AccountDeleteResponse
 import com.oss.abraakadabraaapp.model.BlockedResponse
+import com.oss.abraakadabraaapp.model.ChatMetaDataModel
 import com.oss.abraakadabraaapp.model.DeleteAll
 import com.oss.abraakadabraaapp.model.DeleteMultiple
 import com.oss.abraakadabraaapp.model.InitChatResponce
@@ -515,5 +516,8 @@ interface APIs {
 
     @POST("users/chats/allowed")
     suspend fun isBlocked(@Body body: HashMap<String, String>) : Response<BlockedResponse>
+
+    @POST("user/chat/{chat_id}/metadata")
+    suspend fun chatMetaData(@Path("chat_id") chatId:  String) : Response<ChatMetaDataModel>
 
 }

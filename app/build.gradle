@@ -1,5 +1,5 @@
 plugins {
-     id 'com.android.application'
+    id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
@@ -30,9 +30,9 @@ android {
         applicationId "com.oss.abraakadabraaapp"
         minSdk 23
         targetSdk 33
-        
-        versionCode 46
-        versionName "1.20.6"
+
+        versionCode 47
+        versionName "1.20.7"
 //        versionName "test_refresh_product"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

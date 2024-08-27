@@ -18,9 +18,10 @@ data class Product(
     val id: String,
     val name: String,
     val description: String,
+    val product_status:String,
     @SerializedName("product_image")
     val productImage: String,
-    val timestamp: Timestamp2,
+    val timestamp: Any,
     @SerializedName("chat_count")
     val chatCount: String,
     @SerializedName("unseen_chats")

@@ -21,6 +21,8 @@ data class Chat(
     val userName: String,
     @SerializedName("product_image")
     val productImage: String,
+    @SerializedName("product_status")
+    val product_status:String,
     @SerializedName("product_name")
     val productName: String,
     @SerializedName("last_message")

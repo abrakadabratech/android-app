@@ -92,6 +92,7 @@ class GivingChatsFragment : Fragment() {
                             //shimmer OFF
                             binding.shimmer.visibility = View.GONE
                             binding.shimmer.stopShimmer()
+
                             if (sellerAdapter.itemCount < 1) {
                                 binding.nodata3.visibility = View.VISIBLE
                             } else {

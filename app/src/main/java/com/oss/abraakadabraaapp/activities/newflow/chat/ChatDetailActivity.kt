@@ -2,7 +2,6 @@ package com.oss.abraakadabraaapp.activities.newflow.chat
 
 import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
@@ -16,16 +15,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.compose.material3.AlertDialog
-import androidx.compose.ui.text.capitalize
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
@@ -33,30 +28,26 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.FirebaseApp
+import com.google.firebase.FirebaseOptions
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.WriteBatch
 import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.karumi.dexter.Dexter
 import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.MyPayAsYouGoActivity
 import com.oss.abraakadabraaapp.activities.newflow.NewHomeActivity
-import com.oss.abraakadabraaapp.activities.newflow.RequesterActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ChatMessageAdapter
 import com.oss.abraakadabraaapp.activities.newflow.customeview.WrapContentLinearLayoutManager
-import com.oss.abraakadabraaapp.activities.newflow.model.NotificationDataModel
 import com.oss.abraakadabraaapp.databinding.ActivityChatDetailBinding
 import com.oss.abraakadabraaapp.databinding.ChatMessageRowBinding
+import com.oss.abraakadabraaapp.model.RequestData
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_BACK_CHAT_DETAILS
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_CHAT_BLOCK_USER
@@ -65,22 +56,13 @@ import com.oss.abraakadabraaapp.utils.Constants.BUTTON_CHAT_OPTION_MENU
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_CHAT_REPORT_USER
 import com.oss.abraakadabraaapp.utils.Constants.BUTTON_CHAT_SEND_MESSAGE
 import com.oss.abraakadabraaapp.utils.Constants.CHATS_DATA
-import com.oss.abraakadabraaapp.utils.Constants.DISPLAY_NAME
-import com.oss.abraakadabraaapp.utils.Constants.DISPLAY_PIC
 import com.oss.abraakadabraaapp.utils.Constants.MESSAGE
 import com.oss.abraakadabraaapp.utils.Constants.PAGE_CHATS_DETAILS
 import com.oss.abraakadabraaapp.utils.Constants.PRODUCT_ID
-import com.oss.abraakadabraaapp.utils.Constants.UNDER_DEV
-import com.oss.abraakadabraaapp.utils.PreferencesManagement
-import com.oss.abraakadabraaapp.utils.Utility
-import com.oss.abraakadabraaapp.utils.Utility.convertToTimestamp
-import com.oss.abraakadabraaapp.utils.Utility.toDate
 import com.oss.abraakadabraaapp.utils.Utility.toDateAndTime
 import com.oss.abraakadabraaapp.viewModel.AuthViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.HashMap
+import java.util.Locale
 
 
 class ChatDetailActivity : BaseActivity() {
@@ -89,6 +71,7 @@ class ChatDetailActivity : BaseActivity() {
     private var list: ArrayList<String> = ArrayList()
     var chatData: ChatListModel? = null
     var chatNode = ""
+    var from = ""
     private val TAG = "ChatDetailActivity"
     var firestoreUserAdapter: FirestoreRecyclerAdapter<ChatModel, UsersViewholder>? = null
     private val mainViewModel: AuthViewModel by viewModel()
@@ -96,6 +79,8 @@ class ChatDetailActivity : BaseActivity() {
     private lateinit var messageListener: ListenerRegistration
     private val firestore = FirebaseFirestore.getInstance()
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+    val currentUserEmail = FirebaseAuth.getInstance().currentUser?.email
+    val currentUserPhone = FirebaseAuth.getInstance().currentUser?.phoneNumber
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,6 +114,7 @@ class ChatDetailActivity : BaseActivity() {
             val productId = intent.extras?.getString(PRODUCT_ID, "").toString()
             Log.d(TAG, "onCreate: $message")
 
+//            val db = Firebase.firestore("pre-prod")
             val db = Firebase.firestore
             db.collection("chats")
                 .document(chatNode)
@@ -193,12 +179,14 @@ class ChatDetailActivity : BaseActivity() {
     }
 
     private fun setChatMetaData(productId: String, now: Timestamp) {
+
         val db = Firebase.firestore
+//        val db = Firebase.firestore("pre-prod")
         db.collection("chats-metadata").document(productId).update("last_activity", now)
             .addOnSuccessListener {
                 Log.d(TAG, "setChatMetaData: success")
             }.addOnFailureListener {
-                Log.e(TAG, "setChatMetaData: failed")
+                Log.e(TAG, "setChatMetaData: failed $it")
             }
     }
 
@@ -252,6 +240,7 @@ class ChatDetailActivity : BaseActivity() {
 
     private fun markAsRead() {
         val db = Firebase.firestore
+//        val db = Firebase.firestore("pre-prod")
         Log.d(TAG, "onCreate:before get true in chat node $chatNode")
 
         val user = FirebaseAuth.getInstance().currentUser?.uid
@@ -295,6 +284,8 @@ class ChatDetailActivity : BaseActivity() {
 
     // Set user as offline when the app is in the background or closed
     fun setUserOffline() {
+        val db = Firebase.firestore
+//        val db = Firebase.firestore("pre-prod")
         if (FirebaseAuth.getInstance().currentUser?.uid != null) {
             val userRef =
                 db.collection("online_users")
@@ -314,14 +305,25 @@ class ChatDetailActivity : BaseActivity() {
 
     }
 
-    private fun loaddata() {
-        val db = Firebase.firestore
 
+    private fun loaddata() {
+
+
+
+//        val d = getPreProdFirestore()
+
+        val db = Firebase.firestore
+//        val db = Firebase.firestore("pre-prod")
+
+        mainViewModel.chatMetaData(chatNode)
         Log.d("Notification TAG", "onCreate: $chatNode")
         setUpRecycler(chatNode)
         db.collection("chats")
             .document(chatNode).addSnapshotListener { value, error ->
-                Log.e("TAG:::>", "loaddata: ${Gson().toJson(value?.toObject(ChatListModel::class.java))}", )
+                Log.e(
+                    "TAG:::>",
+                    "loaddata: ${Gson().toJson(value?.toObject(ChatListModel::class.java))}",
+                )
 
                 if (error != null) {
                     // Handle error
@@ -335,20 +337,26 @@ class ChatDetailActivity : BaseActivity() {
 //                    return@addSnapshotListener
 //                }
                 chatData = value?.toObject(ChatListModel::class.java)
+
                 Log.e("TAG:::>", "loaddata: ${Gson().toJson(chatData)}")
-                if (chatData != null){
+                if (chatData != null) {
+                    setChatMetaData(chatData!!.product_id.toString(), Timestamp.now())
+
                     if (currentUserId == chatData!!.sender_id) {
                         binding.chatName.text = chatData!!.receiver_name.toString()
                         Glide.with(applicationContext).load(chatData!!.receiver_avatar)
                             .placeholder(resources.getDrawable(R.drawable.ic_profile))
                             .into(binding.profilePic)
-                        binding.markBtn.text = "Mark as Delivered"
+//                        binding.markBtn.text = "Mark as Delivered"
+                        from = "listing"
+
                     } else {
                         binding.chatName.text = chatData!!.sender_name.toString()
                         Glide.with(applicationContext).load(chatData!!.sender_avatar)
                             .placeholder(resources.getDrawable(R.drawable.ic_profile))
                             .into(binding.profilePic)
-                        binding.markBtn.text = "Mark as Received"
+//                        binding.markBtn.text = "Mark as Received"
+                        from = "requesting"
 
                     }
                     binding.productName.text = chatData!!.product?.capitalize(Locale.ROOT)
@@ -366,14 +374,15 @@ class ChatDetailActivity : BaseActivity() {
                         chatData!!.sender_id.toString()
                     else chatData!!.receiver_id.toString()
                     mainViewModel.isBlockedUser(map)
-                }else{
+                } else {
                     val dialogBuilder = AlertDialog.Builder(this)
                     dialogBuilder
                         .setTitle("Alert")
                         .setMessage("Your chats are deleted!")
                         .setCancelable(false)
 
-                    dialogBuilder.setPositiveButton("OK"
+                    dialogBuilder.setPositiveButton(
+                        "OK"
                     ) { _, i ->
                         finish()
                     }
@@ -393,6 +402,14 @@ class ChatDetailActivity : BaseActivity() {
     }
 
     private fun setUpObserver() {
+
+        mainViewModel.chatMetaDataResponse.observe(this) {
+
+
+
+            updateMarkButton(it.data?.requestData?.status, it.data?.chatData?.senderId,it.data?.requestData)
+
+        }
 
         mainViewModel.isBlockedResponse.observe(this) {
             if (it.data.is_blocked) {
@@ -417,15 +434,15 @@ class ChatDetailActivity : BaseActivity() {
         }
 
         mainViewModel.updateProductRequest.observe(this) {
-//            Log.d("TAG - Product deails", "is it rue : ${productDetails.data.description}")
+            Log.d("TAG - Product deails", "is it rue : ${it}")
 
             if (it.code == 200) {
                 showToast(it.responseMessage.toString())
-
-                if (it.data.request_status == "received") {
-
-                }
+                from = if (currentUserId == chatData!!.sender_id)
+                    "listing" else
+                    "requesting"
                 loaddata()
+                gotoPaymentFlow()
             } else {
                 Log.d("TAG -", "setUpObserver: fail")
             }
@@ -464,9 +481,71 @@ class ChatDetailActivity : BaseActivity() {
 
     }
 
+    private fun gotoPaymentFlow() {
+        val i = Intent(this, MyPayAsYouGoActivity::class.java)
+        i.putExtra("productId", chatData?.product)
+        i.putExtra("phone", currentUserPhone)
+        i.putExtra("email", currentUserEmail)
+        i.putExtra("from",if (currentUserId == chatData!!.sender_id)
+            "listing" else
+            "requesting")
+        i.putExtra("name",if (currentUserId == chatData!!.sender_id)
+            chatData?.sender_name else
+            chatData?.receiver_name)
+        i.putExtra("receiver_id", chatData?.receiver_id)
+        startActivity(i)
+    }
+
+    private fun updateMarkButton(status: String?, senderId: String?, requestData: RequestData?) {
+
+        if (currentUserId == senderId) {
+            binding.chatName.text = chatData!!.receiver_name.toString()
+            Glide.with(applicationContext).load(chatData!!.receiver_avatar)
+                .placeholder(resources.getDrawable(R.drawable.ic_profile))
+                .into(binding.profilePic)
+            binding.markBtn.text = "Mark as Delivered"
+            binding.markBtn.isClickable = true
+            from = "listing"
+            if (requestData?.isDelivered != null && status == "delivered") {
+                binding.chatName.text = chatData!!.receiver_name.toString()
+                Glide.with(applicationContext).load(chatData!!.receiver_avatar)
+                    .placeholder(resources.getDrawable(R.drawable.ic_profile))
+                    .into(binding.profilePic)
+                binding.markBtn.text = "Delivered"
+                binding.markBtn.isClickable = false
+                from = "listing"
+            }
+
+        } else {
+            binding.chatName.text = chatData!!.sender_name.toString()
+            Glide.with(applicationContext).load(chatData!!.sender_avatar)
+                .placeholder(resources.getDrawable(R.drawable.ic_profile))
+                .into(binding.profilePic)
+            binding.markBtn.text = "Mark as Received"
+            binding.markBtn.isClickable = true
+            from = "requesting"
+
+            if (requestData?.isReceived != null && status == "received") {
+                binding.chatName.text = chatData!!.sender_name.toString()
+                Glide.with(applicationContext).load(chatData!!.sender_avatar)
+                    .placeholder(resources.getDrawable(R.drawable.ic_profile))
+                    .into(binding.profilePic)
+                binding.markBtn.text = "Received"
+                binding.markBtn.isClickable = false
+                from = "requesting"
+
+            }
+        }
+        /*if (status == "active") {
+
+        } else if (status == "delivered" || status == "received") {
+
+        }*/
+    }
+
     private fun clickEvents() {
         binding.markBtn.setOnClickListener {
-            if (currentUserId == chatData?.sender_id) {
+            if (binding.markBtn.text == "Mark as Delivered") {
                 mainViewModel.updateProductRequest(
                     chatData?.requestId.toString(),
                     "delivered"
@@ -523,7 +602,6 @@ class ChatDetailActivity : BaseActivity() {
                 binding.messageBox.setText("")
             } else {
                 sendMessage(binding.messageBox.text.toString().trim())
-                setChatMetaData(chatData!!.product_id.toString(), Timestamp.now())
                 list.add(binding.messageBox.text.toString().trim())
                 binding.messageBox.setText("")
             }
@@ -566,7 +644,7 @@ class ChatDetailActivity : BaseActivity() {
         val btnSubmitReport = dialogView.findViewById<MaterialButton>(R.id.btnSubmitReport)
         val titleTxt = dialogView.findViewById<TextView>(R.id.textViewHeading)
         val sbtitleTxt = dialogView.findViewById<TextView>(R.id.textViewSubheading)
-        titleTxt.text  = title
+        titleTxt.text = title
         sbtitleTxt.text = subTitle
 
         // Handle submit button click
@@ -602,6 +680,7 @@ class ChatDetailActivity : BaseActivity() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         userId?.let { uid ->
             val db = Firebase.firestore
+//            val db = Firebase.firestore("pre-prod")
             val data = hashMapOf(
                 "isTyping" to isTyping
             )
@@ -690,6 +769,7 @@ class ChatDetailActivity : BaseActivity() {
             showToast("Please enter some message")
         } else {
             val db = Firebase.firestore
+//            val db = Firebase.firestore("pre-prod")
             val sender_id = FirebaseAuth.getInstance().currentUser?.uid
             db.collection("chats")
                 .document(chatNode)
@@ -706,7 +786,7 @@ class ChatDetailActivity : BaseActivity() {
                 .addOnFailureListener {
 
                 }
-            Log.e(TAG, "sendMessage: ${chatData.toString()}", )
+            Log.e(TAG, "sendMessage: ${chatData.toString()}")
             val chats = hashMapOf(
                 "chatNode" to chatNode,
                 "receiverId" to if (sender_id == chatData!!.receiver_id) chatData!!.sender_id else chatData?.receiver_id,
@@ -752,6 +832,7 @@ class ChatDetailActivity : BaseActivity() {
     private fun setUpRecycler(chatNode: String) {
 
         val db = Firebase.firestore
+//        val db = Firebase.firestore("pre-prod")
         val sender_id = FirebaseAuth.getInstance().currentUser?.uid
 
         val query = db.collection("chats")
@@ -823,7 +904,8 @@ class ChatDetailActivity : BaseActivity() {
     }
 
     private fun markMessageAsRead(messageId: String) {
-        val firestore = FirebaseFirestore.getInstance()
+        val firestore = Firebase.firestore
+//        val firestore = Firebase.firestore("pre-prod")
         val messagesCollection = firestore.collection("chats").document(chatNode)
             .collection("Messages")
         val user = FirebaseAuth.getInstance().currentUser?.uid
@@ -853,6 +935,8 @@ class ChatDetailActivity : BaseActivity() {
     }
 
     fun setUserOnline() {
+        val db = Firebase.firestore
+//        val db = Firebase.firestore("pre-prod")
         if (FirebaseAuth.getInstance().currentUser?.uid != null) {
             val userRef = db.collection("online_users")
                 .document(FirebaseAuth.getInstance().currentUser?.uid.toString())
@@ -900,6 +984,6 @@ class ChatDetailActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        showOnlineOrOffline()
+        //showOnlineOrOffline()
     }
 }

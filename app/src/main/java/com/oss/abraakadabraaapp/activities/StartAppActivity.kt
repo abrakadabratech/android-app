@@ -504,7 +504,7 @@ class StartAppActivity : BaseActivity(), LocationListener {
                             val clipboard =
                                 getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                             val clip = ClipData.newPlainText(android.R.attr.label.toString(), idToken)
-//                            clipboard.setPrimaryClip(clip)
+                            clipboard.setPrimaryClip(clip)
                             if(PreferencesManagement.saveAuthToken(this@StartAppActivity,auth))
                             {
                                 Log.d("akd_debug", "generateAuthToken: Data saved in preferences.")

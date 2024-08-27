@@ -6,8 +6,8 @@ import com.oss.abraakadabraaapp.retrofit.api.APIService
 
 class MainViewModelFactory(private val apiService: APIService,
                            private val maxDistance:Int,
-                           private val lat:Double,
-                           private val long:Double,
+                           private val lat:Double = 12.9724,
+                           private val long:Double = 77.5806,
                            private val sortBy:String,private val type:String) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {

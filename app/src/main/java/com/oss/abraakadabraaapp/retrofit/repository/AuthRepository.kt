@@ -255,6 +255,7 @@ class AuthRepository(private val apiHelper: APIs) {
     suspend fun userAccountDelete() = apiHelper.deleteUserAccount()
     suspend fun viewProfile(id:String) = apiHelper.viewProfile(id)
     suspend fun isBlockedUser(body: HashMap<String, String>) = apiHelper.isBlocked(body)
+    suspend fun chatMetaData(chatId:  String) = apiHelper.chatMetaData(chatId)
 
     suspend fun iniChat(id:String,body: HashMap<String, String>) = apiHelper.initChat(id,body)
     suspend fun reportChat(id:String,body: HashMap<String, String>) = apiHelper.reportChat(id,body)

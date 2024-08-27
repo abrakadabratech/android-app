@@ -2,11 +2,9 @@ package com.oss.abraakadabraaapp.activities.newflow.chat
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -15,28 +13,19 @@ import androidx.paging.PagingData
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
-import com.oss.abraakadabraaapp.R
 import com.oss.abraakadabraaapp.activities.BaseActivity
 import com.oss.abraakadabraaapp.activities.newflow.adapters.ChatAdapter
-import com.oss.abraakadabraaapp.activities.newflow.adapters.ExpandableAdapter
 import com.oss.abraakadabraaapp.activities.newflow.adapters.SubAdapter
 import com.oss.abraakadabraaapp.databinding.ChatRowBinding
 import com.oss.abraakadabraaapp.databinding.FragmentReceivingChatsBinding
 import com.oss.abraakadabraaapp.retrofit.api.APIService
 import com.oss.abraakadabraaapp.utils.Constants
 import com.oss.abraakadabraaapp.viewModel.BuyerProductViewModel
-import com.oss.abraakadabraaapp.viewModel.SellerProductListViewModel
 import com.oss.abraakadabraaapp.viewmodelfactory.BuyerChatListViewModelFactory
-import com.oss.abraakadabraaapp.viewmodelfactory.SellerProductViewModelFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.util.*
 
 
 class ReceivingChatsFragment : Fragment(),ChatAdapter.onChatClicked {

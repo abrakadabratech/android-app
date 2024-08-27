@@ -8,6 +8,7 @@ data class NotificationDataModel(
     @SerializedName("requestId"        ) var requestId        : String? = "",
     @SerializedName("product_id"        ) var product_id        : String? = "",
     @SerializedName("notificationDoc" ) var notificationDoc : String? = "",
+    @SerializedName("product_status" ) var product_status : String? = "",
     @SerializedName("request_status" ) var requestStatus : String? = ""
 )
 

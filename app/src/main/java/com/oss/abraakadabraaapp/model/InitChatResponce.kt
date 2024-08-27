@@ -11,5 +11,6 @@ class InitChatResponce(
 data class InitChatData(
     @SerializedName("chat_id")
     val chatId: String = "",
+    val product_status: String = "",
     val message: String,
 )

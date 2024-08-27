@@ -9,7 +9,7 @@
         android:id="@+id/navigation_home"
         android:name="com.oss.abraakadabraaapp.activities.newflow.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/new_receiver_flow" />
+         />
 
     <fragment
         android:id="@+id/navigation_community"
